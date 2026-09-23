@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VoltCE — Electrical Continuing Education</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
   :root {
@@ -442,8 +443,7 @@ const STRIPE_PAYMENT_LINK_COURSE = 'https://buy.stripe.com/fZu8wOgENeqZ6DE6XY144
 const ADMIN_EMAIL = 'matttimler@gmail.com'
 // ============================================================
 
-const { createClient } = window.supabase
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 const COURSES = [
   { id:'gb', slug:'grounding-bonding-nec2017', title:'Grounding & Bonding per NEC 2017', hours:4.0, price:49, tag:'Journeyman', icon:'G&B', bg:'#E6F1FB', ic:'#0C447C' },
