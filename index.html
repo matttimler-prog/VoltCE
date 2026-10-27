@@ -639,7 +639,7 @@ const STRIPE_PAYMENT_LINK_SUBSCRIPTION = 'https://buy.stripe.com/5kQ8wO9clbeN9PQ
 const STRIPE_PAYMENT_LINK_COURSE = 'https://buy.stripe.com/fZu8wOgENeqZ6DE6XY14401'
 const ADMIN_EMAIL = 'matttimler@gmail.com'
 // Paste a Stripe Payment Link (customer chooses price) here to switch the Support button on:
-const STRIPE_DONATE_LINK = ''
+const STRIPE_DONATE_LINK = 'https://buy.stripe.com/cNi4gygEN3Mle666XY14402'
 // ============================================================
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -1475,7 +1475,7 @@ function renderRecs(kind, btn, target) {
 
 // ── SUPPORT ───────────────────────────────────────────────
 function donate() {
-  if (STRIPE_DONATE_LINK) { window.open(STRIPE_DONATE_LINK, '_blank'); return }
+  if (STRIPE_DONATE_LINK) { trk('donate_click', 'support'); window.open(STRIPE_DONATE_LINK, '_blank', 'noopener'); return }
   const n = document.getElementById('donate-note')
   n.textContent = 'Contributions open very soon. Thank you for wanting to help.'
   n.style.display = 'block'
