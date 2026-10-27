@@ -7,7 +7,7 @@
 <meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
   :root {
     --blue: #1B5FC0;
@@ -34,11 +34,11 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.5; background: var(--gray); color: var(--text); font-size: 15px; }
+  body { font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.5; background: radial-gradient(1200px 500px at 70% -100px, #F5F7F9, transparent 70%), var(--gray); color: var(--text); font-size: 15px; }
 
   /* ── NAV ── */
   .nav { background: var(--gray); border-bottom: 2px solid var(--ink); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .nav-logo { font-family: var(--display); font-size: 28px; font-weight: 800; color: var(--ink); letter-spacing: 0.2px; cursor: pointer; line-height: 1; }
+  .nav-logo { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: 0.6px; cursor: pointer; line-height: 1; }
   .nav-logo span { color: var(--blue); }
   .nav-links { display: flex; gap: 6px; align-items: center; }
   .nav-link { font-size: 13px; color: var(--muted); background: transparent; border: none; padding: 6px 12px; border-radius: 6px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
@@ -53,7 +53,7 @@
   .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
 
   /* ── CARDS ── */
-  .card { background: var(--white); border: 1px solid var(--border); border-top: 3px solid var(--ink); border-radius: 4px var(--radius-lg) var(--radius-lg) var(--radius-lg); padding: 24px; margin-bottom: 16px; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(20,32,44,.06), 0 8px 24px -16px rgba(20,32,44,.25); }
   .card-sm { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 
   /* ── FORMS ── */
@@ -91,7 +91,7 @@
   /* ── METRICS ── */
   .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
   .metric { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-  .metric-val { font-family: var(--display); font-size: 40px; font-weight: 800; color: var(--blue); line-height: 1; }
+  .metric-val { font-family: var(--display); font-size: 38px; font-weight: 700; color: var(--blue); line-height: 1; }
   .metric-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
   /* ── TABLES ── */
@@ -107,55 +107,107 @@
   .prog-fill { height: 6px; background: var(--blue); border-radius: 3px; transition: width 0.4s; }
 
   /* ── HERO + PANEL ── */
-  .hero { background: var(--gray); color: var(--ink); padding: 56px 24px 40px; text-align: left; border-bottom: 1px solid var(--border); }
-  .hero-in { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
-  .hero h1 { font-family: var(--display); font-size: clamp(52px, 8vw, 96px); font-weight: 800; line-height: .92; margin-bottom: 18px; letter-spacing: 0; }
-  .hero p { font-size: 17px; color: var(--muted); max-width: 460px; margin: 0 0 26px; line-height: 1.6; }
+  .hero { background: transparent; color: var(--ink); padding: 56px 24px 52px; text-align: left; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; inset:0; background-image: radial-gradient(rgba(20,32,44,.09) 1px, transparent 1.2px); background-size: 22px 22px; mask-image: linear-gradient(90deg, transparent, #000 60%); -webkit-mask-image: linear-gradient(90deg, transparent, #000 60%); pointer-events:none; }
+  .hero-in { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.08fr; gap: 56px; align-items: center; position: relative; }
+  .hero h1 { font-family: var(--display); font-size: clamp(46px, 6.4vw, 78px); font-weight: 700; line-height: .98; margin-bottom: 20px; letter-spacing: .5px; }
+  .hero p { font-size: 17px; color: var(--muted); max-width: 440px; margin: 0 0 28px; line-height: 1.65; }
   .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-  .hero-btn { padding: 13px 24px; border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; border: 2px solid var(--ink); transition: background .15s, color .15s, transform .08s; }
-  .hero-btn-primary { background: var(--ink); color: #fff; }
+  .hero-btn { padding: 13px 24px; border-radius: 6px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--ink); transition: background .15s, color .15s, transform .08s, box-shadow .15s; }
+  .hero-btn-primary { background: var(--ink); color: #fff; box-shadow: 0 6px 16px -8px rgba(20,32,44,.7); }
   .hero-btn-primary:hover { background: var(--blue); border-color: var(--blue); }
-  .hero-btn-outline { background: transparent; color: var(--ink); }
+  .hero-btn-outline { background: rgba(255,255,255,.5); color: var(--ink); }
   .hero-btn-outline:hover { background: var(--ink); color: #fff; }
-  .hero-btn-donate { background:#FFD25A; color:var(--ink); }
   .hero-note { margin-top: 18px; font-size: 13px; color: var(--muted); }
   .hero-note button { background: none; border: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font: inherit; padding: 0; }
 
-  .panel { background: #2A333D; border-radius: 10px; padding: 16px 16px 14px; box-shadow: 0 0 0 3px #AEB6BE, 0 0 0 5px var(--ink), 0 18px 30px -14px rgba(20,32,44,.5); position: relative; }
-  .panel-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 4px 12px; }
-  .panel-title { font-family: var(--display); font-size: 22px; font-weight: 800; color: #E8EBEE; letter-spacing: .3px; }
-  .panel-title small { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; color: #9AA5B0; margin-left: 8px; }
-  .brk { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; align-items: center; gap: 10px; background: #E8EBEE; border-radius: 6px; padding: 9px 10px 9px 12px; min-height: 58px; border-left: 6px solid var(--ph, #1A1D21); }
-  .brk:focus-visible { outline: 3px solid #FFD25A; outline-offset: 2px; }
-  .brk .num { font-size: 11px; color: #6B7783; width: 14px; text-align: center; flex: none; }
-  .brk .txt { flex: 1; min-width: 0; }
-  .brk .txt b { display: block; font-family: var(--display); font-size: 21px; font-weight: 800; line-height: 1; color: var(--ink); }
-  .brk .txt i { font-style: normal; font-size: 12px; color: #4A5763; }
-  .brk .sw { flex: none; width: 26px; height: 40px; background: #12181F; border-radius: 4px; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,.6); }
-  .brk .sw::before { content: ''; position: absolute; left: 3px; right: 3px; height: 17px; border-radius: 3px; background: linear-gradient(#F4F6F8, #B9C1C9); box-shadow: 0 1px 2px rgba(0,0,0,.5); bottom: 3px; transition: bottom .16s cubic-bezier(.3,1.6,.5,1); }
-  .brk.on .sw::before { bottom: 20px; }
-  .brk .lamp { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #9AA5B0; transition: background .2s, box-shadow .2s; }
-  .brk.on .lamp { background: #25C47A; box-shadow: 0 0 8px 2px rgba(37,196,122,.7); }
-  .brk:hover .txt b { color: var(--blue); }
-  .brk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; position: relative; padding: 0 0; }
-  .bus { position: relative; height: 12px; margin: 0 4px 12px; background: #12181F; border-radius: 3px; overflow: hidden; }
-  .bus::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #E7B04A, #FFE9A6); transform-origin: left; transform: scaleX(var(--bus, 0)); transition: transform .9s cubic-bezier(.5,0,.2,1); }
-  .main-brk { all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; background: #E8EBEE; border-radius: 6px; padding: 6px 10px; font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--ink); }
-  .main-brk:focus-visible { outline: 3px solid #FFD25A; outline-offset: 2px; }
-  .main-brk .sw { width: 22px; height: 30px; background: #12181F; border-radius: 4px; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,.6); }
-  .main-brk .sw::before { content: ''; position: absolute; left: 3px; right: 3px; height: 12px; border-radius: 3px; background: linear-gradient(#F4F6F8, #B9C1C9); bottom: 3px; transition: bottom .18s cubic-bezier(.3,1.6,.5,1); }
-  .main-brk.on .sw::before { bottom: 15px; }
-  .panel-key { display: flex; gap: 14px; flex-wrap: wrap; padding: 12px 4px 2px; font-size: 12px; color: #B8C1CA; }
-  .panel-key span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); box-shadow: 0 0 0 1px rgba(255,255,255,.35); }
-  .panel.alive .brk { transition: transform .08s; }
-  .panel.alive .brk:active { transform: translateY(1px); }
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  @media (max-width: 860px) { .hero-in { grid-template-columns: 1fr; gap: 32px; } .hero { padding-top: 36px; } }
-  @media (max-width: 480px) { .brk-grid { grid-template-columns: 1fr; } }
+  /* breaker panel */
+  .panel { position: relative; width: 100%; max-width: 560px; margin-left: auto; padding: 20px 20px 18px; border-radius: 5px;
+    background: linear-gradient(172deg, #EEF0F2 0%, #D3D8DD 55%, #C4CAD0 100%);
+    box-shadow: inset 0 1px 0 #fff, inset 0 0 0 1px rgba(255,255,255,.6), inset 0 0 0 4px #BCC3CA, inset 0 0 0 5px rgba(0,0,0,.18), 0 0 0 1px #7E8892, 0 34px 50px -22px rgba(20,32,44,.6), 0 6px 10px rgba(20,32,44,.2); }
+  .panel::before { content:''; position:absolute; inset:5px; border-radius:3px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, rgba(20,32,44,.025) 1px 3px); pointer-events:none; mix-blend-mode: multiply; opacity:.55; }
+  .screw { position:absolute; width:12px; height:12px; border-radius:50%; background: radial-gradient(circle at 35% 30%, #FAFBFB, #A5ADB5 65%, #7B848C); box-shadow: 0 1px 1px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.28); }
+  .screw::after { content:''; position:absolute; left:2px; right:2px; top:50%; height:1.6px; background:#4F5861; transform: translateY(-50%) rotate(var(--r, 25deg)); }
+  .s1 { top:8px; left:8px; } .s2 { top:8px; right:8px; --r:-35deg; } .s3 { bottom:8px; left:8px; --r:70deg; } .s4 { bottom:8px; right:8px; --r:10deg; }
+  .nameplate { position:relative; width:max-content; max-width:100%; margin: 0 auto 14px; padding: 5px 16px; background: linear-gradient(#262B31,#14171B); color:#DDE2E7; font: 500 13px/1.2 'IBM Plex Sans', sans-serif; letter-spacing: .3px; border-radius: 3px; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 1px 0 rgba(255,255,255,.7); }
+  .nameplate b { font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .8px; margin-right: 8px; color: #fff; }
+  .main-row { position: relative; display:flex; align-items:center; gap:12px; margin: 0 6px 12px; }
+  .main-row .lbl { font: 600 13px 'IBM Plex Sans', sans-serif; color:#2B343D; min-width: 64px; }
+  .mainbtn { all: unset; cursor:pointer; flex:1; position:relative; height:40px; border-radius:4px; background: linear-gradient(180deg,#2D3239,#15181C); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.55), 0 3px 5px rgba(0,0,0,.35); }
+  .mainbtn:focus-visible, .row:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .mainbtn .slot { position:absolute; left:34%; right:34%; top:6px; bottom:6px; background:#07090B; border-radius:3px; box-shadow: inset 0 2px 5px #000; }
+  .mainbtn .handle { position:absolute; top:2px; left:2px; width:calc(50% - 2px); bottom:2px; border-radius:2px; background: linear-gradient(90deg,#F6F7F8,#BDC3C9); box-shadow: 0 1px 2px #000; transition: left .2s cubic-bezier(.3,1.5,.5,1); }
+  .mainbtn.on .handle { left: calc(50%); }
+  .mainbtn .amp { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#C8CED4; font: 700 16px var(--display); letter-spacing:.5px; }
+  .deadfront { position:relative; display:grid; grid-template-columns: 1fr 24px 1fr; grid-auto-rows: 54px; gap: 8px 0; padding: 14px 10px; background: linear-gradient(180deg,#A9B0B7,#B7BDC3); border-radius:3px; box-shadow: inset 0 3px 8px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.7); }
+  .spine { grid-column: 2; grid-row: 1 / span 3; position:relative; margin: -14px 2px; background: linear-gradient(90deg,#6B4C25,#C99347 38%,#F1CF8C 50%,#C99347 62%,#6B4C25); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 0 3px rgba(0,0,0,.25); overflow:hidden; filter: saturate(.25) brightness(.62); transition: filter .6s ease; }
+  .panel.live .spine { filter: none; }
+  .spine::after { content:''; position:absolute; left:0; right:0; height:90px; top:-90px; background: linear-gradient(transparent, rgba(255,255,255,.95), transparent); opacity:0; }
+  .panel.live .spine::after { animation: sweep 1.2s ease-in .05s 1 both; }
+  @keyframes sweep { 0% { top:-90px; opacity:1 } 100% { top:100%; opacity:.2 } }
+  .row { all: unset; box-sizing:border-box; cursor:pointer; display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+  .row.l { grid-column: 1; flex-direction: row; padding-right: 14px; }
+  .row.r { grid-column: 3; flex-direction: row-reverse; padding-left: 14px; }
+  .r1 { grid-row:1 } .r2 { grid-row:1 } .r3 { grid-row:2 } .r4 { grid-row:2 } .r5 { grid-row:3 } .r6 { grid-row:3 }
+  .row .tx { flex:1; min-width:0; font: 600 14px/1.2 'IBM Plex Sans', sans-serif; color:#202A33; text-shadow: 0 1px 0 rgba(255,255,255,.45); }
+  .row.r .tx { text-align:right; }
+  .row .tx i { display:block; font-style:normal; font-weight:400; font-size:11.5px; color:#46525D; margin-top:2px; }
+  .row:hover .tx { color: var(--blue-dark); }
+  .brkr { position:relative; flex:none; width:96px; height:46px; border-radius:4px; background: linear-gradient(180deg,#2F343B,#15181C); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), inset 0 -3px 4px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.5), 0 3px 5px rgba(0,0,0,.4); }
+  .brkr::before { content:''; position:absolute; top:0; bottom:0; width:4px; background: var(--ph); border-radius:2px; opacity:.95; }
+  .row.l .brkr::before { left:0; } .row.r .brkr::before { right:0; }
+  .brkr .slot { position:absolute; top:5px; bottom:5px; left:24px; width:30px; border-radius:3px; background:#07090B; box-shadow: inset 0 2px 5px #000; }
+  .brkr .handle { position:absolute; left:2px; right:2px; height:17px; border-radius:2px; bottom:2px; background: repeating-linear-gradient(180deg, rgba(0,0,0,.18) 0 1px, transparent 1px 4px), linear-gradient(180deg,#F7F8F9,#B8BFC6); box-shadow: 0 1px 2px #000; transition: bottom .17s cubic-bezier(.3,1.7,.5,1); }
+  .row.on .brkr .handle { bottom: calc(100% - 19px); }
+  .brkr .amp { position:absolute; top:50%; transform:translateY(-50%); color:#C3C9CF; font: 700 15px var(--display); letter-spacing:.4px; }
+  .row.l .brkr .amp { right:9px; } .row.r .brkr .amp { left:9px; }
+  .row.r .brkr .slot { left:auto; right:24px; }
+  .brkr::after { content:''; position:absolute; top:50%; width:9px; height:10px; transform: translateY(-50%); background: #7A6038; border-radius:1px; transition: background .4s, box-shadow .4s; }
+  .row.l .brkr::after { right:-9px; } .row.r .brkr::after { left:-9px; }
+  .row.on .brkr::after { background:#F5D184; box-shadow: 0 0 10px 2px rgba(255,200,90,.75); }
+  .panel-key { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; padding: 12px 4px 0; font-size:12px; color:#3B4651; }
+  .panel-key span::before { content:''; display:inline-block; width:10px; height:3px; margin-right:6px; vertical-align:3px; background: var(--c); border-radius:2px; }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  @media (max-width: 900px) { .hero-in { grid-template-columns: 1fr; gap: 36px; } .hero { padding-top: 36px; } .panel { margin: 0 auto; } }
+  @media (max-width: 520px) {
+    .deadfront { grid-template-columns: 22px 1fr; grid-auto-rows: 54px; padding: 14px 8px 14px 6px; }
+    .spine { grid-column:1; grid-row: 1 / span 6; margin: -14px 2px; }
+    .row.l, .row.r { grid-column: 2; flex-direction: row-reverse; padding: 0 0 0 4px; }
+    .row.r .tx { text-align:left; }
+    .r1 { grid-row:1 } .r2 { grid-row:2 } .r3 { grid-row:3 } .r4 { grid-row:4 } .r5 { grid-row:5 } .r6 { grid-row:6 }
+    .row.l .brkr::after, .row.r .brkr::after { left:-9px; right:auto; }
+    .row.l .brkr::before, .row.r .brkr::before { left:0; right:auto; }
+    .row.l .brkr .amp, .row.r .brkr .amp { left:auto; right:9px; }
+    .row.r .brkr .slot { right:auto; left:24px; }
+  }
+
+  /* donation band + footer */
+  .donate-band { background: var(--ink); color:#EEF1F4; position:relative; overflow:hidden; }
+  .donate-band::before { content:''; position:absolute; left:0; right:0; top:0; height:3px; background: repeating-linear-gradient(90deg, #FFC857 0 26px, transparent 26px 40px); background-size: 40px 3px; animation: flow 1.4s linear infinite; opacity:.9; }
+  @keyframes flow { to { background-position: 40px 0 } }
+  .db-in { max-width: 1080px; margin:0 auto; padding: 38px 24px; display:grid; grid-template-columns: 1.6fr 1fr; gap: 32px; align-items:center; }
+  .db-in h2 { font-family: var(--display); font-weight:700; font-size: clamp(30px,4.2vw,46px); line-height:1.02; letter-spacing:.4px; margin-bottom:10px; }
+  .db-in p { color:#B9C3CD; font-size:15.5px; line-height:1.65; max-width:560px; }
+  .db-act { display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+  .db-btn { background:#FFC857; color:var(--ink); border:0; border-radius:6px; padding:15px 30px; font: 700 17px 'IBM Plex Sans', sans-serif; cursor:pointer; box-shadow: 0 10px 24px -10px rgba(255,200,87,.8); transition: transform .1s, background .15s; }
+  .db-btn:hover { background:#FFD57E; } .db-btn:active { transform: translateY(1px); }
+  .db-act small { color:#93A0AC; font-size:12.5px; }
+  @media (max-width: 760px) { .db-in { grid-template-columns: 1fr; } }
+  .site-foot { background: var(--ink); color:#C7D0D9; border-top: 3px solid #FFC857; }
+  .site-foot .sf-in { max-width:1080px; margin:0 auto; padding:18px 24px; display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap; font-size:14px; }
+  .site-foot button.sf-don { background:#FFC857; color:var(--ink); border:0; border-radius:6px; padding:9px 20px; font:700 14px 'IBM Plex Sans', sans-serif; cursor:pointer; }
+  .site-foot .sf-fx { background:none; border:1px solid #4A5864; color:#9FADBA; border-radius:6px; padding:5px 10px; font:12px 'IBM Plex Sans', sans-serif; cursor:pointer; }
+
+  /* effects layers */
+  #fx-bolt, #fx-wire { position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; }
+  #fx-bolt { z-index: 40; } #fx-wire { z-index: 9999; }
+  #fx-flash { position:fixed; inset:0; background:#D6E4FF; opacity:0; pointer-events:none; z-index:39; }
+  .page.active.wire-in { animation: wire-in .4s ease-out 0s both; }
+  @keyframes wire-in { from { opacity:0; transform: translateY(10px); filter: brightness(1.25) } to { opacity:1; transform:none; filter:none } }
 
   /* ── COURSE CARDS ── */
   .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-  .course-card { background: var(--white); border: 1px solid var(--border); border-top: 3px solid var(--ink); border-radius: 4px var(--radius-lg) var(--radius-lg) var(--radius-lg); padding: 20px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+  .course-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; box-shadow: 0 1px 2px rgba(20,32,44,.06), 0 8px 24px -16px rgba(20,32,44,.25); transition: border-color 0.15s, transform 0.15s; }
   .course-card:hover { border-color: var(--blue); transform: translateY(-2px); }
   .course-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
   .course-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.35; }
@@ -194,9 +246,9 @@
   .divider-text { font-size: 12px; color: var(--muted); }
 
   /* ── MISC ── */
-  .page-title { font-family: var(--display); font-size: 38px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.2px; line-height: 1.05; }
+  .page-title { font-family: var(--display); font-size: 36px; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.2px; line-height: 1.05; }
   .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
-  .section-title { font-family: var(--display); font-size: 24px; font-weight: 800; margin-bottom: 14px; letter-spacing: 0.2px; }
+  .section-title { font-family: var(--display); font-size: 24px; font-weight: 700; margin-bottom: 14px; letter-spacing: 0.4px; }
   .success-wrap { text-align: center; padding: 48px 24px; }
   .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
   .empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
@@ -224,9 +276,9 @@
   @keyframes no-shake { 20%,60% { transform:translateX(-5px) } 40%,80% { transform:translateX(5px) } }
   .expl { background:var(--blue-light); color:var(--blue-dark); border-radius:var(--radius); padding:12px 14px; font-size:14px; margin-top:10px; line-height:1.55; }
   .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
-  .rec { background:var(--white); border:1px solid var(--border); border-left:6px solid var(--ph, var(--ink)); border-radius:var(--radius-lg); padding:18px; transition: transform .12s, border-color .12s; }
+  .rec { background:var(--white); border:1px solid var(--border); border-left:3px solid var(--ph, var(--ink)); border-radius:8px; padding:18px; box-shadow: 0 1px 2px rgba(20,32,44,.06), 0 8px 24px -16px rgba(20,32,44,.25); transition: transform .12s, border-color .12s; }
   .rec[onclick]:hover { transform: translateY(-2px); }
-  .rec h4 { font-family: var(--display); font-size: 22px; font-weight: 800; letter-spacing: .2px; }
+  .rec h4 { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: .4px; }
   .rec h4 { margin-bottom:6px; }
   .rec p { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
   .rec a, .rec button.lnk { font-size:13px; color:var(--blue); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline; font-family:inherit; }
@@ -252,7 +304,7 @@
 <body>
 
 <!-- ── NAV ─────────────────────────────────────────────── -->
-<div class="banner">Paid CE courses open after state approval. <a onclick="showPage('prep')">Free exam prep is open now →</a></div>
+<div class="banner">Every donation helps us keep free classes free for people who cannot afford large courses. <a onclick="donate()">Donate</a></div>
 <nav class="nav">
   <div class="nav-logo" onclick="showPage('home')">Volt<span>CE</span></div>
   <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">Menu</button>
@@ -286,21 +338,31 @@
         <div class="hero-note">Free to use. <button onclick="showPage('support')">Help keep it free</button></div>
       </div>
       <div class="panel" id="panel" role="group" aria-label="Study tools">
-        <div class="panel-top"><div class="panel-title">Study panel<small>flip a breaker to start</small></div>
-          <button class="main-brk" id="main-brk" aria-pressed="false" aria-label="Main breaker"><span>Main</span><span class="sw"></span></button></div>
-        <div class="bus" aria-hidden="true"></div>
-        <div class="brk-grid">
-          <button class="brk" style="--ph:var(--phase-a)" data-go="fcOpen()"><span class="num">1</span><span class="txt"><b>Flashcards</b><i>900+ cards</i></span><span class="lamp"></span><span class="sw"></span></button>
-          <button class="brk" style="--ph:var(--phase-a)" data-go="chgOpen()"><span class="num">2</span><span class="txt"><b>Edition changes</b><i>2017 to 2026</i></span><span class="lamp"></span><span class="sw"></span></button>
-          <button class="brk" style="--ph:var(--phase-b)" data-go="codeOpen()"><span class="num">3</span><span class="txt"><b>Code articles</b><i>2,700+ questions</i></span><span class="lamp"></span><span class="sw"></span></button>
-          <button class="brk" style="--ph:var(--phase-b)" data-go="idxOpen()"><span class="num">4</span><span class="txt"><b>Index drill</b><i>find it in the book</i></span><span class="lamp"></span><span class="sw"></span></button>
-          <button class="brk" style="--ph:var(--phase-c)" data-go="calcOpen()"><span class="num">5</span><span class="txt"><b>Load calcs</b><i>2,800+ problems</i></span><span class="lamp"></span><span class="sw"></span></button>
-          <button class="brk" style="--ph:var(--phase-c)" data-go="theoryOpen()"><span class="num">6</span><span class="txt"><b>Theory</b><i>worked math</i></span><span class="lamp"></span><span class="sw"></span></button>
+        <i class="screw s1"></i><i class="screw s2"></i><i class="screw s3"></i><i class="screw s4"></i>
+        <div class="nameplate"><b>Study panel</b>120/240 V, 6 circuits</div>
+        <div class="main-row"><span class="lbl">Main</span><button class="mainbtn" id="main-brk" aria-pressed="false" aria-label="Main breaker"><span class="slot"><span class="handle"></span></span><span class="amp">100</span></button></div>
+        <div class="deadfront">
+          <div class="spine" aria-hidden="true"></div>
+          <button class="row l r1" style="--ph:var(--phase-a)" data-go="fcOpen()"><span class="tx">Flashcards<i>900+ cards</i></span><span class="brkr"><span class="slot"><span class="handle"></span></span><span class="amp">15</span></span></button>
+          <button class="row r r2" style="--ph:var(--phase-a)" data-go="chgOpen()"><span class="tx">Edition changes<i>2017 to 2026</i></span><span class="brkr"><span class="slot"><span class="handle"></span></span><span class="amp">15</span></span></button>
+          <button class="row l r3" style="--ph:var(--phase-b)" data-go="codeOpen()"><span class="tx">Code articles<i>2,700+ questions</i></span><span class="brkr"><span class="slot"><span class="handle"></span></span><span class="amp">20</span></span></button>
+          <button class="row r r4" style="--ph:var(--phase-b)" data-go="idxOpen()"><span class="tx">Index drill<i>find it in the book</i></span><span class="brkr"><span class="slot"><span class="handle"></span></span><span class="amp">20</span></span></button>
+          <button class="row l r5" style="--ph:var(--phase-c)" data-go="calcOpen()"><span class="tx">Load calcs<i>2,800+ problems</i></span><span class="brkr"><span class="slot"><span class="handle"></span></span><span class="amp">30</span></span></button>
+          <button class="row r r6" style="--ph:var(--phase-c)" data-go="theoryOpen()"><span class="tx">Theory<i>worked math</i></span><span class="brkr"><span class="slot"><span class="handle"></span></span><span class="amp">30</span></span></button>
         </div>
         <div class="panel-key"><span style="--c:var(--phase-a)">Memorize</span><span style="--c:var(--phase-b)">Look it up</span><span style="--c:var(--phase-c)">Calculate</span></div>
       </div>
     </div>
   </div>
+  <section class="donate-band" aria-label="Support free classes">
+    <div class="db-in">
+      <div>
+        <h2>Free classes for everyone who cannot afford large courses</h2>
+        <p>VoltCE is built by a Wisconsin master electrician. Every donation pays for hosting and new free questions, so more apprentices and journeymen can study for their exam without buying an expensive prep course.</p>
+      </div>
+      <div class="db-act"><button class="db-btn" onclick="donate()">Donate to keep it free</button><small>Pick any amount. Secure payment through Stripe.</small></div>
+    </div>
+  </section>
   <div class="container">
     <span id="home-q" class="sr-only">300+</span>
     <div class="section-title">Recommended for you</div>
@@ -692,6 +754,8 @@
   </div>
 </div>
 
+<footer class="site-foot"><div class="sf-in"><span>Every donation helps us keep free classes free for everyone who cannot afford large courses.</span><span style="display:flex;gap:10px;align-items:center"><button class="sf-fx" id="fx-toggle" onclick="FX.toggle()">Effects: on</button><button class="sf-don" onclick="donate()">Donate</button></span></div></footer>
+<div id="fx-flash"></div><canvas id="fx-bolt"></canvas><canvas id="fx-wire"></canvas>
 <script src="exam-prep-data.js"></script>
 <script>
 // ============================================================
@@ -1508,23 +1572,121 @@ async function loadFeedbackAdmin() {
 }
 async function setFbStatus(id, st) { await supabaseClient.from('feedback').update({ status: st }).eq('id', id) }
 
+// ── effects: lightning + wire travel ─────
+const FX = (function () {
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+  let on = !mq.matches
+  try { const v = localStorage.getItem('vc_fx'); if (v === '0') on = false; else if (v === '1') on = true } catch (e) {}
+  const bolt = document.getElementById('fx-bolt'), wire = document.getElementById('fx-wire'), flash = document.getElementById('fx-flash')
+  const bc = bolt.getContext('2d'), wc = wire.getContext('2d')
+  const F = { on, busy: false, click: { t: 0, x: 0, y: 0 } }
+  function size() { const d = Math.min(window.devicePixelRatio || 1, 2); [bolt, wire].forEach(c => { c.width = innerWidth * d; c.height = innerHeight * d; c.getContext('2d').setTransform(d, 0, 0, d, 0, 0) }) }
+  size(); addEventListener('resize', size)
+  document.addEventListener('click', e => { F.click = { t: performance.now(), x: e.clientX, y: e.clientY } }, true)
+  const label = () => { const b = document.getElementById('fx-toggle'); if (b) b.textContent = 'Effects: ' + (F.on ? 'on' : 'off') }
+  F.toggle = () => { F.on = !F.on; try { localStorage.setItem('vc_fx', F.on ? '1' : '0') } catch (e) {} label(); if (!F.on) { bc.clearRect(0, 0, innerWidth, innerHeight); flash.style.opacity = 0 } else strike() }
+  label()
+
+  // lightning: midpoint displacement
+  function path(x1, y1, x2, y2, disp, out) {
+    if (disp < 3) { out.push([x2, y2]); return }
+    const mx = (x1 + x2) / 2 + (Math.random() - .5) * disp, my = (y1 + y2) / 2 + (Math.random() - .5) * disp * .5
+    path(x1, y1, mx, my, disp / 2, out); path(mx, my, x2, y2, disp / 2, out)
+  }
+  function build(x1, y1, x2, y2, depth) {
+    const pts = [[x1, y1]]; path(x1, y1, x2, y2, Math.hypot(x2 - x1, y2 - y1) * .45, pts)
+    const segs = [pts]
+    if (depth < 2) for (let i = 4; i < pts.length - 2; i += 6 + (Math.random() * 6 | 0)) {
+      if (Math.random() < .55) { const [bx, by] = pts[i]; const a = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - .5) * 1.6, L = Math.hypot(x2 - x1, y2 - y1) * (.15 + Math.random() * .2); segs.push(...build(bx, by, bx + Math.cos(a) * L, by + Math.sin(a) * L, depth + 1)) }
+    }
+    return segs
+  }
+  let striking = false
+  function strike() {
+    if (!F.on || striking || document.hidden) return
+    striking = true
+    const x1 = innerWidth * (.1 + Math.random() * .8), x2 = x1 + (Math.random() - .5) * innerWidth * .35
+    const segs = build(x1, -10, x2, innerHeight * (.45 + Math.random() * .4), 0)
+    const t0 = performance.now(), life = 520
+    const flashes = [0, 90, 170]
+    ;(function frame(now) {
+      const t = now - t0; bc.clearRect(0, 0, innerWidth, innerHeight)
+      if (t > life) { flash.style.opacity = 0; striking = false; return }
+      const k = flashes.reduce((a, f) => a + (t > f && t < f + 70 ? 1 : 0), 0)
+      const al = k ? 1 : Math.max(0, .55 * (1 - t / life))
+      flash.style.opacity = k ? .13 : 0
+      segs.forEach((pts, i) => {
+        bc.beginPath(); pts.forEach(([x, y], j) => j ? bc.lineTo(x, y) : bc.moveTo(x, y))
+        bc.lineJoin = 'round'; bc.strokeStyle = `rgba(150,190,255,${al * .5})`; bc.lineWidth = i ? 5 : 9; bc.shadowColor = '#8DB6FF'; bc.shadowBlur = 24; bc.stroke()
+        bc.strokeStyle = `rgba(255,255,255,${al})`; bc.lineWidth = i ? 1 : 2; bc.shadowBlur = 8; bc.stroke()
+      })
+      requestAnimationFrame(frame)
+    })(t0)
+  }
+  F.strike = strike
+  function schedule() { setTimeout(() => { strike(); schedule() }, 14000 + Math.random() * 16000) }
+  if (F.on) setTimeout(strike, 2200)
+  schedule()
+
+  // wire travel
+  F.travel = function (fromX, fromY, done) {
+    if (!F.on || F.busy) { done(); return }
+    F.busy = true
+    const W = innerWidth, H = innerHeight
+    const tx = W / 2, ty = 28
+    const mid = [fromX, Math.min(H - 20, fromY + 40)], mid2 = [tx, mid[1]]
+    const pts = [[fromX, fromY], mid, mid2, [tx, ty]]
+    const lens = []; let total = 0
+    for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); lens.push(l); total += l }
+    const at = d => { let r = d; for (let i = 0; i < lens.length; i++) { if (r <= lens[i]) { const u = r / lens[i]; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * u, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * u] } r -= lens[i] } return pts[pts.length - 1] }
+    const dur = 520, t0 = performance.now(); let fired = false
+    ;(function frame(now) {
+      const t = Math.min(1, (now - t0) / dur), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, d = e * total
+      wc.clearRect(0, 0, W, H)
+      // dim
+      wc.fillStyle = `rgba(14,22,32,${.38 * Math.sin(Math.min(1, t * 1.15) * Math.PI)})`; wc.fillRect(0, 0, W, H)
+      // wire (cold) then energized copper-gold up to spark
+      wc.lineCap = 'round'; wc.lineJoin = 'round'
+      wc.beginPath(); pts.forEach(([x, y], i) => i ? wc.lineTo(x, y) : wc.moveTo(x, y)); wc.strokeStyle = 'rgba(190,200,210,.55)'; wc.lineWidth = 4; wc.shadowBlur = 0; wc.stroke()
+      wc.beginPath(); wc.moveTo(pts[0][0], pts[0][1])
+      let acc = 0
+      for (let i = 1; i < pts.length; i++) { if (d >= acc + lens[i - 1]) { wc.lineTo(pts[i][0], pts[i][1]); acc += lens[i - 1] } else { const q = at(d); wc.lineTo(q[0], q[1]); break } }
+      wc.strokeStyle = '#FFC857'; wc.lineWidth = 4; wc.shadowColor = '#FFB020'; wc.shadowBlur = 16; wc.stroke()
+      const [sx, sy] = at(d)
+      wc.shadowBlur = 30; wc.shadowColor = '#fff'; wc.fillStyle = '#fff'; wc.beginPath(); wc.arc(sx, sy, 6, 0, 7); wc.fill()
+      for (let i = 0; i < 7; i++) { const a = Math.random() * 6.28, r = 6 + Math.random() * 14; wc.fillStyle = 'rgba(255,220,130,.9)'; wc.shadowBlur = 6; wc.fillRect(sx + Math.cos(a) * r, sy + Math.sin(a) * r, 2, 2) }
+      wc.shadowBlur = 0
+      if (t > .72 && !fired) { fired = true; done() }
+      if (t < 1) requestAnimationFrame(frame)
+      else { wc.clearRect(0, 0, W, H); F.busy = false }
+    })(t0)
+  }
+  return F
+})();
+
 // ── study panel (home hero) ─────
 (function () {
   const panel = document.getElementById('panel'); if (!panel) return
-  const main = document.getElementById('main-brk'), brks = [...panel.querySelectorAll('.brk')], bus = panel.querySelector('.bus')
+  const main = document.getElementById('main-brk'), rows = [...panel.querySelectorAll('.row')]
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let seen = false; try { seen = sessionStorage.getItem('vc_panel') === '1' } catch (e) {}
   const energize = (instant) => {
-    main.classList.add('on'); main.setAttribute('aria-pressed', 'true'); bus.style.setProperty('--bus', 1)
-    brks.forEach((b, i) => setTimeout(() => b.classList.add('on'), instant ? 0 : 700 + i * 110))
-    setTimeout(() => panel.classList.add('alive'), instant ? 0 : 700 + brks.length * 110)
+    main.classList.add('on'); main.setAttribute('aria-pressed', 'true')
+    setTimeout(() => panel.classList.add('live'), instant ? 0 : 300)
+    rows.forEach((b, i) => setTimeout(() => b.classList.add('on'), instant ? 0 : 650 + i * 120))
+    if (!instant) setTimeout(() => { try { FX.strike() } catch (e) {} }, 500)
   }
-  if (reduce || seen) { bus.style.transition = 'none'; energize(true) } else { setTimeout(() => energize(false), 450); try { sessionStorage.setItem('vc_panel', '1') } catch (e) {} }
-  main.onclick = () => { const on = !main.classList.contains('on'); if (on) { energize(false) } else { main.classList.remove('on'); main.setAttribute('aria-pressed', 'false'); bus.style.setProperty('--bus', 0); brks.forEach(b => b.classList.remove('on')); panel.classList.remove('alive') } }
-  brks.forEach(b => b.onclick = () => {
+  if (reduce || seen) energize(true); else { setTimeout(() => energize(false), 450); try { sessionStorage.setItem('vc_panel', '1') } catch (e) {} }
+  main.onclick = () => {
+    if (!main.classList.contains('on')) { energize(false); return }
+    main.classList.remove('on'); main.setAttribute('aria-pressed', 'false'); panel.classList.remove('live'); rows.forEach(b => b.classList.remove('on'))
+  }
+  rows.forEach(b => b.onclick = () => {
     if (!main.classList.contains('on')) { energize(false); return }
     const go = b.dataset.go; b.classList.add('on')
-    setTimeout(() => { try { trk('panel', 'home', { t: go.replace('()', '') }) } catch (e) {} ; (new Function(go))() }, reduce ? 0 : 260)
+    try { trk('panel', 'home', { t: go.replace('()', '') }) } catch (e) {}
+    const r = b.querySelector('.brkr').getBoundingClientRect()
+    FX.travel(b.classList.contains('l') ? r.right : r.left, r.top + r.height / 2, () => (new Function(go))())
   })
 })()
 
@@ -1562,16 +1724,21 @@ function renderRecs(kind, btn, target) {
 // ── SUPPORT ───────────────────────────────────────────────
 function donate() {
   if (STRIPE_DONATE_LINK) { trk('donate_click', 'support'); window.open(STRIPE_DONATE_LINK, '_blank', 'noopener'); return }
-  const n = document.getElementById('donate-note')
+  const n = document.getElementById('donate-note'); if (!n) { showPage('support'); return }
   n.textContent = 'Contributions open very soon. Thank you for wanting to help.'
   n.style.display = 'block'
 }
 
 // ── UTILS ─────────────────────────────────────────────────
 function showPage(id) {
+  const cur = (document.querySelector('.page.active')?.id || '').replace('page-', '')
+  if (id !== cur && !FX.busy && FX.on && performance.now() - FX.click.t < 80) {
+    FX.travel(FX.click.x, FX.click.y, () => showPage(id)); return
+  }
   window._prevPage = (document.querySelector('.page.active')?.id || '').replace('page-', '')
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
-  document.getElementById('page-' + id).classList.add('active')
+  const pg = document.getElementById('page-' + id); pg.classList.add('active')
+  if (FX.busy) { pg.classList.add('wire-in'); setTimeout(() => pg.classList.remove('wire-in'), 1000) }
   window.scrollTo(0, 0)
   document.querySelector('.nav-links')?.classList.remove('open')
   try { trk('page', id) } catch (e) {}
