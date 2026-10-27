@@ -9,7 +9,7 @@
     chg: { label: 'Edition changes', file: 'chg-bank.js', glob: 'CHG_BANK', field: 'ar' }
   };
   const N = 10;
-  const Q = { bank: 'code', section: 'All', qs: [], i: 0, sel: -1, answered: false, score: 0, missed: [] };
+  const Q = { qStart: 0, bank: 'code', section: 'All', qs: [], i: 0, sel: -1, answered: false, score: 0, missed: [] };
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const shuf = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a };
@@ -36,15 +36,14 @@
       if (!secs.some(s => s[0] === Q.section)) Q.section = 'All';
       body.innerHTML = `<div class="card">
         <div class="tabs">${Object.keys(BANKS).map(k => `<button class="tab ${k === Q.bank ? 'active' : ''}" onclick="PQ.setBank('${k}')">${BANKS[k].label}</button>`).join('')}</div>
-        <label class="form-label" for="pq-sec">Section</label>
-        <select class="form-select" id="pq-sec" onchange="PQ.section=this.value">
-          <option value="All">Mixed: all sections</option>
-          ${secs.map(([k, n]) => `<option value="${esc(k)}" ${k === Q.section ? 'selected' : ''}>${esc(k)} (${n})</option>`).join('')}
-        </select>
+        <div class="form-label">Pick a section</div>
+        <div class="sec-wrap"><div class="sec-grid" id="pq-secs">
+          <button class="sec-chip ${Q.section === 'All' ? 'on' : ''}" data-fx-label="Mixed practice" onclick="PQ.pickSec('All')">${VCSYM.svg('bolt', 24)}Mixed: all sections</button>
+          ${secs.map(([k, n]) => `<button class="sec-chip ${k === Q.section ? 'on' : ''}" onclick="PQ.pickSec(this.dataset.s)" data-s="${esc(k)}">${VCSYM.forLabel(k, 24)}${esc(k)} <small>${n}</small></button>`).join('')}
+        </div></div>
         <div class="row-btns" style="margin-top:14px"><button class="btn-primary" style="max-width:260px" onclick="PQ.start()">Start a ${N}-question quiz</button></div>
         <p style="font-size:13px;color:var(--muted);margin-top:12px">Practice only. These quizzes are separate from any course exam and do not earn CE credit. Every answer shows an explanation and a code reference.</p>
       </div>`;
-      const sel = $('pq-sec'); if (sel) sel.value = Q.section;
       setCorner('practice', Q.section === 'All' ? 'Practice quiz' : Q.section);
     });
   }
@@ -66,7 +65,7 @@
   function render() {
     const body = $('pq-body');
     if (Q.i >= Q.qs.length) return result();
-    const q = Q.qs[Q.i];
+    const q = Q.qs[Q.i]; if (!Q.answered && !Q.qStart) Q.qStart = Date.now();
     body.innerHTML = `<div class="card">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Question ${Q.i + 1} of ${Q.qs.length}</span><span>${Q.score} correct so far</span></div>
       <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
@@ -78,10 +77,11 @@
   function pick(k) {
     if (Q.answered) return; const q = Q.qs[Q.i];
     Q.sel = k; Q.answered = true;
+    try { trk('ans', 'practice', { t: 'practice', c: String(q[BANKS[Q.bank].field] || BANKS[Q.bank].label).slice(0, 40), ok: k === q.a ? 1 : 0, s: Math.round((Date.now() - (Q.qStart || Date.now())) / 1000) }) } catch (e) {}
     if (k === q.a) Q.score++; else Q.missed.push({ q, sel: k });
     render();
   }
-  function next() { Q.i++; Q.sel = -1; Q.answered = false; render() }
+  function next() { Q.qStart = 0; Q.i++; Q.sel = -1; Q.answered = false; render() }
 
   function shareText(pct) {
     const what = Q.section === 'All' ? BANKS[Q.bank].label : Q.section;
@@ -118,6 +118,7 @@
     copy.then(ok => { if (note) note.textContent = ok ? 'Facebook opened in a new window. Your post text was copied: paste it if the box is empty, then post it yourself.' : 'Facebook opened in a new window. Write your post and post it yourself.' });
   }
 
-  window.PQ = { Q, menu, start, pick, next, share, section: 'All', setBank(b) { Q.bank = b; Q.section = 'All'; menu() }, open() { showPage('practice'); menu() } };
+  function pickSec(k) { Q.section = k; document.querySelectorAll('#pq-secs .sec-chip').forEach(b => b.classList.toggle('on', (b.dataset.s || 'All') === k)); setCorner('practice', k === 'All' ? 'Practice quiz' : k) }
+  window.PQ = { pickSec, Q, menu, start, pick, next, share, section: 'All', setBank(b) { Q.bank = b; Q.section = 'All'; menu() }, open() { showPage('practice'); menu() } };
   Object.defineProperty(window.PQ, 'section', { get: () => Q.section, set: v => { Q.section = v } });
 })();

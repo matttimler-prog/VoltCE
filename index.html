@@ -13,6 +13,9 @@
 <script src="symbols.js"></script>
 <script src="practice.js"></script>
 <script src="reviews.js"></script>
+<script src="stats.js"></script>
+<link rel="stylesheet" href="fxhover.css">
+<script src="fxhover.js" defer></script>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
@@ -60,7 +63,7 @@
   .pq-launch { margin: -4px 0 14px; }
   @media (max-width: 640px) { .corner-sym .vcsym { width: 44px; height: 44px; } .nav-logo img { height: 46px; } }
   .nav-links { display: flex; gap: 6px; align-items: center; }
-  .nav-link { font-size: 13px; color: var(--muted); background: transparent; border: none; padding: 6px 12px; border-radius: 6px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+  .nav-link { font-size: 13px; color: var(--muted); background: transparent; border: none; padding: 6px 12px; border-radius: 6px; font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
   .nav-link:hover, .nav-link.active { background: rgba(20,32,44,0.08); color: var(--ink); }
   .nav-link.btn { background: var(--ink); color: #fff; font-weight: 500; }
   .nav-link.btn:hover { background: var(--blue); color:#fff; }
@@ -137,6 +140,35 @@
   .hero-btn-primary:hover { background: var(--blue); border-color: var(--blue); }
   .hero-btn-outline { background: rgba(255,255,255,.5); color: var(--ink); }
   .hero-btn-outline:hover { background: var(--ink); color: #fff; }
+  .tally { background: var(--white); border-bottom: 1px solid var(--border); }
+  .tally-in { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
+  .tally-t b { display: block; font-size: 15px; } .tally-t span { font-size: 12px; color: var(--muted); }
+  .tally-grid { display: flex; flex-wrap: wrap; gap: 8px 26px; flex: 1; }
+  .tally-grid div b, .st-tile b { display: block; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .tally-grid div span, .st-tile span { font-size: 12px; color: var(--muted); }
+  .g { color: var(--green); } .r { color: var(--red); }
+  .st-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .st-tile b { font-size: 26px; }
+  .st-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .st-prog { position: relative; height: 14px; border-radius: 999px; background: var(--blue-light); overflow: visible; }
+  .st-prog i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--blue), #FFD23A); transition: width .6s; }
+  .st-prog u { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+  .st-rd { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  .st-ring { --c: var(--green); width: 130px; height: 130px; border-radius: 50%; display: grid; place-content: center; text-align: center; background: radial-gradient(closest-side, #fff 76%, transparent 78%), conic-gradient(var(--c) calc(var(--p) * 1%), #e3e8ee 0); }
+  .st-rd > div:last-child { flex: 1; min-width: 240px; }
+  .st-ring.a { --c: #D98A00; } .st-ring.r { --c: var(--red); }
+  .st-ring b { font-size: 28px; line-height: 1; } .st-ring span { font-size: 10.5px; color: var(--muted); }
+  .a { color: #9A6200; }
+  .st-h { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .st-big { font-size: 18px; font-weight: 600; } .st-sub { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  .st-tool { font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .st-bars { display: flex; gap: 6px; align-items: flex-end; height: 120px; }
+  .st-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+  .st-bar { flex: 1; width: 100%; display: flex; align-items: flex-end; } .st-bar i { display: block; width: 100%; background: var(--blue-light); border: 1px solid var(--blue); border-radius: 3px 3px 0 0; min-height: 2px; position: relative; }
+  .st-bar u { position: absolute; left: 0; right: 0; bottom: 0; background: var(--green); opacity: .85; }
+  .st-col span { font-size: 10px; color: var(--muted); }
+  .lnk { background: none; border: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font: inherit; padding: 0; }
+  @media (max-width: 700px) { .st-grid { grid-template-columns: repeat(2, 1fr); } .tally-in { padding: 12px 16px; } }
   .hero-note { margin-top: 18px; font-size: 13px; color: var(--muted); }
   .hero-note button { background: none; border: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font: inherit; padding: 0; }
 
@@ -331,6 +363,7 @@
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
     <button class="nav-link" onclick="showPage('study')">Study tools</button>
     <button class="nav-link" onclick="PQ.open()">Practice quizzes</button>
+    <button class="nav-link" onclick="Stats.open()">Progress</button>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
@@ -374,6 +407,7 @@
       </div>
     </div>
   </div>
+  <div id="tally" class="tally" aria-live="polite"></div>
   <section class="donate-band" aria-label="Support free classes">
     <div class="db-in">
       <div>
@@ -419,6 +453,14 @@
 </div>
 
 <!-- ── PRACTICE QUIZZES ──────────────────────────────────── -->
+<div id="page-stats" class="page">
+  <div class="container">
+    <div class="page-title">My progress</div>
+    <div class="page-sub">Everything you answer across the study tools and practice quizzes, added up.</div>
+    <div id="stats-body"></div>
+  </div>
+</div>
+
 <div id="page-practice" class="page">
   <div class="container">
     <div class="page-title">Practice quizzes</div>
@@ -1554,6 +1596,7 @@ const TRK = { q: [], sid: null }
 try { TRK.sid = localStorage.getItem('vc_sid'); if (!TRK.sid) { TRK.sid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); localStorage.setItem('vc_sid', TRK.sid) } } catch (e) { TRK.sid = null }
 const TRK_OFF = (navigator.doNotTrack === '1' || window.doNotTrack === '1')
 function trk(ev, page, meta) {
+  try { Stats.hook(ev, page, meta) } catch (e) {}
   if (TRK_OFF) return
   if (!TRK.sid) TRK.sid = ('s' + Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 40)
   if (TRK.q.length > 200) return
@@ -1771,7 +1814,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
