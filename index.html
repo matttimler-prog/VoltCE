@@ -7,47 +7,53 @@
 <meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
   :root {
-    --blue: #185FA5;
-    --blue-dark: #0C447C;
-    --blue-light: #E6F1FB;
-    --green: #3B6D11;
-    --green-light: #EAF3DE;
+    --blue: #1B5FC0;
+    --blue-dark: #12408A;
+    --blue-light: #E4EDFB;
+    --green: #17794A;
+    --green-light: #DDF3E6;
     --amber: #854F0B;
     --amber-light: #FAEEDA;
-    --red: #A32D2D;
-    --red-light: #FCEBEB;
-    --gray: #f8f9fb;
-    --border: #e2e8f0;
-    --text: #1a202c;
-    --muted: #64748b;
+    --red: #B02A22;
+    --red-light: #FBE6E4;
+    --gray: #E8EBEE;
+    --border: #C9D0D7;
+    --text: #14202C;
+    --muted: #56636F;
     --white: #ffffff;
-    --radius: 10px;
-    --radius-lg: 14px;
+    --ink: #14202C;
+    --phase-a: #1A1D21;
+    --phase-b: #D1342B;
+    --phase-c: #2563C8;
+    --radius: 6px;
+    --radius-lg: 8px;
+    --display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--gray); color: var(--text); font-size: 15px; }
+  body { font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.5; background: var(--gray); color: var(--text); font-size: 15px; }
 
   /* ── NAV ── */
-  .nav { background: var(--blue); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .nav-logo { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
-  .nav-logo span { opacity: 0.6; font-weight: 300; }
+  .nav { background: var(--gray); border-bottom: 2px solid var(--ink); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .nav-logo { font-family: var(--display); font-size: 28px; font-weight: 800; color: var(--ink); letter-spacing: 0.2px; cursor: pointer; line-height: 1; }
+  .nav-logo span { color: var(--blue); }
   .nav-links { display: flex; gap: 6px; align-items: center; }
-  .nav-link { font-size: 13px; color: rgba(255,255,255,0.75); background: transparent; border: none; padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all 0.15s; }
-  .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.15); color: #fff; }
-  .nav-link.btn { background: #fff; color: var(--blue); font-weight: 500; }
-  .nav-link.btn:hover { background: #e0ecf8; }
+  .nav-link { font-size: 13px; color: var(--muted); background: transparent; border: none; padding: 6px 12px; border-radius: 6px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+  .nav-link:hover, .nav-link.active { background: rgba(20,32,44,0.08); color: var(--ink); }
+  .nav-link.btn { background: var(--ink); color: #fff; font-weight: 500; }
+  .nav-link.btn:hover { background: var(--blue); color:#fff; }
 
   /* ── PAGES ── */
   .page { display: none; min-height: calc(100vh - 56px); }
-  .page.active { display: block; }
+  .page.active { display: block; animation: page-in .22s ease-out; }
+  @keyframes page-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
   .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
 
   /* ── CARDS ── */
-  .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px; }
+  .card { background: var(--white); border: 1px solid var(--border); border-top: 3px solid var(--ink); border-radius: 4px var(--radius-lg) var(--radius-lg) var(--radius-lg); padding: 24px; margin-bottom: 16px; }
   .card-sm { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 
   /* ── FORMS ── */
@@ -59,8 +65,9 @@
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
   /* ── BUTTONS ── */
-  .btn-primary { display: block; width: 100%; padding: 12px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; text-align: center; }
-  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary { display: block; width: 100%; padding: 12px; background: var(--ink); color: #fff; border: none; border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; text-align: center; }
+  .btn-primary:hover { background: var(--blue); }
+  .btn-primary:active, .btn-sm:active, .hero-btn:active { transform: translateY(1px); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
   .btn-outline { display: inline-block; padding: 9px 20px; border: 1px solid var(--border); background: var(--white); color: var(--text); border-radius: var(--radius); font-family: inherit; font-size: 14px; cursor: pointer; transition: background 0.15s; }
   .btn-outline:hover { background: var(--gray); }
@@ -84,7 +91,7 @@
   /* ── METRICS ── */
   .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
   .metric { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-  .metric-val { font-size: 28px; font-weight: 600; color: var(--blue); line-height: 1; }
+  .metric-val { font-family: var(--display); font-size: 40px; font-weight: 800; color: var(--blue); line-height: 1; }
   .metric-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
   /* ── TABLES ── */
@@ -99,20 +106,56 @@
   .prog-bg { height: 6px; background: #e2e8f0; border-radius: 3px; }
   .prog-fill { height: 6px; background: var(--blue); border-radius: 3px; transition: width 0.4s; }
 
-  /* ── HERO ── */
-  .hero { background: var(--blue); color: #fff; padding: 64px 24px; text-align: center; }
-  .hero h1 { font-size: 42px; font-weight: 600; line-height: 1.15; margin-bottom: 14px; letter-spacing: -1px; }
-  .hero p { font-size: 17px; opacity: 0.8; max-width: 520px; margin: 0 auto 28px; line-height: 1.65; }
-  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .hero-btn { padding: 13px 28px; border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
-  .hero-btn-primary { background: #fff; color: var(--blue); }
-  .hero-btn-primary:hover { background: #e8f0fa; }
-  .hero-btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5); }
-  .hero-btn-outline:hover { background: rgba(255,255,255,0.1); }
+  /* ── HERO + PANEL ── */
+  .hero { background: var(--gray); color: var(--ink); padding: 56px 24px 40px; text-align: left; border-bottom: 1px solid var(--border); }
+  .hero-in { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+  .hero h1 { font-family: var(--display); font-size: clamp(52px, 8vw, 96px); font-weight: 800; line-height: .92; margin-bottom: 18px; letter-spacing: 0; }
+  .hero p { font-size: 17px; color: var(--muted); max-width: 460px; margin: 0 0 26px; line-height: 1.6; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-btn { padding: 13px 24px; border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; border: 2px solid var(--ink); transition: background .15s, color .15s, transform .08s; }
+  .hero-btn-primary { background: var(--ink); color: #fff; }
+  .hero-btn-primary:hover { background: var(--blue); border-color: var(--blue); }
+  .hero-btn-outline { background: transparent; color: var(--ink); }
+  .hero-btn-outline:hover { background: var(--ink); color: #fff; }
+  .hero-btn-donate { background:#FFD25A; color:var(--ink); }
+  .hero-note { margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .hero-note button { background: none; border: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font: inherit; padding: 0; }
+
+  .panel { background: #2A333D; border-radius: 10px; padding: 16px 16px 14px; box-shadow: 0 0 0 3px #AEB6BE, 0 0 0 5px var(--ink), 0 18px 30px -14px rgba(20,32,44,.5); position: relative; }
+  .panel-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 4px 12px; }
+  .panel-title { font-family: var(--display); font-size: 22px; font-weight: 800; color: #E8EBEE; letter-spacing: .3px; }
+  .panel-title small { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; color: #9AA5B0; margin-left: 8px; }
+  .brk { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; align-items: center; gap: 10px; background: #E8EBEE; border-radius: 6px; padding: 9px 10px 9px 12px; min-height: 58px; border-left: 6px solid var(--ph, #1A1D21); }
+  .brk:focus-visible { outline: 3px solid #FFD25A; outline-offset: 2px; }
+  .brk .num { font-size: 11px; color: #6B7783; width: 14px; text-align: center; flex: none; }
+  .brk .txt { flex: 1; min-width: 0; }
+  .brk .txt b { display: block; font-family: var(--display); font-size: 21px; font-weight: 800; line-height: 1; color: var(--ink); }
+  .brk .txt i { font-style: normal; font-size: 12px; color: #4A5763; }
+  .brk .sw { flex: none; width: 26px; height: 40px; background: #12181F; border-radius: 4px; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,.6); }
+  .brk .sw::before { content: ''; position: absolute; left: 3px; right: 3px; height: 17px; border-radius: 3px; background: linear-gradient(#F4F6F8, #B9C1C9); box-shadow: 0 1px 2px rgba(0,0,0,.5); bottom: 3px; transition: bottom .16s cubic-bezier(.3,1.6,.5,1); }
+  .brk.on .sw::before { bottom: 20px; }
+  .brk .lamp { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #9AA5B0; transition: background .2s, box-shadow .2s; }
+  .brk.on .lamp { background: #25C47A; box-shadow: 0 0 8px 2px rgba(37,196,122,.7); }
+  .brk:hover .txt b { color: var(--blue); }
+  .brk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; position: relative; padding: 0 0; }
+  .bus { position: relative; height: 12px; margin: 0 4px 12px; background: #12181F; border-radius: 3px; overflow: hidden; }
+  .bus::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #E7B04A, #FFE9A6); transform-origin: left; transform: scaleX(var(--bus, 0)); transition: transform .9s cubic-bezier(.5,0,.2,1); }
+  .main-brk { all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; background: #E8EBEE; border-radius: 6px; padding: 6px 10px; font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--ink); }
+  .main-brk:focus-visible { outline: 3px solid #FFD25A; outline-offset: 2px; }
+  .main-brk .sw { width: 22px; height: 30px; background: #12181F; border-radius: 4px; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,.6); }
+  .main-brk .sw::before { content: ''; position: absolute; left: 3px; right: 3px; height: 12px; border-radius: 3px; background: linear-gradient(#F4F6F8, #B9C1C9); bottom: 3px; transition: bottom .18s cubic-bezier(.3,1.6,.5,1); }
+  .main-brk.on .sw::before { bottom: 15px; }
+  .panel-key { display: flex; gap: 14px; flex-wrap: wrap; padding: 12px 4px 2px; font-size: 12px; color: #B8C1CA; }
+  .panel-key span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); box-shadow: 0 0 0 1px rgba(255,255,255,.35); }
+  .panel.alive .brk { transition: transform .08s; }
+  .panel.alive .brk:active { transform: translateY(1px); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 860px) { .hero-in { grid-template-columns: 1fr; gap: 32px; } .hero { padding-top: 36px; } }
+  @media (max-width: 480px) { .brk-grid { grid-template-columns: 1fr; } }
 
   /* ── COURSE CARDS ── */
   .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-  .course-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+  .course-card { background: var(--white); border: 1px solid var(--border); border-top: 3px solid var(--ink); border-radius: 4px var(--radius-lg) var(--radius-lg) var(--radius-lg); padding: 20px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
   .course-card:hover { border-color: var(--blue); transform: translateY(-2px); }
   .course-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
   .course-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.35; }
@@ -122,7 +165,7 @@
   /* ── TABS ── */
   .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
   .tab { font-size: 14px; padding: 10px 18px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; transition: color 0.15s; }
-  .tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+  .tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
   .tab-pane { display: none; }
   .tab-pane.active { display: block; }
 
@@ -151,9 +194,9 @@
   .divider-text { font-size: 12px; color: var(--muted); }
 
   /* ── MISC ── */
-  .page-title { font-size: 24px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .page-title { font-family: var(--display); font-size: 38px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.2px; line-height: 1.05; }
   .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
-  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+  .section-title { font-family: var(--display); font-size: 24px; font-weight: 800; margin-bottom: 14px; letter-spacing: 0.2px; }
   .success-wrap { text-align: center; padding: 48px 24px; }
   .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
   .empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
@@ -162,8 +205,8 @@
 
 
   /* ── PREP / SUPPORT ── */
-  .banner { background:#FFF7E6; color:#7a4a00; border-bottom:1px solid #f1d9a8; text-align:center; font-size:13px; padding:8px 16px; }
-  .banner a { color:#7a4a00; text-decoration:underline; cursor:pointer; }
+  .banner { background:var(--ink); color:#E8EBEE; border-bottom:0; text-align:center; font-size:13px; padding:8px 16px; }
+  .banner a { color:#FFD25A; text-decoration:underline; cursor:pointer; }
   .hero-btn-donate { background:#F6C343; color:#3a2a00; }
   .hero-btn-donate:hover { background:#f2b92a; }
   .flash { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); min-height:230px; padding:28px; display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; line-height:1.55; }
@@ -175,25 +218,35 @@
   .tmr.warn { background:var(--red-light); color:var(--red); }
   .opt { display:block; width:100%; text-align:left; padding:11px 14px; margin:7px 0; border:1px solid var(--border); background:var(--white); border-radius:var(--radius); font-family:inherit; font-size:14px; cursor:pointer; color:var(--text); }
   .opt:hover:not(:disabled) { border-color:var(--blue); }
-  .opt.right { background:var(--green-light); border-color:var(--green); }
-  .opt.wrong { background:var(--red-light); border-color:var(--red); }
+  .opt.right { background:var(--green-light); border-color:var(--green); animation: ok-pulse .5s ease-out; }
+  .opt.wrong { background:var(--red-light); border-color:var(--red); animation: no-shake .35s ease-out; }
+  @keyframes ok-pulse { 0% { box-shadow:0 0 0 0 rgba(23,121,74,.45) } 100% { box-shadow:0 0 0 12px rgba(23,121,74,0) } }
+  @keyframes no-shake { 20%,60% { transform:translateX(-5px) } 40%,80% { transform:translateX(5px) } }
   .expl { background:var(--blue-light); color:var(--blue-dark); border-radius:var(--radius); padding:12px 14px; font-size:14px; margin-top:10px; line-height:1.55; }
   .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
-  .rec { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
-  .rec h4 { font-size:15px; margin-bottom:6px; }
+  .rec { background:var(--white); border:1px solid var(--border); border-left:6px solid var(--ph, var(--ink)); border-radius:var(--radius-lg); padding:18px; transition: transform .12s, border-color .12s; }
+  .rec[onclick]:hover { transform: translateY(-2px); }
+  .rec h4 { font-family: var(--display); font-size: 22px; font-weight: 800; letter-spacing: .2px; }
+  .rec h4 { margin-bottom:6px; }
   .rec p { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
   .rec a, .rec button.lnk { font-size:13px; color:var(--blue); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline; font-family:inherit; }
   .locked { opacity:.85; cursor:default !important; }
   .locked:hover { border-color:var(--border) !important; transform:none !important; }
-  .cat-chip.active { background:var(--blue-light); color:var(--blue-dark); border-color:var(--blue); }
+  .cat-chip.active { background:var(--ink); color:#fff; border-color:var(--ink); }
   .donate-amts { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
 
   @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 28px; }
     .metrics { grid-template-columns: 1fr 1fr; }
-    .nav-links .nav-link:not(.btn) { display: none; }
+    .nav-toggle { display: inline-block !important; }
+    .nav-links { display: none; position: absolute; top: 54px; left: 0; right: 0; background: var(--gray); border-bottom: 2px solid var(--ink); flex-direction: column; align-items: stretch; padding: 8px 16px 14px; gap: 2px; }
+    .nav-links.open { display: flex; }
+    .nav-links .nav-link { text-align: left; padding: 11px 12px; font-size: 15px; }
   }
+  .nav-toggle { display: none; background: var(--ink); color: #fff; border: 0; border-radius: 6px; padding: 7px 14px; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -201,7 +254,8 @@
 <!-- ── NAV ─────────────────────────────────────────────── -->
 <div class="banner">Paid CE courses open after state approval. <a onclick="showPage('prep')">Free exam prep is open now →</a></div>
 <nav class="nav">
-  <div class="nav-logo">Volt<span>CE</span></div>
+  <div class="nav-logo" onclick="showPage('home')">Volt<span>CE</span></div>
+  <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">Menu</button>
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
     <button class="nav-link" onclick="showPage('study')">Study tools</button>
@@ -210,7 +264,7 @@
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
     <button class="nav-link" onclick="showPage('feedback')">Suggest</button>
     <button class="nav-link" onclick="showPage('support')">Support us</button>
-    <span id="nav-user-name" style="font-size:13px;color:rgba(255,255,255,0.75);display:none"></span>
+    <span id="nav-user-name" style="font-size:13px;color:var(--muted);display:none"></span>
     <button class="nav-link" id="nav-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-link" id="nav-admin-btn" style="display:none" onclick="showPage('admin')">Admin</button>
     <button class="nav-link btn" id="nav-auth-btn" onclick="showPage('auth')">Sign in</button>
@@ -221,23 +275,34 @@
 <!-- ── HOME ─────────────────────────────────────────────── -->
 <div id="page-home" class="page active">
   <div class="hero">
-    <h1>Free electrician exam prep. CE courses coming soon.</h1>
-    <p>Practice questions and flashcards on the 2023 NEC, grounding and bonding, and electrical safety — free, no sign-up. Continuing-education courses for journeymen, masters and contractors open as each state approves them.</p>
-    <div class="hero-btns">
-      <button class="hero-btn hero-btn-primary" onclick="showPage('prep')">Start free exam prep</button>
-      <button class="hero-btn hero-btn-outline" onclick="calcOpen()">Load calc practice</button>
-      <button class="hero-btn hero-btn-outline" onclick="codeOpen()">Code article study</button>
-      <button class="hero-btn hero-btn-outline" onclick="showPage('study')">All study tools</button>
-      <button class="hero-btn hero-btn-donate" onclick="showPage('support')">Support VoltCE</button>
+    <div class="hero-in">
+      <div>
+        <h1>Free electrician exam prep</h1>
+        <p>Flashcards, code-article drills, load calculations and theory for the 2023 NEC, with the math and the code reference behind every answer. No sign-up. Paid CE courses open as each state approves them.</p>
+        <div class="hero-btns">
+          <button class="hero-btn hero-btn-primary" onclick="fcOpen()">Start with flashcards</button>
+          <button class="hero-btn hero-btn-outline" onclick="showPage('study')">See all study tools</button>
+        </div>
+        <div class="hero-note">Free to use. <button onclick="showPage('support')">Help keep it free</button></div>
+      </div>
+      <div class="panel" id="panel" role="group" aria-label="Study tools">
+        <div class="panel-top"><div class="panel-title">Study panel<small>flip a breaker to start</small></div>
+          <button class="main-brk" id="main-brk" aria-pressed="false" aria-label="Main breaker"><span>Main</span><span class="sw"></span></button></div>
+        <div class="bus" aria-hidden="true"></div>
+        <div class="brk-grid">
+          <button class="brk" style="--ph:var(--phase-a)" data-go="fcOpen()"><span class="num">1</span><span class="txt"><b>Flashcards</b><i>900+ cards</i></span><span class="lamp"></span><span class="sw"></span></button>
+          <button class="brk" style="--ph:var(--phase-a)" data-go="chgOpen()"><span class="num">2</span><span class="txt"><b>Edition changes</b><i>2017 to 2026</i></span><span class="lamp"></span><span class="sw"></span></button>
+          <button class="brk" style="--ph:var(--phase-b)" data-go="codeOpen()"><span class="num">3</span><span class="txt"><b>Code articles</b><i>2,700+ questions</i></span><span class="lamp"></span><span class="sw"></span></button>
+          <button class="brk" style="--ph:var(--phase-b)" data-go="idxOpen()"><span class="num">4</span><span class="txt"><b>Index drill</b><i>find it in the book</i></span><span class="lamp"></span><span class="sw"></span></button>
+          <button class="brk" style="--ph:var(--phase-c)" data-go="calcOpen()"><span class="num">5</span><span class="txt"><b>Load calcs</b><i>2,800+ problems</i></span><span class="lamp"></span><span class="sw"></span></button>
+          <button class="brk" style="--ph:var(--phase-c)" data-go="theoryOpen()"><span class="num">6</span><span class="txt"><b>Theory</b><i>worked math</i></span><span class="lamp"></span><span class="sw"></span></button>
+        </div>
+        <div class="panel-key"><span style="--c:var(--phase-a)">Memorize</span><span style="--c:var(--phase-b)">Look it up</span><span style="--c:var(--phase-c)">Calculate</span></div>
+      </div>
     </div>
   </div>
   <div class="container">
-    <div class="metrics">
-      <div class="metric"><div class="metric-val" id="home-q">300+</div><div class="metric-label">Flashcards &amp; code questions</div></div>
-      <div class="metric"><div class="metric-val">2,800+</div><div class="metric-label">Load calc problems</div></div>
-      <div class="metric"><div class="metric-val">2023</div><div class="metric-label">NEC edition</div></div>
-      <div class="metric"><div class="metric-val">$0</div><div class="metric-label">No sign-up needed</div></div>
-    </div>
+    <span id="home-q" class="sr-only">300+</span>
     <div class="section-title">Recommended for you</div>
     <div class="row-btns" style="margin-top:0">
       <span style="font-size:13px;color:var(--muted)">I am a:</span>
@@ -377,12 +442,12 @@
     <div class="page-title">Free study tools</div>
     <div class="page-sub">Everything here is free. Practice written by VoltCE for the 2023 NEC, with an explanation, a reference and the math behind every answer. Not official exam questions, no CE credit.</div>
     <div class="rec-grid">
-      <div class="rec" style="cursor:pointer" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
-      <div class="rec" style="cursor:pointer" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
-      <div class="rec" style="cursor:pointer" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
-      <div class="rec" style="cursor:pointer" onclick="calcOpen()"><h4>Load calc and sizing</h4><p>Thousands of problems: services, motors, conductors, conduit fill, transformers.</p></div>
-      <div class="rec" style="cursor:pointer" onclick="theoryOpen()"><h4>Electrical theory and formulas</h4><p>Ohm's law, power, AC, three-phase, transformers, motors, with full worked math.</p></div>
-      <div class="rec" style="cursor:pointer" onclick="chgOpen()"><h4>Edition changes (2017, 2020, 2023, 2026)</h4><p>Review what changed between NEC editions, article by article. Cards and quiz.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="calcOpen()"><h4>Load calc and sizing</h4><p>Thousands of problems: services, motors, conductors, conduit fill, transformers.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="theoryOpen()"><h4>Electrical theory and formulas</h4><p>Ohm's law, power, AC, three-phase, transformers, motors, with full worked math.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="chgOpen()"><h4>Edition changes (2017, 2020, 2023, 2026)</h4><p>Review what changed between NEC editions, article by article. Cards and quiz.</p></div>
       <div class="rec" style="cursor:pointer" onclick="showPage('prep')"><h4>Safety, grounding and NEC 2023 changes</h4><p>Flashcards and quizzes on OSHA, grounding and bonding, and the 2023 updates.</p></div>
     </div>
   </div>
@@ -1442,6 +1507,27 @@ async function loadFeedbackAdmin() {
   el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>When</th><th>Type</th><th>Message</th><th>Contact</th><th>Page</th><th>Status</th></tr></thead><tbody>${data.map(f => `<tr><td>${new Date(f.created_at).toLocaleDateString()}</td><td><span class="badge badge-blue">${esc(f.kind)}</span></td><td style="white-space:pre-wrap;max-width:420px">${esc(f.message)}</td><td>${esc(f.contact || '')}</td><td>${esc(f.page || '')}</td><td><select class="form-select" style="font-size:12px;padding:4px 6px" onchange="setFbStatus(${f.id},this.value)">${['new', 'reviewing', 'done', 'dismissed'].map(x => `<option ${f.status === x ? 'selected' : ''}>${x}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`
 }
 async function setFbStatus(id, st) { await supabaseClient.from('feedback').update({ status: st }).eq('id', id) }
+
+// ── study panel (home hero) ─────
+(function () {
+  const panel = document.getElementById('panel'); if (!panel) return
+  const main = document.getElementById('main-brk'), brks = [...panel.querySelectorAll('.brk')], bus = panel.querySelector('.bus')
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let seen = false; try { seen = sessionStorage.getItem('vc_panel') === '1' } catch (e) {}
+  const energize = (instant) => {
+    main.classList.add('on'); main.setAttribute('aria-pressed', 'true'); bus.style.setProperty('--bus', 1)
+    brks.forEach((b, i) => setTimeout(() => b.classList.add('on'), instant ? 0 : 700 + i * 110))
+    setTimeout(() => panel.classList.add('alive'), instant ? 0 : 700 + brks.length * 110)
+  }
+  if (reduce || seen) { bus.style.transition = 'none'; energize(true) } else { setTimeout(() => energize(false), 450); try { sessionStorage.setItem('vc_panel', '1') } catch (e) {} }
+  main.onclick = () => { const on = !main.classList.contains('on'); if (on) { energize(false) } else { main.classList.remove('on'); main.setAttribute('aria-pressed', 'false'); bus.style.setProperty('--bus', 0); brks.forEach(b => b.classList.remove('on')); panel.classList.remove('alive') } }
+  brks.forEach(b => b.onclick = () => {
+    if (!main.classList.contains('on')) { energize(false); return }
+    const go = b.dataset.go; b.classList.add('on')
+    setTimeout(() => { try { trk('panel', 'home', { t: go.replace('()', '') }) } catch (e) {} ; (new Function(go))() }, reduce ? 0 : 260)
+  })
+})()
+
 // ── RECOMMENDATIONS ───────────────────────────────────────
 const RECS = {
   Apprentice: [
@@ -1487,6 +1573,7 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById('page-' + id).classList.add('active')
   window.scrollTo(0, 0)
+  document.querySelector('.nav-links')?.classList.remove('open')
   try { trk('page', id) } catch (e) {}
 }
 
