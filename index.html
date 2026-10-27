@@ -202,6 +202,7 @@
   <div class="nav-logo">Volt<span>CE</span></div>
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
+    <button class="nav-link" onclick="calcOpen()">Calc practice</button>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
@@ -221,14 +222,14 @@
     <p>Practice questions and flashcards on the 2023 NEC, grounding and bonding, and electrical safety — free, no sign-up. Continuing-education courses for journeymen, masters and contractors open as each state approves them.</p>
     <div class="hero-btns">
       <button class="hero-btn hero-btn-primary" onclick="showPage('prep')">Start free exam prep</button>
-      <button class="hero-btn hero-btn-outline" onclick="showPage('courses')">See CE courses</button>
+      <button class="hero-btn hero-btn-outline" onclick="calcOpen()">Load calc practice</button>
       <button class="hero-btn hero-btn-donate" onclick="showPage('support')">Support VoltCE</button>
     </div>
   </div>
   <div class="container">
     <div class="metrics">
-      <div class="metric"><div class="metric-val" id="home-q">300+</div><div class="metric-label">Free practice questions</div></div>
-      <div class="metric"><div class="metric-val">4</div><div class="metric-label">Topics to study</div></div>
+      <div class="metric"><div class="metric-val" id="home-q">300+</div><div class="metric-label">Flashcards &amp; code questions</div></div>
+      <div class="metric"><div class="metric-val">2,000</div><div class="metric-label">Load calc problems</div></div>
       <div class="metric"><div class="metric-val">2023</div><div class="metric-label">NEC edition</div></div>
       <div class="metric"><div class="metric-val">$0</div><div class="metric-label">No sign-up needed</div></div>
     </div>
@@ -330,6 +331,18 @@
     </div>
     <div class="row-btns" id="prep-cats"></div>
     <div id="prep-body"></div>
+  </div>
+</div>
+
+<!-- ── CALC PRACTICE ─────────────────────────────────────── -->
+<div id="page-calc" class="page">
+  <div class="container">
+    <div class="page-title">Load calc &amp; sizing practice</div>
+    <div class="page-sub">2,000 free practice problems: conductor sizing, branch circuits, dwelling service calculations, motors, voltage drop, grounding and box fill. Every answer comes with the worked solution.</div>
+    <div class="alert alert-info" style="font-size:13px">Based on the 2023 NEC. Unless a problem says otherwise, assume 75°C-rated terminations, copper conductors and standard overcurrent device sizes from 240.6(A). Study practice written by VoltCE, not official exam questions, and no CE credit. Have your code book handy.</div>
+    <div class="row-btns" id="calc-cats"></div>
+    <div class="row-btns" id="calc-diff"></div>
+    <div id="calc-body"></div>
   </div>
 </div>
 
@@ -947,15 +960,62 @@ function stepCard(d) { const n = PREP.order.length; PREP.i = (PREP.i + d + n) % 
 function pickAnswer(k) { const q = prepBank()[PREP.order[PREP.qi]]; PREP.sel = k; PREP.answered = true; PREP.done++; if (k === q.a) PREP.score++; renderPrep() }
 function nextQuestion() { PREP.qi++; PREP.answered = false; renderPrep() }
 
+// ── CALC PRACTICE ─────────────────────────────────────────
+const CALC = { cat:'All', diff:0, order:[], i:0, answered:false, sel:-1, score:0, done:0, loading:false }
+function calcList() { return (window.CALC_BANK || []).filter(x => (CALC.cat === 'All' || x.c === CALC.cat) && (!CALC.diff || x.d === CALC.diff)) }
+function calcOpen() {
+  showPage('calc')
+  if (window.CALC_BANK) { calcReset(); return }
+  if (CALC.loading) return
+  CALC.loading = true
+  document.getElementById('calc-body').innerHTML = '<div class="empty">Loading 2,000 problems…</div>'
+  const sc = document.createElement('script'); sc.src = 'calc-bank.js'
+  sc.onload = () => { CALC.loading = false; calcReset() }
+  sc.onerror = () => { CALC.loading = false; document.getElementById('calc-body').innerHTML = '<div class="empty">Could not load the problems. Refresh and try again.</div>' }
+  document.head.appendChild(sc)
+}
+function calcReset() {
+  CALC.i = 0; CALC.answered = false; CALC.sel = -1; CALC.score = 0; CALC.done = 0
+  CALC.order = shuffle(calcList().map((_, k) => k))
+  calcRender()
+}
+function calcSetCat(c) { CALC.cat = c; calcReset() }
+function calcSetDiff(d) { CALC.diff = d; calcReset() }
+function calcRender() {
+  const bank = window.CALC_BANK || []
+  const cats = ['All', ...new Set(bank.map(x => x.c))]
+  document.getElementById('calc-cats').innerHTML = cats.map(c => `<button class="btn-sm cat-chip ${CALC.cat === c ? 'active' : ''}" onclick="calcSetCat('${c.replace(/'/g, "\\'")}')">${esc(c)}${c === 'All' ? ' (' + bank.length + ')' : ''}</button>`).join('')
+  const dl = ['All levels', 'Basic', 'Intermediate', 'Advanced']
+  document.getElementById('calc-diff').innerHTML = dl.map((l, k) => `<button class="btn-sm cat-chip ${CALC.diff === k ? 'active' : ''}" onclick="calcSetDiff(${k})">${l}</button>`).join('')
+  const list = calcList(), body = document.getElementById('calc-body')
+  if (!list.length) { body.innerHTML = '<div class="empty">No problems match that filter.</div>'; return }
+  if (CALC.i >= CALC.order.length) {
+    body.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${CALC.score} of ${CALC.done} correct</div><p class="page-sub">${Math.round(CALC.score / Math.max(1, CALC.done) * 100)}%. Start over to reshuffle, or pick another topic.</p><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="calcReset()">Start over</button></div>`
+    return
+  }
+  const q = list[CALC.order[CALC.i]]
+  body.innerHTML = `<div class="card">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Problem ${CALC.i + 1} of ${CALC.order.length} · ${CALC.score} correct · ${esc(q.c)} · ${['', 'Basic', 'Intermediate', 'Advanced'][q.d]}</div>
+    <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
+    ${q.o.map((o, k) => `<button class="opt ${CALC.answered ? (k === q.a ? 'right' : (k === CALC.sel ? 'wrong' : '')) : ''}" ${CALC.answered ? 'disabled' : ''} onclick="calcPick(${k})">${String.fromCharCode(65 + k)}. ${esc(o)}</button>`).join('')}
+    ${CALC.answered ? `<div class="expl"><b>Worked solution.</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>` : ''}
+    <div class="row-btns">${CALC.answered ? '<button class="btn-sm" onclick="calcNext()">Next problem →</button>' : '<button class="btn-sm" onclick="calcNext()">Skip</button>'}</div>
+  </div>` + prepCta()
+}
+function calcPick(k) { const q = calcList()[CALC.order[CALC.i]]; CALC.sel = k; CALC.answered = true; CALC.done++; if (k === q.a) CALC.score++; calcRender() }
+function calcNext() { CALC.i++; CALC.answered = false; CALC.sel = -1; calcRender() }
+
 // ── RECOMMENDATIONS ───────────────────────────────────────
 const RECS = {
   Apprentice: [
     { t:'Start with electrical safety', d:'Free OSHA-based course and practice questions. Good first topic before your first inspection.', go:"showPage('prep');setCat('Electrical safety & OSHA')", l:'Study safety questions' },
     { t:'Grounding and bonding basics', d:'The topic most apprentices find hardest. Free flashcards.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
+    { t:'Practice basic sizing', d:'Conductor ampacity and branch-circuit problems, basic level first.', go:"calcOpen();calcSetCat('Conductor sizing');calcSetDiff(1)", l:'Start with basics' },
     { t:'Read the code book free online', d:'NFPA lets you read the NEC online for free.', href:'https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70', l:'NFPA 70 (NEC)' },
   ],
   Journeyman: [
     { t:'2023 NEC changes', d:'Newer code editions show up on exams. Practice the changes.', go:"showPage('prep');setCat('NEC 2023 changes')", l:'Practice NEC 2023' },
+    { t:'Load calculations and sizing', d:'2,000 free problems: motors, service sizing, conductors, voltage drop, with worked solutions.', go:"calcOpen()", l:'Start calc practice' },
     { t:'Grounding and bonding', d:'Heavy on most journeyman exams. Flashcards plus a practice quiz.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
     { t:'Wisconsin code changes', d:'Wisconsin adopted the 2023 NEC. Know the state-specific rules.', go:"showPage('prep');setCat('Wisconsin 2023 NEC');prepMode('quiz')", l:'Wisconsin quiz' },
     { t:'Your state licensing board', d:'Exam dates, applications and approved code edition come from your state.', go:"showPage('states')", l:'State links' },
