@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electrical Safety & OSHA Standards | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">Electrical Safety & OSHA Standards</div>
+      <div class="pills">
+        <span class="pill red">4.0 CEU hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">OSHA 29 CFR 1910 / 1926</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds: 60 + 65 + 60 + 55 = 240 min (4.0 hours)
+const MOD_MINS = [60*60, 60*60, 60*60, 60*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "OSHA Electrical Standards Overview",
+  "time": "60 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "The OSH Act, the General Duty Clause and employer/employee duties",
+   "29 CFR 1910 Subpart S (general industry) and 29 CFR 1926 Subpart K (construction)",
+   "How consensus standards such as the NEC and NFPA 70E relate to OSHA",
+   "Employer responsibilities: training, PPE, programs and recordkeeping",
+   "Employee rights and responsibilities",
+   "Qualified, unqualified and competent persons",
+   "Recognizing electrical hazards on the job",
+   "OSHA inspections, citations, recordkeeping and reporting"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "The OSH Act: Where Workplace Electrical Safety Law Begins",
+    "video": {
+     "title": "Supplementary video: OSHA and electrical safety",
+     "dur": "3–5 min"
+    },
+    "body": "The Occupational Safety and Health Act of 1970 (OSH Act) created the Occupational Safety and Health Administration (OSHA) to help ensure safe and healthful working conditions. For most private-sector employers, including electrical contractors, OSHA enforces two distinct kinds of employer duty: compliance with specific OSHA standards, and the General Duty Clause.",
+    "def_grid": [
+     {
+      "term": "Section 5(a)(1) — General Duty",
+      "body": "Each employer must furnish a place of employment free from recognized hazards that are causing or are likely to cause death or serious physical harm to employees."
+     },
+     {
+      "term": "Section 5(a)(2) — Standards",
+      "body": "Each employer must comply with the occupational safety and health standards issued under the Act, such as those in 29 CFR Parts 1910 and 1926."
+     },
+     {
+      "term": "Section 5(b) — Employees",
+      "body": "Each employee must comply with the standards, rules, regulations and orders that apply to his or her own actions and conduct."
+     },
+     {
+      "term": "Section 11(c) — Anti-retaliation",
+      "body": "Employees are protected from retaliation for exercising rights under the Act, such as reporting a hazard or injury. Deadlines for filing a complaint are short; contact OSHA promptly."
+     }
+    ],
+    "keypoint": "Employers have two separate OSHA obligations: follow the specific standards that apply, and protect workers from other recognized serious hazards even where no specific standard exists.",
+    "info": "The video is supplementary. Knowledge-check questions are based on the written lesson content. State plans: many states operate their own OSHA-approved occupational safety and health programs that must be at least as effective as federal OSHA. Always confirm which program covers your employer.",
+    "refs": [
+     "OSH Act Sec. 5",
+     "OSH Act Sec. 11(c)",
+     "29 CFR Parts 1910 and 1926"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "Where the Electrical Rules Live: Part 1910 and Part 1926",
+    "body": "OSHA's electrical requirements are spread across several parts of Title 29 of the Code of Federal Regulations. Which part applies depends mainly on the type of work and the industry, so electricians who move between maintenance work in existing facilities and construction work must know both.",
+    "table": {
+     "h": [
+      "Rule set",
+      "Generally applies to",
+      "What it covers"
+     ],
+     "r": [
+      [
+       "29 CFR 1910 Subpart S (1910.301–1910.399)",
+       "General industry",
+       "Design safety standards for electrical systems (1910.302–1910.308); safety-related work practices (1910.331–1910.335); definitions (1910.399)"
+      ],
+      [
+       "29 CFR 1926 Subpart K (1926.400–1926.449)",
+       "Construction",
+       "Installation safety requirements, safety-related work practices (including 1926.416 and 1926.417), environmental and equipment provisions, definitions (1926.449)"
+      ],
+      [
+       "29 CFR 1910.147",
+       "General industry",
+       "Control of hazardous energy (lockout/tagout) when servicing and maintaining machines and equipment"
+      ],
+      [
+       "29 CFR 1910.269",
+       "General industry",
+       "Electric power generation, transmission and distribution work"
+      ],
+      [
+       "29 CFR 1926 Subpart V",
+       "Construction",
+       "Power transmission and distribution work"
+      ]
+     ]
+    },
+    "keypoint": "Lockout/tagout for work on electrical conductors and equipment in electric utilization installations is addressed by Subpart S (1910.333), not by 1910.147. The 1910.147 standard states that it does not cover exposure to electrical hazards from work on, near, or with conductors or equipment in electric utilization installations, which Subpart S covers. Module 2 explains how the two fit together.",
+    "warning": "If you are unsure whether a job is governed by general industry or construction rules, or by the utility-worker standards, do not guess. Ask your employer's safety professional or contact OSHA.",
+    "refs": [
+     "29 CFR 1910 Subpart S",
+     "29 CFR 1926 Subpart K",
+     "29 CFR 1910.147(a)",
+     "29 CFR 1910.269"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "The General Duty Clause and Consensus Standards",
+    "body": "OSHA cannot write a specific standard for every hazard. Where no specific standard applies, OSHA may cite an employer under the General Duty Clause. To do so, OSHA generally must show that the hazard existed, that it was recognized, that it was causing or likely to cause death or serious physical harm, and that a feasible and useful way to correct it existed.",
+    "step_list": [
+     "The employer failed to keep the workplace free of a hazard to which its employees were exposed.",
+     "The hazard was recognized (by the employer, the industry, or common sense).",
+     "The hazard was causing or likely to cause death or serious physical harm.",
+     "A feasible and useful method existed to correct the hazard."
+    ],
+    "bullets": [
+     "Consensus standards such as the National Electrical Code (NEC) and NFPA 70E are developed by standards organizations. They are not OSHA regulations unless OSHA incorporates them by reference.",
+     "OSHA may nonetheless treat consensus standards as evidence of what is recognized industry practice and of feasible ways to abate a hazard.",
+     "The NEC is primarily an installation standard; NFPA 70E addresses electrical safety in the workplace. Following them does not automatically guarantee compliance with every OSHA requirement, and OSHA requirements can differ from them.",
+     "Licensed electricians must also follow their state and local licensing and code requirements, which are separate from OSHA."
+    ],
+    "warning": "This course covers OSHA requirements. It does not state or interpret requirements of any particular edition of the NEC or NFPA 70E. Consult the edition adopted in your jurisdiction.",
+    "refs": [
+     "OSH Act Sec. 5(a)(1)"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "Employer Responsibilities for Electrical Safety",
+    "body": "Employers are responsible for the safety of workers exposed to electrical hazards. For electrical work, that responsibility is carried out through a combination of specific standards and sound safety management.",
+    "bullets": [
+     "Comply with applicable standards, including Subpart S (general industry) or Subpart K (construction), and furnish a workplace free of recognized serious hazards.",
+     "Train employees. In general industry, 1910.332 sets training requirements for employees who face a risk of electric shock not reduced to a safe level by the electrical installation requirements. In construction, 1926.21(b)(2) requires the employer to instruct each employee in recognizing and avoiding unsafe conditions and the regulations applicable to the work environment.",
+     "Assess the workplace for hazards that require personal protective equipment (PPE) and provide required PPE. Under 1910.132, a written certification of the hazard assessment is required, and the employer must generally pay for required PPE (with limited exceptions such as ordinary clothing and non-specialty safety-toe footwear).",
+     "Establish and maintain safety programs. In construction, 1926.20(b) requires programs that provide for frequent and regular inspections of job sites, materials and equipment by competent persons designated by the employer.",
+     "Maintain injury and illness records and report severe injuries and fatalities as required by 29 CFR Part 1904.",
+     "Post the OSHA workplace poster, allow employees access to required records, and not retaliate against employees who exercise their rights."
+    ],
+    "keypoint": "On a multi-employer site, the host employer, general contractor and subcontractors can each have responsibilities. Clear communication about electrical hazards, energized systems and lockout procedures is essential.",
+    "refs": [
+     "29 CFR 1910.132",
+     "29 CFR 1910.332",
+     "29 CFR 1926.20(b)",
+     "29 CFR 1926.21(b)(2)",
+     "29 CFR Part 1904"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Employee Rights and Responsibilities",
+    "body": "The OSH Act gives workers important rights, and it also places responsibilities on them. Electricians who understand both are better protected and better able to protect others.",
+    "def_grid": [
+     {
+      "term": "Employee rights",
+      "body": "Work in conditions that do not pose a risk of serious harm; receive required information and training in a language and vocabulary they understand; request an OSHA inspection; speak with an OSHA inspector privately; review the injury and illness records (OSHA 300 log) as provided in Part 1904; and be free from retaliation for using these rights."
+     },
+     {
+      "term": "Employee responsibilities",
+      "body": "Follow the employer's safety rules and OSHA standards that apply to your own conduct; use required PPE and tools correctly; complete required training; and report hazards, near misses and injuries promptly."
+     },
+     {
+      "term": "Reporting hazards",
+      "body": "Tell your supervisor first when it is practical. You may also contact OSHA at any time, and you do not have to go through your employer to file a complaint."
+     },
+     {
+      "term": "Refusing dangerous work",
+      "body": "The right to refuse work is narrow. OSHA's regulations describe conditions that generally include a good-faith belief that there is an imminent danger of death or serious injury, a situation a reasonable person would see the same way, too little time to get the hazard corrected through regular channels, and, where possible, having asked the employer to correct it."
+     }
+    ],
+    "warning": "Do not walk off a job or ignore a hazard on your own. If you believe a condition is immediately dangerous, stop work, move to a safe position, notify your supervisor, and contact OSHA if the hazard is not corrected. See 29 CFR 1977.12 for the specific conditions.",
+    "refs": [
+     "OSH Act Sec. 5(b)",
+     "OSH Act Sec. 8(f)",
+     "OSH Act Sec. 11(c)",
+     "29 CFR 1977.12"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Qualified, Unqualified and Competent Persons",
+    "body": "OSHA's electrical standards depend heavily on who is allowed to do what. Under 1910.399, a qualified person is one familiar with the construction and operation of the equipment and the hazards involved. OSHA's note to that definition explains that qualification depends on the circumstances: a person may be qualified for some equipment and unqualified for other equipment.",
+    "def_grid": [
+     {
+      "term": "Qualified person (Subpart S)",
+      "body": "One familiar with the construction and operation of the equipment and the hazards involved. Only qualified persons may work on electric circuit parts or equipment that have not been de-energized under the lockout/tagging procedures. Qualification is equipment- and task-specific."
+     },
+     {
+      "term": "Unqualified person",
+      "body": "Anyone who does not meet the qualified-person definition for the equipment in question. Unqualified persons must be protected from exposed live parts, for example by guarding, and trained in the electrically related safety practices necessary for their safety."
+     },
+     {
+      "term": "Training for qualified persons (1910.332)",
+      "body": "At a minimum, qualified persons must be trained in and familiar with: the skills and techniques to distinguish exposed live parts from other parts of electrical equipment; the skills and techniques to determine the nominal voltage of exposed live parts; and the clearance distances in 1910.333(c) and the corresponding voltages to which they will be exposed."
+     },
+     {
+      "term": "Competent person (Construction)",
+      "body": "Defined in 1926.32(f) as one capable of identifying existing and predictable hazards in the surroundings or working conditions that are unsanitary, hazardous or dangerous to employees, and who has authorization to take prompt corrective measures to eliminate them."
+     }
+    ],
+    "keypoint": "A state electrician license does not by itself make a person 'qualified' for every piece of equipment under OSHA. The employer must ensure the training and familiarity are real and specific to the equipment and hazards involved.",
+    "refs": [
+     "29 CFR 1910.399",
+     "29 CFR 1910.332",
+     "29 CFR 1926.32"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "Recognizing Electrical Hazards",
+    "body": "Hazard recognition is the foundation of every OSHA electrical requirement. The main injuries from electrical hazards are shock and electrocution, arc flash and arc blast burns, thermal burns, fires, and falls caused by a reaction to shock or by a fall from a work position.",
+    "table": {
+     "h": [
+      "Hazard",
+      "How it injures",
+      "Typical field sources"
+     ],
+     "r": [
+      [
+       "Electric shock / electrocution",
+       "Current passes through the body and can disrupt the heart and breathing and burn tissue",
+       "Contact with energized conductors, damaged cords and tools, ungrounded equipment, wet conditions"
+      ],
+      [
+       "Arc flash and arc blast",
+       "An electrical arc releases intense heat, light, pressure and molten metal",
+       "Faults while working in or near energized equipment, tools dropped into live parts"
+      ],
+      [
+       "Contact with overhead or buried lines",
+       "High-energy contact with utility conductors",
+       "Cranes, lifts, ladders, long tools, excavation"
+      ],
+      [
+       "Electrical fire",
+       "Overheated or arcing conductors ignite nearby materials",
+       "Overloaded circuits, loose terminations, damaged insulation, misused extension cords"
+      ],
+      [
+       "Secondary injuries",
+       "Involuntary reaction or loss of consciousness leads to a fall or strike",
+       "Working on ladders, lifts, roofs and platforms"
+      ]
+     ]
+    },
+    "keypoint": "It is current flowing through the body, the path it takes, and how long it flows that determine the injury, not voltage alone. Currents on the order of one milliamp can be perceived, around ten milliamps or more can prevent a person from releasing a conductor, and currents in the range of tens to about a hundred milliamps through the chest can cause ventricular fibrillation. Exact thresholds vary from person to person.",
+    "bullets": [
+     "Look for damaged insulation, missing covers and knockouts, open enclosures, and signs of overheating such as discoloration.",
+     "Look for improper grounding, including broken or removed grounding pins and adapters that defeat the grounding path.",
+     "Note wet or damp conditions, conductive surfaces, cramped spaces, poor lighting and cluttered work areas.",
+     "Identify overhead lines and, before digging, have underground utilities located."
+    ],
+    "refs": [
+     "29 CFR 1910.333",
+     "29 CFR 1926.416"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Inspections, Citations, Penalties and Recordkeeping",
+    "body": "OSHA can inspect workplaces and issue citations for violations. The classification of a violation affects the proposed penalty. Penalty amounts are adjusted periodically, so this course does not state dollar amounts; refer to OSHA's current penalty information.",
+    "table": {
+     "h": [
+      "Topic",
+      "Key points"
+     ],
+     "r": [
+      [
+       "Violation types",
+       "Other-than-serious, serious, willful, repeat, and failure to abate. A serious violation involves a substantial probability that death or serious physical harm could result and the employer knew or should have known of the hazard. A willful violation involves intentional disregard of the law or plain indifference to employee safety."
+      ],
+      [
+       "Criminal liability",
+       "A willful violation that causes the death of an employee can carry criminal penalties under the OSH Act."
+      ],
+      [
+       "Inspection priorities",
+       "Imminent danger situations come first, then severe injuries and fatalities, then employee complaints and referrals, then programmed inspections."
+      ],
+      [
+       "Recording injuries (Part 1904)",
+       "Many employers must record work-related injuries and illnesses that result in death, days away from work, restricted work or job transfer, medical treatment beyond first aid, loss of consciousness, or a significant diagnosed injury or illness. Some small employers and employers in certain low-hazard industries are partially exempt from routine recordkeeping."
+      ],
+      [
+       "OSHA forms and retention",
+       "Employers keep the OSHA 300 log, 301 incident report and 300A annual summary. The 300A summary is posted from February 1 through April 30 of the following year. Records are generally kept for five years following the end of the calendar year they cover."
+      ],
+      [
+       "Reporting to OSHA (1904.39)",
+       "All covered employers must report a work-related fatality within 8 hours, and a work-related inpatient hospitalization, amputation or loss of an eye within 24 hours."
+      ]
+     ]
+    },
+    "keypoint": "Electrical burns, electrocutions and falls after shock can quickly trigger the reporting requirements. Know your employer's procedure for immediate notification.",
+    "refs": [
+     "OSH Act Sec. 17",
+     "29 CFR 1904.7",
+     "29 CFR 1904.39"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Under Section 5(a)(1) of the OSH Act (the General Duty Clause), an employer must:",
+    "opts": [
+     "Provide every employee with a written copy of the NEC",
+     "Guarantee that no employee will ever be injured on the job",
+     "Furnish a place of employment free from recognized hazards that are causing or likely to cause death or serious physical harm",
+     "Obtain a state electrical license for each supervisor"
+    ],
+    "correct": 2,
+    "explain": "Section 5(a)(1) is the General Duty Clause. It requires employers to furnish a workplace free from recognized hazards causing or likely to cause death or serious physical harm. It does not guarantee zero injuries, and it does not require distributing the NEC."
+   },
+   {
+    "q": "Which OSHA part contains the electrical safety standards for general industry?",
+    "opts": [
+     "29 CFR 1926 Subpart K",
+     "29 CFR 1910 Subpart S",
+     "29 CFR 1904 Subpart E",
+     "29 CFR 1903 Subpart A"
+    ],
+    "correct": 1,
+    "explain": "Subpart S of Part 1910 (1910.301–1910.399) is the electrical subpart for general industry. Subpart K of Part 1926 is the electrical subpart for construction."
+   },
+   {
+    "q": "Which OSHA part contains the electrical safety standards for construction?",
+    "opts": [
+     "29 CFR 1910 Subpart S",
+     "29 CFR 1904 Subpart C",
+     "29 CFR 1977",
+     "29 CFR 1926 Subpart K"
+    ],
+    "correct": 3,
+    "explain": "29 CFR 1926 Subpart K (1926.400–1926.449) covers electrical requirements in construction, including safety-related work practices such as 1926.416 and the lockout and tagging of circuits in 1926.417."
+   },
+   {
+    "q": "What does the OSH Act require of employees under Section 5(b)?",
+    "opts": [
+     "Perform all hazard assessments for their employer",
+     "Comply with the standards, rules, regulations and orders that apply to their own actions and conduct",
+     "Pay for their own PPE",
+     "Report to OSHA before starting any electrical task"
+    ],
+    "correct": 1,
+    "explain": "Section 5(b) requires each employee to comply with the standards, rules, regulations and orders applicable to his or her own actions and conduct. It does not make employees responsible for the employer's hazard assessments or PPE costs."
+   },
+   {
+    "q": "How does a consensus standard such as NFPA 70E or the NEC generally relate to OSHA enforcement?",
+    "opts": [
+     "It automatically becomes an OSHA regulation when published",
+     "It has no relevance to OSHA enforcement under any circumstances",
+     "It is not an OSHA regulation unless OSHA incorporates it by reference, but OSHA may treat it as evidence of recognized industry practice",
+     "It replaces the OSHA standard whenever the two differ"
+    ],
+    "correct": 2,
+    "explain": "Consensus standards are not OSHA regulations unless incorporated by reference. OSHA may still use them as evidence that a hazard is recognized and that feasible abatement methods exist, particularly under the General Duty Clause."
+   },
+   {
+    "q": "Which of the following is NOT one of the elements OSHA generally must show to cite the General Duty Clause?",
+    "opts": [
+     "The hazard was recognized",
+     "The employer had previously been cited for an unrelated violation",
+     "The hazard was causing or likely to cause death or serious physical harm",
+     "A feasible and useful method existed to correct the hazard"
+    ],
+    "correct": 1,
+    "explain": "The general elements are: a hazard to which employees were exposed, that the hazard was recognized, that it was causing or likely to cause death or serious physical harm, and that a feasible and useful abatement method existed. An unrelated earlier citation is not an element."
+   },
+   {
+    "q": "An electrician is servicing wiring in a new building under construction. Which electrical subpart is most directly applicable?",
+    "opts": [
+     "29 CFR 1910 Subpart S only",
+     "29 CFR 1904 Subpart B",
+     "29 CFR 1903 Subpart B",
+     "29 CFR 1926 Subpart K"
+    ],
+    "correct": 3,
+    "explain": "Work on a building under construction is construction work, so the construction standards in Part 1926, including Subpart K, apply. If you are uncertain how a particular job is classified, ask a safety professional or OSHA."
+   },
+   {
+    "q": "Under 1910.147(a), the lockout/tagout standard states that it does not cover which of the following?",
+    "opts": [
+     "Servicing a machine with stored hydraulic energy",
+     "Exposure to electrical hazards from work on, near, or with conductors or equipment in electric utilization installations, which Subpart S covers",
+     "Servicing equipment where unexpected start-up could occur",
+     "Servicing equipment with an energy-isolating device that can be locked"
+    ],
+    "correct": 1,
+    "explain": "1910.147 states that it does not cover exposure to electrical hazards from work on, near, or with conductors or equipment in electric utilization installations; those are covered by Subpart S. It applies to servicing and maintenance of machines and equipment where unexpected energization, start-up or release of stored energy could injure employees."
+   },
+   {
+    "q": "Under 1910.132, what is the general rule about who pays for required PPE?",
+    "opts": [
+     "The employer pays for required PPE, with limited exceptions such as ordinary clothing and non-specialty safety-toe footwear",
+     "The employee always pays and is reimbursed by the union",
+     "The employee pays for any PPE bought before being hired",
+     "Employers never have to pay for any PPE"
+    ],
+    "correct": 0,
+    "explain": "OSHA's PPE payment requirement in 1910.132(h) generally requires employers to pay for PPE they require, with limited exceptions, including everyday clothing and non-specialty safety-toe footwear that may be worn off the job."
+   },
+   {
+    "q": "Which statement about the right to refuse dangerous work is most accurate?",
+    "opts": [
+     "Employees may refuse any task they dislike without consequence",
+     "Employees may only refuse work after OSHA has issued a citation",
+     "The right is narrow and generally applies only to an imminent danger of death or serious injury, where there is no time to get it corrected through regular channels",
+     "Employees have no right to refuse work under any circumstances"
+    ],
+    "correct": 2,
+    "explain": "OSHA's regulation at 29 CFR 1977.12 describes narrow conditions, generally an imminent danger of death or serious injury that a reasonable person would recognize, with insufficient time to resolve it through regular channels, and, where possible, a request that the employer correct it."
+   },
+   {
+    "q": "What does Section 11(c) of the OSH Act protect?",
+    "opts": [
+     "Employers from penalties if they self-report a violation",
+     "Employees from all discipline for any workplace reason",
+     "Contractors from having to pay for PPE",
+     "Employees from retaliation for exercising rights under the Act, such as reporting a hazard or injury"
+    ],
+    "correct": 3,
+    "explain": "Section 11(c) prohibits retaliation against employees for exercising their rights under the OSH Act. It does not shield employees from all discipline for unrelated reasons."
+   },
+   {
+    "q": "Under 1910.399, a 'qualified person' is best described as:",
+    "opts": [
+     "One familiar with the construction and operation of the equipment and the hazards involved",
+     "Any person who holds a state electrician license",
+     "Any person with five years of experience in any trade",
+     "Any person supervised by a master electrician"
+    ],
+    "correct": 0,
+    "explain": "1910.399 defines a qualified person as one familiar with the construction and operation of the equipment and the hazards involved. Qualification depends on the equipment and circumstances, so a person can be qualified for some equipment and unqualified for other equipment."
+   },
+   {
+    "q": "An electrician is fully qualified on 120/208-volt panelboards. Based on OSHA's note to the qualified-person definition, what can be concluded about unfamiliar medium-voltage equipment?",
+    "opts": [
+     "The electrician is not automatically qualified for it; qualification depends on familiarity with that equipment and its hazards",
+     "The electrician is automatically qualified for all electrical equipment",
+     "The electrician is qualified if the equipment is rated under 1000 volts only",
+     "The electrician is qualified as long as a license is current"
+    ],
+    "correct": 0,
+    "explain": "OSHA's note to the definition explains that a person may be qualified for certain equipment and unqualified for other equipment. Qualification is specific to the equipment and hazards involved."
+   },
+   {
+    "q": "At a minimum, which topic must qualified persons be trained in under 1910.332?",
+    "opts": [
+     "How to prepare the OSHA 300 log",
+     "Skills and techniques to distinguish exposed live parts from other parts of electrical equipment and to determine the nominal voltage of exposed live parts",
+     "Procedures for filing OSHA citations",
+     "Contract negotiation with utilities"
+    ],
+    "correct": 1,
+    "explain": "1910.332 requires qualified persons to be trained in, at a minimum, distinguishing exposed live parts from other parts, determining the nominal voltage of exposed live parts, and the clearance distances in 1910.333(c) with the corresponding voltages."
+   },
+   {
+    "q": "Under 29 CFR 1926.32(f), a 'competent person' is one who:",
+    "opts": [
+     "Holds a master electrician license",
+     "Has completed a four-year engineering degree",
+     "Can identify existing and predictable hazards and has authorization to take prompt corrective measures to eliminate them",
+     "Is employed by OSHA"
+    ],
+    "correct": 2,
+    "explain": "The construction standards define a competent person as one capable of identifying existing and predictable hazardous or dangerous conditions and who has authorization to take prompt corrective measures. The term depends on capability and authority, not on a particular license or degree."
+   },
+   {
+    "q": "Which statement about electric shock injury is most accurate?",
+    "opts": [
+     "The amount of current through the body, its path and its duration are what determine the injury",
+     "Only voltages above 600 volts can seriously injure a person",
+     "Injury depends only on the size of the person",
+     "Current does not matter; only the voltage rating matters"
+    ],
+    "correct": 0,
+    "explain": "Injury severity depends on current magnitude, the path through the body and the duration of flow. Voltage matters because it drives current, but serious or fatal injury can occur at common utilization voltages."
+   },
+   {
+    "q": "Under 29 CFR 1904.39, an employer must report a work-related fatality to OSHA within:",
+    "opts": [
+     "8 hours",
+     "24 hours",
+     "48 hours",
+     "7 days"
+    ],
+    "correct": 0,
+    "explain": "All covered employers must report a work-related fatality within 8 hours. In-patient hospitalizations, amputations and losses of an eye must be reported within 24 hours."
+   },
+   {
+    "q": "Under 29 CFR 1904.39, an employer must report a work-related in-patient hospitalization of an employee to OSHA within:",
+    "opts": [
+     "8 hours",
+     "72 hours",
+     "30 days",
+     "24 hours"
+    ],
+    "correct": 3,
+    "explain": "A work-related in-patient hospitalization, amputation or loss of an eye must be reported within 24 hours of the employer learning of it. A fatality must be reported within 8 hours."
+   }
+  ]
+ },
+ {
+  "title": "Lockout/Tagout and Verification of De-Energization",
+  "time": "65 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "Hazardous energy and why unexpected energization injures workers",
+   "Which standard applies: 29 CFR 1910.147, 1910.333 and 1926.417",
+   "Energy control program elements, roles and training",
+   "Lockout devices versus tagout devices",
+   "The six steps of the 1910.147(d) procedure and release from lockout",
+   "Verification of de-energization and testing",
+   "Group lockout, shift changes and outside contractors",
+   "Re-energizing, documentation, periodic inspection and retraining"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "Hazardous Energy and Why Lockout/Tagout Exists",
+    "body": "Many serious electrical injuries happen not because a worker touched something known to be live, but because equipment that was believed to be safe became energized, started up unexpectedly, or released stored energy. Lockout/tagout (LOTO) is the practice of isolating energy sources and securing the isolating devices so that this cannot happen while people are working.",
+    "bullets": [
+     "Electrical energy is only one form of hazardous energy. Mechanical motion, hydraulic and pneumatic pressure, thermal energy, chemical energy and gravity (a raised load) can also injure.",
+     "Stored energy can remain after power is removed, for example in capacitors, springs, flywheels, pressurized lines and raised components.",
+     "A circuit that appears dead can be energized by backfeed from another source, such as a generator, a parallel feed or a tie breaker, or by induced voltage from nearby energized conductors.",
+     "Common causes of injury include another person closing a breaker or switch, a control signal restarting equipment, and failing to identify every energy source.",
+     "A circuit breaker, push button, selector switch or interlock that is turned off is not by itself a safe isolation: control circuit devices may not be used as the sole means of de-energizing."
+    ],
+    "keypoint": "The purpose of lockout/tagout is to control hazardous energy so that equipment cannot be energized, started or release stored energy while people are exposed. Treat every conductor and every piece of equipment as energized until it has been isolated, secured and verified.",
+    "info": "Which OSHA rule governs depends on the work. The next lesson explains how 1910.147, 1910.333 and 1926.417 fit together.",
+    "refs": [
+     "29 CFR 1910.147",
+     "29 CFR 1910.333(b)",
+     "29 CFR 1926.417"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "Which Standard Applies: 1910.147, 1910.333 and 1926.417",
+    "body": "Electricians encounter three different lockout requirements. Knowing which one governs a job is the first step in building the correct procedure.",
+    "table": {
+     "h": [
+      "Standard",
+      "Where it applies",
+      "Key idea"
+     ],
+     "r": [
+      [
+       "29 CFR 1910.147 Control of hazardous energy",
+       "General industry: servicing and maintenance of machines and equipment where unexpected energization, start-up or release of stored energy could injure employees",
+       "Requires an energy control program with documented procedures, training and periodic inspection. It does not cover construction, agriculture or maritime employment, and it states that it does not cover exposure to electrical hazards from work on, near or with conductors or equipment in electric utilization installations, which Subpart S covers."
+      ],
+      [
+       "29 CFR 1910.333(a) and (b)",
+       "General industry: electrical safety-related work practices for work on or near electrical circuits and equipment",
+       "De-energize live parts before working on or near them unless the employer can demonstrate that de-energizing introduces additional or increased hazards or is infeasible. Sets lockout and tagging, verification, and re-energizing requirements for electrical circuits."
+      ],
+      [
+       "29 CFR 1926.417 Lockout and tagging of circuits",
+       "Construction",
+       "Controls and circuits that are deactivated during work must be tagged, and equipment or circuits that are de-energized must be rendered inoperative and tagged at all points where they can be energized."
+      ],
+      [
+       "29 CFR 1910.269 and 1926 Subpart V",
+       "Electric power generation, transmission and distribution",
+       "Separate, more specific work practices for power system work."
+      ]
+     ]
+    },
+    "bullets": [
+     "1910.147 also excludes work on cord- and plug-connected electric equipment when the hazard is controlled by unplugging the equipment and the plug remains under the exclusive control of the person doing the work. See 1910.147(a) for the exact conditions.",
+     "Many employers write one program that satisfies all of the standards that apply to their operations. Follow your employer's written procedure and the stricter applicable requirement."
+    ],
+    "warning": "Do not assume a standard does not apply because the equipment is electrical. For example, a machine with electrical and mechanical energy sources is often serviced under 1910.147, while the electrical circuits supplying a building are governed by Subpart S.",
+    "refs": [
+     "29 CFR 1910.147(a)",
+     "29 CFR 1910.333(a)",
+     "29 CFR 1910.333(b)",
+     "29 CFR 1926.417"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Energy Control Program, Roles and Training",
+    "body": "Under 1910.147(c), the employer must establish a program consisting of energy control procedures, employee training, and periodic inspections. The program must ensure that, before an employee performs servicing or maintenance where unexpected energization, start-up or release of stored energy could cause injury, the machine or equipment is isolated and rendered inoperative.",
+    "def_grid": [
+     {
+      "term": "Authorized employee",
+      "body": "A person who locks out or tags out machines or equipment in order to perform servicing or maintenance on that machine or equipment."
+     },
+     {
+      "term": "Affected employee",
+      "body": "A person whose job requires operating or using a machine or equipment on which servicing or maintenance is being performed under lockout or tagout, or whose job requires working in an area where such servicing is being performed."
+     },
+     {
+      "term": "Other employees",
+      "body": "Employees whose work operations are or may be in an area where energy control procedures may be used. They must be instructed about the procedure and the prohibition on restarting or re-energizing equipment that is locked or tagged out."
+     },
+     {
+      "term": "Training and retraining",
+      "body": "Authorized employees need the knowledge and skills to apply, use and remove energy controls. Retraining is required, for example, when job assignments, equipment or processes change in a way that presents a new hazard, when the energy control procedure changes, or when a periodic inspection finds deviations or inadequacies."
+     }
+    ],
+    "bullets": [
+     "Energy control procedures must be developed, documented and used (1910.147(c)(4) allows limited documentation exceptions for simple equipment), and they must clearly outline the scope, purpose, authorization, rules and techniques that will be used to control hazardous energy, including the means to enforce compliance.",
+     "The employer must conduct a periodic inspection of each energy control procedure at least annually, performed by an authorized employee other than the one(s) using the procedure being inspected.",
+     "Under 1910.333(b)(2), the employer must maintain a written copy of the lockout and tagging procedures for electrical circuits and make it available for inspection by employees and OSHA representatives."
+    ],
+    "refs": [
+     "29 CFR 1910.147(c)",
+     "29 CFR 1910.147(b)",
+     "29 CFR 1910.333(b)(2)"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Lockout Devices versus Tagout Devices",
+    "body": "A lockout device uses a positive means, such as a lock, to hold an energy-isolating device in the safe position, so that the equipment cannot be energized until the lock is removed. A tagout device is a prominent warning device, such as a tag and a means of attachment, that is fastened to an energy-isolating device to warn that the equipment may not be operated until the tag is removed. A tag by itself does not physically prevent operation.",
+    "table": {
+     "h": [
+      "Topic",
+      "Requirement or principle"
+     ],
+     "r": [
+      [
+       "Lockout preferred under 1910.147",
+       "If an energy-isolating device can be locked out, the employer's program must use lockout, unless the employer can demonstrate that a tagout system will provide full employee protection."
+      ],
+      [
+       "Device characteristics (1910.147(c)(5))",
+       "Lockout and tagout devices must be durable, standardized (by color, shape or size), substantial enough to prevent inadvertent or accidental removal, and identifiable as to the individual who applied them. They must be used only for controlling energy."
+      ],
+      [
+       "Tag attachment",
+       "Tagout device attachment means must be non-reusable, attachable by hand, self-locking, and non-releasable with a minimum unlocking strength of no less than 50 pounds."
+      ],
+      [
+       "1910.333(b)(2)(iii) electrical circuits",
+       "A lock and a tag are placed on each disconnecting means used to de-energize circuits and equipment on which work is to be performed, with exceptions. Each tag must prohibit unauthorized operation of the disconnecting means and removal of the tag."
+      ],
+      [
+       "Tag without lock (1910.333)",
+       "Allowed only if a lock cannot be applied, or the employer can demonstrate that tagging provides equivalent safety. It must be supplemented by at least one additional safety measure providing equivalent protection, such as removing an isolating circuit element, blocking a controlling switch or opening an extra disconnecting device."
+      ],
+      [
+       "Lock without tag (1910.333)",
+       "Allowed only if only one circuit or piece of equipment is de-energized, the lockout period does not extend beyond the work shift, and employees exposed to the hazards of re-energizing are familiar with this procedure."
+      ]
+     ]
+    },
+    "keypoint": "Locks and tags do not substitute for verification. They keep the isolation in place; they do not prove that the energy is gone.",
+    "refs": [
+     "29 CFR 1910.147(c)(2)",
+     "29 CFR 1910.147(c)(5)",
+     "29 CFR 1910.333(b)(2)(iii)"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "The Six-Step Procedure under 1910.147(d)",
+    "body": "The sequence of steps for applying controls is set out in 1910.147(d). It is commonly taught as six steps. Follow the equipment-specific written procedure your employer has developed and follow the steps in order.",
+    "step_list": [
+     "<strong>Preparation for shutdown.</strong> Before an authorized or affected employee turns off a machine or equipment, the authorized employee must know the type and magnitude of the energy, its hazards, and the methods to control it.",
+     "<strong>Machine or equipment shutdown.</strong> Turn off or shut down the equipment using the procedure established for it. Use an orderly shutdown to avoid additional or increased hazards to employees from the equipment stopping.",
+     "<strong>Machine or equipment isolation.</strong> Physically locate and operate all energy-isolating devices so that the equipment is isolated from every energy source.",
+     "<strong>Lockout or tagout device application.</strong> Affix lockout or tagout devices to each energy-isolating device by authorized employees, in accordance with the procedure.",
+     "<strong>Control of stored or residual energy.</strong> Stored or residual energy, such as that in capacitors, springs, elevated members, rotating flywheels and pressurized systems, must be relieved, disconnected, restrained or otherwise rendered safe. If stored energy can re-accumulate, continue verification until the work is completed.",
+     "<strong>Verification of isolation.</strong> Before starting work on equipment that has been locked or tagged out, the authorized employee must verify that isolation and de-energization have been accomplished."
+    ],
+    "keypoint": "Release from lockout is a separate sequence in 1910.147(e): inspect the work area and equipment, make sure employees are safely positioned or removed from the area, and then remove the devices. Each lockout or tagout device must be removed by the employee who applied it, with only the narrow exception described in a later lesson.",
+    "warning": "For electrical circuits under Subpart S, 1910.333(b)(2) separately requires safe de-energizing procedures to be determined before circuits are de-energized, disconnection from all electric energy sources, release of stored electric energy that could endanger personnel (for example, discharging capacitors), and blocking or relieving stored non-electrical energy in devices that could re-energize electric circuit parts.",
+    "refs": [
+     "29 CFR 1910.147(d)",
+     "29 CFR 1910.147(e)",
+     "29 CFR 1910.333(b)(2)"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "Verification of De-Energization: Test Before You Touch",
+    "video": {
+     "title": "Supplementary video: verifying de-energization",
+     "dur": "3–5 min"
+    },
+    "body": "Verification is the step that separates a safe isolation from a presumed one. Under 1910.333(b)(2)(iv), a qualified person must operate the equipment operating controls, or otherwise verify, that the equipment cannot be restarted. A qualified person must then use test equipment to test the circuit elements and electrical parts of equipment to which employees will be exposed and verify that they are de-energized.",
+    "bullets": [
+     "The test must also determine whether any energized condition exists as a result of inadvertently induced voltage or unrelated voltage backfeed, even though specific parts of the circuit have been de-energized and presumed to be safe.",
+     "Use test instruments that are rated for the circuit and environment and in good condition. Only qualified persons may perform testing work on electric circuits or equipment, and test instruments must be visually inspected for external defects before use.",
+     "Test every conductor you could contact, phase to phase and phase to ground, not just one pair.",
+     "Many employer procedures and consensus standards direct you to prove the tester on a known live source before and after testing the target conductors. Follow your employer's written procedure; OSHA's explicit before-and-after instrument check wording in 1910.333(b)(2)(iv) applies to circuits over 600 volts, nominal.",
+     "Remember stored energy: capacitors and other stored electrical energy must be discharged or grounded as the procedure requires, and conditions can re-accumulate.",
+     "If the verification test shows voltage, stop. Do not work on the equipment. Find the unidentified source, correct the isolation, and repeat the process."
+    ],
+    "keypoint": "The attempt to restart (the 'try' test) confirms that the equipment will not start. Meter testing confirms that the conductors are dead. In many cases you need both. Neither the position of a switch handle nor a tag proves that conductors are de-energized.",
+    "info": "The video is supplementary. Knowledge-check questions are based on the written lesson content.",
+    "refs": [
+     "29 CFR 1910.333(b)(2)(iv)",
+     "29 CFR 1910.334(c)",
+     "29 CFR 1910.147(d)(6)"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Group Lockout, Shift Changes and Outside Contractors",
+    "body": "Complex jobs involve several people, crews, shifts or employers working on the same equipment. 1910.147(f) addresses these situations so that protection is never lost when responsibility changes hands.",
+    "def_grid": [
+     {
+      "term": "Group lockout or tagout (1910.147(f)(3))",
+      "body": "When servicing is performed by a group, the procedure must give employees protection equivalent to personal lockout. Primary responsibility is vested in an authorized employee for a set number of employees working under the protection of a group lockout device, with a way for that person to determine each group member's exposure status."
+     },
+     {
+      "term": "Personal locks",
+      "body": "Each authorized employee affixes a personal lockout or tagout device to the group lockout device, group lockbox or comparable mechanism when he or she begins work, and removes it when he or she stops working on the equipment."
+     },
+     {
+      "term": "Multiple crews or departments",
+      "body": "When more than one crew, craft or department is involved, overall job-associated lockout control responsibility is assigned to an authorized employee designated to coordinate the affected work forces and ensure continuity of protection."
+     },
+     {
+      "term": "Shift or personnel changes (1910.147(f)(4))",
+      "body": "Specific procedures must ensure continuity of lockout or tagout protection, including orderly transfer of lockout or tagout device protection between off-going and oncoming employees."
+     },
+     {
+      "term": "Outside personnel (1910.147(f)(2))",
+      "body": "The on-site employer and the outside employer must inform each other of their respective lockout or tagout procedures, and the on-site employer must ensure its employees understand and comply with the outside employer's restrictions."
+     },
+     {
+      "term": "Testing or positioning (1910.147(f)(1))",
+      "body": "Where equipment must be energized temporarily for testing or positioning, a documented sequence is followed: clear tools and materials, remove employees from the area, remove the lockout or tagout devices as specified, energize and proceed, then de-energize and re-apply the controls."
+     }
+    ],
+    "keypoint": "Never rely on another person's lock for your own protection. Every person exposed puts a personal lock on the group mechanism before beginning work.",
+    "refs": [
+     "29 CFR 1910.147(f)"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Re-energizing, Documentation and Program Review",
+    "body": "Restoring power is a high-risk moment. Under 1910.333(b)(2)(v), the following must be met, in the order given, before circuits or equipment are re-energized, even temporarily.",
+    "step_list": [
+     "A qualified person conducts tests and visual inspections, as necessary, to verify that all tools, electrical jumpers, shorts, grounds and other such devices have been removed, so that circuits and equipment can be safely energized.",
+     "Employees exposed to the hazards of re-energizing the circuit or equipment are warned to stay clear of circuits and equipment.",
+     "Each lock and tag is removed by the employee who applied it or under his or her direct supervision. If that employee is absent, a qualified person designated for the task may remove it only if the employer ensures the employee who applied it is not available at the workplace, and that the employee is aware the lock or tag has been removed before he or she resumes work at that workplace.",
+     "There is a visual determination that all employees are clear of the circuits and equipment."
+    ],
+    "bullets": [
+     "1910.147(e)(3) contains a parallel provision: the device is removed by the authorized employee who applied it, with a narrow exception, which must be covered by a specific procedure that the employer demonstrates is at least as safe.",
+     "Keep records appropriate to your program: written procedures, training records, and periodic inspection certifications (1910.147(c)(6) requires the employer to certify that periodic inspections were performed, including the machine or equipment, the date, the employees included and the person performing the inspection).",
+     "Review your program after any incident or near miss, and retrain when procedures, equipment or assignments change or when inspections reveal deficiencies.",
+     "After a circuit protective device trips, do not simply reset it repeatedly. 1910.334(b)(2) prohibits repetitive manual reclosing of circuit breakers and re-energizing circuits through replaced fuses, and requires determining that equipment and circuit can be safely energized before reclosing."
+    ],
+    "warning": "A lock may only be removed by someone other than its owner through the specific procedure in your employer's program. Cutting a lock because it is inconvenient is a serious violation and an invitation to a fatality.",
+    "refs": [
+     "29 CFR 1910.333(b)(2)(v)",
+     "29 CFR 1910.147(e)",
+     "29 CFR 1910.334(b)(2)"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which standard states that it does not cover exposure to electrical hazards from work on, near, or with conductors or equipment in electric utilization installations?",
+    "opts": [
+     "29 CFR 1926.417, because Subpart K excludes them",
+     "29 CFR 1910.147, because those hazards are covered by Subpart S",
+     "29 CFR 1904.39, because it covers only recordkeeping",
+     "29 CFR 1910.132, because it governs only eye protection"
+    ],
+    "correct": 1,
+    "explain": "1910.147(a) states that the standard does not cover exposure to electrical hazards from work on, near or with conductors or equipment in electric utilization installations; those are covered by Subpart S, including 1910.333."
+   },
+   {
+    "q": "Under 1910.333(a)(1), live parts to which an employee may be exposed must be de-energized before the employee works on or near them unless:",
+    "opts": [
+     "The employer can demonstrate that de-energizing introduces additional or increased hazards or is infeasible due to equipment design or operational limitations",
+     "The employee has a state electrician license",
+     "The task will take less than an hour",
+     "The equipment is operating at less than 20 amperes"
+    ],
+    "correct": 0,
+    "explain": "The rule is to de-energize unless the employer can demonstrate that doing so introduces additional or increased hazards or is infeasible. Examples include shutting down life support systems or testing circuits that can only be tested while energized."
+   },
+   {
+    "q": "What are the three required components of an energy control program under 1910.147(c)?",
+    "opts": [
+     "Energy control procedures, employee training, and periodic inspections",
+     "Lockout locks, tag printing, and storage cabinets",
+     "Hazard assessment, medical surveillance, and air monitoring",
+     "Permits, insurance, and union approval"
+    ],
+    "correct": 0,
+    "explain": "1910.147(c) requires the employer to establish a program consisting of energy control procedures, employee training and periodic inspections."
+   },
+   {
+    "q": "The employer must conduct a periodic inspection of each energy control procedure at least:",
+    "opts": [
+     "Annually",
+     "Every five years",
+     "Only after an injury",
+     "Every two years"
+    ],
+    "correct": 0,
+    "explain": "1910.147(c)(6) requires periodic inspection of the energy control procedure at least annually, performed by an authorized employee other than the one(s) using the procedure being inspected."
+   },
+   {
+    "q": "Under 1910.147, an authorized employee is:",
+    "opts": [
+     "A person who locks out or tags out machines or equipment in order to perform servicing or maintenance",
+     "A person who only operates the machine during normal production",
+     "A person whose workstation is in a different building",
+     "Any supervisor on site regardless of training"
+    ],
+    "correct": 0,
+    "explain": "An authorized employee locks out or tags out equipment to perform servicing or maintenance. An affected employee is one who operates the equipment or works in an area where servicing is performed."
+   },
+   {
+    "q": "If an energy-isolating device is capable of being locked out, what does 1910.147 generally require the employer's program to use?",
+    "opts": [
+     "Tagout only, because tags are easier to use",
+     "Lockout, unless the employer can demonstrate that tagout will provide full employee protection",
+     "Either, at the preference of the nearest supervisor",
+     "Neither; only a written warning at the panel is required"
+    ],
+    "correct": 1,
+    "explain": "If an energy-isolating device can be locked out, the program must use lockout unless the employer demonstrates that a tagout system will provide full employee protection."
+   },
+   {
+    "q": "Under 1910.147(c)(5), which is a required characteristic of lockout and tagout devices?",
+    "opts": [
+     "They are red, rectangular and no longer than 3 inches",
+     "They are durable, standardized, substantial, and identify the employee who applied them",
+     "They are interchangeable among all workers",
+     "They are used for other purposes when not locked out"
+    ],
+    "correct": 1,
+    "explain": "Devices must be durable, standardized by color, shape or size, substantial enough to prevent inadvertent removal, and identifiable as to the individual who applied them. They must be used only for energy control."
+   },
+   {
+    "q": "What minimum unlocking strength does 1910.147 specify for a tagout device attachment means?",
+    "opts": [
+     "No less than 50 pounds",
+     "No less than 5 pounds",
+     "No less than 500 pounds",
+     "No requirement for strength is stated"
+    ],
+    "correct": 0,
+    "explain": "Tagout device attachment means must be non-reusable, attachable by hand, self-locking and non-releasable with a minimum unlocking strength of no less than 50 pounds."
+   },
+   {
+    "q": "Under 1910.333(b)(2), when may a tag be used on a disconnecting means without a lock?",
+    "opts": [
+     "Whenever the job is expected to take less than one shift",
+     "If a lock cannot be applied, or tagging is demonstrated to provide equivalent safety, and at least one additional equivalent safety measure is also used",
+     "Whenever only one person is working on the equipment",
+     "Whenever the equipment is operated at less than 120 volts"
+    ],
+    "correct": 1,
+    "explain": "A tag may be used without a lock if a lock cannot be applied or tagging provides equivalent safety, but it must be supplemented by at least one additional safety measure providing equivalent protection, such as removing an isolating circuit element."
+   },
+   {
+    "q": "Which list shows the correct order of the 1910.147(d) steps?",
+    "opts": [
+     "Verification, preparation, device application, shutdown, isolation, stored energy",
+     "Device application, shutdown, preparation, verification, isolation, stored energy",
+     "Preparation, shutdown, isolation, device application, control of stored energy, verification",
+     "Shutdown, verification, isolation, preparation, stored energy, device application"
+    ],
+    "correct": 2,
+    "explain": "1910.147(d) sets out preparation for shutdown, machine or equipment shutdown, isolation, lockout/tagout device application, control of stored or residual energy, and verification of isolation, in that order."
+   },
+   {
+    "q": "Under 1910.333(b)(2)(iv), who must verify that equipment cannot be restarted and test for de-energization?",
+    "opts": [
+     "Any employee in the work area",
+     "The OSHA compliance officer",
+     "A qualified person",
+     "The equipment manufacturer's sales representative"
+    ],
+    "correct": 2,
+    "explain": "A qualified person must operate the equipment operating controls or otherwise verify it cannot be restarted, and must use test equipment to verify the circuit elements and parts are de-energized."
+   },
+   {
+    "q": "The test for de-energization under 1910.333(b)(2)(iv) must also determine whether any energized condition exists because of:",
+    "opts": [
+     "Only the position of the disconnect handle",
+     "Weather conditions at the site",
+     "Inadvertently induced voltage or unrelated voltage backfeed",
+     "The age of the circuit breaker"
+    ],
+    "correct": 2,
+    "explain": "The test must determine if any energized condition exists as a result of inadvertently induced voltage or unrelated voltage backfeed, even though specific parts of the circuit have been de-energized and presumed safe."
+   },
+   {
+    "q": "A control circuit device such as a push button, selector switch or interlock may be used as:",
+    "opts": [
+     "The sole means of de-energizing if the switch is labeled",
+     "A substitute for lockout if the interlock is tested monthly",
+     "Not the sole means of de-energizing circuits or equipment, and not a substitute for lockout and tagging procedures",
+     "A valid isolating device under all conditions"
+    ],
+    "correct": 2,
+    "explain": "Under 1910.333(b)(2)(ii), control circuit devices such as push buttons, selector switches and interlocks may not be used as the sole means for de-energizing circuits or equipment, and interlocks are not a substitute for lockout and tagging."
+   },
+   {
+    "q": "Under group lockout (1910.147(f)(3)), what must each authorized employee do?",
+    "opts": [
+     "Rely on the group leader's lock alone",
+     "Remove all locks at the end of the shift regardless of who applied them",
+     "Leave the group device unlocked until the job is complete",
+     "Affix a personal lockout or tagout device to the group lockout device, lockbox or comparable mechanism when beginning work"
+    ],
+    "correct": 3,
+    "explain": "Each authorized employee affixes a personal lockout or tagout device to the group mechanism when beginning work and removes it when he or she stops working on the equipment."
+   },
+   {
+    "q": "Under 1910.333(b)(2)(v), which action must come last in the sequence before circuits or equipment are re-energized?",
+    "opts": [
+     "A test of tools to verify jumpers and grounds have been removed",
+     "A warning to exposed employees to stay clear",
+     "A decision about whether to apply new tags",
+     "A visual determination that all employees are clear of the circuits and equipment"
+    ],
+    "correct": 3,
+    "explain": "The sequence is: tests and visual inspections by a qualified person that tools, jumpers, shorts and grounds are removed; warn exposed employees; remove locks and tags properly; and then visually determine that all employees are clear."
+   },
+   {
+    "q": "Who is generally permitted to remove a lock or tag under 1910.333(b)(2)(v)?",
+    "opts": [
+     "Any employee who needs the equipment to run",
+     "The first supervisor to arrive on the next shift",
+     "Any employee with a bolt cutter",
+     "The employee who applied it or someone under that employee's direct supervision, with a narrow exception when that employee is absent"
+    ],
+    "correct": 3,
+    "explain": "Each lock and tag is removed by the employee who applied it or under direct supervision. If that employee is absent, a designated qualified person may remove it only if the employer ensures the applying employee is unavailable and that he or she knows of the removal before resuming work."
+   },
+   {
+    "q": "After a circuit breaker trips on a feeder, a worker wants to reset it repeatedly until it holds. What does 1910.334(b)(2) say?",
+    "opts": [
+     "Reclose it three times before investigating",
+     "Reclose it only if no one is within 10 feet of the panel",
+     "Reclosing is encouraged to locate the fault",
+     "Repetitive manual reclosing is prohibited; the circuit and equipment must be determined safe to energize before re-energizing"
+    ],
+    "correct": 3,
+    "explain": "1910.334(b)(2) prohibits repetitive manual reclosing of circuit breakers and re-energizing circuits through replaced fuses. The circuit may not be manually re-energized until it has been determined that the equipment and circuit can be safely energized."
+   }
+  ]
+ },
+ {
+  "title": "Working Near Energized Equipment and Power Lines",
+  "time": "60 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "The de-energize-first rule and its limited exceptions",
+   "Qualified and unqualified persons near exposed live parts",
+   "Alerting techniques, guarding, illumination and work-space practices",
+   "Overhead power lines: identifying, avoiding and de-energizing",
+   "Response to equipment contact with power lines and underground utilities",
+   "Ground-fault circuit interrupters and the assured equipment grounding conductor program",
+   "Cords, portable tools, wet and conductive locations, and ladders",
+   "Temporary power on job sites"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "Energized Work: De-Energize First",
+    "video": {
+     "title": "Supplementary video: working near energized equipment",
+     "dur": "3–5 min"
+    },
+    "body": "The core rule of OSHA's general industry electrical work practices is in 1910.333(a)(1): live parts to which an employee may be exposed must be de-energized before the employee works on or near them, unless the employer can demonstrate that de-energizing introduces additional or increased hazards or is infeasible because of equipment design or operational limitations.",
+    "def_grid": [
+     {
+      "term": "Increased or additional hazards",
+      "body": "OSHA's examples include interruption of life support equipment, deactivation of emergency alarm systems, shutdown of hazardous location ventilation equipment, or removal of illumination for an area."
+     },
+     {
+      "term": "Infeasibility",
+      "body": "OSHA's examples include testing of electric circuits that can only be performed with the circuit energized, and work on circuits that form an integral part of a continuous industrial process that would otherwise need to be completely shut down."
+     },
+     {
+      "term": "Low-voltage exception",
+      "body": "Live parts that operate at less than 50 volts to ground need not be de-energized if there will be no increased exposure to electrical burns or to explosion due to electric arcs."
+     },
+     {
+      "term": "Who may do energized work",
+      "body": "Only qualified persons may work on electric circuit parts or equipment that have not been de-energized under the lockout and tagging procedures. They must be capable of working safely on energized circuits and familiar with the proper use of special precautionary techniques, PPE, insulating and shielding materials, and insulated tools."
+     }
+    ],
+    "keypoint": "Convenience, schedule pressure and cost are not exceptions. If a circuit can be de-energized, locked out and verified, that is the OSHA default. Energized work needs a documented reason and qualified people.",
+    "info": "The video is supplementary. Knowledge-check questions are based on the written lesson content. Construction employers should also review 1926.416 and 1926.417, which address work near energized parts and lockout and tagging of circuits in construction.",
+    "refs": [
+     "29 CFR 1910.333(a)",
+     "29 CFR 1910.333(c)",
+     "29 CFR 1926.416",
+     "29 CFR 1926.417"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Qualified and Unqualified Persons Near Live Parts",
+    "body": "Work near exposed energized parts is a matter of who is allowed there and what protections surround them. Unqualified persons rely on distance, guarding and warning devices. Qualified persons rely on training, procedures, insulated tools and protective equipment.",
+    "table": {
+     "h": [
+      "Protective measure",
+      "What OSHA requires (summary)"
+     ],
+     "r": [
+      [
+       "Safety signs and tags (1910.335(b))",
+       "Used where necessary to warn employees about electrical hazards that may endanger them."
+      ],
+      [
+       "Barricades",
+       "Used in conjunction with signs where it is necessary to prevent or limit access to work areas exposing employees to uninsulated energized conductors or circuit parts. Conductive barricades may not be used where they might cause an electrical contact hazard."
+      ],
+      [
+       "Attendants",
+       "If signs and barricades do not provide the necessary protection on or adjacent to electrical equipment or lines, an attendant must be stationed to warn and protect employees."
+      ],
+      [
+       "Guarding (1910.335(a)(2))",
+       "Protective shields, barriers or insulating materials must protect employees working near exposed energized parts that might be accidentally contacted or where dangerous electric heating or arcing might occur. When normally enclosed live parts are exposed for maintenance or repair, they must be guarded to protect unqualified persons from contact."
+      ],
+      [
+       "Illumination (1910.333(c))",
+       "Employees may not enter spaces containing exposed energized parts unless illumination enables them to perform the work safely, and may not reach blindly into areas that may contain energized parts."
+      ],
+      [
+       "Confined or enclosed spaces (1910.333(c))",
+       "Protective shields, barriers or insulating materials must be used as necessary to avoid inadvertent contact with exposed energized parts, and doors and hinged panels must be secured so they cannot swing into an employee and cause contact."
+      ],
+      [
+       "Conductive apparel (1910.333(c))",
+       "Conductive articles of jewelry and clothing, such as watch bands, bracelets, rings, key chains, necklaces, metalized aprons, cloth with conductive thread or metal headgear, may not be worn if they might contact exposed energized parts, unless rendered nonconductive."
+      ]
+     ]
+    },
+    "keypoint": "Use insulated tools and handling equipment when working near exposed energized conductors or circuit parts if the tool might make contact. Fuse handling equipment insulated for the circuit voltage must be used to remove or install fuses when the fuse terminals are energized.",
+    "refs": [
+     "29 CFR 1910.333(c)",
+     "29 CFR 1910.335(a)",
+     "29 CFR 1910.335(b)"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "Overhead Power Lines: Identify, Avoid, De-energize",
+    "body": "Contact with overhead power lines is a leading cause of electrical fatalities. In construction, 1926.416(a)(1) provides that no employer may permit an employee to work so close to any part of an electric power circuit that the employee could contact it in the course of work, unless the employee is protected against shock by de-energizing and grounding the circuit or by guarding it effectively by insulation or other means.",
+    "bullets": [
+     "Before work begins, 1926.416(a)(2) requires the employer to ascertain, by inquiry, direct observation or instruments, whether any part of an energized power circuit, exposed or concealed, is located so that the work may bring any person, tool or machine into physical or electrical contact with it.",
+     "The employer must advise employees of the location of such lines, the hazards involved and the protective measures to be taken (1926.416(a)(3)).",
+     "Under 1910.333(c)(3), if work is to be performed near overhead lines, the lines must be de-energized and grounded, or other protective measures must be provided before work starts. If lines are to be de-energized, arrangements are made with the person or organization that operates or controls the circuits.",
+     "Under 1910.333(c)(3), an unqualified person working in an elevated position near unguarded, energized overhead lines must be located so that neither the person nor the longest conductive object they may contact can come closer than 10 feet for voltages to ground of 50 kV or below, plus 4 inches for every 10 kV over 50 kV. An unqualified person working on the ground may not bring any conductive object closer than those distances.",
+     "Different, more detailed rules apply to qualified line workers (1910.269 and 1926 Subpart V) and to cranes, derricks and similar equipment in construction (1926 Subpart CC). Consult those standards and the line owner instead of applying the general distance."
+    ],
+    "warning": "Treat overhead lines as energized and uninsulated unless the line owner or operator has confirmed they are de-energized and grounded at the work site. Wind, sag, and the swing or sway of equipment, ladders and materials can reduce the clearance you planned. Use a spotter when moving equipment or long objects near lines.",
+    "refs": [
+     "29 CFR 1926.416(a)",
+     "29 CFR 1910.333(c)(3)",
+     "29 CFR 1910.269",
+     "29 CFR 1926 Subpart V",
+     "29 CFR 1926 Subpart CC"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "If Equipment Contacts a Power Line, and Underground Utilities",
+    "body": "A line contact is an emergency. The goal is to prevent anyone from becoming the path to ground. Training workers on these steps before a contact occurs is essential.",
+    "step_list": [
+     "Stay inside the vehicle or equipment cab if you can. The cab is usually the safest place unless there is fire or an imminent hazard.",
+     "Warn others to stay away. Energized ground and equipment can electrocute anyone who touches the equipment or steps near it.",
+     "Call the utility and emergency services. Do not approach until the utility confirms the line is de-energized.",
+     "If you must leave because of fire or another immediate danger, jump clear so you do not touch the equipment and the ground at the same time. Land with feet together, then shuffle or hop away, keeping your feet together and close to the ground, rather than taking normal strides.",
+     "Do not return to the equipment, and do not attempt to move the equipment off the line, until the utility has cleared the scene."
+    ],
+    "bullets": [
+     "Step potential: current entering the ground from a fallen or contacting conductor spreads outward, creating different voltages between points on the ground. A person taking long strides can bridge a voltage difference.",
+     "Underground utilities: in construction excavation, 1926.651(b) requires that the estimated location of utility installations that may be encountered be determined before opening an excavation. Request locates through 811 before digging, then verify and protect marked lines.",
+     "Do not assume a buried conduit or cable is de-energized or abandoned until the owner confirms it."
+    ],
+    "refs": [
+     "29 CFR 1926.651(b)",
+     "29 CFR 1926.416(a)"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "GFCIs and the Assured Equipment Grounding Conductor Program",
+    "body": "Ground-fault circuit interrupters (GFCIs) are personnel-protection devices. They continuously compare the current flowing out on the hot conductor with the current returning on the neutral. If the difference shows that current is leaking to ground, such as through a person, the device opens the circuit quickly. A GFCI designed for personnel protection is designed to trip when the ground-fault current is about 5 milliamperes (the trip threshold lies in a range of roughly 4 to 6 milliamperes).",
+    "table": {
+     "h": [
+      "Topic",
+      "Key points"
+     ],
+     "r": [
+      [
+       "What a GFCI does",
+       "Detects ground-fault leakage and opens the circuit. It does not limit overcurrent; you still need circuit breakers or fuses."
+      ],
+      [
+       "What a GFCI does not do",
+       "It does not protect a person who contacts the hot and neutral conductors on the load side at the same time, because no current is leaking to ground and the GFCI sees no imbalance. It does not replace safe work practices."
+      ],
+      [
+       "Construction temporary power (1926.404(b)(1))",
+       "All 120-volt, single-phase, 15- and 20-ampere receptacle outlets on construction sites that are not part of the permanent wiring of the building or structure and are in use by employees must have approved GFCIs for personnel protection."
+      ],
+      [
+       "Generator exception",
+       "Receptacles on a two-wire, single-phase portable or vehicle-mounted generator rated not more than 5 kW, where the circuit conductors of the generator are insulated from the generator frame and all other grounded surfaces, need not have GFCI protection."
+      ],
+      [
+       "Assured equipment grounding conductor program (AEGCP)",
+       "The employer establishes and implements a program covering cord sets, receptacles that are not part of the building or structure, and cord- and plug-connected equipment available for use or used by employees."
+      ],
+      [
+       "Required AEGCP elements",
+       "A written description available at the job site; one or more designated competent persons; visual inspection of cord sets, plugs, receptacles and cord- and plug-connected equipment before each day's use (except fixed items not exposed to damage); required continuity and receptacle tests at the intervals specified in the standard, including before first use and after repair or suspected damage; and records of the tests."
+      ]
+     ]
+    },
+    "warning": "A GFCI that fails its test, or that does not trip when the test button is pressed, must be removed from service. Use the manufacturer's test instructions. A GFCI is not a substitute for equipment grounding, insulation, and de-energizing.",
+    "refs": [
+     "29 CFR 1926.404(b)(1)",
+     "29 CFR 1910.304(b)"
+    ]
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Cords, Cord- and Plug-Connected Tools and Portable Equipment",
+    "body": "Damaged cords and tools are among the most common sources of electric shock on job sites. Both Subpart S and Subpart K contain specific, practical requirements.",
+    "bullets": [
+     "Handle portable equipment so as not to damage it. Flexible cords may not be used to raise or lower equipment, and may not be fastened with staples or hung in a way that could damage the outer jacket or insulation (1910.334(a)(1)). In construction, extension cords may not be fastened with staples, hung from nails or suspended by wire (1926.416(e)(2)).",
+     "Inspect before use. Portable cord- and plug-connected equipment and flexible cord sets must be visually inspected before use on any shift for external defects (such as loose parts, deformed or missing pins, or damage to the outer jacket or insulation) and for evidence of possible internal damage such as a pinched or crushed jacket (1910.334(a)(2)).",
+     "Remove defective items from service. If there is a defect or evidence of damage that might expose an employee to injury, the item must be removed from service and not used until repairs and tests necessary to render it safe have been made (1910.334(a)(2)). Worn or frayed cords and cables may not be used in construction (1926.416(e)(1)).",
+     "Keep the grounding path intact. A flexible cord used with grounding-type utilization equipment must contain an equipment grounding conductor. Attachment plugs and receptacles may not be connected or altered in a manner that would interrupt the continuity of the equipment grounding circuit, and adapters that interrupt that continuity may not be used (1910.334(a)(3)).",
+     "Connections. Employees' hands may not be wet when plugging or unplugging flexible cords and cord- and plug-connected equipment if energized equipment is involved (1910.334(a)(5)).",
+     "Use cords suited to the conditions. Flexible cords used with temporary and portable lights in construction must be designed for hard or extra-hard usage (1926.405(a)(2)(ii)). Protect cords from accidental damage, including pinch points such as doorways, vehicle traffic and sharp edges."
+    ],
+    "keypoint": "A tool with a missing grounding prong, a taped cord, or a cracked housing is not a tool you can repair on the job with tape. Tag it, remove it from service, and have it repaired and tested.",
+    "refs": [
+     "29 CFR 1910.334(a)",
+     "29 CFR 1926.416(e)",
+     "29 CFR 1926.405(a)(2)"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Wet and Conductive Locations, and Ladders Near Electrical Hazards",
+    "body": "Water lowers the resistance of the body and creates conductive paths. Wet, damp and conductive locations raise both the likelihood and the severity of shock, and they call for equipment and practices suited to the environment.",
+    "bullets": [
+     "Portable electric equipment and flexible cords used in highly conductive work locations (such as those inundated with water or other conductive liquids), or in job locations where employees are likely to contact water or conductive liquids, must be approved for those locations (1910.334(a)).",
+     "Portable electric lighting used in wet or other conductive locations, such as drums, tanks and vessels, must be operated at 12 volts or less in construction. However, 120-volt lights may be used if they are protected by a GFCI (1926.405(a)(2)(ii)).",
+     "If a plug or receptacle connection could provide a conductive path to the hand (for example, a cord connector wet from being immersed), energized plug and receptacle connections may be handled only with insulating protective equipment (1910.334(a)(5)). Locking-type connectors must be secured after connection.",
+     "Keep connections out of standing water, use GFCI protection where required, and do not work on energized equipment in wet conditions unless the procedures, equipment and qualified personnel needed for that exposure are in place.",
+     "Portable ladders used where the employee or the ladder could contact exposed energized parts must have nonconductive siderails (1910.333(c)(7)). The construction ladder standard (1926.1053) likewise restricts the use of portable metal ladders where they could contact electrical conductors. Wood and fiberglass ladders are common nonconductive choices, but a wet, dirty or damaged ladder can conduct, so keep nonconductive ladders clean, dry and in good condition.",
+     "Carrying long conductive objects such as aluminum conduit, pipe, tape measures with metal blades, or tools overhead near live parts adds contact hazards, as does reaching blindly into spaces that may contain energized parts."
+    ],
+    "warning": "Ladder placement matters: set up so that neither you nor the ladder, even if it falls or slides, can reach overhead lines or exposed energized parts. A fiberglass ladder does not make it safe to work within reach of exposed energized parts unless you are qualified and following the energized-work procedures.",
+    "refs": [
+     "29 CFR 1910.333(c)(7)",
+     "29 CFR 1910.334(a)",
+     "29 CFR 1926.405(a)(2)",
+     "29 CFR 1926.1053"
+    ]
+   },
+   {
+    "tag": "M3·S8",
+    "title": "Temporary Power on Job Sites",
+    "body": "Temporary power is often assembled quickly, moved frequently and exposed to weather, traffic and rough use, which is why it is a recurring source of citations and injuries. Subpart K of Part 1926 contains the electrical requirements for construction, including temporary wiring.",
+    "step_list": [
+     "<strong>Plan the distribution.</strong> Identify sources, loads, and routes before building the temporary system, and keep the layout clear of vehicle and foot traffic where possible.",
+     "<strong>Provide required protection.</strong> Use GFCIs on temporary 120-volt, single-phase, 15- and 20-ampere receptacle outlets in use by employees, and implement the assured equipment grounding conductor program for cord sets, receptacles that are not part of the building and cord- and plug-connected equipment.",
+     "<strong>Choose suitable equipment.</strong> Use cords and equipment rated for hard usage and for the environment (wet, outdoor, abrasion). Keep enclosures closed and covers in place.",
+     "<strong>Protect lights and cords.</strong> Temporary lights may not be suspended by their electric cords unless the cords and lights are designed for that means of suspension. Lamps for general illumination must be protected from accidental contact or breakage.",
+     "<strong>Control generators.</strong> Do not connect a portable generator to building wiring except through properly installed transfer equipment that isolates the building from the utility. Backfeed can energize utility lines and endanger line workers and others. Operate generators outdoors, away from openings, to avoid carbon monoxide.",
+     "<strong>Inspect and maintain.</strong> Inspect temporary systems regularly, remove damaged items immediately, and do not allow other trades to modify them without authorization."
+    ],
+    "keypoint": "Temporary does not mean casual. OSHA's construction electrical requirements apply to temporary installations just as they do to permanent ones, and temporary systems are subject to the same lockout, tagging and verification practices when you work on them.",
+    "refs": [
+     "29 CFR 1926 Subpart K",
+     "29 CFR 1926.404(b)",
+     "29 CFR 1926.405(a)(2)"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which of the following is an example given by OSHA of de-energizing introducing an additional or increased hazard?",
+    "opts": [
+     "Working in a space that is cold",
+     "Rescheduling work to the next day",
+     "Interruption of life support equipment",
+     "A supervisor preferring to avoid a shutdown"
+    ],
+    "correct": 2,
+    "explain": "OSHA's examples of increased or additional hazards include interruption of life support equipment, deactivation of emergency alarm systems, shutdown of hazardous location ventilation equipment, and removal of illumination for an area. Convenience or schedule is not an exception."
+   },
+   {
+    "q": "Under 1910.333(c), who may work on electric circuit parts or equipment that have not been de-energized under the lockout and tagging procedures?",
+    "opts": [
+     "Any employee with a hard hat and gloves",
+     "Only qualified persons",
+     "Any employee supervised by an apprentice",
+     "Any person with a valid driver's license"
+    ],
+    "correct": 1,
+    "explain": "Only qualified persons may work on electric circuit parts or equipment that have not been de-energized under the lockout and tagging procedures, and they must be capable of working safely on energized circuits and familiar with the special precautionary techniques, PPE, insulating materials and insulated tools."
+   },
+   {
+    "q": "If signs and barricades do not provide necessary protection on or adjacent to electrical equipment or lines, OSHA requires:",
+    "opts": [
+     "An attendant to be stationed to warn and protect employees",
+     "The area to be left unmarked",
+     "A second sign to be added only",
+     "The equipment to be painted a bright color"
+    ],
+    "correct": 0,
+    "explain": "1910.335(b) provides that if signs and barricades do not provide the necessary protection, an attendant must be stationed to warn and protect employees."
+   },
+   {
+    "q": "Under 1910.333(c)(3), an unqualified person working near unguarded, energized overhead lines of 50 kV or below must keep themselves and the longest conductive object they may contact at least:",
+    "opts": [
+     "10 feet away",
+     "3 feet away",
+     "25 feet away",
+     "1 foot away"
+    ],
+    "correct": 0,
+    "explain": "For voltages to ground of 50 kV or below, the standard's distance for unqualified persons is 10 feet. For higher voltages the distance increases. Qualified line workers and crane operations follow other, more detailed standards."
+   },
+   {
+    "q": "For unguarded energized overhead lines over 50 kV, the distance for unqualified persons in 1910.333(c)(3) is:",
+    "opts": [
+     "10 feet regardless of voltage",
+     "10 feet plus 4 inches for every 10 kV over 50 kV",
+     "The same distance as for 50 kV or less, divided by two",
+     "Whatever distance the foreman chooses"
+    ],
+    "correct": 1,
+    "explain": "For voltages over 50 kV the minimum distance is 10 feet plus 4 inches for every 10 kV over 50 kV. This general rule does not replace the specific requirements for line workers and for cranes and derricks in construction."
+   },
+   {
+    "q": "Before work begins in construction, 1926.416(a)(2) requires the employer to:",
+    "opts": [
+     "Assume no energized circuits exist near the site",
+     "Ask the lowest-paid employee to look for lines",
+     "Ascertain by inquiry, direct observation or instruments whether any part of an energized power circuit is located where the work may result in contact",
+     "Wait until a contact occurs and then call the utility"
+    ],
+    "correct": 2,
+    "explain": "1926.416(a)(2) requires the employer to ascertain, by inquiry, direct observation or instruments, whether any part of an energized electric power circuit, exposed or concealed, is located so that work may bring a person, tool or machine into contact."
+   },
+   {
+    "q": "A boom truck contacts an overhead line, and nobody is in danger from fire. What is the safest action for the operator?",
+    "opts": [
+     "Stay in the cab, warn others to stay away, and wait for the utility to confirm the line is de-energized",
+     "Climb out and inspect the damage immediately",
+     "Step out and touch the truck to check whether it is energized",
+     "Order a coworker to pull the boom away by hand"
+    ],
+    "correct": 0,
+    "explain": "The operator should stay in the cab, warn others to keep away and have the utility de-energize the line. Anyone touching the equipment and the ground at the same time can become the path for current."
+   },
+   {
+    "q": "If an operator must leave equipment that contacted a power line because of a fire, how should they exit?",
+    "opts": [
+     "Climb down while holding the handrail",
+     "Step out and walk away with long strides",
+     "Run toward the fence line",
+     "Jump clear without touching the equipment and ground at the same time, land with feet together, and shuffle or hop away"
+    ],
+    "correct": 3,
+    "explain": "The operator should jump clear so that no part of the body touches the equipment and the ground at once, land with feet together and shuffle or hop away to limit the voltage difference between feet (step potential)."
+   },
+   {
+    "q": "A GFCI designed for personnel protection is designed to trip when the ground-fault current is about:",
+    "opts": [
+     "500 milliamperes",
+     "15 amperes",
+     "100 amperes",
+     "5 milliamperes (within a range of about 4 to 6 milliamperes)"
+    ],
+    "correct": 3,
+    "explain": "Personnel-protection GFCIs trip at ground-fault current in the range of about 4 to 6 milliamperes. They are not overcurrent devices, so breakers or fuses are still required."
+   },
+   {
+    "q": "A worker standing on dry ground touches both the hot and neutral conductors on the load side of a GFCI. What is true?",
+    "opts": [
+     "The GFCI will always trip faster than a breaker",
+     "The GFCI will always prevent injury",
+     "The GFCI may not trip, because current flowing from hot to neutral through the person is not a ground-fault imbalance",
+     "The GFCI cannot be used in that circuit"
+    ],
+    "correct": 2,
+    "explain": "A GFCI detects current leaking to ground. If current flows from hot to neutral through a person without leaking to ground, the device sees no imbalance and may not trip. GFCIs reduce shock risk, but they do not replace safe work practices."
+   },
+   {
+    "q": "On a construction site, which receptacle outlets must have GFCI protection for personnel under 1926.404(b)(1)?",
+    "opts": [
+     "Only outlets located above the second floor",
+     "Only outlets used for lighting",
+     "Only outlets on circuits above 480 volts",
+     "120-volt, single-phase, 15- and 20-ampere outlets that are not part of the permanent wiring and are in use by employees"
+    ],
+    "correct": 3,
+    "explain": "1926.404(b)(1) requires approved GFCIs on all 120-volt, single-phase 15- and 20-ampere receptacle outlets on construction sites that are not part of the permanent wiring of the building or structure and are in use by employees."
+   },
+   {
+    "q": "Which is a required element of the assured equipment grounding conductor program under 1926.404(b)(1)?",
+    "opts": [
+     "Annual replacement of every extension cord",
+     "A written program description and one or more designated competent persons to implement the program",
+     "A requirement that all tools be battery-powered",
+     "Approval of the program by the local utility"
+    ],
+    "correct": 1,
+    "explain": "The program must be described in writing and available at the job site, and the employer must designate one or more competent persons to implement it. It also requires inspections, testing and records."
+   },
+   {
+    "q": "Under the assured equipment grounding conductor program, cord sets and equipment connected by cord and plug must be visually inspected:",
+    "opts": [
+     "Only once at purchase",
+     "Before each day's use (except items that are fixed and not exposed to damage)",
+     "Only after an injury",
+     "Once per calendar year"
+    ],
+    "correct": 1,
+    "explain": "The standard requires visual inspection for external defects before each day's use, with an exception for cord sets and receptacles that are fixed and not exposed to damage. Required tests are performed at specified times and intervals."
+   },
+   {
+    "q": "A portable cord-and-plug tool has a pinched, crushed outer jacket on its cord. What does 1910.334(a)(2) require?",
+    "opts": [
+     "Wrap the damaged area with tape and continue using it",
+     "Use it only for outdoor work",
+     "Remove the item from service and do not use it until repairs and tests necessary to make it safe have been made",
+     "Use it only if the housing is dry"
+    ],
+    "correct": 2,
+    "explain": "If there is a defect or evidence of damage that might expose an employee to injury, the item must be removed from service. It cannot be used until repairs and tests necessary to render it safe have been made."
+   },
+   {
+    "q": "Under 1910.334(a)(3), adapters that interrupt the continuity of the equipment grounding connection:",
+    "opts": [
+     "May be used if the tool is double insulated and the worker is dry",
+     "May not be used",
+     "May be used if the cord is under 25 feet long",
+     "May be used when plugging into a two-slot outlet"
+    ],
+    "correct": 1,
+    "explain": "Attachment plugs and receptacles may not be connected or altered in a manner that would interrupt the continuity of the equipment grounding circuit, and adapters that interrupt that continuity may not be used."
+   },
+   {
+    "q": "Under the construction standards, temporary lights:",
+    "opts": [
+     "May always be hung by their cords for convenience",
+     "May be suspended by their cords if the cord is taped",
+     "May be hung by the cord only outdoors",
+     "May not be suspended by their electric cords unless the cords and lights are designed for this means of suspension"
+    ],
+    "correct": 3,
+    "explain": "1926.405(a)(2)(ii) provides that temporary lights may not be suspended by their electric cords unless the cords and lights are designed for suspension."
+   },
+   {
+    "q": "Under 1910.333(c)(7), portable ladders used where the employee or ladder could contact exposed energized parts must have:",
+    "opts": [
+     "Nonconductive siderails",
+     "Metal siderails for strength",
+     "Rubber feet only",
+     "A bright color"
+    ],
+    "correct": 0,
+    "explain": "Portable ladders must have nonconductive siderails if they are used where the employee or the ladder could contact exposed energized parts."
+   },
+   {
+    "q": "Portable electric lighting used in wet or other conductive locations in construction, such as inside a tank, must operate at:",
+    "opts": [
+     "12 volts or less, or 120 volts if protected by a GFCI",
+     "240 volts if the cord is yellow",
+     "277 volts with a double-pole breaker",
+     "Any voltage if the worker wears boots"
+    ],
+    "correct": 0,
+    "explain": "1926.405(a)(2)(ii) requires such lighting to be operated at 12 volts or less, though 120-volt lights may be used if protected by a ground-fault circuit interrupter."
+   }
+  ]
+ },
+ {
+  "title": "Incident Prevention, PPE, Emergency Response and Final Exam",
+  "time": "55 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "Hierarchy of controls and job planning",
+   "PPE basics for electrical work: hazard assessment, head, eye, foot and hand protection",
+   "Rubber insulating equipment and insulated tools",
+   "Fall protection and ladder safety for electricians",
+   "Emergency response for electric shock victims",
+   "Electrical fires, arc flash events, reporting and investigation",
+   "Field scenarios",
+   "Final exam preparation (the final exam covers all four modules)"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "Preventing Incidents: Hierarchy of Controls and Job Planning",
+    "body": "Most electrical incidents are preventable. The most reliable protection comes from removing the hazard, not from relying on a person to behave perfectly around it. Safety professionals describe this as the hierarchy of controls. OSHA's electrical standards follow the same logic: de-energize first, then use protective measures for work that must be done near energized parts.",
+    "hierarchy": [
+     {
+      "n": 1,
+      "title": "Elimination",
+      "sub": "Remove the hazard. For electrical work, de-energize, lock out and verify.",
+      "bg": "#F0FDF4",
+      "bc": "#16A34A",
+      "tc": "#14532D"
+     },
+     {
+      "n": 2,
+      "title": "Substitution",
+      "sub": "Replace the hazard with a lesser one, such as using low-voltage or battery tools where practical.",
+      "bg": "#EFF6FF",
+      "bc": "#2563EB",
+      "tc": "#1E40AF"
+     },
+     {
+      "n": 3,
+      "title": "Engineering controls",
+      "sub": "Isolate people from the hazard: guarding, barriers, insulation, GFCIs, interlocks and enclosures.",
+      "bg": "#F0F9FF",
+      "bc": "#0369A1",
+      "tc": "#0C4A6E"
+     },
+     {
+      "n": 4,
+      "title": "Administrative controls",
+      "sub": "Change how people work: procedures, training, job briefings, signs, barricades and work authorization.",
+      "bg": "#FFF7ED",
+      "bc": "#C2410C",
+      "tc": "#431407"
+     },
+     {
+      "n": 5,
+      "title": "Personal protective equipment",
+      "sub": "The last line of defense. PPE does not remove the hazard; it limits injury if the other controls fail.",
+      "bg": "#FEF2F2",
+      "bc": "#DC2626",
+      "tc": "#450A0A"
+     }
+    ],
+    "bullets": [
+     "Plan the job: identify the work, the energy sources, the voltage and the environment. Walk the job and look at the equipment, not just the drawings.",
+     "Hold a job briefing before starting and whenever conditions or the scope change. Cover hazards, the lockout plan, who is qualified for what, emergency contacts and what to do if something goes wrong.",
+     "Establish who has authority to stop the job and make clear that anyone may stop work to ask a question.",
+     "In construction, 1926.20(b) requires programs that provide for frequent and regular inspections of job sites, materials and equipment by competent persons designated by the employer.",
+     "Report near misses. A tripped breaker, an unexpected shock, or a tool that arced is information that can prevent a worse event."
+    ],
+    "keypoint": "If your first question is 'what PPE do I wear?', you may be skipping the more effective controls. Ask first: can this be de-energized, locked out and verified?",
+    "refs": [
+     "29 CFR 1910.333(a)",
+     "29 CFR 1926.20(b)"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "PPE Basics for Electrical Work",
+    "body": "Under 1910.132, the employer must assess the workplace to determine whether hazards are present that necessitate the use of PPE. If so, the employer selects appropriate PPE, communicates the selection to affected employees, and ensures the PPE fits properly. The employer must verify the assessment through a written certification that identifies the workplace evaluated, the person certifying and the date of the assessment. Employees must be trained in when PPE is necessary, what PPE is necessary, how to put it on, take it off, adjust and wear it, its limitations, and its care, maintenance, useful life and disposal.",
+    "table": {
+     "h": [
+      "PPE type",
+      "OSHA reference",
+      "Key points for electrical work"
+     ],
+     "r": [
+      [
+       "Head protection",
+       "1910.135; 1926.100",
+       "Where employees are exposed to electrical hazards, head protection designed to reduce electrical shock hazard is required. Under the ANSI Z89.1 helmet classes, Class E (electrical) is proof-tested at 20,000 volts, Class G (general) at 2,200 volts, and Class C (conductive) provides no electrical protection."
+      ],
+      [
+       "Eye and face protection",
+       "1910.133; 1926.102",
+       "Protect against flying particles, molten metal, and light radiation. Select based on the hazard assessment."
+      ],
+      [
+       "Foot protection",
+       "1910.136; 1926.96",
+       "Protective footwear is required where feet are exposed to electrical hazards, and where there are impact or compression hazards. Electrical-hazard footwear provides secondary protection; it is not a substitute for de-energizing."
+      ],
+      [
+       "Hand protection",
+       "1910.137 (electrical); 1910.138 (general)",
+       "Rubber insulating gloves with protectors are used for electrical hazards. General-purpose work gloves do not protect against shock."
+      ],
+      [
+       "Clothing",
+       "1910.132 hazard assessment; 1910.269(l) for power system work",
+       "Clothing that can melt onto skin or ignite adds to burn injury. The utility-worker standard (1910.269) has explicit arc-hazard provisions. For other electrical work, the PPE hazard assessment and the General Duty Clause are the usual OSHA bases, and employers commonly consult consensus standards such as NFPA 70E."
+      ]
+     ]
+    },
+    "keypoint": "The employer must generally pay for required PPE, with limited exceptions (1910.132(h)). PPE must be maintained in a sanitary and reliable condition and must be inspected before use.",
+    "warning": "PPE reduces injury; it does not make an unsafe task safe. Do not substitute PPE for de-energizing, guarding or insulated tools where those controls are feasible.",
+    "refs": [
+     "29 CFR 1910.132",
+     "29 CFR 1910.135",
+     "29 CFR 1910.136",
+     "29 CFR 1910.137",
+     "29 CFR 1926.100"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Rubber Insulating Equipment and Insulated Tools",
+    "body": "Rubber insulating gloves, sleeves, blankets and line hose are covered by 1910.137, and insulated tools are covered by 1910.335(a)(2). They are protective only when they are in good condition, matched to the voltage, and used as part of a complete method of work.",
+    "bullets": [
+     "Inspect before each use. Under 1910.137(c)(2), rubber insulating equipment must be inspected for damage before each day's use and immediately following any incident that can reasonably be suspected of causing damage. Insulating gloves must also be given an air test along with the inspection.",
+     "Wear protector gloves over insulating gloves. Protector gloves, usually leather, shield the rubber from cuts and punctures. The standard provides a limited exception for Class 0 gloves and for cases where small-parts manipulation needs unusually high finger dexterity.",
+     "Periodic electrical testing. Insulating equipment must be periodically tested at the intervals set out in 1910.137 and its tables. Equipment that fails an inspection or test must not be used.",
+     "Match equipment to the voltage. Use gloves and other insulating equipment with a class and rating appropriate for the voltage, and follow the manufacturer's use, storage and care instructions.",
+     "Insulated tools and handling equipment. When working near exposed energized conductors or circuit parts, each employee must use insulated tools or handling equipment if the tools might make contact with the conductors or parts. If the insulating capability of the tools is subject to damage, the insulating material must be protected.",
+     "Nonconductive ropes and handlines. Ropes and handlines used near exposed energized parts must be nonconductive.",
+     "Do not rely on damaged or modified items. Cracked insulation, exposed metal, or taped repairs mean the tool is no longer protective."
+    ],
+    "keypoint": "Insulating gloves are not a license to work on energized equipment. Energized work is permitted only for qualified persons under the conditions of 1910.333, with the right procedures, tools and protective equipment.",
+    "refs": [
+     "29 CFR 1910.137",
+     "29 CFR 1910.335(a)(2)"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Fall Protection and Ladder Safety for Electricians",
+    "body": "Electricians work on ladders, scaffolds, lifts, roofs and platforms. A shock that makes a worker flinch can cause a fall, and falls are among the most frequent causes of serious injury and death in construction. OSHA's fall protection and ladder standards apply alongside the electrical standards.",
+    "table": {
+     "h": [
+      "Setting",
+      "Trigger and key requirement"
+     ],
+     "r": [
+      [
+       "Construction: unprotected sides and edges",
+       "Fall protection is required at 6 feet or more above a lower level (1926.501(b)(1))."
+      ],
+      [
+       "General industry: unprotected sides and edges",
+       "Fall protection is required at 4 feet or more above a lower level (1910.28(b)(1))."
+      ],
+      [
+       "Scaffolds (construction)",
+       "Employees more than 10 feet above a lower level must be protected from falling (1926.451(g)(1))."
+      ],
+      [
+       "Personal fall arrest systems (construction)",
+       "Anchorage capable of supporting at least 5,000 pounds per employee attached, or designed by a qualified person with a safety factor of at least two; system rigged so the employee cannot free fall more than 6 feet or contact a lower level; the employer must provide for prompt rescue (1926.502(d))."
+      ],
+      [
+       "Aerial lifts",
+       "Employees must stand firmly on the floor of the basket and must not sit or climb on the edge or use planks or ladders as a work position. Use fall protection as required by 1926.453 or 1910.67."
+      ]
+     ]
+    },
+    "bullets": [
+     "Select the right ladder for the job, within its rated load, in good condition, and of a type that is nonconductive where there is any possibility of contacting energized parts.",
+     "Non-self-supporting ladders (such as extension and straight ladders) must be set at an angle such that the horizontal distance from the top support to the foot of the ladder is approximately one-quarter of the working length of the ladder (the 4-to-1 rule).",
+     "When a portable ladder is used to access an upper landing surface, the side rails must extend at least 3 feet above the landing, or the ladder must be secured and an alternative grab-rail provided.",
+     "The top or top step of a stepladder may not be used as a step. Do not stand on the top cap or the pail shelf.",
+     "Face the ladder when climbing or descending and keep three points of contact where practical. Do not carry anything that could cause you to lose your grip or balance; use a tool belt or hoist line.",
+     "Ladders with structural defects, such as broken or missing rungs, split rails or corroded components, must be marked or tagged 'Do Not Use' and withdrawn from service until repaired. A competent person inspects ladders for visible defects periodically and after any occurrence that could affect safe use.",
+     "Set the ladder on a firm, level surface, secure it against displacement, and keep a safe distance from energized parts and overhead lines."
+    ],
+    "refs": [
+     "29 CFR 1926.501",
+     "29 CFR 1910.28",
+     "29 CFR 1926.502",
+     "29 CFR 1926.1053",
+     "29 CFR 1910.23",
+     "29 CFR 1926.453"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "Emergency Response: Electric Shock Victims",
+    "video": {
+     "title": "Supplementary video: responding to electrical emergencies",
+     "dur": "3–5 min"
+    },
+    "body": "Every electrical worker and every crew should know, before the job starts, who will call for help, where the nearest AED and first aid supplies are, and how to de-energize equipment quickly. In an emergency, rescuers must not become second victims.",
+    "step_list": [
+     "<strong>Do not touch the victim if they may still be in contact with an energized source.</strong> The current can pass through the victim to you.",
+     "<strong>Remove the source of power if it can be done safely.</strong> Turn off the disconnect or breaker, or have the utility do so. Do not approach a victim who is in contact with a high-voltage line or fallen conductor; keep everyone away and wait for the utility.",
+     "<strong>Call 911 or your emergency number immediately,</strong> or have a bystander do it, and give the exact location and what has happened.",
+     "<strong>Check responsiveness and breathing once the scene is safe.</strong> If the person is unresponsive and not breathing normally, begin CPR and use an automated external defibrillator (AED) as soon as one is available, following your training.",
+     "<strong>Treat visible injuries.</strong> Cover burns with a clean, dry dressing, and do not move a person with a possible neck or back injury unless danger requires it. Keep the person warm and calm until help arrives.",
+     "<strong>Ensure medical evaluation for every shock victim,</strong> even if they feel fine. Internal injuries and heart rhythm problems can be delayed or hidden."
+    ],
+    "bullets": [
+     "General industry: 1910.151(b) requires that, in the absence of a nearby infirmary, clinic or hospital, a person or persons be adequately trained to render first aid, and that adequate first aid supplies be readily available.",
+     "Construction: 1926.50(c) requires that, in the absence of a reasonably accessible infirmary, clinic, hospital or physician, a person with a valid certificate in first-aid training be available at the worksite.",
+     "Post emergency numbers and provide a means of communication and prompt transport as required by 1926.50."
+    ],
+    "info": "The video is supplementary. Knowledge-check questions are based on the written lesson content. Learn CPR and AED use through a recognized, hands-on course; this lesson is not a substitute for that training.",
+    "refs": [
+     "29 CFR 1910.151(b)",
+     "29 CFR 1926.50"
+    ]
+   },
+   {
+    "tag": "M4·S6",
+    "title": "Electrical Fires, Arc Flash Events, Reporting and Investigation",
+    "body": "Electrical fires and arc flash events happen suddenly, and the response in the first minutes matters. After the emergency is over, reporting and investigation matter just as much, because they prevent repetition.",
+    "def_grid": [
+     {
+      "term": "Electrical fires",
+      "body": "Fires involving energized electrical equipment are Class C fires. If it is safe to do so, de-energize the equipment. Use an extinguisher rated for the fire and the electrical hazard, and never use water on energized equipment. Only employees trained to use extinguishers should fight fires; others should evacuate and alert emergency responders."
+     },
+     {
+      "term": "Evacuation and alarm",
+      "body": "Follow your employer's emergency action plan (1910.38), including the alarm, evacuation routes and accounting for employees. Do not re-enter until emergency responders say it is safe."
+     },
+     {
+      "term": "After an arc flash or blast",
+      "body": "Call for emergency help, de-energize the equipment if you can do so safely, and treat burn injuries. Anyone exposed to an arc blast should receive medical evaluation even if they feel fine, because of the pressure wave, noise, and inhalation hazards."
+     },
+     {
+      "term": "Do not re-energize prematurely",
+      "body": "After a fault or trip, determine why before re-energizing. Repetitive manual reclosing of breakers and re-energizing through replaced fuses is prohibited (1910.334(b)(2)). Have equipment inspected and repaired as required before it returns to service."
+     },
+     {
+      "term": "Reporting to OSHA (1904.39)",
+      "body": "Report a work-related fatality within 8 hours, and a work-related in-patient hospitalization, amputation or loss of an eye within 24 hours. Record the case on the OSHA 300 log if it meets the recording criteria."
+     },
+     {
+      "term": "Investigate",
+      "body": "Preserve the scene where safe, gather facts and statements, identify the root causes (not just the proximate one) and the failed controls, correct them, and share the lessons learned. Include near misses."
+     }
+    ],
+    "keypoint": "A good investigation asks what failed in the system, such as planning, procedures, training, supervision, equipment or controls, rather than only asking who made the mistake.",
+    "refs": [
+     "29 CFR 1910.38",
+     "29 CFR 1910.157",
+     "29 CFR 1910.334(b)(2)",
+     "29 CFR 1904.39"
+    ]
+   },
+   {
+    "tag": "M4·S7",
+    "title": "Field Scenarios",
+    "body": "Apply what you have learned to realistic situations. For each scenario, consider the regulation, the hazard, and the safest course of action. Your employer's written procedures and the actual equipment on the job always govern the details.",
+    "def_grid": [
+     {
+      "term": "Scenario 1: Panel replacement",
+      "body": "You are replacing a distribution panel in an occupied building. The correct approach is to de-energize and isolate every source, apply lock and tag at each disconnecting means, release stored energy, and have a qualified person verify with test equipment that all conductors are de-energized (including checking for backfeed and induced voltage) before touching anything. The breaker being off or the tag being on is not verification."
+     },
+     {
+      "term": "Scenario 2: Unmarked conduit",
+      "body": "While trenching, the excavator exposes a conduit that was not marked on the locate. Stop digging, keep people clear, and treat the conduit as energized. Contact the utility or owner, have the line located and, if needed, de-energized, and confirm the plan before work resumes."
+     },
+     {
+      "term": "Scenario 3: Ladder near a service drop",
+      "body": "You are asked to work on a mast and the service drop is within reach of the ladder. Do not position yourself or the ladder where either could contact the conductors. Contact the utility to have the line de-energized or covered as appropriate, or re-plan the work to a safe position. Use a nonconductive ladder, and stay on the safe side of the minimum distances."
+     },
+     {
+      "term": "Scenario 4: Co-worker in contact",
+      "body": "A co-worker is frozen in contact with an energized part. Do not touch them. Shut off the power if you can do so safely, call 911, and begin CPR and use an AED after power is off and the scene is safe, if the person is unresponsive and not breathing normally."
+     },
+     {
+      "term": "Scenario 5: GFCI keeps tripping",
+      "body": "A GFCI on temporary power trips repeatedly when a saw is plugged in. Do not bypass or defeat the GFCI. Remove the saw and its cord from service, inspect and test them, and repair or replace them before returning to use."
+     },
+     {
+      "term": "Scenario 6: Shift change",
+      "body": "Maintenance on switchgear will continue into the next shift. Use a documented transfer procedure: the oncoming crew applies its personal locks to the group lockout before the off-going crew removes theirs, with clear communication of status and verification, as your program requires. Never remove another person's lock to make the handoff easier."
+     }
+    ],
+    "refs": [
+     "29 CFR 1910.333(b)",
+     "29 CFR 1926.416",
+     "29 CFR 1926.404(b)",
+     "29 CFR 1910.147(f)"
+    ]
+   },
+   {
+    "tag": "M4·S8",
+    "title": "Final Exam Preparation: Key Points Review",
+    "body": "The final exam draws from all four modules. Review the points below, then take the exam. You need a score of at least 70 percent to pass. If you do not pass, you may review the material and retake the exam.",
+    "table": {
+     "h": [
+      "Topic",
+      "Key points to remember"
+     ],
+     "r": [
+      [
+       "OSH Act duties",
+       "Section 5(a)(1) General Duty; Section 5(a)(2) compliance with standards; Section 5(b) employee compliance; Section 11(c) anti-retaliation."
+      ],
+      [
+       "Which standard",
+       "General industry electrical: 29 CFR 1910 Subpart S. Construction electrical: 29 CFR 1926 Subpart K. LOTO machinery servicing: 1910.147, which does not cover electric utilization installation hazards that Subpart S covers."
+      ],
+      [
+       "Qualified person",
+       "Familiar with the construction and operation of the equipment and the hazards involved. Qualification is equipment- and task-specific. Only qualified persons work on energized parts that have not been locked out."
+      ],
+      [
+       "Lockout/tagout",
+       "1910.147(d) six steps: preparation, shutdown, isolation, device application, stored energy, verification. Qualified person verifies de-energization with test equipment. Device removed by the person who applied it, with narrow exceptions."
+      ],
+      [
+       "Overhead lines",
+       "Treat as energized. 1910.333(c)(3): unqualified persons keep at least 10 feet at 50 kV or below, plus 4 inches per 10 kV over 50 kV. Utility and crane work have separate standards."
+      ],
+      [
+       "GFCI and AEGCP",
+       "Construction temporary 120-volt, single-phase, 15- and 20-ampere outlets in use by employees need GFCIs. A GFCI trips at about 5 mA. AEGCP: written program, competent person, daily visual inspection, tests and records."
+      ],
+      [
+       "Cords and tools",
+       "Inspect before use; remove damaged items from service; do not break the grounding path; do not use cords to raise or lower tools."
+      ],
+      [
+       "PPE",
+       "Hazard assessment with written certification; employer generally pays; inspect and air-test insulating gloves; PPE is the last line of defense."
+      ],
+      [
+       "Falls and ladders",
+       "Construction: 6 ft. General industry: 4 ft. 4-to-1 ladder angle; extend 3 ft above landing; no top step; nonconductive ladders near energized parts."
+      ],
+      [
+       "Emergency and reporting",
+       "Do not touch the victim in contact; de-energize; call 911; CPR/AED; medical evaluation for all shock victims; report fatality within 8 hours and hospitalization/amputation/eye loss within 24 hours."
+      ]
+     ]
+    },
+    "keypoint": "This course is a continuing education course on OSHA requirements. It does not replace your employer's written programs, manufacturer instructions, state or local licensing and code requirements, or the current text of the CFR. When a question arises on the job, check the regulation itself and ask a qualified safety professional.",
+    "refs": [
+     "29 CFR Parts 1904, 1910, 1926"
+    ]
+   }
+  ],
+  "isFinal": true,
+  "quiz": [
+   {
+    "q": "In the hierarchy of controls, which approach is placed first for electrical hazards?",
+    "opts": [
+     "Wearing the highest category of PPE",
+     "Elimination: de-energizing, locking out and verifying",
+     "Posting a warning sign",
+     "Scheduling the work for a quiet time"
+    ],
+    "correct": 1,
+    "explain": "Elimination is first. For electrical hazards that means de-energizing, locking out and verifying. PPE is the last line of defense."
+   },
+   {
+    "q": "Under 1910.132(d), after the employer assesses the workplace for hazards requiring PPE, the employer must:",
+    "opts": [
+     "File the assessment with the state licensing board",
+     "Have each employee sign a waiver",
+     "Verify the assessment with a written certification that identifies the workplace evaluated, the person certifying and the date",
+     "Destroy the assessment after one year"
+    ],
+    "correct": 2,
+    "explain": "1910.132(d)(2) requires the employer to verify that the workplace hazard assessment has been performed through a written certification that identifies the workplace evaluated, the person certifying that the evaluation has been performed, and the date of the hazard assessment."
+   },
+   {
+    "q": "What must be done to rubber insulating gloves before each day's use, per 1910.137?",
+    "opts": [
+     "Wash them with solvent",
+     "Mark the date on the cuff and store them",
+     "Inspect them for damage and give them an air test",
+     "Stretch them to the maximum to check elasticity"
+    ],
+    "correct": 2,
+    "explain": "Rubber insulating equipment must be inspected for damage before each day's use and immediately following any incident that can reasonably be suspected of causing damage. Insulating gloves must also be given an air test along with the inspection."
+   },
+   {
+    "q": "Protector gloves, normally leather, are worn:",
+    "opts": [
+     "Instead of rubber insulating gloves",
+     "Under rubber insulating gloves",
+     "Over rubber insulating gloves, with limited exceptions",
+     "Only when the gloves are wet"
+    ],
+    "correct": 2,
+    "explain": "Protector gloves are worn over insulating gloves to protect the rubber from cuts and punctures. 1910.137 provides limited exceptions, such as for Class 0 gloves or where high finger dexterity is needed for small parts."
+   },
+   {
+    "q": "In construction, an employee on an unprotected side or edge must generally be protected from falling at what height above a lower level?",
+    "opts": [
+     "2 feet or more",
+     "6 feet or more",
+     "15 feet or more",
+     "30 feet or more"
+    ],
+    "correct": 1,
+    "explain": "1926.501(b)(1) requires protection from falling for each employee on a walking or working surface with an unprotected side or edge that is 6 feet or more above a lower level. For general industry the trigger is 4 feet."
+   },
+   {
+    "q": "What angle rule applies to setting a non-self-supporting ladder, such as an extension ladder?",
+    "opts": [
+     "The ladder should be set as close to vertical as possible",
+     "The horizontal distance from the top support to the foot of the ladder is about one-quarter of the working length of the ladder",
+     "The horizontal distance equals half the working length",
+     "The ladder should be leaned at about 45 degrees"
+    ],
+    "correct": 1,
+    "explain": "Non-self-supporting ladders must be used at an angle such that the horizontal distance from the top support to the foot is approximately one-quarter of the ladder's working length (the 4-to-1 rule)."
+   },
+   {
+    "q": "A portable ladder is used to reach an upper landing. How far must the side rails extend above the landing, unless the ladder is secured and an alternative grab-rail is provided?",
+    "opts": [
+     "At least 6 inches",
+     "At least 3 feet",
+     "At least 8 feet",
+     "They do not need to extend at all"
+    ],
+    "correct": 1,
+    "explain": "When portable ladders are used for access to an upper landing surface, the side rails must extend at least 3 feet above the landing, or the ladder must be secured at its top and a grasping device provided."
+   },
+   {
+    "q": "On a stepladder, the top or top step:",
+    "opts": [
+     "May not be used as a step",
+     "May be used if the ladder is Type I",
+     "May be used if the worker is holding a tool",
+     "May be used only outdoors"
+    ],
+    "correct": 0,
+    "explain": "The top or top step of a stepladder may not be used as a step. Standing on the top cap or top step reduces stability and removes a handhold."
+   },
+   {
+    "q": "Under 1926.502(d), an anchorage for a personal fall arrest system must support at least how many pounds per attached employee, or be designed by a qualified person with a safety factor of at least two?",
+    "opts": [
+     "500 pounds",
+     "1,000 pounds",
+     "5,000 pounds",
+     "50 pounds"
+    ],
+    "correct": 2,
+    "explain": "Anchorages used for personal fall arrest equipment must be capable of supporting at least 5,000 pounds per employee attached, or be designed, installed and used as part of a complete system with a safety factor of at least two, under the supervision of a qualified person."
+   },
+   {
+    "q": "A co-worker is still gripping an energized conductor and cannot let go. What should you do first?",
+    "opts": [
+     "Pull the person free with your bare hands",
+     "Pour water on the person to cool the burns",
+     "Wait several minutes to see whether the person releases",
+     "Do not touch the person; shut off the power if you can safely do so and call for emergency help"
+    ],
+    "correct": 3,
+    "explain": "Touching the victim may allow current to pass to you. De-energize if it can be done safely, call emergency services, and then give care when the scene is safe."
+   },
+   {
+    "q": "Which statement about fires on energized electrical equipment is correct?",
+    "opts": [
+     "They are Class C fires; de-energize if safe, and do not use water on the energized equipment",
+     "Water is the preferred agent for all electrical fires",
+     "They are Class D fires that can only be fought by a utility",
+     "They cannot be extinguished until the building is evacuated by the fire department"
+    ],
+    "correct": 0,
+    "explain": "Fires involving energized electrical equipment are Class C. If safe, de-energize the equipment, and use an extinguisher rated for the hazard. Water must not be used on energized equipment."
+   },
+   {
+    "q": "A worker receives a shock and says they feel fine. What is the best course of action?",
+    "opts": [
+     "Return to work and monitor the symptoms",
+     "Arrange medical evaluation, because internal injuries and heart rhythm problems may be delayed or hidden",
+     "Take a break for an hour and resume work",
+     "No evaluation is needed unless there is a visible burn"
+    ],
+    "correct": 1,
+    "explain": "Every shock victim should have a medical evaluation even if they seem fine. The current can cause internal injuries and heart rhythm disturbances that may not be immediately apparent."
+   },
+   {
+    "q": "Which step of the 1910.147(d) procedure comes immediately after relieving, disconnecting, restraining or otherwise rendering safe the stored or residual energy?",
+    "opts": [
+     "Verification of isolation",
+     "Preparation for shutdown",
+     "Application of the lockout device",
+     "Machine or equipment shutdown"
+    ],
+    "correct": 0,
+    "explain": "The sequence is preparation, shutdown, isolation, device application, control of stored or residual energy, and then verification of isolation before work begins."
+   },
+   {
+    "q": "A crew must place a ladder near overhead lines of 12 kV on a site. What is the correct approach?",
+    "opts": [
+     "Have the lines de-energized and grounded or otherwise protected, or position the work so neither person nor ladder can come within the required distance, and do not use a conductive ladder",
+     "Use an aluminum ladder because it is lighter to reposition",
+     "Work within reach of the conductors if the ladder is dry",
+     "Proceed if the lines appear to be insulated"
+    ],
+    "correct": 0,
+    "explain": "Treat overhead lines as energized and uninsulated. Arrange for de-energizing and grounding or other protective measures, keep persons and conductive objects outside the required distances, and avoid conductive ladders where contact is possible."
+   },
+   {
+    "q": "Which of the following events carries a 24-hour (rather than 8-hour) reporting deadline to OSHA under 1904.39?",
+    "opts": [
+     "A work-related fatality",
+     "A first aid treatment of a minor cut",
+     "An employee being late to work",
+     "A work-related in-patient hospitalization of an employee"
+    ],
+    "correct": 3,
+    "explain": "In-patient hospitalizations, amputations and losses of an eye must be reported within 24 hours. A fatality must be reported within 8 hours. First aid treatment alone does not trigger a report."
+   },
+   {
+    "q": "Which statement is correct about when a lockout device applied by an authorized employee may be removed by someone else under 1910.147(e)(3)?",
+    "opts": [
+     "Any supervisor may cut the lock at any time",
+     "Any co-worker may remove it if the job is urgent",
+     "The lock may be removed by anyone at the end of the shift",
+     "Only through a documented procedure that the employer demonstrates is as safe, including verifying the employee is not at the facility and making sure the employee knows before resuming work"
+    ],
+    "correct": 3,
+    "explain": "The general rule is that the device is removed by the employee who applied it. The narrow exception requires a specific, documented procedure with at least verification that the employee is not at the facility, reasonable efforts to contact them, and ensuring they know before resuming work."
+   },
+   {
+    "q": "A technician is servicing a machine whose motor is fed by a branch circuit. Which statement best describes how the standards fit together?",
+    "opts": [
+     "Neither standard applies to any electrician",
+     "Only 1926.417 applies in general industry",
+     "1910.147 applies to all work on building wiring and Subpart S never applies",
+     "1910.147 applies to servicing the machine; Subpart S (1910.333) governs the electrical circuits and conductors, and employers often combine both into a single program"
+    ],
+    "correct": 3,
+    "explain": "1910.147 covers servicing and maintenance of machines and equipment, while exposure to electrical hazards from work on, near or with conductors or equipment in electric utilization installations is covered by Subpart S, including 1910.333. Many employers write one program that satisfies both."
+   },
+   {
+    "q": "A GFCI protecting a temporary 120-volt receptacle on a construction site repeatedly trips when a particular saw is plugged in. What should be done?",
+    "opts": [
+     "Remove the saw and its cord from service, inspect and test them, and repair or replace them; do not bypass the GFCI",
+     "Plug the saw into an outlet without GFCI protection",
+     "Defeat the GFCI so the saw can run",
+     "Tape the reset button down"
+    ],
+    "correct": 0,
+    "explain": "A GFCI that trips is signaling a ground fault, in this case probably in the saw or its cord. The tool and cord must be removed from service until repaired and tested. The GFCI must never be bypassed or defeated."
+   }
+  ]
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">Electrical Safety & OSHA Standards</div>
+      <div class="cert-detail">4.0 CEU hours · Journeyman & Master Electrician<br>OSHA 29 CFR 1910 Subpart S / 29 CFR 1926 Subpart K / 1910.147 / 1910.333<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>

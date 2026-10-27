@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoltCE — Electrical Continuing Education</title>
+<title>VoltCE — Free Electrician Exam Prep &amp; Continuing Education</title>
+<meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
@@ -159,6 +160,32 @@
   .course-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
   .course-row:last-child { border-bottom: none; }
 
+
+  /* ── PREP / SUPPORT ── */
+  .banner { background:#FFF7E6; color:#7a4a00; border-bottom:1px solid #f1d9a8; text-align:center; font-size:13px; padding:8px 16px; }
+  .banner a { color:#7a4a00; text-decoration:underline; cursor:pointer; }
+  .hero-btn-donate { background:#F6C343; color:#3a2a00; }
+  .hero-btn-donate:hover { background:#f2b92a; }
+  .flash { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); min-height:230px; padding:28px; display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; line-height:1.55; }
+  .flash .side { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:10px; }
+  .flash .big { font-size:18px; font-weight:500; }
+  .flash .ans { font-size:17px; font-weight:600; color:var(--green); margin-bottom:10px; }
+  .row-btns { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; align-items:center; }
+  .opt { display:block; width:100%; text-align:left; padding:11px 14px; margin:7px 0; border:1px solid var(--border); background:var(--white); border-radius:var(--radius); font-family:inherit; font-size:14px; cursor:pointer; color:var(--text); }
+  .opt:hover:not(:disabled) { border-color:var(--blue); }
+  .opt.right { background:var(--green-light); border-color:var(--green); }
+  .opt.wrong { background:var(--red-light); border-color:var(--red); }
+  .expl { background:var(--blue-light); color:var(--blue-dark); border-radius:var(--radius); padding:12px 14px; font-size:14px; margin-top:10px; line-height:1.55; }
+  .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
+  .rec { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
+  .rec h4 { font-size:15px; margin-bottom:6px; }
+  .rec p { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
+  .rec a, .rec button.lnk { font-size:13px; color:var(--blue); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline; font-family:inherit; }
+  .locked { opacity:.85; cursor:default !important; }
+  .locked:hover { border-color:var(--border) !important; transform:none !important; }
+  .cat-chip.active { background:var(--blue-light); color:var(--blue-dark); border-color:var(--blue); }
+  .donate-amts { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+
   @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 28px; }
@@ -170,12 +197,15 @@
 <body>
 
 <!-- ── NAV ─────────────────────────────────────────────── -->
+<div class="banner">Paid CE courses open after state approval. <a onclick="showPage('prep')">Free exam prep is open now →</a></div>
 <nav class="nav">
   <div class="nav-logo">Volt<span>CE</span></div>
   <div class="nav-links">
+    <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
+    <button class="nav-link" onclick="showPage('support')">Support us</button>
     <span id="nav-user-name" style="font-size:13px;color:rgba(255,255,255,0.75);display:none"></span>
     <button class="nav-link" id="nav-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-link" id="nav-admin-btn" style="display:none" onclick="showPage('admin')">Admin</button>
@@ -187,21 +217,30 @@
 <!-- ── HOME ─────────────────────────────────────────────── -->
 <div id="page-home" class="page active">
   <div class="hero">
-    <h1>Keep your electrical license current</h1>
-    <p>Wisconsin DSPS-approved CEU courses for journeymen, masters, and contractors — online, self-paced, reported automatically.</p>
+    <h1>Free electrician exam prep. CE courses coming soon.</h1>
+    <p>Practice questions and flashcards on the 2023 NEC, grounding and bonding, and electrical safety — free, no sign-up. Continuing-education courses for journeymen, masters and contractors open as each state approves them.</p>
     <div class="hero-btns">
-      <button class="hero-btn hero-btn-primary" onclick="showPage('courses')">Browse courses</button>
-      <button class="hero-btn hero-btn-outline" onclick="showPage('states')">Find your state</button>
+      <button class="hero-btn hero-btn-primary" onclick="showPage('prep')">Start free exam prep</button>
+      <button class="hero-btn hero-btn-outline" onclick="showPage('courses')">See CE courses</button>
+      <button class="hero-btn hero-btn-donate" onclick="showPage('support')">Support VoltCE</button>
     </div>
   </div>
   <div class="container">
     <div class="metrics">
-      <div class="metric"><div class="metric-val">40+</div><div class="metric-label">States covered</div></div>
-      <div class="metric"><div class="metric-val">120+</div><div class="metric-label">CEU courses</div></div>
-      <div class="metric"><div class="metric-val">4</div><div class="metric-label">License types</div></div>
-      <div class="metric"><div class="metric-val">100%</div><div class="metric-label">Online & self-paced</div></div>
+      <div class="metric"><div class="metric-val" id="home-q">300+</div><div class="metric-label">Free practice questions</div></div>
+      <div class="metric"><div class="metric-val">4</div><div class="metric-label">Topics to study</div></div>
+      <div class="metric"><div class="metric-val">2023</div><div class="metric-label">NEC edition</div></div>
+      <div class="metric"><div class="metric-val">$0</div><div class="metric-label">No sign-up needed</div></div>
     </div>
-    <div class="section-title">Featured courses</div>
+    <div class="section-title">Recommended for you</div>
+    <div class="row-btns" style="margin-top:0">
+      <span style="font-size:13px;color:var(--muted)">I am a:</span>
+      <button class="btn-sm" onclick="renderRecs('Apprentice',this)">Apprentice</button>
+      <button class="btn-sm active" onclick="renderRecs('Journeyman',this)">Journeyman candidate</button>
+      <button class="btn-sm" onclick="renderRecs('Licensed',this)">Licensed electrician</button>
+    </div>
+    <div id="home-recs" class="rec-grid" style="margin-bottom:28px"></div>
+    <div class="section-title">Courses</div>
     <div id="home-courses" class="courses-grid"></div>
   </div>
 </div>
@@ -210,7 +249,7 @@
 <div id="page-courses" class="page">
   <div class="container">
     <div class="page-title">All courses</div>
-    <div class="page-sub">Wisconsin DSPS-approved continuing education</div>
+    <div class="page-sub">Continuing education for licensed electricians. Paid courses open once the state approves them. The OSHA course is free to study now.</div>
     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
       <button class="btn-sm active" id="filter-all" onclick="filterCourses('all',this)">All</button>
       <button class="btn-sm" id="filter-Journeyman" onclick="filterCourses('Journeyman',this)">Journeyman</button>
@@ -226,7 +265,7 @@
 <div id="page-states" class="page">
   <div class="container">
     <div class="page-title">State licensing resources</div>
-    <div class="page-sub">CEU requirements, renewal deadlines, and application links by state</div>
+    <div class="page-sub">Where to check continuing-education rules. Our courses are not yet approved in any state; these links go to each state board.</div>
     <div id="states-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"></div>
   </div>
 </div>
@@ -235,46 +274,79 @@
 <div id="page-pricing" class="page">
   <div class="container">
     <div class="page-title">Plans & pricing</div>
-    <div class="page-sub">All plans include DSPS-approved courses and automatic state reporting</div>
+    <div class="page-sub">Paid plans open after state approval. Join the free account now and we will tell you the day it happens.</div>
     <div class="plans">
       <div class="plan-card">
         <div class="plan-name">Free</div>
         <div class="plan-price">$0</div>
         <div class="plan-desc">Get started with foundational content</div>
         <ul class="plan-features">
-          <li>Apprentice-level courses</li>
+          <li>Free exam-prep flashcards and practice questions</li>
+          <li>Free electrical safety &amp; OSHA course</li>
           <li>State resource library</li>
-          <li>License lookup tool</li>
         </ul>
-        <button class="plan-btn" onclick="showPage('auth')">Get started</button>
+        <button class="plan-btn" onclick="showPage('prep')">Start studying</button>
       </div>
       <div class="plan-card featured">
         <div class="popular">Most popular</div>
         <div class="plan-name">Annual</div>
         <div class="plan-price"><sup>$</sup>149<sub>/yr</sub></div>
-        <div class="plan-desc">Unlimited access for active licensees</div>
+        <div class="plan-desc">Planned price. Opens after state approval.</div>
         <ul class="plan-features">
           <li>All courses, all license types</li>
-          <li>Automatic state reporting</li>
+          <li>State reporting where required</li>
           <li>Completion certificates</li>
           <li>Priority support</li>
           <li>New courses as added</li>
         </ul>
-        <button class="plan-btn primary" onclick="startCheckout('subscription',14900)">Subscribe — $149/yr</button>
+        <button class="plan-btn primary" onclick="showPage('auth')">Join the waitlist</button>
       </div>
       <div class="plan-card">
         <div class="plan-name">Per course</div>
         <div class="plan-price">$29<sub>–$59</sub></div>
-        <div class="plan-desc">Pay only for what you need</div>
+        <div class="plan-desc">Planned prices. Open after state approval.</div>
         <ul class="plan-features">
           <li>Any single course</li>
           <li>Lifetime access</li>
           <li>Completion certificate</li>
-          <li>State reporting included</li>
+          <li>State reporting where required</li>
         </ul>
-        <button class="plan-btn" onclick="showPage('courses')">Browse courses</button>
+        <button class="plan-btn" onclick="showPage('courses')">See courses</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ── FREE EXAM PREP ────────────────────────────────────── -->
+<div id="page-prep" class="page">
+  <div class="container">
+    <div class="page-title">Free electrician exam prep</div>
+    <div class="page-sub">Flashcards and practice questions on the 2023 NEC, grounding and bonding, Wisconsin code changes and electrical safety. Free, no account needed.</div>
+    <div class="alert alert-info" style="font-size:13px">Study practice written by VoltCE. These are not official exam questions and do not earn continuing-education credit. Always check the code book and your state licensing board for what applies to you.</div>
+    <div class="tabs" id="prep-tabs">
+      <button class="tab active" onclick="prepMode('flash',this)">Flashcards</button>
+      <button class="tab" onclick="prepMode('quiz',this)">Practice quiz</button>
+      <button class="tab" onclick="prepMode('recs',this)">Recommended</button>
+    </div>
+    <div class="row-btns" id="prep-cats"></div>
+    <div id="prep-body"></div>
+  </div>
+</div>
+
+<!-- ── SUPPORT / DONATE ──────────────────────────────────── -->
+<div id="page-support" class="page">
+  <div class="container" style="max-width:640px">
+    <div class="page-title">Help keep the free study tools free</div>
+    <div class="page-sub">VoltCE is built by a Wisconsin master electrician. Free exam prep costs real money to build and host. If it helped you, a small contribution keeps it going and pays for new free material.</div>
+    <div class="card">
+      <div class="section-title">Support VoltCE</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">Pick any amount on the secure payment page. Contributions support VoltCE and are not tax-deductible. Nothing is required: the free tools stay free either way.</p>
+      <div class="donate-amts"><button class="btn-primary" style="max-width:260px" onclick="donate()">Support VoltCE</button></div>
+      <div id="donate-note" class="alert alert-info" style="display:none;font-size:13px"></div>
+      <p style="font-size:12px;color:var(--muted)">Payments are handled by Stripe. VoltCE never sees your card details.</p>
+    </div>
+    <div class="card"><div class="section-title">Other ways to help</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">Share the free prep with someone studying for their exam, and tell us which topics you want next.</p></div>
   </div>
 </div>
 
@@ -431,6 +503,7 @@
   </div>
 </div>
 
+<script src="exam-prep-data.js"></script>
 <script>
 // ============================================================
 // CONFIGURATION — REPLACE THESE WITH YOUR REAL VALUES
@@ -441,26 +514,28 @@ const SUPABASE_ANON_KEY = 'sb_publishable_53JBBNhFeqg2Qmy2TkdWrw_t3fi0XOB'
 const STRIPE_PAYMENT_LINK_SUBSCRIPTION = 'https://buy.stripe.com/5kQ8wO9clbeN9PQ82214400'
 const STRIPE_PAYMENT_LINK_COURSE = 'https://buy.stripe.com/fZu8wOgENeqZ6DE6XY14401'
 const ADMIN_EMAIL = 'matttimler@gmail.com'
+// Paste a Stripe Payment Link (customer chooses price) here to switch the Support button on:
+const STRIPE_DONATE_LINK = ''
 // ============================================================
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 const COURSES = [
-  { id:'gb', slug:'grounding-bonding-nec2017', title:'Grounding & Bonding per NEC 2017', hours:4.0, price:49, tag:'Journeyman', icon:'G&B', bg:'#E6F1FB', ic:'#0C447C' },
-  { id:'af', slug:'arc-flash-nfpa70e', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806' },
-  { id:'nec', slug:'nec-2017-code-update', title:'NEC 2017 Code Update', hours:8.0, price:59, tag:'All types', icon:'NEC', bg:'#EAF3DE', ic:'#27500A' },
-  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true },
+  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true, url:'course-osha.html' },
+  { id:'wi23', slug:'wisconsin-2023-nec-transition', title:'Wisconsin 2023 NEC Transition', hours:4.0, price:49, tag:'All types', icon:'WI', bg:'#FAEEDA', ic:'#633806', soon:true },
+  { id:'nec', slug:'nec-2023-code-update', title:'NEC 2023 Code Update', hours:8.0, price:59, tag:'All types', icon:'NEC', bg:'#EAF3DE', ic:'#27500A', soon:true },
+  { id:'gb', slug:'grounding-bonding-nec2023', title:'Grounding & Bonding per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'G&B', bg:'#E6F1FB', ic:'#0C447C', soon:true },
+  { id:'af', slug:'arc-flash-nfpa70e-2021', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806', soon:true },
 ]
 
 const STATES = [
-  { name:'Wisconsin', hours:'24 hrs / 4 yrs', url:'https://dsps.wi.gov/Pages/Professions/TradesContinuingEducation.aspx', status:'active' },
-  { name:'Texas', hours:'12 hrs / cycle', url:'https://www.tdlr.texas.gov/electricians/', status:'active' },
-  { name:'Florida', hours:'14 hrs / cycle', url:'https://www.myfloridalicense.com', status:'active' },
-  { name:'Illinois', hours:'8 hrs / cycle', url:'https://idfpr.illinois.gov', status:'active' },
-  { name:'Ohio', hours:'6 hrs / cycle', url:'https://www.com.ohio.gov', status:'active' },
-  { name:'Michigan', hours:'6 hrs / cycle', url:'https://www.michigan.gov/lara', status:'active' },
-  { name:'California', hours:'32 hrs / cycle', url:'https://www.cslb.ca.gov', status:'pending' },
-  { name:'Georgia', hours:'10 hrs / cycle', url:'https://sos.ga.gov/index.php/licensing', status:'pending' },
+  { name:'Wisconsin', hours:'Master 24 hrs. Check DSPS for other licenses', url:'https://dsps.wi.gov/Pages/Professions/TradesContinuingEducation.aspx', status:'pending' },
+  { name:'Colorado', hours:'See state board', url:'https://dpo.colorado.gov/Electrical/CE', status:'pending' },
+  { name:'Texas', hours:'See state board', url:'https://www.tdlr.texas.gov/electricians/', status:'pending' },
+  { name:'Florida', hours:'See state board', url:'https://www.myfloridalicense.com', status:'pending' },
+  { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
+  { name:'Michigan', hours:'See state board', url:'https://www.michigan.gov/lara', status:'pending' },
+  { name:'Georgia', hours:'See state board', url:'https://sos.ga.gov/index.php/licensing', status:'pending' },
 ]
 
 let currentUser = null
@@ -473,6 +548,9 @@ let authMode = 'login'
 // ── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   renderHomeCourses()
+  renderRecs('Journeyman', null)
+  resetPrep()
+  const hq = document.getElementById('home-q'); if (hq && window.PREP_BANK) hq.textContent = window.PREP_BANK.length
   renderAllCourses()
   renderStates()
   await checkSession()
@@ -633,8 +711,8 @@ function renderDashboard(profile, enrollments, completions) {
           <div style="font-size:12px;color:var(--muted)">${c.hours} CEU hours · ${c.free ? 'Free' : '$' + c.price}</div>
         </div>
         <div>${c.free
-          ? `<button class="btn-sm" onclick="enrollFree('${c.slug}')">Enroll free</button>`
-          : `<button class="btn-sm" onclick="startCheckout('course',${c.price * 100},'${c.slug}','${c.title}')">$${c.price}</button>`
+          ? `<button class="btn-sm" onclick="openFree('${c.slug}','${c.url}')">Open free course</button>`
+          : `<span class="badge badge-amber">Pending approval</span>`
         }</div>
       </div>`).join('')
 
@@ -672,6 +750,8 @@ async function enrollFree(slug) {
 
 // ── CHECKOUT ──────────────────────────────────────────────
 function startCheckout(type, amountCents, slug, title) {
+  // Paid checkout stays closed until state approval and verified payments
+  alert('Paid courses open after state approval. Create a free account and we will email you.'); return
   if (!currentUser) { showPage('auth'); return }
   checkoutItem = { type, amountCents, slug, title }
   const dollars = (amountCents / 100).toFixed(2)
@@ -771,12 +851,20 @@ function renderAllCourses(filter = 'all') {
 }
 
 function courseCard(c) {
-  return `<div class="course-card" onclick="${c.free ? `enrollFree('${c.slug}')` : `startCheckout('course',${c.price*100},'${c.slug}','${c.title}')`}">
+  const action = c.soon ? '' : (c.free ? `onclick="openFree('${c.slug}','${c.url}')"` : '')
+  const price = c.free ? 'Free' : (c.soon ? `<span class="badge badge-amber">Pending state approval</span> <span style="font-size:13px;color:var(--muted);font-weight:400">· planned $${c.price}</span>` : '$' + c.price)
+  const note = c.free ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Study for free now. No CE credit until approved.</div>' : (c.soon ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Create a free account and we will email you when it opens.</div>' : '')
+  return `<div class="course-card${c.soon?' locked':''}" ${action}>
     <div class="course-icon" style="background:${c.bg};color:${c.ic}">${c.icon}</div>
     <div class="course-title">${c.title}</div>
-    <div class="course-meta">${c.hours} CEU hours · ${c.tag}</div>
-    <div class="course-price">${c.free ? 'Free' : '$' + c.price}</div>
+    <div class="course-meta">${c.hours} hours · ${c.tag}</div>
+    <div class="course-price">${price}</div>${note}
   </div>`
+}
+
+function openFree(slug, url) {
+  if (currentUser) { try { enrollFree(slug) } catch (e) {} }
+  window.open(url, '_blank')
 }
 
 function filterCourses(filter, btn) {
@@ -791,11 +879,106 @@ function renderStates() {
     <div class="card-sm" style="cursor:pointer" onclick="window.open('${s.url}','_blank')">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <div style="font-size:15px;font-weight:600">${s.name}</div>
-        <span class="badge ${s.status==='active'?'badge-green':'badge-amber'}">${s.status==='active'?'Active':'Pending'}</span>
+        <span class="badge ${s.status==='active'?'badge-green':'badge-amber'}">${s.status==='active'?'Approved':'Approval pending'}</span>
       </div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${s.hours}</div>
       <div style="font-size:12px;color:var(--blue)">View requirements →</div>
     </div>`).join('')
+}
+
+// ── FREE EXAM PREP ────────────────────────────────────────
+const PREP = { mode:'flash', cat:'All', i:0, flipped:false, order:[], qi:0, answered:false, score:0, done:0 }
+function prepBank() { return (window.PREP_BANK || []).filter(x => PREP.cat === 'All' || x.c === PREP.cat) }
+function esc(t) { return String(t).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
+function prepMode(m, btn) {
+  PREP.mode = m
+  if (btn) { btn.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active')); btn.classList.add('active') }
+  resetPrep()
+}
+function resetPrep() {
+  PREP.i = 0; PREP.flipped = false; PREP.qi = 0; PREP.answered = false; PREP.score = 0; PREP.done = 0
+  PREP.order = shuffle(prepBank().map((_, k) => k))
+  renderPrep()
+}
+function setCat(c) { PREP.cat = c; resetPrep() }
+function renderPrep() {
+  const bank = window.PREP_BANK || []
+  const cats = ['All', ...new Set(bank.map(x => x.c))]
+  const catsEl = document.getElementById('prep-cats')
+  catsEl.style.display = PREP.mode === 'recs' ? 'none' : 'flex'
+  catsEl.innerHTML = cats.map(c => `<button class="btn-sm cat-chip ${PREP.cat === c ? 'active' : ''}" onclick="setCat('${c.replace(/'/g, "\\'")}')">${esc(c)}</button>`).join('')
+  const body = document.getElementById('prep-body')
+  if (!bank.length) { body.innerHTML = '<div class="empty">Loading questions…</div>'; return }
+  if (PREP.mode === 'recs') { body.innerHTML = '<div id="prep-recs" class="rec-grid"></div>' + prepCta(); renderRecs('Journeyman', null, 'prep-recs'); return }
+  const list = prepBank()
+  if (!list.length) { body.innerHTML = '<div class="empty">No questions in this topic.</div>'; return }
+  if (PREP.mode === 'flash') {
+    const q = list[PREP.order[PREP.i % PREP.order.length]]
+    body.innerHTML = `<div class="flash" onclick="flipCard()">
+        <div class="side">${PREP.flipped ? 'Answer' : 'Question'} · ${esc(q.c)}</div>
+        ${PREP.flipped ? `<div class="ans">${esc(q.o[q.a])}</div><div>${esc(q.e)}</div>` : `<div class="big">${esc(q.q)}</div>`}
+      </div>
+      <div class="row-btns">
+        <button class="btn-sm" onclick="stepCard(-1)">← Back</button>
+        <button class="btn-sm" onclick="flipCard()">${PREP.flipped ? 'Show question' : 'Show answer'}</button>
+        <button class="btn-sm" onclick="stepCard(1)">Next →</button>
+        <span style="font-size:13px;color:var(--muted)">Card ${(PREP.i % PREP.order.length) + 1} of ${PREP.order.length}</span>
+        <button class="btn-sm" onclick="resetPrep()">Shuffle</button>
+      </div>` + prepCta()
+  } else {
+    if (PREP.qi >= PREP.order.length) { body.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${PREP.score} of ${PREP.done} correct</div><p class="page-sub">${Math.round(PREP.score / Math.max(1, PREP.done) * 100)}%. Keep going or switch topics.</p><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="resetPrep()">Start over</button></div>` + prepCta(); return }
+    const q = list[PREP.order[PREP.qi]]
+    body.innerHTML = `<div class="card">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Question ${PREP.qi + 1} of ${PREP.order.length} · ${PREP.score} correct · ${esc(q.c)}</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:10px;line-height:1.5">${esc(q.q)}</div>
+      ${q.o.map((o, k) => `<button class="opt ${PREP.answered ? (k === q.a ? 'right' : (k === PREP.sel ? 'wrong' : '')) : ''}" ${PREP.answered ? 'disabled' : ''} onclick="pickAnswer(${k})">${String.fromCharCode(65 + k)}. ${esc(o)}</button>`).join('')}
+      ${PREP.answered ? `<div class="expl">${esc(q.e)}</div><div class="row-btns"><button class="btn-sm" onclick="nextQuestion()">Next question →</button></div>` : ''}
+    </div>` + prepCta()
+  }
+}
+function prepCta() {
+  return `<div class="card-sm" style="margin-top:16px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    <div style="font-size:14px"><b>Want the paid CE courses when they open?</b><div style="font-size:13px;color:var(--muted)">Create a free account and we will tell you the day each course is approved.</div></div>
+    <div><button class="btn-sm" onclick="showPage('auth')">Create free account</button> <button class="btn-sm" onclick="showPage('support')">Support VoltCE</button></div></div>`
+}
+function flipCard() { PREP.flipped = !PREP.flipped; renderPrep() }
+function stepCard(d) { const n = PREP.order.length; PREP.i = (PREP.i + d + n) % n; PREP.flipped = false; renderPrep() }
+function pickAnswer(k) { const q = prepBank()[PREP.order[PREP.qi]]; PREP.sel = k; PREP.answered = true; PREP.done++; if (k === q.a) PREP.score++; renderPrep() }
+function nextQuestion() { PREP.qi++; PREP.answered = false; renderPrep() }
+
+// ── RECOMMENDATIONS ───────────────────────────────────────
+const RECS = {
+  Apprentice: [
+    { t:'Start with electrical safety', d:'Free OSHA-based course and practice questions. Good first topic before your first inspection.', go:"showPage('prep');setCat('Electrical safety & OSHA')", l:'Study safety questions' },
+    { t:'Grounding and bonding basics', d:'The topic most apprentices find hardest. Free flashcards.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
+    { t:'Read the code book free online', d:'NFPA lets you read the NEC online for free.', href:'https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70', l:'NFPA 70 (NEC)' },
+  ],
+  Journeyman: [
+    { t:'2023 NEC changes', d:'Newer code editions show up on exams. Practice the changes.', go:"showPage('prep');setCat('NEC 2023 changes')", l:'Practice NEC 2023' },
+    { t:'Grounding and bonding', d:'Heavy on most journeyman exams. Flashcards plus a practice quiz.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
+    { t:'Wisconsin code changes', d:'Wisconsin adopted the 2023 NEC. Know the state-specific rules.', go:"showPage('prep');setCat('Wisconsin 2023 NEC');prepMode('quiz')", l:'Wisconsin quiz' },
+    { t:'Your state licensing board', d:'Exam dates, applications and approved code edition come from your state.', go:"showPage('states')", l:'State links' },
+  ],
+  Licensed: [
+    { t:'Wisconsin 2023 NEC Transition (4 hrs)', d:'Opens once DSPS approves it. Create an account to get the announcement.', go:"showPage('courses')", l:'See courses' },
+    { t:'NEC 2023 Code Update (8 hrs)', d:'Planned for states on the 2023 NEC. Pending approval.', go:"showPage('courses')", l:'See courses' },
+    { t:'Check your renewal rules', d:'Hours and deadlines differ by license and state.', go:"showPage('states')", l:'State links' },
+    { t:'Free refresher', d:'Keep sharp with the free safety course.', go:"openFree('electrical-safety-osha','course-osha.html')", l:'Open free course' },
+  ],
+}
+function renderRecs(kind, btn, target) {
+  if (btn) { btn.parentElement.querySelectorAll('.btn-sm').forEach(b => b.classList.remove('active')); btn.classList.add('active') }
+  const el = document.getElementById(target || 'home-recs'); if (!el) return
+  el.innerHTML = RECS[kind].map(r => `<div class="rec"><h4>${esc(r.t)}</h4><p>${esc(r.d)}</p>${r.href ? `<a href="${r.href}" target="_blank" rel="noopener">${esc(r.l)} →</a>` : `<button class="lnk" onclick="${r.go}">${esc(r.l)} →</button>`}</div>`).join('')
+}
+
+// ── SUPPORT ───────────────────────────────────────────────
+function donate() {
+  if (STRIPE_DONATE_LINK) { window.open(STRIPE_DONATE_LINK, '_blank'); return }
+  const n = document.getElementById('donate-note')
+  n.textContent = 'Contributions open very soon. Thank you for wanting to help.'
+  n.style.display = 'block'
 }
 
 // ── UTILS ─────────────────────────────────────────────────
