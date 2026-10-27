@@ -1,0 +1,3060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motor Circuits and Motor Calculations per NEC 2023 | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">Motor Circuits and Motor Calculations per NEC 2023</div>
+      <div class="pills">
+        <span class="pill red">4.0 CE hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">NEC Arts. 430, 440</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds (total 4 hours)
+const MOD_MINS = [50*60, 60*60, 65*60, 65*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "Motor circuit fundamentals",
+  "time": "50 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "How Article 430 is organized into parts and how to find a topic fast",
+   "Section 430.6: when to use the table full-load current and when to use the nameplate",
+   "Which table covers which motor type: 430.247, 430.248, 430.249 and 430.250",
+   "Reading voltage columns and horsepower rows in the full-load current tables",
+   "A guided Code book lookup exercise with several different motors",
+   "Table current versus nameplate current for a sample motor",
+   "Motor theory: synchronous speed, torque and efficiency",
+   "Why table currents differ from currents you calculate for an ideal motor"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "Organization of Article 430",
+    "body": "Article 430 is long, but it is organized in a logical order that follows the path of the energy and the protection from the supply end to the motor. Learning the part headings lets you open the book to the right region instead of paging through it. Each part answers one kind of question, such as how big the wires are, how the overload is selected, or where the disconnect goes.",
+    "table": {
+     "h": [
+      "Part",
+      "Subject",
+      "Typical question it answers"
+     ],
+     "r": [
+      [
+       "I",
+       "General",
+       "What does the Article cover, and which current value applies (430.6)?"
+      ],
+      [
+       "II",
+       "Motor circuit conductors",
+       "How large are the branch-circuit and feeder conductors (430.22, 430.24)?"
+      ],
+      [
+       "III",
+       "Motor and branch-circuit overload protection",
+       "What is the maximum overload setting (430.32)?"
+      ],
+      [
+       "IV",
+       "Motor branch-circuit short-circuit and ground-fault protection",
+       "How large can the breaker or fuse be (430.52)?"
+      ],
+      [
+       "V",
+       "Motor feeder short-circuit and ground-fault protection",
+       "How large can the feeder device be (430.62)?"
+      ],
+      [
+       "VI and VII",
+       "Motor control circuits and motor controllers",
+       "What must the controller be rated for (430.81, 430.83)?"
+      ],
+      [
+       "IX",
+       "Disconnecting means",
+       "Where does the disconnect go and how is it rated (430.102, 430.110)?"
+      ],
+      [
+       "XIV",
+       "Tables",
+       "What is the full-load current (430.247 through 430.250)?"
+      ]
+     ]
+    },
+    "bullets": [
+     "Parts VIII, X, XI, XII and XIII cover motor control centers, adjustable-speed drive systems, over 1000 volts, protection of live parts, and grounding.",
+     "Part numbers are printed in the running heading at the top of each page; use them to orient yourself.",
+     "Article 440 is a separate article for air-conditioning and refrigeration equipment and is covered in Module 3."
+    ],
+    "keypoint": "Know the part headings of Article 430 so that any motor question can be answered by going straight to the correct part.",
+    "info": "Habit to build: when you read a motor problem, name the part first (conductors, overload, short-circuit, disconnect), then go to that part.",
+    "refs": [
+     "NEC Article 430"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "Section 430.6: Table Current or Nameplate Current?",
+    "body": "The most common mistake in motor work is using the wrong current value. Section 430.6 settles the question. For most calculations the Code uses the full-load current from the tables, not the value stamped on the motor, because the table value is a standard that does not depend on the particular manufacturer or design.",
+    "table": {
+     "h": [
+      "Job",
+      "Current to use",
+      "Where it comes from"
+     ],
+     "r": [
+      [
+       "Branch-circuit conductor ampacity",
+       "Table full-load current",
+       "430.6(A)(1) and 430.22"
+      ],
+      [
+       "Disconnecting means rating",
+       "Table full-load current",
+       "430.6(A)(1) and 430.110"
+      ],
+      [
+       "Branch-circuit short-circuit and ground-fault device",
+       "Table full-load current",
+       "430.6(A)(1) and 430.52"
+      ],
+      [
+       "Feeder conductors and feeder device",
+       "Table full-load current",
+       "430.24 and 430.62"
+      ],
+      [
+       "Motor overload protection",
+       "Nameplate current",
+       "430.6(A)(2) and 430.32"
+      ]
+     ]
+    },
+    "keypoint": "Use the table full-load current to size conductors, disconnects and short-circuit protection, and use the nameplate current for overload protection.",
+    "warning": "Torque motors, adjustable-speed drive systems and multispeed motors are treated differently in 430.6. For those, read 430.6 itself rather than relying on the general rule above.",
+    "refs": [
+     "NEC 430.6",
+     "NEC Article 430"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "Where the Rule Comes From and How to Use the Index",
+    "body": "The reason for two different current values is practical. Conductors, disconnects and short-circuit devices must be selected before the motor is purchased or while it is still interchangeable, so the Code gives a standard table value for each horsepower, voltage and phase. Overload protection, on the other hand, must follow the heating limit of the actual motor installed, which is why it uses the nameplate. Two motors of the same horsepower from different makers can have different nameplate currents but the same table current.",
+    "def_grid": [
+     {
+      "term": "Table full-load current",
+      "body": "A standard value by horsepower, phase and voltage in Tables 430.247 through 430.250. It is used for the 'fixed' parts of the circuit."
+     },
+     {
+      "term": "Nameplate current",
+      "body": "The full-load amperes stamped on the motor. It is used to select the overload device for that specific motor."
+     },
+     {
+      "term": "Part-finding method",
+      "body": "Use the Table of Contents and the part headings at the top of each page. Mark the start of Parts II, III, IV, IX and XIV in your book."
+     }
+    ],
+    "step_list": [
+     "Read the problem and decide what is being sized: conductor, overload, short-circuit device or disconnect.",
+     "Choose the matching part of Article 430 from the list on the previous slide.",
+     "Pick the current value that 430.6 assigns to that job.",
+     "Write down the section number next to every answer you produce."
+    ],
+    "keypoint": "The table value keeps the circuit independent of the brand of motor; the nameplate value protects the actual motor.",
+    "refs": [
+     "NEC 430.6",
+     "NEC Article 430"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "The Full-Load Current Tables",
+    "body": "Four tables in Part XIV give the full-load currents. Choose by the type of motor and the supply, then read across the row for the horsepower. Always confirm you are in the right table before reading a number, because a three-phase value looks plausible in a single-phase problem and the error is easy to miss.",
+    "table": {
+     "h": [
+      "Table",
+      "Motor type",
+      "Notes"
+     ],
+     "r": [
+      [
+       "430.247",
+       "Direct-current motors",
+       "Armature current at rated horsepower and dc voltage"
+      ],
+      [
+       "430.248",
+       "Single-phase alternating-current motors",
+       "Columns for 115, 200, 208, 230 volt supplies"
+      ],
+      [
+       "430.249",
+       "Two-phase alternating-current motors (four-wire)",
+       "Rare today; check the table notes on the common conductor"
+      ],
+      [
+       "430.250",
+       "Three-phase alternating-current motors",
+       "Induction and synchronous-type columns by voltage; most common table in practice"
+      ]
+     ]
+    },
+    "bullets": [
+     "Example from Table 430.250: a 10 horsepower, 460 volt, three-phase motor has a full-load current of 14 amperes.",
+     "Example from Table 430.250: a 25 horsepower, 460 volt motor is 34 amperes, and a 5 horsepower, 460 volt motor is 7.6 amperes.",
+     "The tables are for motors running at usual speeds with normal torque characteristics. Special motors use the nameplate current, as 430.6 directs."
+    ],
+    "keypoint": "Match the table to the motor type first: 430.247 is dc, 430.248 is single-phase ac, 430.249 is two-phase ac, and 430.250 is three-phase ac.",
+    "refs": [
+     "NEC Table 430.247",
+     "NEC Table 430.248",
+     "NEC Table 430.249",
+     "NEC Table 430.250",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Reading the Voltage Columns",
+    "body": "Each table has one row per horsepower and several voltage columns. The voltage columns are labeled with the nominal values but they cover a range of actual system voltages, which the table notes explain. A motor on a 480 volt system uses the 460 volt column, and a motor on a 240 volt system uses the 230 volt column. Using the wrong column is a frequent source of errors, so always match the column to the motor's rated voltage.",
+    "table": {
+     "h": [
+      "Three-phase motor (Table 430.250)",
+      "208 V",
+      "230 V",
+      "460 V"
+     ],
+     "r": [
+      [
+       "5 hp",
+       "16.7 A",
+       "15.2 A",
+       "7.6 A"
+      ],
+      [
+       "7-1/2 hp",
+       "24.2 A",
+       "22 A",
+       "11 A"
+      ],
+      [
+       "10 hp",
+       "30.8 A",
+       "28 A",
+       "14 A"
+      ],
+      [
+       "15 hp",
+       "46.2 A",
+       "42 A",
+       "21 A"
+      ],
+      [
+       "25 hp",
+       "74.8 A",
+       "68 A",
+       "34 A"
+      ]
+     ]
+    },
+    "bullets": [
+     "Doubling the voltage halves the current for the same horsepower: 28 A at 230 V and 14 A at 460 V for 10 hp.",
+     "The 208 volt column is higher than the 230 volt column for the same horsepower, since lower voltage requires more current for the same power.",
+     "Notes under the tables state which actual system voltages each column covers, for example that the 460 volt column covers 440 to 480 volt systems. Read these notes in your own copy of the Code."
+    ],
+    "keypoint": "Match the nameplate voltage to the correct column, and remember the separate 200, 208 and 230 volt columns give different currents for the same horsepower.",
+    "info": "Single-phase example from Table 430.248: a 2 hp, 115 volt motor is 24 A, a 5 hp, 230 volt motor is 28 A, and a 10 hp, 230 volt motor is 50 A.",
+    "refs": [
+     "NEC Table 430.250",
+     "NEC Table 430.248",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Code Book Lookup Exercise: Find the FLC for Different Motors",
+    "body": "Open your Code book to Part XIV and work the following motors one at a time. For each one write the table, the voltage column, the full-load current and the Code reference. Do the lookup first, cover the Answer column, and then check your work against it.",
+    "table": {
+     "h": [
+      "Motor",
+      "Table to open",
+      "Column",
+      "Answer"
+     ],
+     "r": [
+      [
+       "A. 2 hp, 115 V, single-phase",
+       "430.248",
+       "115 V",
+       "24 A"
+      ],
+      [
+       "B. 5 hp, 230 V, single-phase",
+       "430.248",
+       "230 V",
+       "28 A"
+      ],
+      [
+       "C. 7-1/2 hp, 208 V, three-phase",
+       "430.250",
+       "208 V",
+       "24.2 A"
+      ],
+      [
+       "D. 20 hp, 460 V, three-phase",
+       "430.250",
+       "460 V",
+       "27 A"
+      ],
+      [
+       "E. 50 hp, 230 V, three-phase",
+       "430.250",
+       "230 V",
+       "130 A"
+      ],
+      [
+       "F. 30 hp, 460 V, three-phase",
+       "430.250",
+       "460 V",
+       "40 A"
+      ]
+     ]
+    },
+    "step_list": [
+     "Decide the number of phases on the nameplate. Single-phase goes to Table 430.248, three-phase to Table 430.250.",
+     "Run down the horsepower column to the correct row. Use your finger or a straightedge to avoid sliding to the neighbouring row.",
+     "Slide across to the column that matches the rated voltage (115, 208, 230 or 460).",
+     "Write the number with units and the table name, for example: Table 430.250, 20 hp, 460 V = 27 A.",
+     "Check reasonableness: at the same horsepower, the 460 volt current should be about half the 230 volt current."
+    ],
+    "keypoint": "A correct lookup always records the table number, the horsepower row, the voltage column and the resulting current.",
+    "refs": [
+     "NEC Table 430.248",
+     "NEC Table 430.250",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "Exercise Continued: Table Current Versus Nameplate Current",
+    "body": "Now compare the table value with the nameplate for a motor you actually have in front of you. Take a 30 horsepower, 460 volt, three-phase motor whose nameplate reads 36 amperes with a service factor of 1.15. The table value for the same motor is 40 amperes. They differ, and each is correct for a different job.",
+    "table": {
+     "h": [
+      "Calculation",
+      "Current used",
+      "Value"
+     ],
+     "r": [
+      [
+       "Branch-circuit conductor ampacity (125 percent)",
+       "Table 40 A",
+       "50 A minimum"
+      ],
+      [
+       "Disconnect rating (115 percent)",
+       "Table 40 A",
+       "46 A minimum"
+      ],
+      [
+       "Short-circuit device (for example 250 percent inverse-time)",
+       "Table 40 A",
+       "100 A maximum"
+      ],
+      [
+       "Overload limit with service factor 1.15 (125 percent)",
+       "Nameplate 36 A",
+       "45 A maximum"
+      ]
+     ]
+    },
+    "step_list": [
+     "Table current from Table 430.250 for 30 hp at 460 V: 40 A.",
+     "Conductors: 40 x 1.25 = 50 A minimum ampacity.",
+     "Disconnect: 40 x 1.15 = 46 A minimum rating.",
+     "Short-circuit device with an inverse-time breaker: 40 x 2.50 = 100 A, which is a standard size.",
+     "Overload device with a service factor of 1.15: 36 x 1.25 = 45 A maximum trip current.",
+     "Record each answer with its Code reference."
+    ],
+    "keypoint": "State for every calculation which current applies; the answer changes if you use the wrong one.",
+    "warning": "Do not mix the two values. Sizing the conductors from 36 A would give 45 A, which is 5 A short of the 50 A required.",
+    "refs": [
+     "NEC 430.6",
+     "NEC Table 430.250",
+     "NEC 430.22",
+     "NEC 430.32"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Motor Theory: Speed, Torque and Efficiency",
+    "body": "A few relationships from motor theory explain why the tables look the way they do. The speed of an ac induction motor depends on the supply frequency and the number of poles. Torque links horsepower to speed, and efficiency links the power drawn to the power delivered. These are not Code rules, but they help you judge whether a number is reasonable.",
+    "def_grid": [
+     {
+      "term": "Synchronous speed",
+      "body": "rpm = 120 x frequency / poles. At 60 Hz: 2 poles = 3,600, 4 poles = 1,800, 6 poles = 1,200, 8 poles = 900 rpm. Real rotor speed is a little lower (slip), for example about 1,750 rpm for a 4-pole motor."
+     },
+     {
+      "term": "Torque",
+      "body": "Torque (lb-ft) = hp x 5,252 / rpm. A 10 hp motor at 1,750 rpm: 10 x 5,252 / 1,750 = 30.0 lb-ft. At 3,450 rpm it is only 15.2 lb-ft."
+     },
+     {
+      "term": "Efficiency",
+      "body": "Efficiency = output power / input power. Output in watts = hp x 746, so 10 hp = 7,460 W. At 90 percent efficiency the input is 7,460 / 0.90 = 8,289 W."
+     },
+     {
+      "term": "Why it matters",
+      "body": "Real motors need more than the ideal current because of losses and a power factor below 1.0. Module 4 shows the arithmetic with the 10 hp, 460 volt motor."
+     }
+    ],
+    "bullets": [
+     "Slip for a 4-pole motor at 1,750 rpm: (1,800 - 1,750) / 1,800 = 2.8 percent.",
+     "Lower-speed motors of the same horsepower produce more torque, since torque is inversely proportional to speed.",
+     "Starting current is several times the running current, which is the reason Code percentages for short-circuit devices are above 100 percent."
+    ],
+    "keypoint": "Synchronous speed, torque and efficiency are simple formulas that help you check that motor data is reasonable.",
+    "refs": [
+     "NEC Article 430"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A 1/2 HP, 230 V, three-phase induction motor nameplate reads 2.1 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "2.2 A",
+     "2.1 A",
+     "2.8 A",
+     "2.6 A"
+    ],
+    "correct": 0,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.250): 2.2 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "A 5 HP motor is 85 percent efficient. How many watts does it draw at full load, to the nearest watt?",
+    "opts": [
+     "5,882 W",
+     "4,388 W",
+     "3,171 W",
+     "3,730 W"
+    ],
+    "correct": 1,
+    "explain": "Output watts = 5 x 746 = 3,730 W. Input = output / efficiency = 3,730 / 0.85 = 4,388.2 W. Recognise it: a motor always draws more than it delivers; divide output by efficiency. Why the other choices are wrong: 3,730 W - ignored efficiency (that is output watts); 3,171 W - multiplied by efficiency instead of dividing; 5,882 W - used 1,000 W per HP. [HP = 746 W; efficiency]"
+   },
+   {
+    "q": "A motor nameplate lists full-load current of 18 A. A clamp meter reads 12 A while the motor drives its load. The most likely explanation is",
+    "opts": [
+     "the clamp is on the neutral",
+     "the supply voltage is too high by 50 percent",
+     "the motor is overloaded",
+     "the motor is lightly loaded (below full load)"
+    ],
+    "correct": 3,
+    "explain": "Motor current is proportional to the mechanical load. 12 A is two-thirds of the nameplate, so the load is below rated. An overload would read above 18 A. [Motor loading]"
+   },
+   {
+    "q": "Using the NEC tables, what full-load current is used for a 2 HP, 208 V, three-phase induction motor?",
+    "opts": [
+     "9.4 A",
+     "6.8 A",
+     "7.5 A",
+     "3.4 A"
+    ],
+    "correct": 2,
+    "explain": "Table 430.250: 2 HP at 208 V = 7.5 A. [NEC Table 430.250, 430.6(A)(1)]"
+   },
+   {
+    "q": "What is the minimum ampacity for the branch-circuit conductors to a single 25 HP, 230 V, three-phase induction motor?",
+    "opts": [
+     "102 A",
+     "78.2 A",
+     "85 A",
+     "68 A"
+    ],
+    "correct": 2,
+    "explain": "125% × 68 A (table FLC) = 85 A. [NEC 430.22, 430.6(A)(1)]"
+   },
+   {
+    "q": "What is the minimum ampacity for the branch-circuit conductors to a single 1/2 HP, 230 V, single-phase induction motor?",
+    "opts": [
+     "5.6 A",
+     "7.4 A",
+     "4.9 A",
+     "6.1 A"
+    ],
+    "correct": 3,
+    "explain": "125% × 4.9 A (table FLC) = 6.1 A. [NEC 430.22, 430.6(A)(1)]"
+   }
+  ]
+ },
+ {
+  "title": "Conductors and overload protection",
+  "time": "60 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "The 125 percent rule for a single continuous-duty motor under 430.22",
+   "Why the table current is used even when the nameplate differs",
+   "Terminal temperature limits and the correct Table 310.16 column",
+   "A complete conductor and disconnect calculation for a 10 hp, 460 volt motor",
+   "Overload protection basics under 430.31 and 430.32",
+   "The 115 and 125 percent overload limits and what decides which applies",
+   "Three common errors in conductor and overload sizing, corrected with numbers",
+   "A worked overload example from a nameplate, including the 430.32(C) increase"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "Branch-Circuit Conductors for a Single Motor: 430.22",
+    "body": "A motor draws more than its running current for a few seconds at startup and may run hotter than expected during load swings, so the Code adds a margin to the conductors. For a single motor used for continuous duty, the branch-circuit conductors must have an ampacity of at least 125 percent of the motor full-load current. The full-load current is the one from the tables, as 430.6(A)(1) requires, even when the nameplate shows a different number.",
+    "def_grid": [
+     {
+      "term": "Rule",
+      "body": "Ampacity of the branch-circuit conductors is at least 1.25 x FLC for a single continuous-duty motor."
+     },
+     {
+      "term": "Current to use",
+      "body": "Table full-load current from Tables 430.247 through 430.250, not the nameplate, per 430.6(A)(1)."
+     },
+     {
+      "term": "Example",
+      "body": "10 hp, 460 V, three-phase: 14 A x 1.25 = 17.5 A minimum ampacity."
+     },
+     {
+      "term": "Not the same as",
+      "body": "The 125 percent rule for continuous loads in general circuits (210.19, 215.2). The motor rule is separate and uses the table value."
+     }
+    ],
+    "bullets": [
+     "The same 125 percent figure appears in both rules, which is why students confuse them, but the motor rule comes from Article 430 and uses a table current.",
+     "Other duty types (short-time, intermittent, periodic, varying) use different percentages from Table 430.22(E).",
+     "Small-conductor limits in 240.4(D) do not apply to motor circuits, because 240.4(G) sends motor circuits to Article 430."
+    ],
+    "keypoint": "Minimum branch-circuit conductor ampacity for one continuous-duty motor = 125 percent x table full-load current.",
+    "refs": [
+     "NEC 430.22",
+     "NEC 430.6",
+     "NEC Table 430.250"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "Choosing the Table 310.16 Column: Terminal Temperature Limits",
+    "body": "Once the minimum ampacity is known, you pick a conductor from Table 310.16. The column to use is controlled by 110.14(C), which limits the ampacity to the temperature rating of the lowest-rated termination in the circuit. Terminations on equipment for circuits of 100 amperes or less are generally treated as rated 60 degrees C unless the equipment is marked otherwise, and many motor controllers and disconnects are marked for 75 degrees C.",
+    "table": {
+     "h": [
+      "Copper conductor size",
+      "60 C column",
+      "75 C column",
+      "90 C column"
+     ],
+     "r": [
+      [
+       "14 AWG",
+       "15 A",
+       "20 A",
+       "25 A"
+      ],
+      [
+       "12 AWG",
+       "20 A",
+       "25 A",
+       "30 A"
+      ],
+      [
+       "10 AWG",
+       "30 A",
+       "35 A",
+       "40 A"
+      ],
+      [
+       "8 AWG",
+       "40 A",
+       "50 A",
+       "55 A"
+      ],
+      [
+       "6 AWG",
+       "55 A",
+       "65 A",
+       "75 A"
+      ]
+     ]
+    },
+    "step_list": [
+     "Compute the minimum ampacity with the 125 percent rule.",
+     "Read the equipment markings for the terminal temperature rating; use 60 C if nothing is marked and the circuit is 100 A or less.",
+     "Choose the column that matches the lowest-rated terminal.",
+     "Pick the smallest conductor whose ampacity in that column is at least the minimum.",
+     "Check whether 110.14(C) allows a higher column for your motor. Read the permissions for motors with design letters B, C, D or E before relying on them."
+    ],
+    "keypoint": "The temperature rating of the terminals, not just the insulation of the wire, decides which column of Table 310.16 you may use.",
+    "warning": "Higher-rated insulation (for example 90 C THHN) does not raise the allowed ampacity above the termination limit. It can be used for derating starting points only.",
+    "refs": [
+     "NEC 110.14",
+     "NEC Table 310.16",
+     "NEC 430.22"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Worked Example: Conductors for a 10 hp, 460 V Motor",
+    "body": "A 10 horsepower, 460 volt, three-phase squirrel-cage motor is fed by a single branch circuit. Find the minimum conductor ampacity, select a copper conductor, and determine the minimum rating of the disconnecting means. Every step uses the table current from Table 430.250.",
+    "step_list": [
+     "Table 430.250, 10 hp, 460 V column: FLC = 14 A.",
+     "430.22: minimum ampacity = 14 A x 1.25 = 17.5 A.",
+     "Table 310.16, 75 C copper column, smallest size with ampacity at least 17.5 A: 14 AWG at 20 A (240.4(D) small-conductor limit does not apply to motor circuits, see 240.4(G)).",
+     "Check terminals: if the equipment is marked for 75 C, 14 AWG at 20 A passes. If the terminals are only 60 C rated, 14 AWG at 15 A is too small; use 12 AWG (20 A at 60 C).",
+     "Result: 14 AWG (75 C terminals) or 12 AWG (60 C terminals) copper, with ampacity at least 17.5 A."
+    ],
+    "keypoint": "Table current 14 A gives 17.5 A of conductor ampacity, and a 14 AWG copper conductor in the 75 C column (20 A) satisfies it.",
+    "info": "The selected conductor is permitted to be protected at much more than its ampacity, since the overload device and the short-circuit device of the motor circuit follow Article 430 rules. That is covered in later slides.",
+    "refs": [
+     "NEC 430.22",
+     "NEC Table 430.250",
+     "NEC Table 310.16",
+     "NEC 110.14"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Worked Example Continued: The Disconnecting Means Rating",
+    "body": "The same motor needs a disconnecting means. Section 430.110(A) requires the ampere rating of the disconnect to be at least 115 percent of the motor full-load current from the table. This is a different percentage from the conductor rule, so write it separately on your work sheet.",
+    "step_list": [
+     "Table FLC for the 10 hp, 460 V motor is 14 A.",
+     "430.110(A): minimum disconnect ampere rating = 14 A x 1.15 = 16.1 A.",
+     "Pick a disconnect from the permitted types in 430.109 rated at least 16.1 A, for example a 30 A horsepower-rated motor-circuit switch. The next standard switch size above 16.1 A is typically 30 A.",
+     "Confirm that the switch is also rated in horsepower at least equal to the motor (10 hp at 460 V) if a horsepower rated switch is used.",
+     "Write the answer: disconnect at least 16.1 A, with section 430.110."
+    ],
+    "table": {
+     "h": [
+      "Quantity",
+      "Formula",
+      "Result"
+     ],
+     "r": [
+      [
+       "Table FLC",
+       "Table 430.250",
+       "14 A"
+      ],
+      [
+       "Minimum conductor ampacity",
+       "14 x 1.25",
+       "17.5 A"
+      ],
+      [
+       "Minimum disconnect rating",
+       "14 x 1.15",
+       "16.1 A"
+      ]
+     ]
+    },
+    "keypoint": "Disconnect minimum = 115 percent x table FLC. For this motor, 14 x 1.15 = 16.1 A.",
+    "refs": [
+     "NEC 430.110",
+     "NEC 430.109",
+     "NEC Table 430.250"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "Motor Overload Protection: 430.31 and 430.32",
+    "body": "Overload protection guards the motor, the controller and the branch-circuit conductors against heating from running overloaded or failing to start. It is not intended to respond to short circuits. Section 430.32 sets the maximum trip current or setting of a separate overload device, and the percentage depends on the markings on the motor. The base for that percentage is the nameplate current.",
+    "def_grid": [
+     {
+      "term": "Purpose",
+      "body": "Protect against overheating from running overload and failure to start; it will not clear a fault."
+     },
+     {
+      "term": "Base current",
+      "body": "Nameplate full-load current of the motor, per 430.6(A)(2)."
+     },
+     {
+      "term": "Device types",
+      "body": "Separate overload relays (thermal or electronic), fuses or circuit breakers used for overload, and thermal protectors built into the motor. Details are in 430.32 through 430.40."
+     },
+     {
+      "term": "Not covered here",
+      "body": "Overload rules for motors of different duty types and for motors protected by a thermal protector or integral electronics. Read 430.32(A) through (D) and 430.33 for these."
+     }
+    ],
+    "bullets": [
+     "A three-phase motor needs overload units in all three phases when relays are used (see Table 430.37).",
+     "The overload device and the branch-circuit short-circuit device may be the same device only if its rating also meets 430.32.",
+     "Overload protection has no relation to the 125 percent conductor rule except that the conductors must be at least as large as what the motor draws."
+    ],
+    "keypoint": "The overload device is selected from the nameplate full-load current of the actual motor, never from the table.",
+    "refs": [
+     "NEC 430.31",
+     "NEC 430.32",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "The 125 and 115 Percent Limits and Increases for Starting",
+    "body": "For a motor that is continuous duty, 430.32(A)(1) caps a separate overload device at 125 percent of the nameplate current when the motor is marked with a service factor of 1.15 or greater, or with a temperature rise of 40 degrees C or less. All other motors are capped at 115 percent. If the device selected under these limits will not carry the starting current and trips during normal starting, 430.32(C) lets you go higher, but only to a stated ceiling.",
+    "table": {
+     "h": [
+      "Motor marking",
+      "Normal maximum (430.32(A)(1))",
+      "If it will not start (430.32(C))"
+     ],
+     "r": [
+      [
+       "Service factor 1.15 or higher",
+       "125 percent of nameplate",
+       "140 percent of nameplate"
+      ],
+      [
+       "Temperature rise 40 C or less",
+       "125 percent of nameplate",
+       "140 percent of nameplate"
+      ],
+      [
+       "All other motors",
+       "115 percent of nameplate",
+       "130 percent of nameplate"
+      ]
+     ]
+    },
+    "bullets": [
+     "The percentages are maximums. A lower setting that still starts the motor is acceptable and gives better protection.",
+     "Check your own copy of 430.32(A) and (C) to confirm the wording, since this is a frequent exam item."
+    ],
+    "keypoint": "Service factor of 1.15 or more, or temperature rise of 40 C or less: 125 percent. Everything else: 115 percent. If starting trips the device, the ceilings are 140 and 130 percent.",
+    "warning": "The reasoning is easy to reverse. A motor built with extra thermal capacity (service factor 1.15 or higher) can be allowed the higher 125 percent setting. Motors without this margin get the tighter 115 percent limit.",
+    "refs": [
+     "NEC 430.32",
+     "NEC 430.31"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Discussion of Common Errors: Conductors and Overloads (Part 1)",
+    "body": "Most motor-circuit errors come from using the wrong current value or the wrong percentage. Here are three sample calculations containing errors. Work each one to find the mistake, then compare with the correction.",
+    "step_list": [
+     "Sample 1: 30 hp, 460 V motor, nameplate 36 A. Student sizes conductors at 36 x 1.25 = 45 A. Error: nameplate used for conductors. Correct: table FLC 40 A x 1.25 = 50 A minimum (430.6(A)(1), 430.22).",
+     "Sample 2: 10 hp, 460 V motor, nameplate 12.8 A, service factor 1.15. Student sets overload limit at table 14 x 1.25 = 17.5 A. Error: table used for overload. Correct: nameplate 12.8 x 1.25 = 16.0 A maximum (430.6(A)(2), 430.32(A)(1)).",
+     "Sample 3: 10 hp, 460 V motor. Student sizes conductors at 14 x 1.15 = 16.1 A. Error: the 115 percent factor belongs to the disconnect rule. Correct: 14 x 1.25 = 17.5 A for conductors (430.22); 16.1 A is the disconnect minimum (430.110)."
+    ],
+    "keypoint": "Test each calculation by asking which current value was used and whether it matches 430.6 for that job.",
+    "info": "Each error uses the right arithmetic on the wrong inputs. The habit that prevents it is to write the section number beside every result.",
+    "refs": [
+     "NEC 430.6",
+     "NEC 430.22",
+     "NEC 430.32"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Discussion of Common Errors: Applying the Fixes",
+    "body": "Having found the errors, build a short checklist that you run before accepting any motor circuit calculation. A checklist beats memory when the exam or the job site is busy. The questions are the same every time and take about a minute.",
+    "table": {
+     "h": [
+      "Question",
+      "Check",
+      "Reference"
+     ],
+     "r": [
+      [
+       "What is being sized?",
+       "Conductor, overload, short-circuit device, disconnect",
+       "Parts II, III, IV, IX"
+      ],
+      [
+       "Which current?",
+       "Table for all but overload; nameplate for overload",
+       "430.6(A)"
+      ],
+      [
+       "Which percentage?",
+       "125 conductors, 115 disconnect, 125 or 115 overload (by marking), Table 430.52 for short-circuit",
+       "430.22, 430.110, 430.32, 430.52"
+      ],
+      [
+       "Is the terminal rating respected?",
+       "Column of Table 310.16 matches the terminals",
+       "110.14(C)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Practice: re-do Sample 1 from the previous slide with a 20 hp, 460 V motor (table 27 A, nameplate 25.5 A). Conductors: 27 x 1.25 = 33.75 A. Disconnect: 27 x 1.15 = 31.05 A.",
+     "For the same motor with service factor 1.15, overload maximum is 25.5 x 1.25 = 31.9 A.",
+     "Write the citation beside each result so a reviewer can check your work."
+    ],
+    "keypoint": "Run a four-question checklist: what is being sized, which current applies, which percentage applies, and which section proves it.",
+    "refs": [
+     "NEC 430.6",
+     "NEC 430.22",
+     "NEC 430.32",
+     "NEC 430.110"
+    ]
+   },
+   {
+    "tag": "M2·S9",
+    "title": "Worked Example: Overload Sizing from a Nameplate",
+    "body": "A motor has a nameplate current of 13.2 amperes. The limit that applies depends on the other nameplate markings. Compare two versions of the same motor: one marked with a service factor of 1.15, and one with a service factor of 1.0 and no marked temperature rise of 40 C or less.",
+    "step_list": [
+     "Nameplate current (430.6(A)(2)): 13.2 A.",
+     "Motor A, service factor 1.15: 430.32(A)(1) allows 125 percent. 13.2 x 1.25 = 16.5 A maximum.",
+     "Motor B, service factor 1.0, no 40 C temperature rise marking: 115 percent. 13.2 x 1.15 = 15.18 A maximum.",
+     "Select a relay or heater from the manufacturer's table at or below the limit. A setting of about 15 A would satisfy both motors.",
+     "Compare with the conductor: the branch circuit conductors are sized from the table FLC, so for a 10 hp, 460 V motor they are at least 17.5 A, which is above both overload limits."
+    ],
+    "keypoint": "Same nameplate current, different markings: 13.2 A gives 16.5 A maximum with a 1.15 service factor, and 15.18 A with a 1.0 service factor.",
+    "refs": [
+     "NEC 430.32",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M2·S10",
+    "title": "Worked Example Continued: When the Overload Trips on Start",
+    "body": "Suppose the overload device chosen under the normal limit trips every time the motor starts. Section 430.32(C) permits a larger rating, but only up to a ceiling: 140 percent of nameplate for motors with a service factor of 1.15 or more or a temperature rise of 40 C or less, and 130 percent for others. This is a last resort after checking that the motor is not actually overloaded or mechanically bound.",
+    "step_list": [
+     "Motor A (service factor 1.15): ceiling = 13.2 x 1.40 = 18.48 A.",
+     "Motor B (service factor 1.0): ceiling = 13.2 x 1.30 = 17.16 A.",
+     "Raise the setting step by step. Do not jump to the ceiling; use the lowest value that lets the motor start.",
+     "Record the final setting and the reason, then check the motor for jams, low voltage and loading.",
+     "State the section for each limit: 430.32(A)(1) for the first limit and 430.32(C) for the increase."
+    ],
+    "table": {
+     "h": [
+      "Motor",
+      "Nameplate",
+      "Normal limit",
+      "Start-trip ceiling"
+     ],
+     "r": [
+      [
+       "Service factor 1.15",
+       "13.2 A",
+       "16.5 A (125 percent)",
+       "18.48 A (140 percent)"
+      ],
+      [
+       "Service factor 1.0",
+       "13.2 A",
+       "15.18 A (115 percent)",
+       "17.16 A (130 percent)"
+      ]
+     ]
+    },
+    "keypoint": "The 430.32(C) ceilings for the 13.2 A motor are 18.48 A (140 percent) and 17.16 A (130 percent).",
+    "warning": "Rounding: relay settings are usually adjustable in steps. Choose a setting not greater than the limit; do not round up past it.",
+    "refs": [
+     "NEC 430.32",
+     "NEC 430.31"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A 1/2 HP, 230 V, single-phase induction motor has a nameplate current of 4.7 A and a service factor of 1.00. What is the standard maximum overload trip setting under 430.32(A)(1)?",
+    "opts": [
+     "6.1 A",
+     "5.6 A",
+     "5.9 A",
+     "5.4 A"
+    ],
+    "correct": 3,
+    "explain": "Service factor 1.00 → 115% of nameplate current: 4.7 × 1.15 = 5.4 A. Use the nameplate for overloads, not the table FLC. [NEC 430.32(A)(1)]"
+   },
+   {
+    "q": "A 100 HP, 230 V, three-phase induction motor has a nameplate current of 260.4 A and a service factor of 1.00. What is the standard maximum overload trip setting under 430.32(A)(1)?",
+    "opts": [
+     "285.2 A",
+     "338.5 A",
+     "325.5 A",
+     "299.5 A"
+    ],
+    "correct": 3,
+    "explain": "Service factor 1.00 → 115% of nameplate current: 260.4 × 1.15 = 299.5 A. Use the nameplate for overloads, not the table FLC. [NEC 430.32(A)(1)]"
+   },
+   {
+    "q": "A 1/2 HP, 230 V, single-phase induction motor (nameplate 4.4 A, service factor 1.15) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "6.6 A",
+     "6.2 A",
+     "5.5 A",
+     "6.9 A"
+    ],
+    "correct": 1,
+    "explain": "430.32(C): up to 140% of nameplate for service factor 1.15: 4.4 × 1.4 = 6.2 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "A 8-pole, 60 Hz induction motor has 5 percent slip at full load. What is the rotor speed, to the nearest RPM?",
+    "opts": [
+     "895 RPM",
+     "855 RPM",
+     "900 RPM",
+     "945 RPM"
+    ],
+    "correct": 1,
+    "explain": "Ns = 120 x 60 / 8 = 900 RPM. Rotor speed = Ns x (1 - slip) = 900 x 0.950 = 855.0 RPM. Recognise it: an induction rotor always turns slower than the field, so reduce Ns by the slip fraction. Why the other choices are wrong: 945 RPM - added slip to synchronous speed; 895 RPM - subtracted the percent as RPM; 900 RPM - gave synchronous speed. [Slip]"
+   },
+   {
+    "q": "A 10 HP, 230 V, three-phase induction motor (nameplate 26.6 A, service factor 1.00) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "39.9 A",
+     "34.6 A",
+     "36.4 A",
+     "30.6 A"
+    ],
+    "correct": 1,
+    "explain": "430.32(C): up to 130% of nameplate for service factor 1.00: 26.6 × 1.3 = 34.6 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "A standard part-winding start induction motor uses separate overload devices for each winding half. What is the maximum branch-circuit short-circuit and ground-fault protection for each winding connection?",
+    "opts": [
+     "One-half the value specified by 430.52",
+     "The full value permitted by 430.52",
+     "125 percent of the value in 430.52",
+     "Twice the value in 430.52"
+    ],
+    "correct": 0,
+    "explain": "Each motor-winding connection must have short-circuit and ground-fault protection rated at not more than one-half that specified in 430.52. [NEC 430.4]"
+   },
+   {
+    "q": "A 30 HP, 230 V, three-phase induction motor (nameplate 76 A, service factor 1.15) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "106.4 A",
+     "95 A",
+     "114 A",
+     "112 A"
+    ],
+    "correct": 0,
+    "explain": "430.32(C): up to 140% of nameplate for service factor 1.15: 76 × 1.4 = 106.4 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "A motor winding insulation system's life is most directly shortened by",
+    "opts": [
+     "operating above its rated temperature",
+     "operating below nameplate current",
+     "running at the correct voltage",
+     "using a higher power factor"
+    ],
+    "correct": 0,
+    "explain": "Insulation life roughly halves for each 10 degrees C above its rated temperature. Heat is the main enemy of motors, which is why overload protection is required. [Motor insulation]"
+   }
+  ]
+ },
+ {
+  "title": "Short-circuit protection, disconnects and controllers",
+  "time": "65 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "What branch-circuit short-circuit and ground-fault protection does and does not do",
+   "Table 430.52 percentages by device type for a squirrel-cage motor",
+   "Rounding to standard sizes and the increases permitted when a motor will not start",
+   "Complete short-circuit device selection for a 10 hp, 460 volt motor",
+   "Controller requirements in 430.81 through 430.83",
+   "Disconnecting means location, type and rating in 430.102, 430.109 and 430.110",
+   "Article 440: nameplate rated-load current, conductors, protection and disconnects",
+   "Common errors in protection and disconnect calculations"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "Branch-Circuit Short-Circuit and Ground-Fault Protection: Purpose",
+    "body": "Part IV of Article 430 deals with the device that protects the branch circuit, controller and motor from short circuits and ground faults. It has a different job from the overload device. The overload device allows a motor to start and ride through brief surges but opens on sustained overload. The short-circuit device must be large enough to let the starting current pass without opening, yet small enough to clear a fault quickly.",
+    "table": {
+     "h": [
+      "Device",
+      "Protects against",
+      "Sized from"
+     ],
+     "r": [
+      [
+       "Overload relay or device",
+       "Sustained overload and failure to start",
+       "Nameplate current (430.32)"
+      ],
+      [
+       "Branch-circuit short-circuit and ground-fault device",
+       "Short circuits and ground faults",
+       "Table full-load current (430.52)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Motor starting (locked-rotor) current is commonly six times full-load current or more, and it lasts a few seconds.",
+     "That is why the percentages in Table 430.52 are well above 100 percent of FLC.",
+     "The device must still be selected so that it protects the controller. If the controller or overload relay is marked with a maximum protective device, that marking also applies."
+    ],
+    "keypoint": "The short-circuit and ground-fault device is sized from the table full-load current, and its limits are generous because it must not open on motor starting current.",
+    "refs": [
+     "NEC 430.52",
+     "NEC Table 430.52",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Table 430.52: Maximum Device Ratings for an AC Squirrel-Cage Motor",
+    "body": "Table 430.52 lists the maximum rating or setting of the short-circuit and ground-fault device as a percentage of the table full-load current. The percentage depends on the device type and the motor type. For a standard alternating-current squirrel-cage motor the common entries are shown below. The table has other rows for other motor types such as wound-rotor and direct-current motors, and has different entries for some energy-efficient designs, so check the row for your motor.",
+    "table": {
+     "h": [
+      "Device type",
+      "Maximum percent of table FLC",
+      "Example for 14 A (10 hp, 460 V)"
+     ],
+     "r": [
+      [
+       "Non-time-delay fuse",
+       "300 percent",
+       "14 x 3.00 = 42 A"
+      ],
+      [
+       "Dual-element (time-delay) fuse",
+       "175 percent",
+       "14 x 1.75 = 24.5 A"
+      ],
+      [
+       "Instantaneous-trip circuit breaker",
+       "800 percent",
+       "14 x 8.00 = 112 A"
+      ],
+      [
+       "Inverse-time circuit breaker",
+       "250 percent",
+       "14 x 2.50 = 35 A"
+      ]
+     ]
+    },
+    "keypoint": "Non-time-delay fuse 300 percent, dual-element fuse 175 percent, inverse-time breaker 250 percent, instantaneous-trip breaker 800 percent of table FLC.",
+    "warning": "An instantaneous-trip breaker may be used only as part of a listed combination motor controller and with the adjustable setting limits in 430.52(C)(3). Do not treat it as a general replacement for a thermal-magnetic breaker.",
+    "info": "The percentage is a maximum. A smaller device that still lets the motor start is allowed and gives tighter protection.",
+    "refs": [
+     "NEC 430.52",
+     "NEC Table 430.52"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "Standard Sizes and Increases When the Motor Will Not Start",
+    "body": "The calculated limit seldom lands on a standard device rating. The exception to 430.52(C)(1) permits the next higher standard size from 240.6(A) when the value from Table 430.52 does not correspond to a standard size. If the motor still trips the device on starting, further increases are allowed within the ceilings stated in 430.52(C)(1), which are higher for some device types than for others.",
+    "step_list": [
+     "Multiply the table FLC by the Table 430.52 percentage for the device type.",
+     "If the result is not a standard rating in 240.6(A), the next higher standard size is permitted.",
+     "Install the device. If the motor will not start without nuisance opening, check the motor, load and voltage first.",
+     "If a larger device is truly needed, use the increase allowed in 430.52(C)(1) for that device type, and stay below its stated ceiling.",
+     "Document the final rating and the section used."
+    ],
+    "bullets": [
+     "Standard ratings in 240.6(A) include 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200 and so on.",
+     "Fuses also have standard sizes of 1, 3, 6, 10 and 601 amperes listed in 240.6(A).",
+     "Where an overload relay is rated lower than the short-circuit device, the relay or the controller marking can limit the device you may choose."
+    ],
+    "keypoint": "Round a calculated maximum up to the next standard size; go beyond that only for a motor that will not start, and only within the stated ceilings.",
+    "refs": [
+     "NEC 430.52",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "Worked Example: Short-Circuit Protection for a 10 hp Motor",
+    "body": "Use the 10 horsepower, 460 volt, three-phase squirrel-cage motor with a table full-load current of 14 amperes. Find the maximum rating for each of three device types, rounding up to a standard size where the exception allows it. Then see which choice works with the rest of the circuit.",
+    "step_list": [
+     "Table 430.250, 10 hp, 460 V: 14 A.",
+     "Inverse-time breaker: 14 x 2.50 = 35 A. This is a standard size, so the maximum is 35 A.",
+     "Dual-element fuse: 14 x 1.75 = 24.5 A. Not a standard size. Next higher standard size from 240.6(A): 25 A.",
+     "Non-time-delay fuse: 14 x 3.00 = 42 A. Not a standard size. Next higher standard size: 45 A.",
+     "Compare: the dual-element fuse gives the tightest protection of the three. The breaker and the plain fuse are allowed higher."
+    ],
+    "table": {
+     "h": [
+      "Device",
+      "Calculation",
+      "Standard size"
+     ],
+     "r": [
+      [
+       "Inverse-time breaker",
+       "14 x 2.50 = 35",
+       "35 A"
+      ],
+      [
+       "Dual-element fuse",
+       "14 x 1.75 = 24.5",
+       "25 A"
+      ],
+      [
+       "Non-time-delay fuse",
+       "14 x 3.00 = 42",
+       "45 A"
+      ]
+     ]
+    },
+    "keypoint": "For the 14 A motor: inverse-time breaker 35 A, dual-element fuse 25 A, non-time-delay fuse 45 A.",
+    "refs": [
+     "NEC 430.52",
+     "NEC Table 430.52",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "Worked Example Continued: Does the Choice Work with the Whole Circuit?",
+    "body": "A selection is complete only when you check it against the rest of the circuit. The device must be able to carry the motor starting current, which is why a device cannot be too small, and it must not exceed the Table 430.52 maximum. It also should not be larger than a controller or overload relay marking allows. The branch-circuit conductors are permitted to carry a device larger than their ampacity because the overload device protects them from overload.",
+    "table": {
+     "h": [
+      "Circuit element",
+      "Value for the 10 hp, 460 V motor"
+     ],
+     "r": [
+      [
+       "Table FLC",
+       "14 A"
+      ],
+      [
+       "Conductor minimum ampacity",
+       "17.5 A (14 AWG copper at 75 C, 20 A)"
+      ],
+      [
+       "Overload limit (nameplate 13.2 A, service factor 1.15)",
+       "16.5 A"
+      ],
+      [
+       "Dual-element fuse maximum",
+       "25 A"
+      ],
+      [
+       "Inverse-time breaker maximum",
+       "35 A"
+      ]
+     ]
+    },
+    "step_list": [
+     "Confirm the device rating is not above the Table 430.52 maximum.",
+     "Confirm it is at least large enough to start the motor without nuisance operation; if not, see the increases on the previous slide.",
+     "Read the nameplate of the controller and overload relay for a maximum protective device marking.",
+     "Record the choice, for example: 25 A dual-element fuse, per 430.52 and Table 430.52."
+    ],
+    "keypoint": "A device that carries the starting current, stays within Table 430.52 and agrees with equipment markings is a correct choice.",
+    "warning": "A selected 35 A breaker on a 14 AWG conductor looks wrong at first sight. It is permitted for a motor branch circuit because motor circuits follow Article 430, with the overload device providing overload protection.",
+    "refs": [
+     "NEC 430.52",
+     "NEC 430.32",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Controllers: 430.81 through 430.83",
+    "body": "A motor controller is the device that starts and stops the motor. Part VII of Article 430 sets out what the controller must be able to do, what it may be, and how it is rated. The key rating rule is that the controller must have a horsepower rating at least equal to the motor horsepower, with the specific wording and the exceptions in 430.83.",
+    "def_grid": [
+     {
+      "term": "430.81 General",
+      "body": "Each motor needs a controller suitable for the motor. For small motors the Code permits simple arrangements, for example the branch-circuit protective device as the controller for a stationary motor of 1/8 hp or less."
+     },
+     {
+      "term": "430.82 Controller design",
+      "body": "Covers how the controller is designed to start and stop the motor."
+     },
+     {
+      "term": "430.83 Ratings",
+      "body": "The controller must have a horsepower rating at least equal to the motor horsepower, with exceptions for some controllers rated in amperes."
+     },
+     {
+      "term": "Portable motors",
+      "body": "A portable motor of 1/3 hp or less may use an attachment plug and receptacle as the controller. Check 430.81 for the exact conditions."
+     }
+    ],
+    "bullets": [
+     "Matching the horsepower rating is done at the motor's voltage; a controller rated 10 hp at 230 V is not automatically rated 10 hp at 460 V.",
+     "The controller can be a contactor and overload relay (a starter), a manual motor controller, a motor circuit protector assembly, or a drive.",
+     "Compare the controller rules with the switch rules in Article 404, which are written for lighting and general-use switches."
+    ],
+    "keypoint": "A controller must be able to start and stop the motor and carry a horsepower rating at least equal to the motor.",
+    "refs": [
+     "NEC 430.81",
+     "NEC 430.83"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Disconnecting Means: Location, Type and Rating",
+    "body": "The disconnecting means lets a worker open the circuit to the motor and controller. Section 430.102 requires a disconnect for the controller within sight of the controller location, and a disconnect for the motor within sight of the motor and driven machinery. Section 430.109 lists the permitted types, and 430.110 sets the ampere rating at no less than 115 percent of the table full-load current.",
+    "table": {
+     "h": [
+      "Requirement",
+      "Rule",
+      "Section"
+     ],
+     "r": [
+      [
+       "Controller disconnect",
+       "Within sight of the controller location",
+       "430.102(A)"
+      ],
+      [
+       "Motor disconnect",
+       "Within sight of the motor location and the driven machinery",
+       "430.102(B)"
+      ],
+      [
+       "Types permitted",
+       "Motor-circuit switch rated in horsepower, listed molded-case breaker or switch, and other types listed in 430.109",
+       "430.109"
+      ],
+      [
+       "Ampere rating",
+       "At least 115 percent of the table full-load current",
+       "430.110(A)"
+      ],
+      [
+       "Out-of-sight option",
+       "A lockable disconnect where the exception applies (impracticable location or added hazard)",
+       "430.102(B) exception"
+      ]
+     ]
+    },
+    "bullets": [
+     "'In sight' means visible and not more than 50 feet away, as defined in Article 100.",
+     "A single disconnect can serve as both controller and motor disconnect if it is within sight of both.",
+     "Compare Article 404: a general-use snap switch has its own load limits, and 430.109 has a special allowance for small stationary motors. Read each rule in its own article."
+    ],
+    "keypoint": "A motor disconnect must be in sight, be one of the 430.109 types, and be rated at least 115 percent of table FLC.",
+    "warning": "The out-of-sight exception requires a disconnect that can be locked in the open position and meets the other conditions of the exception. Do not apply it simply because the disconnect is inconvenient to locate.",
+    "refs": [
+     "NEC 430.102",
+     "NEC 430.109",
+     "NEC 430.110",
+     "NEC Article 404"
+    ]
+   },
+   {
+    "tag": "M3·S8",
+    "title": "Article 440: Air-Conditioning and Refrigeration Equipment",
+    "body": "Article 440 applies to electrically driven air-conditioning and refrigerating equipment that has a hermetic refrigerant motor-compressor. It adds to Article 430 and changes some rules. The most important difference is the current used: for the compressor, you use the rated-load current marked on the equipment nameplate (or the branch-circuit selection current if it is marked), not the Article 430 tables.",
+    "def_grid": [
+     {
+      "term": "Rated-load current (RLC)",
+      "body": "The current marked on the compressor or equipment nameplate. It replaces the table FLC for hermetic compressors, per 440.6."
+     },
+     {
+      "term": "Branch-circuit selection current",
+      "body": "A value marked on some equipment that is used for conductor and device sizing in place of RLC when it is greater."
+     },
+     {
+      "term": "Conductors (440.32)",
+      "body": "For a single motor-compressor, ampacity of at least 125 percent of the RLC (or branch-circuit selection current if greater)."
+     },
+     {
+      "term": "Other motors in the unit",
+      "body": "Fan and pump motors that are not hermetic compressors follow Article 430 using their own tables and nameplates; see 440.33 for the combination-load rules."
+     }
+    ],
+    "bullets": [
+     "Equipment nameplates also give a minimum circuit ampacity and a maximum overcurrent device size. Those markings apply and should be used as the limits (see 440.4(B)).",
+     "Article 440 provisions are in addition to or amendatory of Article 430, which still applies except where 440 changes it.",
+     "Example: a compressor with a nameplate RLC of 18.0 A needs conductors of at least 18.0 x 1.25 = 22.5 A."
+    ],
+    "keypoint": "In Article 440 the current for a hermetic motor-compressor is the nameplate rated-load current, and branch-circuit conductors are 125 percent of it.",
+    "refs": [
+     "NEC Article 440",
+     "NEC 440.6",
+     "NEC 440.32"
+    ]
+   },
+   {
+    "tag": "M3·S9",
+    "title": "Article 440: Protection and Disconnecting Means with Numbers",
+    "body": "The short-circuit and ground-fault protective device for a single motor-compressor is limited to 175 percent of the rated-load current under 440.22(A), with a higher ceiling of 225 percent permitted if needed for the compressor to start. The disconnecting means is rated at least 115 percent of the rated-load current under 440.12. These are Article 440 percentages, so they differ from the Article 430 percentages for ordinary motors.",
+    "step_list": [
+     "Nameplate RLC: 18.0 A (use the nameplate, not a table).",
+     "Conductors, 440.32: 18.0 x 1.25 = 22.5 A minimum ampacity.",
+     "Short-circuit and ground-fault device, 440.22(A): 18.0 x 1.75 = 31.5 A maximum. If needed to start, up to 18.0 x 2.25 = 40.5 A.",
+     "Disconnecting means, 440.12: 18.0 x 1.15 = 20.7 A minimum rating.",
+     "Check the equipment nameplate for minimum circuit ampacity and maximum overcurrent device, and use those values if marked."
+    ],
+    "table": {
+     "h": [
+      "Item",
+      "Article 430 motor (14 A table FLC)",
+      "Article 440 compressor (18.0 A RLC)"
+     ],
+     "r": [
+      [
+       "Current used",
+       "Table 430.250",
+       "Nameplate RLC"
+      ],
+      [
+       "Conductors",
+       "14 x 1.25 = 17.5 A",
+       "18.0 x 1.25 = 22.5 A"
+      ],
+      [
+       "Disconnect",
+       "14 x 1.15 = 16.1 A",
+       "18.0 x 1.15 = 20.7 A"
+      ],
+      [
+       "Short-circuit device",
+       "35 A inverse-time maximum (250 percent)",
+       "31.5 A maximum (175 percent)"
+      ]
+     ]
+    },
+    "keypoint": "Article 440 limits: conductors 125 percent, protective device 175 percent (225 percent if needed to start), disconnect 115 percent of nameplate RLC.",
+    "info": "Where the equipment nameplate gives a minimum circuit ampacity (MCA) and a maximum overcurrent device (MOP), use those; they are calculated by the manufacturer under Article 440.",
+    "refs": [
+     "NEC 440.12",
+     "NEC 440.22",
+     "NEC 440.32",
+     "NEC 440.6"
+    ]
+   },
+   {
+    "tag": "M3·S10",
+    "title": "Discussion of Common Errors: Protection and Disconnects (Part 1)",
+    "body": "Protection errors usually come from the same few mistakes: using the nameplate where the table is required, using the Article 430 tables for a compressor, or forgetting to round to a standard size. Review these three samples, find the error and compare with the correction.",
+    "step_list": [
+     "Sample 1: 30 hp, 460 V motor, nameplate 36 A. Student sizes a non-time-delay fuse at 36 x 3.00 = 108 A, so 110 A. Error: nameplate used in Table 430.52. Correct: table FLC 40 A x 3.00 = 120 A, next higher standard size 125 A (430.52, Table 430.52, 240.6(A)).",
+     "Sample 2: Air-conditioner compressor, nameplate RLC 18.0 A. Student looks up a 5 hp, 230 V single-phase motor in Table 430.248 (28 A) and sizes conductors at 28 x 1.25 = 35 A. Error: Article 430 table used for a hermetic compressor. Correct: 18.0 x 1.25 = 22.5 A (440.6, 440.32).",
+     "Sample 3: 10 hp, 460 V motor, dual-element fuse. Student chooses 24.5 A and orders a 24.5 A fuse. Error: not a standard size. Correct: next higher standard size 25 A (430.52(C)(1) exception, 240.6(A))."
+    ],
+    "bullets": [
+     "Always write the table FLC next to the percentage so that the source of the number is visible.",
+     "Check that the result is a standard size from 240.6(A) before you order a device."
+    ],
+    "keypoint": "In motor protection work, ask first which article governs and which current value that article assigns.",
+    "refs": [
+     "NEC 430.52",
+     "NEC 440.6",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M3·S11",
+    "title": "Discussion of Common Errors: Disconnect Placement and Rating",
+    "body": "The third kind of error is physical rather than arithmetic. A disconnect placed out of sight of the controller, or a disconnect with too small a rating, is a violation even if the circuit calculation is correct. The correction is either to relocate it or, where the exception applies, to provide a lockable disconnect that meets the conditions.",
+    "step_list": [
+     "Sample 4: Controller is in a mechanical room and its disconnect is on the far side of a wall, 40 feet away and not visible. Error: not within sight of the controller. Correct: move the disconnect so it is visible from the controller, or use a lockable disconnect where the 430.102 exception conditions are met (430.102(A)).",
+     "Sample 5: 10 hp, 460 V motor on a 15 A general-use switch. Error: below 115 percent x 14 A = 16.1 A, and the type must be permitted by 430.109. Correct: use a motor-circuit switch or breaker rated at least 16.1 A and a horsepower rating of at least 10 hp at 460 V (430.109, 430.110).",
+     "Sample 6: A disconnect is visible from the motor but not from the controller. Error: the controller has no disconnect in sight. Correct: provide a disconnect within sight of the controller (430.102(A)). One disconnect can serve both locations only if it is visible from both."
+    ],
+    "def_grid": [
+     {
+      "term": "Location",
+      "body": "Controller disconnect in sight of controller. Motor disconnect in sight of motor and driven machinery."
+     },
+     {
+      "term": "Type",
+      "body": "One of the types listed in 430.109."
+     },
+     {
+      "term": "Rating",
+      "body": "At least 115 percent of table FLC (430.110)."
+     },
+     {
+      "term": "Lockable",
+      "body": "Required for any out-of-sight exception, and good practice generally."
+     }
+    ],
+    "keypoint": "Verify location, type and ampere rating of the disconnect on every job, not just the wire and breaker sizes.",
+    "refs": [
+     "NEC 430.102",
+     "NEC 430.110",
+     "NEC 430.109"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "What is the maximum rating of an inverse time circuit breaker for motor branch-circuit short-circuit and ground-fault protection of a three-phase squirrel-cage motor, as a percentage of table full-load current (before exceptions)?",
+    "opts": [
+     "250 percent",
+     "175 percent",
+     "150 percent",
+     "300 percent"
+    ],
+    "correct": 0,
+    "explain": "Table 430.52 permits inverse time breakers up to 250 percent of FLC for these motors. [NEC 430.52(C)(1); Table 430.52]"
+   },
+   {
+    "q": "What is the maximum standard rating of a non-time-delay fuse for branch-circuit short-circuit and ground-fault protection of a 1/2 HP, 115 V, single-phase induction motor?",
+    "opts": [
+     "25 A",
+     "15 A",
+     "30 A",
+     "20 A"
+    ],
+    "correct": 2,
+    "explain": "300% × 9.8 A = 29.4 A. If this is not a standard size, the next higher standard size is permitted: 30 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "For a stationary motor of 1/8 horsepower or less, what is permitted to serve as the disconnecting means?",
+    "opts": [
+     "A snap switch with 1/2 ampere rating",
+     "Only a lockable disconnect",
+     "The branch-circuit overcurrent device",
+     "Nothing"
+    ],
+    "correct": 2,
+    "explain": "For stationary motors of 1/8 hp or less, the branch-circuit overcurrent device may serve as the disconnecting means. [NEC 430.109(B)]"
+   },
+   {
+    "q": "For a 240-volt room air conditioner, what is the maximum length of the flexible supply cord?",
+    "opts": [
+     "6 feet (1.8 m)",
+     "10 feet",
+     "15 feet",
+     "3 feet"
+    ],
+    "correct": 0,
+    "explain": "For 208- or 240-volt room air conditioners, the cord must not exceed 1.8 m (6 ft). [NEC 440.64]"
+   },
+   {
+    "q": "What is the maximum standard rating of a dual-element (time-delay) fuse for branch-circuit short-circuit and ground-fault protection of a 10 HP, 115 V, single-phase induction motor?",
+    "opts": [
+     "125 A",
+     "250 A",
+     "300 A",
+     "175 A"
+    ],
+    "correct": 3,
+    "explain": "175% × 100 A = 175 A. If this is not a standard size, the next higher standard size is permitted: 175 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "Branch-circuit conductors supplying a single motor-compressor must have an ampacity of at least what percent of the RLC or BCSC, whichever is greater?",
+    "opts": [
+     "115 percent",
+     "125 percent",
+     "175 percent",
+     "100 percent"
+    ],
+    "correct": 1,
+    "explain": "Conductors supplying a single motor-compressor must be sized at not less than 125 percent of the RLC or BCSC, whichever is greater. [NEC 440.32]"
+   },
+   {
+    "q": "Motor equipment receives energy from more than one source. What is required?",
+    "opts": [
+     "One disconnect for the primary source only",
+     "A fuse in each source",
+     "A disconnecting means from each source of energy, unless interlocked as permitted",
+     "No disconnect"
+    ],
+    "correct": 2,
+    "explain": "Equipment receiving energy from more than one source must have a disconnecting means from each source (with an exception for interlocked disconnects). [NEC 430.113]"
+   },
+   {
+    "q": "A separate overload relay for a motor-compressor must be selected to trip at no more than what percent of the compressor's rated-load current?",
+    "opts": [
+     "125 percent",
+     "115 percent",
+     "140 percent",
+     "175 percent"
+    ],
+    "correct": 2,
+    "explain": "A separate overload relay must trip at not more than 140 percent of the motor-compressor rated-load current. [NEC 440.52(A)(1)]"
+   }
+  ]
+ },
+ {
+  "title": "Multiple motors, feeders and review",
+  "time": "65 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "Feeder conductor ampacity for several motors under 430.24",
+   "Feeder short-circuit and ground-fault protection under 430.62(A)",
+   "How the largest motor is identified and why table currents are used",
+   "A three-motor feeder worked from start to finish",
+   "Three-phase power relationships and why table currents exceed ideal currents",
+   "A complete motor circuit lookup exercise for a 15 hp, 460 volt motor",
+   "Final review of which value and which percentage applies to each calculation",
+   "Course wrap-up"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "Feeders for Multiple Motors: Conductor Ampacity (430.24)",
+    "body": "When one feeder supplies several motors, the conductors do not have to be sized for all motors starting at once. Section 430.24 requires an ampacity of at least 125 percent of the full-load current of the largest motor plus the sum of the full-load currents of the other motors in the group. The 125 percent is applied only to the largest motor. All values come from the tables.",
+    "step_list": [
+     "List each motor with its table FLC.",
+     "Identify the largest motor. The Code defines it by the highest full-load current rating from the tables, not by the nameplate or horsepower label (430.17).",
+     "Multiply the largest motor FLC by 1.25.",
+     "Add the FLCs of all other motors at 100 percent.",
+     "Select a conductor from Table 310.16 with that ampacity, in the column that matches the terminal rating (110.14(C))."
+    ],
+    "keypoint": "Feeder ampacity = 1.25 x FLC of the largest motor + sum of the FLCs of all the other motors, all from the tables.",
+    "info": "If the feeder also supplies other loads such as lighting, those loads are added using the rules of 430.24 for other loads, with continuous loads taken at 125 percent. Read the full section before applying it to mixed loads.",
+    "refs": [
+     "NEC 430.24",
+     "NEC 430.17",
+     "NEC 430.6"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "Feeders for Multiple Motors: Protection (430.62)",
+    "body": "The feeder short-circuit and ground-fault device is limited by 430.62(A). Its rating or setting may not exceed the largest rating or setting of the branch-circuit short-circuit and ground-fault device of any motor in the group, plus the sum of the full-load currents of the other motors. If the result is not a standard size, the next lower standard size from 240.6(A) is used for the feeder device.",
+    "def_grid": [
+     {
+      "term": "Largest branch device",
+      "body": "Calculate the 430.52 maximum for each motor's branch circuit and take the biggest actual device rating in the group (after rounding to a standard size)."
+     },
+     {
+      "term": "Plus the others",
+      "body": "Add the table FLC of every other motor in the group, at 100 percent."
+     },
+     {
+      "term": "Round down",
+      "body": "If the sum is not a standard size, use the next lower standard size from 240.6(A) for the feeder device."
+     },
+     {
+      "term": "Table currents",
+      "body": "Table full-load currents are used for every motor in both formulas, not the nameplate."
+     }
+    ],
+    "bullets": [
+     "Round down for the feeder, but round up for the branch-circuit device; this is the opposite direction and a frequent error.",
+     "The result is the maximum. A smaller feeder device is permitted if it carries the load.",
+     "Where the branch circuits use different device types, take the largest actual device rating, whatever its type."
+    ],
+    "keypoint": "Feeder device maximum = largest branch-circuit device rating in the group + sum of the other motors' FLCs, rounded down to a standard size.",
+    "refs": [
+     "NEC 430.62",
+     "NEC 430.52",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Worked Example: A Feeder for Three Motors (Conductors)",
+    "body": "A feeder supplies three motors, all three-phase at 460 volts: 25 horsepower, 10 horsepower and 5 horsepower. The 25 horsepower motor is the largest. Find the minimum ampacity of the feeder conductors using Table 430.250 currents.",
+    "table": {
+     "h": [
+      "Motor",
+      "Table 430.250 at 460 V"
+     ],
+     "r": [
+      [
+       "25 hp",
+       "34 A (largest)"
+      ],
+      [
+       "10 hp",
+       "14 A"
+      ],
+      [
+       "5 hp",
+       "7.6 A"
+      ]
+     ]
+    },
+    "step_list": [
+     "Largest motor: 25 hp, 34 A. 34 x 1.25 = 42.5 A.",
+     "Other motors at 100 percent: 14 + 7.6 = 21.6 A.",
+     "Minimum feeder ampacity: 42.5 + 21.6 = 64.1 A.",
+     "Table 310.16, 75 C copper: 6 AWG is 65 A, which is at least 64.1 A. (8 AWG is 50 A, too small.)",
+     "Terminal check: if any terminal in the feeder is limited to 60 C, 6 AWG is 55 A and is too small; 4 AWG (70 A at 60 C) would be required."
+    ],
+    "keypoint": "Feeder ampacity is 34 x 1.25 + 14 + 7.6 = 64.1 A, which 6 AWG copper (65 A at 75 C) satisfies.",
+    "refs": [
+     "NEC 430.24",
+     "NEC Table 430.250",
+     "NEC Table 310.16"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Worked Example Continued: The Feeder Protective Device",
+    "body": "Now find the maximum feeder device using inverse-time circuit breakers on the branch circuits. First calculate the branch-circuit breaker for each motor, then use the largest one in the 430.62(A) formula. The branch breaker for the 25 horsepower motor is the largest because it has the highest table current.",
+    "table": {
+     "h": [
+      "Motor",
+      "Table FLC",
+      "x 2.50",
+      "Standard branch breaker"
+     ],
+     "r": [
+      [
+       "25 hp",
+       "34 A",
+       "85 A",
+       "90 A (next higher)"
+      ],
+      [
+       "10 hp",
+       "14 A",
+       "35 A",
+       "35 A"
+      ],
+      [
+       "5 hp",
+       "7.6 A",
+       "19 A",
+       "20 A (next higher)"
+      ]
+     ]
+    },
+    "step_list": [
+     "Largest branch-circuit device: 34 x 2.50 = 85 A, not standard; next higher standard size is 90 A (430.52(C)(1) exception, 240.6(A)).",
+     "Add the other motors' table FLCs: 14 + 7.6 = 21.6 A.",
+     "Feeder maximum: 90 + 21.6 = 111.6 A.",
+     "111.6 A is not a standard size. Next lower standard size in 240.6(A): 110 A.",
+     "Result: feeder device not larger than 110 A."
+    ],
+    "keypoint": "Largest branch breaker 90 A + 14 + 7.6 = 111.6 A, so the feeder device is 110 A (next lower standard size).",
+    "refs": [
+     "NEC 430.62",
+     "NEC 430.52",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "Worked Example Variations: Different Device Type and Added Load",
+    "body": "Change one variable at a time to see how each input affects the answer. First, if the branch circuits use dual-element fuses, the largest branch device is smaller, and so is the feeder limit. Second, if a continuous non-motor load is also on the feeder, it is added to the conductor calculation at 125 percent.",
+    "step_list": [
+     "Dual-element fuses on the branch circuits: largest device 34 x 1.75 = 59.5 A, next higher standard size 60 A.",
+     "Feeder maximum with those fuses: 60 + 14 + 7.6 = 81.6 A, next lower standard size 80 A.",
+     "Compare with the breaker version (110 A): the fuse version is tighter by 30 A.",
+     "Adding a load: a four-motor feeder at 460 V with 30 hp (40 A), 15 hp (21 A), 5 hp (7.6 A) and 1-1/2 hp (3 A), plus 20 A of continuous lighting.",
+     "Conductors: 40 x 1.25 + 21 + 7.6 + 3 + 20 x 1.25 = 50 + 31.6 + 25 = 106.6 A."
+    ],
+    "keypoint": "The feeder limit follows the branch device type chosen, and other continuous loads add to the conductor ampacity.",
+    "info": "The 106.6 A answer takes the continuous lighting at 125 percent. Confirm the treatment of other loads against 430.24 in your Code book.",
+    "refs": [
+     "NEC 430.24",
+     "NEC 430.62",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M4·S6",
+    "title": "Three-Phase Relationships",
+    "body": "In a balanced three-phase circuit the apparent power is the square root of 3 (1.732) times the line voltage times the line current. Apparent power is measured in volt-amperes. For the table current of 14 amperes at 460 volts it is 1.732 x 460 x 14 = 11,154 VA, or about 11.2 kVA. This is what the supply must carry, whether or not all of it becomes useful work.",
+    "def_grid": [
+     {
+      "term": "Apparent power S",
+      "body": "1.732 x line volts x line amps, in VA. For 460 V and 14 A: 11,154 VA."
+     },
+     {
+      "term": "Real power P",
+      "body": "P = S x power factor, in watts. At power factor 0.85: 11,154 x 0.85 = 9,481 W."
+     },
+     {
+      "term": "Output power",
+      "body": "Horsepower x 746. For 10 hp: 7,460 W."
+     },
+     {
+      "term": "Efficiency",
+      "body": "Output divided by input. Input real power = output / efficiency."
+     }
+    ],
+    "bullets": [
+     "At 230 V the same load draws twice the current: 1.732 x 230 x 28 gives the same 11,154 VA.",
+     "Conductors and protective devices see the line current, not the watts, so power factor and efficiency affect the current they carry.",
+     "These are balanced-load formulas; they do not replace the Code tables for sizing."
+    ],
+    "keypoint": "S (VA) = 1.732 x V x I. For 460 V and 14 A, S is about 11,154 VA.",
+    "refs": [
+     "NEC Article 430"
+    ]
+   },
+   {
+    "tag": "M4·S7",
+    "title": "Why Table Currents Exceed the Current of an Ideal Motor",
+    "body": "If a 10 horsepower motor were 100 percent efficient with a power factor of 1.0, it would draw only 7,460 / (1.732 x 460) = 9.36 amperes at 460 volts. Real motors have losses and a power factor below 1.0, so they draw more. Work backward from the output to see how the numbers combine. The table value of 14 A is a standardized figure that sits above typical calculated values.",
+    "step_list": [
+     "Output: 10 hp x 746 = 7,460 W.",
+     "Assume efficiency 0.90: input power = 7,460 / 0.90 = 8,289 W.",
+     "Assume power factor 0.85: apparent power = 8,289 / 0.85 = 9,752 VA.",
+     "Current = 9,752 / (1.732 x 460) = 12.24 A.",
+     "Compare: ideal 9.36 A, assumed typical 12.24 A, table value 14 A. The assumptions used (0.90 and 0.85) are examples, not Code values."
+    ],
+    "table": {
+     "h": [
+      "Case",
+      "Efficiency",
+      "Power factor",
+      "Current at 460 V"
+     ],
+     "r": [
+      [
+       "Ideal",
+       "1.00",
+       "1.00",
+       "9.36 A"
+      ],
+      [
+       "Typical example",
+       "0.90",
+       "0.85",
+       "12.24 A"
+      ],
+      [
+       "Table 430.250",
+       "not stated",
+       "not stated",
+       "14 A"
+      ]
+     ]
+    },
+    "keypoint": "Losses and power factor raise the real current well above the ideal value; the table uses a single standard figure.",
+    "warning": "Use the table current in the Code calculations even when you can compute a smaller number. The computed current is for understanding, not for sizing.",
+    "refs": [
+     "NEC Article 430",
+     "NEC Table 430.250"
+    ]
+   },
+   {
+    "tag": "M4·S8",
+    "title": "Code Book Lookup Exercise: A Complete Motor Circuit (Part 1)",
+    "body": "You are given a 15 horsepower, 460 volt, three-phase squirrel-cage motor. Find the table current, then size the conductors, the branch-circuit short-circuit device and the disconnect. Do each step from the book before reading the results.",
+    "step_list": [
+     "Open Table 430.250. Row: 15 hp. Column: 460 V. FLC = 21 A.",
+     "Conductors, 430.22: 21 x 1.25 = 26.25 A. Table 310.16, 75 C copper: 12 AWG is 25 A (too small), 10 AWG is 35 A. Use 10 AWG copper (30 A at 60 C also works if terminals are 60 C rated).",
+     "Short-circuit device, Table 430.52: inverse-time breaker 21 x 2.50 = 52.5 A, next higher standard size 60 A. Dual-element fuse 21 x 1.75 = 36.75 A, next higher 40 A. Non-time-delay fuse 21 x 3.00 = 63 A, next higher 70 A.",
+     "Disconnect, 430.110: 21 x 1.15 = 24.15 A minimum rating, with a horsepower rating of at least 15 hp at 460 V if a horsepower rated switch is used.",
+     "Record the Code section beside each answer."
+    ],
+    "table": {
+     "h": [
+      "Item",
+      "Calculation",
+      "Result"
+     ],
+     "r": [
+      [
+       "Table FLC",
+       "Table 430.250",
+       "21 A"
+      ],
+      [
+       "Conductor ampacity",
+       "21 x 1.25",
+       "26.25 A, 10 AWG copper"
+      ],
+      [
+       "Inverse-time breaker",
+       "21 x 2.50 = 52.5",
+       "60 A"
+      ],
+      [
+       "Dual-element fuse",
+       "21 x 1.75 = 36.75",
+       "40 A"
+      ],
+      [
+       "Disconnect",
+       "21 x 1.15",
+       "24.15 A minimum"
+      ]
+     ]
+    },
+    "keypoint": "Table 430.250 gives 21 A for a 15 hp, 460 V motor, and everything except the overload derives from that number.",
+    "refs": [
+     "NEC Table 430.250",
+     "NEC 430.22",
+     "NEC 430.52",
+     "NEC 430.110"
+    ]
+   },
+   {
+    "tag": "M4·S9",
+    "title": "Lookup Exercise (Part 2): Overload Device and Citations",
+    "body": "The last piece is the overload device, which uses the nameplate. Assume this motor's nameplate reads 19.6 amperes with a service factor of 1.15. The limit is 125 percent. Then compile every answer with its section number so that another person can check the calculation.",
+    "step_list": [
+     "Nameplate current: 19.6 A (430.6(A)(2)). Service factor 1.15.",
+     "Normal limit, 430.32(A)(1): 19.6 x 1.25 = 24.5 A maximum.",
+     "If the nameplate showed service factor 1.0 and no 40 C temperature rise marking: 19.6 x 1.15 = 22.54 A.",
+     "Starting ceiling, 430.32(C): 19.6 x 1.40 = 27.44 A (service factor 1.15), or 19.6 x 1.30 = 25.48 A (service factor 1.0).",
+     "Compile the sheet: FLC 21 A (Table 430.250), conductors 26.25 A (430.22), breaker 60 A (430.52), disconnect 24.15 A (430.110), overload 24.5 A (430.32)."
+    ],
+    "keypoint": "Overload: 19.6 x 1.25 = 24.5 A maximum for a service factor of 1.15, with 27.44 A as the ceiling if the motor will not start.",
+    "warning": "The nameplate figure 19.6 A is an assumed value for this exercise. Use the actual nameplate for a real motor.",
+    "refs": [
+     "NEC 430.32",
+     "NEC 430.6",
+     "NEC 430.22",
+     "NEC 430.52",
+     "NEC 430.110"
+    ]
+   },
+   {
+    "tag": "M4·S10",
+    "title": "Final Review: Which Value, Which Percentage",
+    "body": "Every motor circuit problem is solved by choosing the right current and the right percentage. Use this slide as a one-page reference. The table current feeds conductors, short-circuit protection and disconnects. The nameplate feeds the overload. Article 440 equipment uses the nameplate rated-load current throughout.",
+    "table": {
+     "h": [
+      "Item",
+      "Current",
+      "Rule",
+      "Section"
+     ],
+     "r": [
+      [
+       "Single motor conductors",
+       "Table FLC",
+       "125 percent",
+       "430.22"
+      ],
+      [
+       "Disconnect",
+       "Table FLC",
+       "at least 115 percent",
+       "430.110"
+      ],
+      [
+       "Overload device",
+       "Nameplate",
+       "125 percent (SF 1.15 or more, or 40 C rise or less); 115 percent otherwise",
+       "430.32(A)(1)"
+      ],
+      [
+       "Branch short-circuit device",
+       "Table FLC",
+       "Table 430.52 percentages, round up",
+       "430.52"
+      ],
+      [
+       "Feeder conductors",
+       "Table FLC",
+       "125 percent of largest + others",
+       "430.24"
+      ],
+      [
+       "Feeder device",
+       "Table FLC",
+       "largest branch device + others, round down",
+       "430.62(A)"
+      ],
+      [
+       "Article 440 compressor",
+       "Nameplate RLC",
+       "125 percent conductors, 175 percent device, 115 percent disconnect",
+       "440.32, 440.22, 440.12"
+      ]
+     ]
+    },
+    "bullets": [
+     "Round the branch-circuit device up and the feeder device down.",
+     "Match terminal temperature to the Table 310.16 column.",
+     "Cite the section for every answer."
+    ],
+    "keypoint": "Table FLC for conductors, short-circuit protection and disconnects; nameplate for overload; Article 440 uses the nameplate rated-load current.",
+    "refs": [
+     "NEC 430.22",
+     "NEC 430.32",
+     "NEC 430.52",
+     "NEC 430.24",
+     "NEC 430.62"
+    ]
+   },
+   {
+    "tag": "M4·S11",
+    "title": "Final Review Drill and Course Wrap-Up",
+    "body": "Close the book and answer these questions aloud, citing a section for each. Then check your answers. The drill uses the 10 horsepower, 460 volt motor you have worked with throughout the course. The goal is that you can pick up any motor problem, name the part of Article 430 that governs it, and apply the right current and percentage.",
+    "step_list": [
+     "Q: What current sizes the branch-circuit conductors? A: Table FLC, 14 A, then 14 x 1.25 = 17.5 A (430.6(A)(1), 430.22).",
+     "Q: What current sizes the overload? A: Nameplate current (430.6(A)(2)), 125 percent or 115 percent depending on markings (430.32(A)(1)).",
+     "Q: Largest dual-element fuse? A: 14 x 1.75 = 24.5 A, next higher standard 25 A (Table 430.52, 240.6(A)).",
+     "Q: Minimum disconnect rating? A: 14 x 1.15 = 16.1 A (430.110).",
+     "Q: How does a compressor differ? A: Article 440 uses nameplate RLC (440.6) and its own percentages (440.32, 440.22, 440.12)."
+    ],
+    "bullets": [
+     "Always find the part first, then the current, then the percentage.",
+     "Keep your Code book tabbed to Parts II, III, IV, IX and XIV and to Article 440.",
+     "Verify every result against the Code edition and any local amendments in force where you work."
+    ],
+    "keypoint": "You can now size the conductors, overload, short-circuit device and disconnect for a motor, find the right table value, and handle feeders and Article 440 equipment.",
+    "refs": [
+     "NEC Article 430",
+     "NEC Article 440",
+     "NEC 430.6"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A feeder supplies 2 three-phase induction motors at 208 V (50 HP, 1 HP). What is the smallest copper feeder conductor using the 75°C column?",
+    "opts": [
+     "4/0 AWG",
+     "2/0 AWG",
+     "3/0 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 2,
+    "explain": "Table 430.250 FLCs: 50 HP = 143 A, 1 HP = 4.6 A. 125% × 143 A (largest) + 4.6 (others) = 183.4 A. Smallest Cu with 75°C ampacity ≥ 183.4 A is 3/0 AWG (200 A). [NEC 430.24, Table 310.16]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 230 V (40 HP, 25 HP, 1 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "1 HP, 4.2 A",
+     "40 HP, 104 A",
+     "25 HP, 68 A",
+     "40 HP, 130 A"
+    ],
+    "correct": 1,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 40 HP at 104 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "A feeder supplies 2 three-phase induction motors at 230 V (7-1/2 HP, 5 HP). What is the smallest copper feeder conductor using the 75°C column?",
+    "opts": [
+     "8 AWG",
+     "10 AWG",
+     "6 AWG",
+     "4 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 430.250 FLCs: 7-1/2 HP = 22 A, 5 HP = 15.2 A. 125% × 22 A (largest) + 15.2 (others) = 42.7 A. Smallest Cu with 75°C ampacity ≥ 42.7 A is 8 AWG (50 A). [NEC 430.24, Table 310.16]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 230 V (20 HP, 15 HP, 2 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "20 HP, 54 A",
+     "2 HP, 6.8 A",
+     "20 HP, 67.5 A",
+     "15 HP, 42 A"
+    ],
+    "correct": 0,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 20 HP at 54 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 230 V (25 HP, 5 HP, 3 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "25 HP, 68 A",
+     "3 HP, 9.6 A",
+     "5 HP, 15.2 A",
+     "25 HP, 85 A"
+    ],
+    "correct": 0,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 25 HP at 68 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "A feeder supplies 2 three-phase induction motors at 460 V (50 HP, 3 HP). What is the smallest copper feeder conductor using the 75°C column?",
+    "opts": [
+     "3 AWG",
+     "2 AWG",
+     "1 AWG",
+     "4 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 430.250 FLCs: 50 HP = 65 A, 3 HP = 4.8 A. 125% × 65 A (largest) + 4.8 (others) = 86.1 A. Smallest Cu with 75°C ampacity ≥ 86.1 A is 3 AWG (100 A). [NEC 430.24, Table 310.16]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 208 V (25 HP, 10 HP, 5 HP). The branch circuits use inverse-time circuit breakers sized at the maximum. What is the maximum standard feeder overcurrent device rating?",
+    "opts": [
+     "225 A",
+     "250 A",
+     "300 A",
+     "125 A"
+    ],
+    "correct": 0,
+    "explain": "Largest motor (25 HP, 74.8 A): branch device = 250% × 74.8 A = 187 → 200 A. Feeder max = 200 + 47.5 (other motors) = 247.5 A. Round down to the next lower standard size: 225 A. [NEC 430.62(A), 430.52, 240.6(A)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 230 V (15 HP, 10 HP, 2 HP), plus a 20 A continuous lighting load. What is the minimum feeder conductor ampacity?",
+    "opts": [
+     "121 A",
+     "96.8 A",
+     "112.3 A",
+     "103.5 A"
+    ],
+    "correct": 2,
+    "explain": "Table 430.250 FLCs: 15 HP = 42 A, 10 HP = 28 A, 2 HP = 6.8 A. 125% × 42 A (largest) + 34.8 (others) + 125% × 20 (continuous) = 112.3 A. [NEC 430.24, 215.2(A)]"
+   },
+   {
+    "q": "A 30 HP, 208 V, three-phase induction motor nameplate reads 92.4 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "110 A",
+     "115.5 A",
+     "92.4 A",
+     "88 A"
+    ],
+    "correct": 3,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.250): 88 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 230 V (15 HP, 5 HP, 1 HP), plus a 12 A continuous lighting load. What is the minimum feeder conductor ampacity?",
+    "opts": [
+     "73.4 A",
+     "86.9 A",
+     "91.8 A",
+     "77.5 A"
+    ],
+    "correct": 1,
+    "explain": "Table 430.250 FLCs: 15 HP = 42 A, 5 HP = 15.2 A, 1 HP = 4.2 A. 125% × 42 A (largest) + 19.4 (others) + 125% × 12 (continuous) = 86.9 A. [NEC 430.24, 215.2(A)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 208 V (50 HP, 15 HP, 10 HP). What is the minimum feeder conductor ampacity?",
+    "opts": [
+     "255.8 A",
+     "227.7 A",
+     "220 A",
+     "275 A"
+    ],
+    "correct": 0,
+    "explain": "Table 430.250 FLCs: 50 HP = 143 A, 15 HP = 46.2 A, 10 HP = 30.8 A. 125% × 143 A (largest) + 77 (others) = 255.8 A. [NEC 430.24, 215.2(A)]"
+   },
+   {
+    "q": "Using the NEC tables, what full-load current is used for a 15 HP, 460 V, three-phase induction motor?",
+    "opts": [
+     "26.3 A",
+     "42 A",
+     "21 A",
+     "46.2 A"
+    ],
+    "correct": 2,
+    "explain": "Table 430.250: 15 HP at 460 V = 21 A. [NEC Table 430.250, 430.6(A)(1)]"
+   },
+   {
+    "q": "What is the synchronous speed of a 2-pole induction motor on a 60 Hz supply?",
+    "opts": [
+     "1,800 RPM",
+     "4 RPM",
+     "3,600 RPM",
+     "14,400 RPM"
+    ],
+    "correct": 2,
+    "explain": "Formula: Ns = 120 x f / P = 120 x 60 / 2 = 7,200 / 2 = 3,600 RPM. Recognise it: the question gives poles and frequency and asks for speed; the 120 already accounts for pole pairs. Why the other choices are wrong: 1,800 RPM - used 60 instead of 120; 4 RPM - inverted poles and frequency; 14,400 RPM - divided by pole pairs instead of poles. [Ns = 120f/P]"
+   },
+   {
+    "q": "What is the 'rated-load current' of a hermetic refrigerant motor-compressor?",
+    "opts": [
+     "The current resulting when the motor-compressor is operated at the rated load, rated voltage and rated frequency of the equipment it serves",
+     "The current at locked rotor",
+     "The current at no load",
+     "The service factor current"
+    ],
+    "correct": 0,
+    "explain": "Rated-load current is the current when the compressor operates at the rated load, voltage and frequency of the equipment it serves. [NEC 440.2]"
+   },
+   {
+    "q": "A 10 HP, 115 V, single-phase induction motor (nameplate 105 A, service factor 1.15) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "131.3 A",
+     "157.5 A",
+     "140 A",
+     "147 A"
+    ],
+    "correct": 3,
+    "explain": "430.32(C): up to 140% of nameplate for service factor 1.15: 105 × 1.4 = 147 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 460 V (50 HP, 30 HP, 1-1/2 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "1-1/2 HP, 3 A",
+     "30 HP, 40 A",
+     "50 HP, 81.3 A",
+     "50 HP, 65 A"
+    ],
+    "correct": 3,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 50 HP at 65 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "What is the maximum standard rating of a dual-element (time-delay) fuse for branch-circuit short-circuit and ground-fault protection of a 20 HP, 460 V, three-phase induction motor?",
+    "opts": [
+     "90 A",
+     "50 A",
+     "45 A",
+     "70 A"
+    ],
+    "correct": 1,
+    "explain": "175% × 27 A = 47.3 A. If this is not a standard size, the next higher standard size is permitted: 50 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "A feeder supplies 4 three-phase induction motors at 460 V (50 HP, 40 HP, 20 HP, 3 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "50 HP, 65 A",
+     "40 HP, 52 A",
+     "50 HP, 81.3 A",
+     "3 HP, 4.8 A"
+    ],
+    "correct": 0,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 50 HP at 65 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "A 7-1/2 HP, 460 V, three-phase induction motor nameplate reads 10.4 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "13.8 A",
+     "13 A",
+     "10.4 A",
+     "11 A"
+    ],
+    "correct": 3,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.250): 11 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "Using the NEC tables, what full-load current is used for a 1/2 HP, 460 V, three-phase induction motor?",
+    "opts": [
+     "1.1 A",
+     "2.4 A",
+     "2.2 A",
+     "1.4 A"
+    ],
+    "correct": 0,
+    "explain": "Table 430.250: 1/2 HP at 460 V = 1.1 A. [NEC Table 430.250, 430.6(A)(1)]"
+   },
+   {
+    "q": "A 1 HP, 115 V single-phase motor runs at 78 percent efficiency and 0.75 power factor. What is the running current, to the nearest tenth of an amp? (Use 1.732.)",
+    "opts": [
+     "6.4 A",
+     "11.1 A",
+     "6.5 A",
+     "8.6 A"
+    ],
+    "correct": 1,
+    "explain": "Formula: I = (HP x 746) / (E x eff x PF) = 746 / (115 x 0.78 x 0.75) = 746 / 67.3 = 11.09 A. Recognise it: single-phase, so no 1.732; efficiency and PF both reduce how much work each amp does. Why the other choices are wrong: 6.4 A - applied 1.732 to a single-phase motor; 6.5 A - ignored efficiency and PF; 8.6 A - left out efficiency. [Motor current]"
+   },
+   {
+    "q": "What is the minimum ampacity for the branch-circuit conductors to a single 3 HP, 230 V, single-phase induction motor?",
+    "opts": [
+     "25.5 A",
+     "17 A",
+     "19.6 A",
+     "21.3 A"
+    ],
+    "correct": 3,
+    "explain": "125% × 17 A (table FLC) = 21.3 A. [NEC 430.22, 430.6(A)(1)]"
+   },
+   {
+    "q": "What is the result of operating an induction motor at significantly below its rated voltage under full load?",
+    "opts": [
+     "Greater torque",
+     "Lower current and cooler operation",
+     "Higher current and overheating",
+     "Higher speed"
+    ],
+    "correct": 2,
+    "explain": "The load needs the same power; with less voltage the motor draws more current, I = P / E. Torque falls with the square of voltage, and slip increases. [Motor undervoltage]"
+   },
+   {
+    "q": "What is the synchronous speed of a 4-pole induction motor on a 400 Hz supply?",
+    "opts": [
+     "6,000 RPM",
+     "24,000 RPM",
+     "1 RPM",
+     "12,000 RPM"
+    ],
+    "correct": 3,
+    "explain": "Formula: Ns = 120 x f / P = 120 x 400 / 4 = 48,000 / 4 = 12,000 RPM. Recognise it: the question gives poles and frequency and asks for speed; the 120 already accounts for pole pairs. Why the other choices are wrong: 6,000 RPM - used 60 instead of 120; 1 RPM - inverted poles and frequency; 24,000 RPM - divided by pole pairs instead of poles. [Ns = 120f/P]"
+   },
+   {
+    "q": "What is the maximum standard rating of a dual-element (time-delay) fuse for branch-circuit short-circuit and ground-fault protection of a 20 HP, 208 V, three-phase induction motor?",
+    "opts": [
+     "150 A",
+     "100 A",
+     "110 A",
+     "200 A"
+    ],
+    "correct": 2,
+    "explain": "175% × 59.4 A = 104 A. If this is not a standard size, the next higher standard size is permitted: 110 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "A 1 HP, 115 V, single-phase induction motor nameplate reads 16.8 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "20 A",
+     "21 A",
+     "16.8 A",
+     "16 A"
+    ],
+    "correct": 3,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.248): 16 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 460 V (30 HP, 25 HP, 7-1/2 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "7-1/2 HP, 11 A",
+     "25 HP, 34 A",
+     "30 HP, 40 A",
+     "30 HP, 50 A"
+    ],
+    "correct": 2,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 30 HP at 40 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "An air conditioner is marked 'Minimum circuit ampacity 22 A; Maximum overcurrent protective device 30 A'. An installer wants to use a 40-ampere breaker. Is this permitted?",
+    "opts": [
+     "Yes, up to 175 percent of MCA",
+     "Yes, the conductors are sized for 22 A",
+     "No, the protective device must not exceed the maximum marked on the equipment",
+     "Yes, for outdoor units"
+    ],
+    "correct": 2,
+    "explain": "The protective device may not exceed the manufacturer's marked maximum rating on the equipment nameplate. [NEC 440.22; 440.4(B)]"
+   },
+   {
+    "q": "A 1 HP, 230 V, single-phase induction motor (nameplate 8.4 A, service factor 1.15) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "10.5 A",
+     "12.6 A",
+     "11.2 A",
+     "11.8 A"
+    ],
+    "correct": 3,
+    "explain": "430.32(C): up to 140% of nameplate for service factor 1.15: 8.4 × 1.4 = 11.8 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "What is the maximum standard rating of a non-time-delay fuse for branch-circuit short-circuit and ground-fault protection of a 30 HP, 208 V, three-phase induction motor?",
+    "opts": [
+     "250 A",
+     "225 A",
+     "300 A",
+     "175 A"
+    ],
+    "correct": 2,
+    "explain": "300% × 88 A = 264 A. If this is not a standard size, the next higher standard size is permitted: 300 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "A 22.5 kW three-phase resistive heater is connected to 240 V. What is the line current, to the nearest tenth of an amp? (Use 1.732.)",
+    "opts": [
+     "54.1 A",
+     "162.4 A",
+     "93.8 A",
+     "31.3 A"
+    ],
+    "correct": 0,
+    "explain": "Resistive, so PF = 1. I = W / (1.732 x E) = 22,500 / (1.732 x 240) = 54.13 A. Recognise it: kW and three-phase voltage, find amps, so divide by 1.732 x E. Why the other choices are wrong: 93.8 A - treated it as single-phase; 31.3 A - divided by 3 instead of 1.732; 162.4 A - multiplied by 1.732. [I = P / (1.732 E)]"
+   },
+   {
+    "q": "Three 15 ohm resistors are connected in delta on a 240 V three-phase supply. What is the line current, to the nearest tenth of an amp? (Use 1.732.)",
+    "opts": [
+     "27.7 A",
+     "16.0 A",
+     "48.0 A",
+     "9.2 A"
+    ],
+    "correct": 0,
+    "explain": "In a delta each resistor sees the full line voltage. Phase current = 240 / 15 = 16.00 A. Line current = 1.732 x 16.00 = 27.71 A. Recognise it: delta elements see line voltage, and the line carries 1.732 times the phase current. Why the other choices are wrong: 16.0 A - reported the phase current as the line current; 9.2 A - used wye voltage across a delta element; 48.0 A - multiplied by 3 instead of 1.732. [Delta relationships]"
+   },
+   {
+    "q": "A feeder supplies 4 three-phase induction motors at 460 V (50 HP, 30 HP, 10 HP, 3 HP), plus a 12 A continuous lighting load. The branch circuits use inverse-time circuit breakers sized at the maximum. What is the maximum standard feeder overcurrent device rating?",
+    "opts": [
+     "125 A",
+     "250 A",
+     "300 A",
+     "225 A"
+    ],
+    "correct": 3,
+    "explain": "Largest motor (50 HP, 65 A): branch device = 250% × 65 A = 162.5 → 175 A. Feeder max = 175 + 58.8 (other motors) + 15 (continuous at 125%) = 248.8 A. Round down to the next lower standard size: 225 A. [NEC 430.62(A), 430.52, 240.6(A)]"
+   },
+   {
+    "q": "A feeder supplies 2 three-phase induction motors at 208 V (40 HP, 2 HP). What is the smallest copper feeder conductor using the 75°C column?",
+    "opts": [
+     "3/0 AWG",
+     "2/0 AWG",
+     "1 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 430.250 FLCs: 40 HP = 114 A, 2 HP = 7.5 A. 125% × 114 A (largest) + 7.5 (others) = 150 A. Smallest Cu with 75°C ampacity ≥ 150 A is 1/0 AWG (150 A). [NEC 430.24, Table 310.16]"
+   },
+   {
+    "q": "For a hermetic motor-compressor, what value is used to determine conductor ampacity, disconnect rating and branch-circuit protection?",
+    "opts": [
+     "The locked-rotor current",
+     "The nameplate rated-load current or branch-circuit selection current, whichever is greater",
+     "The fan motor current only",
+     "The horsepower from Table 430.250"
+    ],
+    "correct": 1,
+    "explain": "The marked RLC or BCSC, whichever is greater, is used instead of the motor horsepower rating from the NEC tables. [NEC 440.6(A)]"
+   },
+   {
+    "q": "A 1 HP, 230 V, single-phase induction motor has a nameplate current of 7.6 A and a service factor of 1.15. What is the standard maximum overload trip setting under 430.32(A)(1)?",
+    "opts": [
+     "9.5 A",
+     "8.7 A",
+     "10.6 A",
+     "10 A"
+    ],
+    "correct": 0,
+    "explain": "Service factor 1.15 → 125% of nameplate current: 7.6 × 1.25 = 9.5 A. Use the nameplate for overloads, not the table FLC. [NEC 430.32(A)(1)]"
+   },
+   {
+    "q": "A 1-1/2 HP, 115 V, single-phase induction motor nameplate reads 19 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "19 A",
+     "23.8 A",
+     "25 A",
+     "20 A"
+    ],
+    "correct": 3,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.248): 20 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "What is the maximum standard rating of an inverse-time circuit breaker for branch-circuit short-circuit and ground-fault protection of a 10 HP, 208 V, three-phase induction motor?",
+    "opts": [
+     "100 A",
+     "70 A",
+     "80 A",
+     "60 A"
+    ],
+    "correct": 2,
+    "explain": "250% × 30.8 A = 77 A. If this is not a standard size, the next higher standard size is permitted: 80 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "A 3/4 HP, 208 V, three-phase induction motor (nameplate 3.3 A, service factor 1.00) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "4.6 A",
+     "4.3 A",
+     "3.8 A",
+     "5 A"
+    ],
+    "correct": 1,
+    "explain": "430.32(C): up to 130% of nameplate for service factor 1.00: 3.3 × 1.3 = 4.3 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "A feeder supplies 4 three-phase induction motors at 208 V (20 HP, 15 HP, 10 HP, 1 HP), plus a 12 A continuous lighting load. Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "20 HP, 74.3 A",
+     "15 HP, 46.2 A",
+     "20 HP, 59.4 A",
+     "1 HP, 4.6 A"
+    ],
+    "correct": 2,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 20 HP at 59.4 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 230 V (25 HP, 7-1/2 HP, 2 HP). What is the smallest copper feeder conductor using the 75°C column?",
+    "opts": [
+     "3 AWG",
+     "2 AWG",
+     "1/0 AWG",
+     "1 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 430.250 FLCs: 25 HP = 68 A, 7-1/2 HP = 22 A, 2 HP = 6.8 A. 125% × 68 A (largest) + 28.8 (others) = 113.8 A. Smallest Cu with 75°C ampacity ≥ 113.8 A is 2 AWG (115 A). [NEC 430.24, Table 310.16]"
+   },
+   {
+    "q": "A 40 HP, 208 V, three-phase induction motor (nameplate 108.3 A, service factor 1.15) trips its overload relay while starting. What is the absolute maximum overload trip setting permitted if the standard setting is not sufficient?",
+    "opts": [
+     "162.5 A",
+     "135.4 A",
+     "151.6 A",
+     "159.6 A"
+    ],
+    "correct": 2,
+    "explain": "430.32(C): up to 140% of nameplate for service factor 1.15: 108.3 × 1.4 = 151.6 A. [NEC 430.32(C)]"
+   },
+   {
+    "q": "A 3/4 HP, 230 V, three-phase induction motor nameplate reads 2.9 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "4 A",
+     "2.9 A",
+     "3.6 A",
+     "3.2 A"
+    ],
+    "correct": 3,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.250): 3.2 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "A feeder supplies 4 three-phase induction motors at 230 V (50 HP, 25 HP, 15 HP, 1-1/2 HP). The branch circuits use non-time-delay fuses sized at the maximum. What is the maximum standard feeder overcurrent device rating?",
+    "opts": [
+     "250 A",
+     "600 A",
+     "700 A",
+     "500 A"
+    ],
+    "correct": 3,
+    "explain": "Largest motor (50 HP, 130 A): branch device = 300% × 130 A = 390 → 400 A. Feeder max = 400 + 116 (other motors) = 516 A. Round down to the next lower standard size: 500 A. [NEC 430.62(A), 430.52, 240.6(A)]"
+   },
+   {
+    "q": "A 5 HP, 460 V, three-phase induction motor nameplate reads 7.2 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "9 A",
+     "7.2 A",
+     "7.6 A",
+     "9.5 A"
+    ],
+    "correct": 2,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.250): 7.6 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "Compared to a single-phase circuit delivering the same power at the same voltage, a three-phase circuit uses",
+    "opts": [
+     "the same current per conductor",
+     "more current per conductor",
+     "less current per conductor",
+     "no neutral current in any case"
+    ],
+    "correct": 2,
+    "explain": "At the same kW, 1-phase current = P / E but 3-phase current = P / (1.732 E), about 58 percent as much. That is why large loads are three-phase and conductors can be smaller. [Three-phase advantage]"
+   },
+   {
+    "q": "A three-phase panel supplies 42 A per phase at 208 V. What is the apparent power, to the nearest tenth of a kVA? (Use 1.732.)",
+    "opts": [
+     "8.7 kVA",
+     "15.1 kVA",
+     "15,131 kVA",
+     "26.2 kVA"
+    ],
+    "correct": 1,
+    "explain": "Formula: kVA = 1.732 x E x I / 1,000 = 1.732 x 208 x 42 / 1,000 = 15.13 kVA. Recognise it: volts and amps, three-phase, no PF mentioned, so apparent power is wanted. Why the other choices are wrong: 8.7 kVA - forgot 1.732; 26.2 kVA - multiplied by 3 instead of 1.732; 15,131 kVA - forgot to divide by 1,000. [kVA = 1.732 E I / 1000]"
+   },
+   {
+    "q": "An instantaneous-trip circuit breaker may be used for motor branch-circuit short-circuit and ground-fault protection only if it is:",
+    "opts": [
+     "Part of a listed combination motor controller with coordinated overload and short-circuit protection in each conductor",
+     "Rated at 15 A or less",
+     "Installed in any panelboard",
+     "Used on single-phase motors only"
+    ],
+    "correct": 0,
+    "explain": "Instantaneous-trip breakers are allowed only if adjustable and part of a listed combination motor controller with coordinated protection. [NEC 430.52(C)(3)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 460 V (50 HP, 30 HP, 2 HP). Which motor is treated as the 'largest' for the 125% factor and what is its FLC?",
+    "opts": [
+     "50 HP, 65 A",
+     "30 HP, 40 A",
+     "50 HP, 81.3 A",
+     "2 HP, 3.4 A"
+    ],
+    "correct": 0,
+    "explain": "The motor with the highest full-load current rating (from the tables) is the largest: 50 HP at 65 A. [NEC 430.17, 430.24]"
+   },
+   {
+    "q": "A 200 HP, 460 V, three-phase induction motor has a nameplate current of 252 A and a service factor of 1.00. What is the standard maximum overload trip setting under 430.32(A)(1)?",
+    "opts": [
+     "327.6 A",
+     "289.8 A",
+     "276 A",
+     "315 A"
+    ],
+    "correct": 1,
+    "explain": "Service factor 1.00 → 115% of nameplate current: 252 × 1.15 = 289.8 A. Use the nameplate for overloads, not the table FLC. [NEC 430.32(A)(1)]"
+   },
+   {
+    "q": "What is the maximum standard rating of a dual-element (time-delay) fuse for branch-circuit short-circuit and ground-fault protection of a 7-1/2 HP, 115 V, single-phase induction motor?",
+    "opts": [
+     "200 A",
+     "250 A",
+     "125 A",
+     "150 A"
+    ],
+    "correct": 3,
+    "explain": "175% × 80 A = 140 A. If this is not a standard size, the next higher standard size is permitted: 150 A. [NEC 430.52(C)(1), Table 430.52, Exc. 1, 240.6(A)]"
+   },
+   {
+    "q": "A feeder supplies 3 three-phase induction motors at 460 V (50 HP, 7-1/2 HP, 5 HP). The branch circuits use non-time-delay fuses sized at the maximum. What is the maximum standard feeder overcurrent device rating?",
+    "opts": [
+     "225 A",
+     "200 A",
+     "90 A",
+     "250 A"
+    ],
+    "correct": 1,
+    "explain": "Largest motor (50 HP, 65 A): branch device = 300% × 65 A = 195 → 200 A. Feeder max = 200 + 18.6 (other motors) = 218.6 A. Round down to the next lower standard size: 200 A. [NEC 430.62(A), 430.52, 240.6(A)]"
+   },
+   {
+    "q": "A 3 HP, 230 V, single-phase induction motor nameplate reads 16.1 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "20.1 A",
+     "17 A",
+     "16.1 A",
+     "21.3 A"
+    ],
+    "correct": 1,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.248): 17 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   },
+   {
+    "q": "A 500 kVA three-phase load operates at 480 V. What is the line current, to the nearest tenth of an amp? (Use 1.732.)",
+    "opts": [
+     "1,804.2 A",
+     "347.2 A",
+     "601.4 A",
+     "1,041.7 A"
+    ],
+    "correct": 2,
+    "explain": "Formula: I = (kVA x 1,000) / (1.732 x E) = 500,000 / (1.732 x 480) = 500,000 / 831.4 = 601.42 A. Recognise it: kVA given for a three-phase system, find amps, so convert to VA and divide by 1.732 x line voltage. Why the other choices are wrong: 1,041.7 A - forgot 1.732; 1,804.2 A - multiplied by 1.732 instead of dividing; 347.2 A - divided by 3 instead of 1.732. [I = kVA x 1000 / (1.732 E)]"
+   },
+   {
+    "q": "What is the minimum ampacity for the branch-circuit conductors to a single 1 HP, 115 V, single-phase induction motor?",
+    "opts": [
+     "24 A",
+     "18.4 A",
+     "20 A",
+     "16 A"
+    ],
+    "correct": 2,
+    "explain": "125% × 16 A (table FLC) = 20 A. [NEC 430.22, 430.6(A)(1)]"
+   },
+   {
+    "q": "A 10 HP, 230 V, single-phase induction motor nameplate reads 45 A. What current is used to size the branch-circuit conductors (before the 125% factor)?",
+    "opts": [
+     "50 A",
+     "56.3 A",
+     "45 A",
+     "62.5 A"
+    ],
+    "correct": 0,
+    "explain": "Conductors and short-circuit protection use the table FLC (Table 430.248): 50 A. The nameplate current is used only for overload protection. [NEC 430.6(A)(1)]"
+   }
+  ],
+  "isFinal": true
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">Motor Circuits and Motor Calculations per NEC 2023</div>
+      <div class="cert-detail">4.0 CE hours · Journeyman & Master Electrician<br>2023 NEC (NFPA 70-2023)<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>

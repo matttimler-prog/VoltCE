@@ -1,0 +1,3036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grounding and Bonding per NEC 2023 | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">Grounding and Bonding per NEC 2023</div>
+      <div class="pills">
+        <span class="pill red">4.0 CE hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">NEC Article 250</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds (total 4 hours)
+const MOD_MINS = [60*60, 60*60, 60*60, 60*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "System grounding fundamentals",
+  "time": "60 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "The five performance requirements of 250.4(A) and why grounding and bonding differ",
+   "How to calculate why earth cannot clear a ground fault and a metallic path can",
+   "Defined terms: grounded, bonded, grounded conductor, equipment grounding conductor",
+   "Which ac systems must be grounded and how ungrounded systems are handled (250.20, 250.21, 250.26)",
+   "Service grounding connections and sizing the grounded conductor (250.24)",
+   "The main bonding jumper and Table 250.102(C)(1) (250.28)",
+   "Case study of a downstream neutral bond and the objectionable current it causes (250.6)",
+   "Code book exercise tracing a fault from a receptacle box to the source"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "Purpose of Grounding and Bonding: 250.4(A)",
+    "body": "Section 250.4 opens Article 250 by stating what grounding and bonding are supposed to accomplish. For a grounded system, 250.4(A) lists five performance requirements. Every later rule in the article, from electrode sizes to bonding jumper tables, exists to deliver one or more of these five outcomes. When a field condition is not covered by a specific rule, these statements are the yardstick for judging whether an installation is acceptable.",
+    "def_grid": [
+     {
+      "term": "250.4(A)(1) System grounding",
+      "body": "Connects the system to earth to limit voltage from lightning, line surges, or accidental contact with higher-voltage lines, and to stabilize voltage to ground during normal operation."
+     },
+     {
+      "term": "250.4(A)(2) Equipment grounding",
+      "body": "Connects normally non-current-carrying conductive materials that enclose conductors or equipment to earth so that voltage to ground on those materials is limited."
+     },
+     {
+      "term": "250.4(A)(3) Bonding of equipment",
+      "body": "Connects the same enclosing materials together and to the supply system grounded conductor so an effective ground-fault current path exists."
+     },
+     {
+      "term": "250.4(A)(4) Bonding of other conductive materials",
+      "body": "Connects other metal parts that are likely to become energized, such as metal piping and structural steel, together and to the system grounded conductor so they cannot sit at a different potential."
+     }
+    ],
+    "bullets": [
+     "Notice the split of jobs: items (1) and (2) are about earth and voltage limiting, items (3) and (4) are about bonding and the path that clears a fault.",
+     "Section 250.4(B) gives the matching performance requirements for ungrounded systems. There the bonding of metal parts together is what keeps a first fault from creating a shock hazard.",
+     "The wording is performance based. An installation that follows every prescriptive rule but leaves metal parts able to float at a dangerous potential does not meet the intent of 250.4."
+    ],
+    "info": "The fifth requirement, the effective ground-fault current path in 250.4(A)(5), is covered on the next slide because it is the most tested idea in the article.",
+    "keypoint": "Grounding limits voltage relative to earth, bonding ties metal parts together so they stay at nearly the same potential and carry fault current back to the source.",
+    "refs": [
+     "NEC 250.4"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "The Effective Ground-Fault Current Path: 250.4(A)(5)",
+    "body": "Section 250.4(A)(5) requires the path from any point on the wiring system back to the source to be permanent and continuous, able to carry the maximum ground-fault current likely to be imposed, and low enough in impedance to let the overcurrent device open quickly. It also states that the earth is not to be considered an effective ground-fault current path. The numbers below show why: electrode resistance is simply too high to push enough current through a breaker.",
+    "step_list": [
+     "Assume a 120 V line-to-case fault in a metal box on a 20 A circuit, with no metallic return path. The only way back to the transformer is through the earth.",
+     "Assume a service electrode of 25 ohms and a utility-side electrode of 25 ohms (illustrative values). Total earth loop: 25 + 25 = 50 ohms.",
+     "Fault current through earth: I = E / R = 120 V / 50 ohms = 2.4 A. This is well below the 20 A breaker rating, so the breaker never opens and the fault persists.",
+     "With 2.4 A flowing through a 25 ohm electrode, the voltage across that electrode is 2.4 A x 25 ohms = 60 V. The enclosure and everything bonded to it rise toward that potential relative to remote earth.",
+     "Now assume a bonded metallic path (equipment grounding conductor, enclosure, main bonding jumper, grounded service conductor) so the whole fault loop is 0.2 ohm (illustrative).",
+     "Fault current: I = 120 V / 0.2 ohm = 600 A. That is thirty times a 20 A rating, so the breaker opens in a fraction of a cycle to a few cycles, and the voltage on the enclosure collapses."
+    ],
+    "warning": "Never treat a ground rod as a substitute for an equipment grounding conductor. A rod can stabilize system voltage but it cannot clear a fault.",
+    "info": "The resistances above are teaching values chosen to make the arithmetic clear. Real electrode resistance varies widely with soil.",
+    "keypoint": "The fault is cleared by a low-impedance metallic loop back to the source, never by the earth connection.",
+    "refs": [
+     "NEC 250.4",
+     "NEC 250.2"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "Key Terms: Grounded, Bonded, and the Fault Path",
+    "body": "Article 250 relies on a handful of precise terms, and mixing them up leads to wrong answers on both the exam and the job. Definitions that apply across the whole Code are in Article 100, and terms used mainly in Article 250 are in 250.2. A definition can move between the two between editions, so search both. Nothing in the Code lets you substitute plain-language meanings for the defined ones.",
+    "def_grid": [
+     {
+      "term": "Grounded",
+      "body": "Connected to ground or to a conductive body that extends the ground connection. A grounded system has one conductor intentionally tied to earth."
+     },
+     {
+      "term": "Bonded",
+      "body": "Connected to establish electrical continuity and conductivity. Bonding is about joining metal parts so they act as one conductive body, not about earth."
+     },
+     {
+      "term": "Grounded conductor",
+      "body": "The system conductor that is intentionally grounded, usually the neutral. It carries current under normal operation and is identified under Article 200 (white, gray, or three white stripes in sizes 6 AWG and smaller)."
+     },
+     {
+      "term": "Equipment grounding conductor (EGC)",
+      "body": "The conductive path that connects normally non-current-carrying metal parts to the system grounded conductor or grounding electrode conductor. It carries current only during a fault and is identified by green or green with yellow stripes, with exceptions for larger sizes in 250.119."
+     }
+    ],
+    "bullets": [
+     "Grounding electrode: connects the system to earth. It is part of voltage stabilization but not part of the path that opens the breaker.",
+     "Main bonding jumper: at the service, joins the grounded conductor to the equipment grounding conductors and service enclosure. System bonding jumper: the same function at a separately derived system.",
+     "Bonding jumpers are classified by where they sit: supply-side bonding jumpers are on the source side of the service or system disconnect, equipment bonding jumpers on the load side.",
+     "Exam habit: when a question says grounded, ask yourself whether it means the neutral conductor, an earth connection, or a metal part tied into the fault path."
+    ],
+    "keypoint": "Learn to say precisely what each conductor does: the grounded conductor carries normal current, the equipment grounding conductor carries only fault current, and the electrode connects to earth.",
+    "refs": [
+     "NEC Article 100",
+     "NEC 250.2",
+     "NEC 200.6",
+     "NEC 250.119"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "Which Systems Must Be Grounded: 250.20",
+    "body": "Section 250.20 sorts systems by voltage. Alternating-current systems of 50 volts to 1000 volts must be grounded where certain conditions are met, and the conditions in 250.20(B) are the ones most electricians meet daily. Systems below 50 volts are treated separately in 250.20(A). Whether a given system must be grounded decides whether you need a grounded conductor, a main bonding jumper, and the whole service grounding arrangement.",
+    "table": {
+     "h": [
+      "System",
+      "Voltage to ground",
+      "Grounding requirement under 250.20(B)"
+     ],
+     "r": [
+      [
+       "120/240 V single-phase, 3-wire",
+       "120 V",
+       "Grounded: the maximum voltage to ground is 150 V or less, and the neutral serves as a circuit conductor."
+      ],
+      [
+       "208Y/120 V three-phase, 4-wire wye",
+       "120 V",
+       "Grounded: 4-wire wye with the neutral used as a circuit conductor."
+      ],
+      [
+       "480Y/277 V three-phase, 4-wire wye",
+       "277 V",
+       "Grounded: 4-wire wye with the neutral used as a circuit conductor, even though voltage to ground exceeds 150 V."
+      ],
+      [
+       "240/120 V three-phase, 4-wire delta",
+       "120 V (midpoint), higher on the high leg",
+       "Grounded at the midpoint of one winding because that midpoint is used as a circuit conductor."
+      ],
+      [
+       "480 V three-phase, 3-wire delta",
+       "480 V if corner-grounded or ungrounded",
+       "Not required to be grounded by 250.20(B). May be ungrounded under 250.21 or corner-grounded under 250.26."
+      ]
+     ]
+    },
+    "bullets": [
+     "Three conditions in 250.20(B): the system can be grounded so maximum voltage to ground on the ungrounded conductors does not exceed 150 V; it is a 3-phase, 4-wire wye using the neutral as a circuit conductor; or it is a 3-phase, 4-wire delta using the midpoint of one winding as a circuit conductor.",
+     "Under 250.20(A), ac systems below 50 volts must be grounded when supplied by a transformer whose supply system exceeds 150 volts to ground, when the supply is ungrounded, or when run outside as overhead conductors.",
+     "Direct-current systems have their own rules in the dc portion of Article 250 and in specific articles such as the photovoltaic article."
+    ],
+    "info": "High-leg delta: the 208 V conductor is the high leg, and the grounded conductor is the midpoint conductor, not the high leg.",
+    "keypoint": "Any ac system that uses its neutral as a circuit conductor must be grounded, and so must any system that can be grounded to limit voltage to ground to 150 volts or less.",
+    "refs": [
+     "NEC 250.20",
+     "NEC 250.21"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Ungrounded Systems and Choosing the Grounded Conductor: 250.21 and 250.26",
+    "body": "Not every system under 1000 volts has to be grounded. Section 250.21 recognizes ungrounded systems where the Code does not require grounding, and it attaches safeguards such as ground detectors and warning markings. Section 250.26 answers the next question for grounded systems: which conductor is the one that gets grounded. The choice depends on how many wires and phases the system has.",
+    "table": {
+     "h": [
+      "Grounded ac system type",
+      "Conductor grounded under 250.26"
+     ],
+     "r": [
+      [
+       "Single-phase, 2-wire",
+       "One conductor"
+      ],
+      [
+       "Single-phase, 3-wire",
+       "The neutral conductor"
+      ],
+      [
+       "Multiphase system with one wire common to all phases",
+       "The common conductor"
+      ],
+      [
+       "Multiphase system with one phase grounded (corner-grounded delta)",
+       "The grounded phase conductor"
+      ],
+      [
+       "Multiphase system where one phase is used as in the single-phase 3-wire case (4-wire delta)",
+       "The midpoint conductor of that phase"
+      ]
+     ]
+    },
+    "bullets": [
+     "Ungrounded systems tend to be used where a first ground fault should not shut down a process, so a ground detector alerts maintenance while the system keeps running. That is why the detector and the marking requirements in 250.21 matter.",
+     "Because an ungrounded system has no intentional reference to earth, the Code defines its voltage to ground as the greatest voltage between a conductor and any other conductor. A 480 V ungrounded delta is therefore treated as 480 V to ground.",
+     "A corner-grounded delta has one phase conductor that is the grounded conductor. Make sure that conductor is identified as the Code requires, and remember that overcurrent protection and switching rules for a grounded conductor differ from those for an ungrounded phase."
+    ],
+    "warning": "Opening a grounded conductor in a corner-grounded delta can leave equipment energized from the remaining phases. Follow the specific identification and switching rules for the system.",
+    "keypoint": "Ungrounded systems are allowed in defined cases but they require ground detection, and 250.26 tells you which conductor to ground on each type of grounded ac system.",
+    "refs": [
+     "NEC 250.21",
+     "NEC 250.26",
+     "NEC 250.24"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Service Grounding Connections: 250.24",
+    "body": "Section 250.24 sets up the grounding of an ac service. The system grounding connection can be made at any accessible point from the load end of the service drop or lateral to and including the service disconnecting means. The grounded conductor is run with the ungrounded conductors to each service disconnecting means and terminated on its grounded-conductor terminal or bus. This is the place where the grounded conductor, the equipment grounding conductors, and the electrode system all meet.",
+    "step_list": [
+     "Locate the grounding point. The grounding electrode conductor connects to the grounded service conductor at an accessible point anywhere between the load end of the service drop or lateral and the service disconnect. Most installations make it in the meter socket or service disconnect enclosure.",
+     "Bring the grounded conductor to every service disconnecting means. It travels with the ungrounded conductors (in the same raceway or cable, or routed with them) so that a fault current has a return path next to the faulted conductor.",
+     "Size the grounded conductor for fault duty. It must not be smaller than the size given by Table 250.102(C)(1) for the largest ungrounded service conductor. It must also be large enough for the neutral load calculated under Article 220, so the larger of the two controls.",
+     "Watch the large-conductor rule. For ungrounded copper conductors over 1100 kcmil, the grounded conductor must be at least 12.5 percent of the area of the largest ungrounded conductor. Example for 1500 kcmil copper: 1,500,000 cmil x 0.125 = 187,500 cmil. The next standard size at or above that is 4/0 AWG copper (211,600 cmil), because 3/0 AWG at 167,800 cmil is too small.",
+     "Stop the neutral at the service. Past the service disconnect the grounded conductor is not connected to the enclosure or to the equipment grounding conductors, a rule the next slides come back to."
+    ],
+    "info": "The grounded conductor sizing rule protects the fault path. It does not replace the load calculation for the neutral.",
+    "keypoint": "The neutral is tied to the grounding electrode system and to the metal enclosure at one place, the service, and nowhere downstream.",
+    "refs": [
+     "NEC 250.24",
+     "NEC Table 250.102(C)(1)",
+     "NEC 220.61"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "The Main Bonding Jumper: 250.28",
+    "body": "The main bonding jumper is the connection between the grounded conductor and the equipment grounding conductors, the supply-side bonding jumper, and the service disconnect enclosure. It is the single point where the neutral and the fault-clearing path are joined. Section 250.28 covers its material, construction, attachment, and size. It may be a wire, bus, screw, or similar suitable conductor of copper, aluminum, or another corrosion-resistant material.",
+    "table": {
+     "h": [
+      "Largest ungrounded service conductor (copper)",
+      "Minimum copper main bonding jumper, Table 250.102(C)(1)"
+     ],
+     "r": [
+      [
+       "2 AWG or smaller",
+       "8 AWG"
+      ],
+      [
+       "1 AWG or 1/0 AWG",
+       "6 AWG"
+      ],
+      [
+       "2/0 AWG or 3/0 AWG",
+       "4 AWG"
+      ],
+      [
+       "Over 3/0 AWG through 350 kcmil",
+       "2 AWG"
+      ],
+      [
+       "Over 350 kcmil through 600 kcmil",
+       "1/0 AWG"
+      ],
+      [
+       "Over 600 kcmil through 1100 kcmil",
+       "2/0 AWG"
+      ],
+      [
+       "Over 1100 kcmil",
+       "12.5 percent of the area of the largest ungrounded conductor"
+      ]
+     ]
+    },
+    "bullets": [
+     "Where the ungrounded conductors are paralleled in two or more raceways, size the main bonding jumper from the combined area of the paralleled conductors, not from a single conductor. The 400 ampere service in the final module uses this rule.",
+     "If the jumper is a screw or strap supplied by the equipment manufacturer, it is part of the listing of that equipment, and its size is verified by the listing. Do not remove it from service equipment, and do not install it in a panel that is not service equipment.",
+     "Aluminum conductors use a different column of the table with a larger size for the same row. Look at the aluminum column rather than assuming a size."
+    ],
+    "info": "Why one point only: a second neutral-to-ground connection puts neutral current on the equipment grounding path, covered in the case study that follows.",
+    "keypoint": "Install the main bonding jumper at the service only, and size it from Table 250.102(C)(1) by the largest ungrounded service conductor.",
+    "refs": [
+     "NEC 250.28",
+     "NEC Table 250.102(C)(1)",
+     "NEC 250.24"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Case Study: A Neutral Bonded Downstream of the Service",
+    "body": "An electrician installing a 100 ampere subpanel in a detached workshop leaves the factory bonding screw in the neutral bar, so the neutral is bonded to the enclosure. The feeder has a grounded conductor and an equipment grounding conductor. The load-side grounding rule in 250.24 (check the exact subsection in your 2023 book) prohibits reconnecting the grounded conductor to ground or to the equipment grounding conductors on the load side of the service disconnect, except where the Code specifically allows it. The consequences show up as objectionable current under 250.6.",
+    "step_list": [
+     "Trace the paths. At the subpanel, neutral current has two ways back to the service: the feeder neutral and, because of the extra bond, the equipment grounding conductor plus any metal conduit.",
+     "Pick teaching values. Feeder neutral 3 AWG copper and EGC 8 AWG copper, same length. Chapter 9 Table 8 gives uncoated stranded copper resistance of 0.245 ohm per 1000 ft for 3 AWG and 0.778 ohm per 1000 ft for 8 AWG.",
+     "Assume 40 A of unbalanced neutral load. The two paths are in parallel, so current divides inversely to resistance.",
+     "Current on the EGC: 40 A x 0.245 / (0.245 + 0.778) = 9.6 A. Current staying on the neutral: 40 A - 9.6 A = 30.4 A. This ignores the metal conduit and reactance, so the real EGC and raceway share is larger.",
+     "Result: roughly one quarter of the normal neutral current is flowing on the grounding path all the time. Metal parts carry current continuously, and any open or loose connection in that path can energize equipment.",
+     "Correct it: remove the bonding screw or strap in the subpanel, verify the neutral bar is isolated from the enclosure, land the EGCs on a separate equipment grounding bar bonded to the enclosure, and confirm the EGC continuity back to the service. Under 250.6 corrective measures may include discontinuing one or more, but not all, grounding connections."
+    ],
+    "warning": "Check feeders to detached buildings carefully. The grounded conductor is bonded to the enclosure at the first disconnect only where there is no equipment grounding conductor run with the feeder and the other conditions of 250.32 are met.",
+    "keypoint": "One bond, at the service. Everywhere else the neutral bar stays isolated from the enclosure.",
+    "refs": [
+     "NEC 250.24",
+     "NEC 250.6",
+     "NEC Chapter 9 Table 8"
+    ]
+   },
+   {
+    "tag": "M1·S9",
+    "title": "Code Book Exercise Part 1: Tracing the Fault Path",
+    "body": "Open your 2023 NEC to Article 250, Part I, and find 250.4(A)(5). Then trace a line-to-case fault from a receptacle box in a branch circuit back to the source, naming each element of the return path as you go. The goal is to be able to point to the Code section that supports each link in the chain. Work through the steps below and write the section number beside each element.",
+    "step_list": [
+     "Start of the fault: the ungrounded (hot) conductor touches the metal receptacle box. The box is now energized, and current wants to return to the source.",
+     "Step 1, equipment grounding conductor or metal raceway: in a metal conduit system, the conduit and fittings carry the current, in a cable system the green or bare conductor does. 250.118 lists which wiring methods qualify as equipment grounding conductors.",
+     "Step 2, panelboard: the EGC or raceway terminates on the equipment grounding bar or enclosure of the panelboard, which is bonded to the feeder EGC and then to the service equipment. Part VI of Article 250 covers equipment grounding conductor connections.",
+     "Step 3, main bonding jumper: at the service, the main bonding jumper (250.28) joins the equipment grounding bus to the grounded conductor bus. This is the connection that turns the fault into a short circuit.",
+     "Step 4, grounded service conductor: current flows on the grounded conductor of the service (250.24) back to the transformer.",
+     "Step 5, source: the grounded conductor connects to the secondary winding of the utility transformer, completing the loop with the faulted phase. The breaker sees a high current and opens.",
+     "Write down the five elements in order: EGC or raceway, panelboard bonding, main bonding jumper, grounded service conductor, transformer winding."
+    ],
+    "info": "Practice tip: use a highlighter on 250.4(A)(5) in your own copy of the book and write the five element names in the margin.",
+    "keypoint": "Every link in the fault loop has a Code section that makes it mandatory: if one link is missing, the loop is not an effective ground-fault current path.",
+    "refs": [
+     "NEC 250.4",
+     "NEC 250.24",
+     "NEC 250.28",
+     "NEC 250.118"
+    ]
+   },
+   {
+    "tag": "M1·S10",
+    "title": "Code Book Exercise Part 2: Is the Raceway Permitted and Where Is the Earth?",
+    "body": "The second half of the exercise asks two questions that frequently show up on licensing exams. First, is the raceway used in the example a permitted equipment grounding conductor under 250.118? Second, why do the electrode and earth connection play no role in opening the breaker? Answer each by pointing to a Code section, not from memory.",
+    "table": {
+     "h": [
+      "Question",
+      "Where to look in the 2023 NEC",
+      "What you should find"
+     ],
+     "r": [
+      [
+       "Is EMT permitted as an equipment grounding conductor?",
+       "Section 250.118, list of permitted equipment grounding conductors",
+       "EMT, rigid metal conduit, and intermediate metal conduit are on the list, subject to proper fittings and continuity. Gas piping is not."
+      ],
+      [
+       "Is flexible metal conduit permitted as the only grounding path?",
+       "Section 250.118, flexible metal conduit entry",
+       "Only under stated limits: listed fittings, short total length in the ground-return path (6 ft), a trade size limit (1-1/4 in. or smaller), and conductors protected at 20 A or less. Longer runs need a wire-type EGC."
+      ],
+      [
+       "Can the earth carry the fault current to open the breaker?",
+       "Section 250.4(A)(5)",
+       "No. The earth is not considered an effective ground-fault current path. See the calculation on slide 2."
+      ],
+      [
+       "Where is the grounding electrode shown in the fault loop?",
+       "Section 250.24 and Part III of Article 250",
+       "The electrode ties the system to earth for voltage stabilization. It is not one of the five elements in the clearing path."
+      ]
+     ]
+    },
+    "bullets": [
+     "Write your answers with the Code section next to each, because on the exam and in front of an inspector the section number is what makes the answer defensible.",
+     "A common error is concluding that a low-resistance ground rod will clear a fault. A 5 ohm rod still limits a 120 V fault to 24 A (120 / 5), which may never open a 20 A breaker quickly.",
+     "Another common error is thinking that the EGC and the grounded conductor are interchangeable. They are connected at one point only, the main bonding jumper."
+    ],
+    "keypoint": "Use 250.118 to confirm the raceway qualifies, then use 250.4(A)(5) to explain that earth is not part of the clearing path.",
+    "refs": [
+     "NEC 250.118",
+     "NEC 250.4",
+     "NEC 250.52"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A main bonding jumper may be which of the following?",
+    "opts": [
+     "A wire, bus, screw, or similar suitable conductor of copper, aluminum, or other corrosion-resistant material",
+     "Only a listed pressure connector",
+     "Any steel strap that fits the enclosure",
+     "Only a copper wire"
+    ],
+    "correct": 0,
+    "explain": "Main bonding jumpers may be wire, bus, screw, or similar suitable conductor of copper, aluminum, or another corrosion-resistant material. [NEC 250.28(A), 250.28(B)]"
+   },
+   {
+    "q": "A portable generator is not required to have a grounding electrode when:",
+    "opts": [
+     "It supplies only equipment mounted on the generator and/or cord-and-plug equipment through receptacles on the generator, with non-current-carrying metal parts and receptacle grounding terminals bonded to the generator frame",
+     "It supplies a transfer switch connected to the building wiring",
+     "It is used outdoors in dry weather",
+     "It is rated less than 10 kW"
+    ],
+    "correct": 0,
+    "explain": "The conditions in 250.34(A) allow the generator frame to serve as the grounding reference without an electrode. A generator feeding a building through a transfer switch is not covered. [NEC 250.34(A)]"
+   },
+   {
+    "q": "Which premises wiring system of 50 to 1000 volts is required to be grounded?",
+    "opts": [
+     "A 480-volt, three-phase, 3-wire ungrounded delta system",
+     "A 480-volt, three-phase, 3-wire delta with no neutral load",
+     "A three-phase, 4-wire wye system in which the neutral conductor is used as a circuit conductor",
+     "Any system in a building with a metal frame"
+    ],
+    "correct": 2,
+    "explain": "Three-phase 4-wire wye systems using the neutral as a circuit conductor must be grounded. Ungrounded systems are allowed by 250.21 under specified conditions. [NEC 250.20(B)]"
+   },
+   {
+    "q": "For a single-phase, 3-wire ac premises wiring system, which conductor is the one that must be grounded?",
+    "opts": [
+     "No conductor, because the system is ungrounded",
+     "Either ungrounded conductor",
+     "Both ungrounded conductors",
+     "The neutral conductor"
+    ],
+    "correct": 3,
+    "explain": "On a single-phase 3-wire system the neutral is the grounded conductor. [NEC 250.26]"
+   },
+   {
+    "q": "A detached garage is supplied by a single branch circuit that includes an equipment grounding conductor. Is a grounding electrode required at the garage?",
+    "opts": [
+     "No, a grounding electrode is not required where only one branch circuit supplies the building and it includes an equipment grounding conductor",
+     "Yes, but only if the circuit is over 20 amperes",
+     "Yes, a ground ring is required",
+     "Yes, always, with a 25-ohm measurement"
+    ],
+    "correct": 0,
+    "explain": "An exception to 250.32(A) removes the electrode requirement where one branch circuit (including a multiwire branch circuit) supplies the structure and includes an equipment grounding conductor. [NEC 250.32(A) Exception]"
+   },
+   {
+    "q": "Grounding the electrical system to earth primarily helps to",
+    "opts": [
+     "increase the efficiency of loads",
+     "limit voltage from lightning, line surges or contact with higher-voltage lines",
+     "clear faults without overcurrent devices",
+     "eliminate neutral current"
+    ],
+    "correct": 1,
+    "explain": "Earth connection stabilizes voltage relative to ground. It does not serve as the path to clear faults; that is the job of the bonded metallic path. [System grounding]"
+   },
+   {
+    "q": "Under the 2026 NEC, a 6 AWG or smaller grounded conductor may be identified by:",
+    "opts": [
+     "A single non-green stripe, in addition to the previously recognized methods",
+     "Only a green stripe",
+     "A tag at both ends only",
+     "A red stripe only"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M ('Key Revisions to Chapter 2'), Minnesota DLI's change summary and a 2026 training quiz (stripe or other marking for 6 AWG and smaller). Check 200.7 in the 2026 book for exact placement. [NEC 200.7(A)(9) (2026)]"
+   },
+   {
+    "q": "A 120 V ground fault through the earth only, with a ground resistance of 25 ohms, would produce a current of about",
+    "opts": [
+     "120 A",
+     "25 A",
+     "4.8 A, which will not trip a 20 A breaker",
+     "48 A"
+    ],
+    "correct": 2,
+    "explain": "I = 120 / 25 = 4.8 A. Below the breaker rating, so the fault would persist with dangerous voltage on the metal. A metallic EGC path has a very low impedance and makes the breaker trip. [Fault current path]"
+   }
+  ]
+ },
+ {
+  "title": "Grounding electrode system",
+  "time": "60 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "The electrodes listed in 250.52(A) and the size and contact needed to qualify",
+   "Why 250.50 requires all present electrodes to be bonded into one system",
+   "Rod, pipe, and plate installation rules and the 25 ohm supplement rule",
+   "Ground rings, plates, and burial depths",
+   "Grounding electrode conductor material, protection, and splicing (250.62, 250.64)",
+   "Connection methods and accessibility (250.68, 250.70)",
+   "Sizing the grounding electrode conductor from Table 250.66, including parallel sets and the 250.66(A) to (C) limits",
+   "Code book exercise building the electrode system for a new dwelling"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "Grounding Electrodes: What Is Permitted, 250.50 and 250.52",
+    "body": "Section 250.50 requires every electrode described in 250.52(A)(1) through (A)(7) that is present at a building or structure to be bonded together to form the grounding electrode system. Section 250.52(A) is the list of what counts as an electrode, with the minimum size, length, or contact needed to qualify. Item (A)(8), other local metal underground systems or structures, is used only when none of the others is available. Building the electrode system starts with an inventory of what is actually there.",
+    "table": {
+     "h": [
+      "250.52(A) electrode",
+      "Key qualifying condition"
+     ],
+     "r": [
+      [
+       "(1) Metal underground water pipe",
+       "In direct contact with earth for 10 ft or more. Must be supplemented by another electrode."
+      ],
+      [
+       "(2) Metal in-ground support structure",
+       "Structural metal in direct contact with earth vertically for 10 ft or more, with or without concrete encasement."
+      ],
+      [
+       "(3) Concrete-encased electrode",
+       "At least 20 ft of reinforcing steel bar not less than 1/2 in. in diameter, or at least 20 ft of bare copper 4 AWG or larger. Encased by at least 2 in. of concrete, located near the bottom of a foundation or footing in direct contact with earth."
+      ],
+      [
+       "(4) Ground ring",
+       "At least 20 ft of bare copper, 2 AWG or larger, encircling the building or structure in direct contact with earth."
+      ],
+      [
+       "(5) Rod and pipe electrodes",
+       "Rod: 5/8 in. minimum diameter for steel or stainless steel unless listed (listed rods may be 1/2 in.). Pipe: trade size 3/4 minimum. At least 8 ft in contact with soil."
+      ],
+      [
+       "(6) Other listed electrodes",
+       "Listed for the purpose."
+      ],
+      [
+       "(7) Plate electrodes",
+       "At least 2 sq ft of surface in contact with the soil."
+      ],
+      [
+       "(8) Other local metal underground systems",
+       "Well casings and similar structures, used when no electrode in (1) through (7) is available."
+      ]
+     ]
+    },
+    "bullets": [
+     "The concrete-encased electrode is often called the Ufer ground. In new construction it is frequently the best electrode available because it is in intimate contact with the soil, so it must be used if present and accessible.",
+     "The 2023 edition revised the wording of the concrete-encased electrode rule: the 1/2 in. bar can be a single 20 ft length or shorter pieces tied together."
+    ],
+    "info": "Electrodes not permitted: metal underground gas piping and aluminum, per 250.52(B).",
+    "keypoint": "Take inventory of what is present, because 250.50 makes every qualifying electrode part of the system.",
+    "refs": [
+     "NEC 250.50",
+     "NEC 250.52"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "Building the Electrode System: Bonding, Supplements, and What to Avoid",
+    "body": "Having listed the electrodes, the next step is to connect them. Electrodes at a building must be bonded together with jumpers sized under 250.53 using 250.66 and installed per the grounding electrode conductor rules. Some electrodes cannot stand alone. A metal underground water pipe electrode must be supplemented by another electrode, and a single rod, pipe, or plate must either measure 25 ohms or less or be supplemented. Certain items are excluded outright.",
+    "def_grid": [
+     {
+      "term": "Water pipe supplement",
+      "body": "Under 250.53(D)(2) the metal underground water pipe electrode must be supplemented by an additional electrode from 250.52(A)(2) through (A)(8). The supplement can be connected to the grounding electrode conductor, the grounded service conductor, the service raceway, or the service enclosure."
+     },
+     {
+      "term": "Interior water pipe limit",
+      "body": "Under 250.68(C)(1), only the first 5 ft of interior metal water piping from where it enters the building may serve as part of the grounding electrode system or as a conductor to interconnect electrodes."
+     },
+     {
+      "term": "Auxiliary electrodes",
+      "body": "250.54 allows added electrodes, such as at a pole or a sensitive piece of equipment. They need not be bonded into the grounding electrode system and need not meet a resistance value, but the earth is still not a ground-fault current path."
+     },
+     {
+      "term": "Lightning protection",
+      "body": "Lightning system air terminals, down conductors, and their ground rods are separate. They must be bonded to the building grounding electrode system but cannot replace the electrodes required for the electrical system."
+     }
+    ],
+    "bullets": [
+     "Not permitted as electrodes (250.52(B)): metal underground gas piping systems and aluminum electrodes.",
+     "Existing buildings have a limited relief from using a concrete-encased electrode that cannot be reached without disturbing the concrete. New construction has no such relief.",
+     "Rebar embedded in concrete can serve as the concrete-encased electrode, but since the 2020 edition a rebar extension cannot be used as the conductor that interconnects the electrodes. A rebar extension is allowed as a connection point only when protected from contact with the earth."
+    ],
+    "warning": "Epoxy-coated rebar does not qualify as part of the concrete-encased electrode because the coating is not electrically conductive in the way the Code requires.",
+    "keypoint": "All qualifying electrodes are bonded together, the water pipe never stands alone, and gas piping and aluminum never qualify.",
+    "refs": [
+     "NEC 250.50",
+     "NEC 250.52",
+     "NEC 250.53",
+     "NEC 250.54"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Installing Rod and Pipe Electrodes: 250.53 and 250.56",
+    "body": "Driven rods are the most common supplemental electrode. Section 250.53(G) requires at least 8 ft of the rod to be in contact with the soil. If rock prevents driving to full depth, the rod may be driven at an angle not exceeding 45 degrees from vertical, or buried horizontally in a trench at least 30 in. deep. The upper end must be flush with or below ground level unless the end and the conductor attachment are protected against physical damage.",
+    "step_list": [
+     "Select the rod. Steel or stainless steel rods 5/8 in. diameter, or listed rods 1/2 in. diameter or larger. Pipe is trade size 3/4 minimum and galvanized or otherwise metal-coated if iron or steel.",
+     "Drive it to full length. At least 8 ft must contact soil. A 10 ft rod driven 8 ft deep satisfies the rule even with 2 ft left above grade, but the exposed end must then be protected.",
+     "If rock stops you, angle the rod up to 45 degrees or lay it in a trench at least 30 in. deep. Do not cut the rod shorter than 8 ft.",
+     "Decide on the single rod or supplement. 250.53(A)(2) requires a rod, pipe, or plate to be supplemented by an additional electrode unless it has a resistance to ground of 25 ohms or less. For example a single rod measuring 40 ohms requires one additional electrode of a type in 250.52(A)(2) through (A)(8).",
+     "Do not chase a lower reading on the supplement. Once a second electrode is installed, the Code does not require the resistance of the pair to be tested.",
+     "Space multiple rods at least 6 ft apart (250.53(B)). More spacing improves performance because overlapping zones of influence reduce the benefit of a second rod."
+    ],
+    "info": "Section 250.56 is the resistance rule. It permits the supplemental electrode to take the place of testing the first, which is why you see two rods on most residential services.",
+    "keypoint": "A single rod needs to test at 25 ohms or less or be paired with another electrode, and in practice most installers just drive two rods at least 6 ft apart.",
+    "refs": [
+     "NEC 250.53",
+     "NEC 250.56",
+     "NEC 250.52"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Plate Electrodes and Ground Rings, and How Deep to Bury Them",
+    "body": "Plate electrodes and ground rings are used where rods will not drive, such as in rocky soil, or where the installation calls for a large area of soil contact. A plate has to expose at least 2 sq ft to the soil, with minimum thickness depending on the material, and must be installed at least 30 in. below the earth surface. A ground ring is a bare copper conductor of at least 2 AWG, at least 20 ft long, encircling the building and buried at least 30 in. deep.",
+    "table": {
+     "h": [
+      "Electrode",
+      "Minimum requirement",
+      "Depth or location"
+     ],
+     "r": [
+      [
+       "Plate, iron or steel",
+       "2 sq ft of surface exposed to soil, 1/4 in. thick",
+       "At least 30 in. below the surface of the earth"
+      ],
+      [
+       "Plate, nonferrous",
+       "2 sq ft of surface exposed to soil, 0.06 in. thick",
+       "At least 30 in. below the surface of the earth"
+      ],
+      [
+       "Ground ring",
+       "Bare copper, 2 AWG or larger, at least 20 ft",
+       "Encircles the building, buried at least 30 in."
+      ],
+      [
+       "Concrete-encased electrode",
+       "20 ft of 1/2 in. rebar or 20 ft of 4 AWG bare copper",
+       "Near the bottom of the footing, 2 in. of concrete cover"
+      ],
+      [
+       "Rod or pipe",
+       "8 ft in contact with the soil",
+       "Top flush with or below grade, or protected"
+      ]
+     ]
+    },
+    "bullets": [
+     "Plate electrodes count as a single electrode, so they fall under the same 25 ohm supplement rule as a rod.",
+     "A ground ring is one of the more effective electrodes because of its large footprint. A grounding electrode conductor connecting only to a ring need not be larger than the ring conductor, which is 2 AWG copper at minimum.",
+     "Because the electrodes are underground, connections to buried or encased electrodes are exempt from the accessibility requirement discussed later in this module."
+    ],
+    "keypoint": "Plates and rings are both buried at least 30 in., and each has its own minimum dimension.",
+    "refs": [
+     "NEC 250.52",
+     "NEC 250.53",
+     "NEC 250.54"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "Grounding Electrode Conductor Installation: 250.62 and 250.64",
+    "body": "The grounding electrode conductor is the wire that connects the system to the electrode. Section 250.62 lists acceptable materials: copper, aluminum, or copper-clad aluminum, solid or stranded, insulated, covered, or bare. Section 250.64 then governs how the conductor is installed, secured, protected, and spliced. Most field violations on this part of the Code come from ignoring the physical protection and continuity rules rather than from choosing the wrong size.",
+    "table": {
+     "h": [
+      "Topic",
+      "Rule (250.64)",
+      "Practical note"
+     ],
+     "r": [
+      [
+       "Aluminum and copper-clad aluminum, 250.64(A)",
+       "Not in direct contact with masonry or the earth, and not terminated within 18 in. of the earth outdoors",
+       "Use copper when the conductor reaches a ground rod at grade level."
+      ],
+      [
+       "Securing and protection, 250.64(B)",
+       "6 AWG free of physical damage may run along the surface of the building if securely fastened. Smaller than 6 AWG needs a raceway or cable armor. 4 AWG or larger exposed to damage needs protection.",
+       "Where PVC conduit provides the protection, the 2020 edition calls for Schedule 80."
+      ],
+      [
+       "Continuity, 250.64(C)",
+       "Installed in one continuous length without splice, except listed irreversible compression connectors, exothermic welding, and busbar connections",
+       "Do not use wire nuts or split bolts."
+      ],
+      [
+       "Raceways and enclosures, 250.64(E)",
+       "A ferrous metal raceway or enclosure containing a grounding electrode conductor must be electrically continuous and bonded to the conductor at both ends",
+       "Prevents a choke effect that would impede lightning and fault current."
+      ],
+      [
+       "Vent openings, 250.64(G)",
+       "New in 2023: the conductor may not pass through the ventilation openings of an enclosure",
+       "Airflow and heating concerns."
+      ]
+     ]
+    },
+    "bullets": [
+     "Copper-clad aluminum was added to 250.64(B) in 2023, and cable armor was added to the title of 250.64(E).",
+     "Section 250.62 is what lets you use aluminum, but 250.64(A) is what keeps it off the ground."
+    ],
+    "keypoint": "Run the grounding electrode conductor in one piece, protect it according to its size, and bond any ferrous raceway at both ends.",
+    "refs": [
+     "NEC 250.62",
+     "NEC 250.64"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "Making the Connections: 250.68 and 250.70",
+    "body": "Section 250.68 deals with where and how grounding electrode conductor connections are made, and 250.70 lists the acceptable methods. Connections must be accessible, except those encased in concrete or buried, which are exempt. Where a water meter or other disconnectable equipment is in the line of a metal water pipe electrode, the pipe must be bonded around it with a jumper long enough to allow removal. The connection hardware must be suited to the electrode and conductor.",
+    "bullets": [
+     "Acceptable methods under 250.70 include listed lugs, listed pressure connectors, listed clamps, exothermic welding, and other listed means. Sheet-metal screws are not permitted for grounding or bonding connections.",
+     "Ground clamps and fittings exposed to physical damage need protection in metal, wood, or an equivalent covering (250.10).",
+     "Remove paint, enamel, lacquer, and other nonconductive coatings from threads and contact surfaces before connecting, unless the fitting is designed to penetrate them (250.12, which in 2020 expanded to cover bonding).",
+     "A water pipe connection should be made within the first 5 ft of where the pipe enters, and the jumper around a water meter must be sized as the grounding electrode conductor would be.",
+     "Do not mix metals carelessly: use fittings listed for the conductor material, especially for aluminum conductors."
+    ],
+    "warning": "A common installation error is to terminate two grounding electrode conductors under a single set screw in a clamp rated for one conductor. If the fitting is not listed for multiple conductors, use separate fittings.",
+    "info": "The 2023 edition clarified how the grounding electrode conductor connection to water piping is measured in 250.68.",
+    "keypoint": "Use only listed connectors or exothermic welds, only one conductor per fitting unless the fitting is listed for more, and keep the connections accessible unless they are buried or encased.",
+    "refs": [
+     "NEC 250.68",
+     "NEC 250.70",
+     "NEC 250.12",
+     "NEC 250.10"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Worked Example, Part 1: Sizing the Grounding Electrode Conductor from Table 250.66",
+    "body": "Table 250.66 is entered with the size of the largest ungrounded service-entrance conductor, or the equivalent area when the service conductors are in parallel. The table then gives the minimum grounding electrode conductor, with separate columns for copper and aluminum. Always size by circular mil area of the ungrounded conductors, not by the ampere rating of the service. The steps below show three services with every number written out.",
+    "step_list": [
+     "Copper rows of Table 250.66: 2 AWG or smaller = 8 AWG; 1 or 1/0 = 6 AWG; 2/0 or 3/0 = 4 AWG; over 3/0 through 350 kcmil = 2 AWG; over 350 through 600 kcmil = 1/0 AWG; over 600 through 1100 kcmil = 2/0 AWG; over 1100 kcmil = 3/0 AWG.",
+     "Example 1, single set of 4/0 AWG copper. Chapter 9 Table 8 gives 4/0 AWG = 211,600 circular mils. That is greater than 3/0 AWG (167,800 cmil) and no more than 350 kcmil (350,000 cmil), so the row is over 3/0 through 350 kcmil. Grounding electrode conductor: 2 AWG copper.",
+     "Example 2, 400 A service, two parallel sets of 3/0 AWG copper per phase. One 3/0 AWG = 167,800 cmil. Two sets: 2 x 167,800 = 335,600 cmil. That is greater than 167,800 and less than 350,000, so the same row applies. Grounding electrode conductor: 2 AWG copper.",
+     "Example 3, contrast. Two parallel sets of 4/0 AWG copper per phase. 2 x 211,600 = 423,200 cmil. That exceeds 350,000 and is under 600,000, so the row is over 350 through 600 kcmil. Grounding electrode conductor: 1/0 AWG copper.",
+     "Material does not change the entry: 4/0 AWG aluminum has the same circular mil area as 4/0 AWG copper, so you enter the table at the same row and choose a conductor from the copper or the aluminum column, whichever material you are installing.",
+     "Last check: confirm which electrode the conductor serves, because 250.66(A), (B), and (C) cap the size for some electrodes, which is the subject of the next slide."
+    ],
+    "info": "Table 250.66 and Table 250.102(C)(1) share the same copper values up to 1100 kcmil but are used for different conductors. Do not swap them.",
+    "keypoint": "Find the largest ungrounded conductor area, match it to a row of Table 250.66, and read the copper column.",
+    "refs": [
+     "NEC 250.66",
+     "NEC Table 250.66",
+     "NEC Chapter 9 Table 8"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Worked Example, Part 2: Limits for Rods, Concrete-Encased Electrodes, and Rings",
+    "body": "The Table 250.66 result is the size needed for connection to a metal water pipe, a structural steel member, or any electrode type without a special rule. Three subsections allow smaller conductors where the grounding electrode conductor goes only to certain electrodes. Section 250.66(A) caps the conductor at 6 AWG copper where it is the sole connection to a rod, pipe, or plate. Section 250.66(B) caps it at 4 AWG copper where it is the sole connection to a concrete-encased electrode. Section 250.66(C) caps it at the size of the ring conductor where it is the sole connection to a ground ring.",
+    "table": {
+     "h": [
+      "Service",
+      "Table 250.66 size",
+      "Rod, pipe, plate only (250.66(A))",
+      "Concrete-encased only (250.66(B))",
+      "Ground ring only (250.66(C))",
+      "Water pipe or full size"
+     ],
+     "r": [
+      [
+       "4/0 AWG copper service",
+       "2 AWG",
+       "6 AWG",
+       "4 AWG",
+       "2 AWG (ring 2 AWG)",
+       "2 AWG"
+      ],
+      [
+       "500 kcmil copper service",
+       "1/0 AWG",
+       "6 AWG",
+       "4 AWG",
+       "2 AWG (ring 2 AWG)",
+       "1/0 AWG"
+      ]
+     ]
+    },
+    "bullets": [
+     "The caps apply to the portion of the conductor that is the sole connection to that electrode. A single conductor that continues on to a water pipe or to the service has to be the full table size.",
+     "For the 500 kcmil service, Table 250.66 (over 350 through 600 kcmil) requires 1/0 AWG copper, but a run to a rod alone can be 6 AWG, and a run to a concrete-encased electrode alone can be 4 AWG.",
+     "Where the table gives a size smaller than the cap, the table size controls. For example, a service of 2 AWG copper or smaller yields 8 AWG from the table, and 8 AWG is already smaller than any cap.",
+     "Aluminum conductors have separate caps and a separate table column. Check the aluminum column before substituting aluminum."
+    ],
+    "keypoint": "Use the smaller of the table size and the cap for the electrode the conductor serves, and use the full table size where it reaches a water pipe or serves more than one electrode.",
+    "refs": [
+     "NEC 250.66",
+     "NEC Table 250.66"
+    ]
+   },
+   {
+    "tag": "M2·S9",
+    "title": "Code Book Exercise Part 1: Electrode Inventory for a New Dwelling",
+    "body": "You are given the plan for a new single-family dwelling. It has a poured concrete footing with 1/2 in. rebar, a metal water service entering the building from underground, and a plan to drive a ground rod. Open the 2023 NEC to Article 250, Part III (Grounding Electrode System and Grounding Electrode Conductor), and work through the questions below, writing the section number next to each answer.",
+    "step_list": [
+     "Open to 250.50. It says all electrodes in 250.52(A)(1) through (A)(7) that are present at the building must be bonded together. The question is which of the three items on the plan qualify.",
+     "Concrete footing. Go to 250.52(A)(3). Does the footing contain at least 20 ft of 1/2 in. (or larger) bare or conductive-coated rebar, 2 in. or more of concrete cover, near the bottom of the footing and in direct contact with the earth? If yes, the rebar is a concrete-encased electrode and must be included. If the rebar is epoxy-coated, it does not count.",
+     "Metal water service. Go to 250.52(A)(1). Does the underground metal pipe contact earth for 10 ft or more? If yes, it is an electrode. Then go to 250.53(D)(2) to see that it must be supplemented by another electrode.",
+     "Driven rod. Go to 250.52(A)(5) for the rod size (5/8 in. steel or 1/2 in. listed) and 250.53(G) for the 8 ft rule. Go to 250.53(A)(2) for the 25 ohm rule. The rod is both an electrode and the supplement for the water pipe.",
+     "Compile the list. In this dwelling the electrodes to be bonded are: concrete-encased electrode (if present), metal water pipe, and the rod or rods. Gas piping is excluded by 250.52(B).",
+     "Interconnection. The electrodes are bonded together with a bonding jumper sized per 250.53 using 250.66, connected by methods in 250.70. Water pipe connections must also respect the 5 ft rule in 250.68(C)(1)."
+    ],
+    "info": "Concrete-encased electrodes should be planned before the footing is poured. Coordinate with the foundation contractor so a rebar tail or other connection point is left accessible.",
+    "keypoint": "Start with 250.50 for what must be bonded, then use 250.52(A) to decide what qualifies.",
+    "refs": [
+     "NEC 250.50",
+     "NEC 250.52",
+     "NEC 250.53"
+    ]
+   },
+   {
+    "tag": "M2·S10",
+    "title": "Code Book Exercise Part 2: Sizing the Conductors for the Dwelling",
+    "body": "Now assume the dwelling has a 200 A service made up of 4/0 AWG aluminum ungrounded conductors. Use Table 250.66 and the limits in 250.66(A) and (B) to choose the grounding electrode conductor for each electrode, then use 250.53 and 250.68 to decide how the electrodes are tied together. Write down the table row you used, not just the answer.",
+    "step_list": [
+     "Find the entry size. 4/0 AWG aluminum has an area of 211,600 circular mils (Chapter 9 Table 8), the same as 4/0 AWG copper. The row is over 3/0 through 350 kcmil.",
+     "Read the table. Copper GEC for this row: 2 AWG. (Aluminum GEC would use the aluminum column, which is larger.)",
+     "To the metal water pipe: the full table size, 2 AWG copper. No cap applies to a water pipe connection.",
+     "To the concrete-encased electrode only: 250.66(B) caps the conductor at 4 AWG copper, which is smaller than 2 AWG, so 4 AWG copper is the minimum for that connection.",
+     "To the driven rod only: 250.66(A) caps it at 6 AWG copper, so 6 AWG copper is the minimum for that connection.",
+     "Bonding the electrodes together: jumpers between electrodes are sized under 250.53 using 250.66, based on the largest grounding electrode conductor required among the electrodes connected together. In this dwelling, because the water pipe row demands 2 AWG, a jumper that carries the load for the whole system is 2 AWG copper. Confirm with your inspector how the caps in 250.66(A) and (B) apply to jumpers that connect only to those electrodes.",
+     "Document the answers: for each electrode write the Code section, the table row, and the final size, so you can show the inspector how you arrived at it."
+    ],
+    "warning": "Practice problems often hide a trap: the service ampere rating is not used in Table 250.66. Only the size of the ungrounded conductors matters.",
+    "keypoint": "The conductor that reaches the water pipe is the full table size, the conductor that reaches only the rod can drop to 6 AWG, and the conductor to the footing can drop to 4 AWG.",
+    "refs": [
+     "NEC 250.66",
+     "NEC 250.53",
+     "NEC 250.68"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A metal water pipe serves as a grounding electrode and a water meter is installed in the line. How is continuity ensured?",
+    "opts": [
+     "No bonding is required because the meter is brass",
+     "By bonding the meter to the gas line",
+     "By bonding around the water meter with a bonding jumper long enough to allow its removal",
+     "By relying on the water inside the pipe"
+    ],
+    "correct": 2,
+    "explain": "Piping continuity must be maintained by bonding around insulated joints and around equipment likely to be disconnected for repair or replacement, such as water meters. [NEC 250.68(B)]"
+   },
+   {
+    "q": "A ground rod hits rock at 4 ft. Which installation is permitted?",
+    "opts": [
+     "Drive it at an angle of 60 degrees from vertical",
+     "Drive it at an oblique angle not exceeding 45 degrees from vertical, or bury it in a trench at least 30 in deep",
+     "Bury it in a trench at least 12 in deep",
+     "Cut it off at 4 ft and use it as is"
+    ],
+    "correct": 1,
+    "explain": "Where rock bottom prevents full depth, the rod may be driven at up to 45 degrees from vertical or buried horizontally in a trench at least 30 in deep. [NEC 250.53(G)]"
+   },
+   {
+    "q": "A service uses 400 kcmil copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "3/0 AWG",
+     "1/0 AWG",
+     "2/0 AWG",
+     "2 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.66: copper service conductor 400 kcmil → 1/0 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   },
+   {
+    "q": "When two or more rod electrodes are installed to form part of the grounding electrode system, what is the minimum spacing between them?",
+    "opts": [
+     "8 ft",
+     "10 ft",
+     "6 ft",
+     "2 ft"
+    ],
+    "correct": 2,
+    "explain": "Multiple rod, pipe, or plate electrodes must be at least 1.8 m (6 ft) apart, and more is better. [NEC 250.53(B)]"
+   },
+   {
+    "q": "How far below the surface of the earth must a plate electrode be installed?",
+    "opts": [
+     "At least 8 ft",
+     "At least 30 in",
+     "At least 12 in",
+     "At least 18 in"
+    ],
+    "correct": 1,
+    "explain": "Plate electrodes must be installed not less than 750 mm (30 in) below the surface of the earth. [NEC 250.53(H)]"
+   },
+   {
+    "q": "Which of the following is NOT permitted to be used as a grounding electrode?",
+    "opts": [
+     "Metal underground gas piping system",
+     "Ground ring",
+     "Driven rod",
+     "Concrete-encased electrode"
+    ],
+    "correct": 0,
+    "explain": "Metal underground gas piping and aluminum electrodes are not permitted as grounding electrodes. [NEC 250.52(B)]"
+   },
+   {
+    "q": "A service uses 750 kcmil copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "1/0 AWG",
+     "2/0 AWG",
+     "2 AWG",
+     "3/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.66: copper service conductor 750 kcmil → 2/0 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   },
+   {
+    "q": "A service uses 1000 kcmil copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "2 AWG",
+     "2/0 AWG",
+     "3/0 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.66: copper service conductor 1000 kcmil → 2/0 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   }
+  ]
+ },
+ {
+  "title": "Equipment grounding and bonding",
+  "time": "60 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "Equipment grounding conductor types listed in 250.118 and their conditions",
+   "Identification, installation, and connection of EGCs (250.119, 250.120, 250.134)",
+   "Sizing the EGC from Table 250.122, including upsized circuits, shared raceways, and parallel sets",
+   "Bonding of service equipment (250.92) and when locknuts are not enough",
+   "Bonding metal water piping and other metal piping (250.104)",
+   "Continuity of the fault path and the over 250 volt rule (250.96, 250.97)",
+   "Choosing between Table 250.102(C)(1) and Table 250.122 for bonding jumpers",
+   "Code book exercise with four jumper scenarios and a comparison of the tables"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "Equipment Grounding Conductor Types: 250.118",
+    "body": "Section 250.118 is the list of everything the Code accepts as an equipment grounding conductor. Some are wires, but many are the wiring methods themselves: metal conduit, tubing, and the armor or sheath of certain cables. Each entry carries its own conditions. A metal wiring method that is not on the list, or that is on the list but used outside its conditions, needs a separate wire-type equipment grounding conductor. In the 2023 edition the list was reorganized, so find the entry by name rather than by item number.",
+    "table": {
+     "h": [
+      "Wiring method or conductor",
+      "Accepted as the EGC?",
+      "Condition to remember"
+     ],
+     "r": [
+      [
+       "Copper, aluminum, or copper-clad aluminum conductor",
+       "Yes",
+       "Solid or stranded, insulated, covered, or bare."
+      ],
+      [
+       "Rigid metal conduit (RMC)",
+       "Yes",
+       "Fittings must be made up tight and the system must be electrically continuous."
+      ],
+      [
+       "Intermediate metal conduit (IMC)",
+       "Yes",
+       "Same as RMC."
+      ],
+      [
+       "Electrical metallic tubing (EMT)",
+       "Yes",
+       "Use fittings listed for EMT and made up tight. 358.60 also states EMT is permitted as an EGC."
+      ],
+      [
+       "Listed flexible metal conduit (FMC)",
+       "Only within limits",
+       "Listed fittings, trade size 1-1/4 in. or smaller, circuit conductors protected at 20 A or less, total length in the ground-return path of 6 ft or less, and flexibility not required after installation."
+      ],
+      [
+       "Listed liquidtight flexible metal conduit (LFMC)",
+       "Only within limits",
+       "Trade size, overcurrent rating, and 6 ft length conditions given in 250.118."
+      ],
+      [
+       "Armor of Type AC cable",
+       "Yes",
+       "The armor together with the internal bonding strip provides the path, per the cable article (320.108)."
+      ],
+      [
+       "Type MC cable armor or sheath, mineral-insulated cable sheath, cable tray, cablebus",
+       "Yes, under the conditions of the cable or tray article",
+       "Check the cable article for installation requirements."
+      ],
+      [
+       "Nonmetallic raceways and cables (PVC, ENT, nonmetallic-sheathed cable)",
+       "No",
+       "Install a wire-type EGC sized under 250.122 inside the raceway or cable."
+      ],
+      [
+       "Gas piping",
+       "No",
+       "Never an EGC."
+      ]
+     ]
+    },
+    "bullets": [
+     "The 6 ft limit for flexible metal conduit is measured as the total length of flexible conduit in the ground-return path, so two 4 ft whips in series on the same path already exceed it.",
+     "When in doubt, pull a green wire. A wire-type EGC always satisfies 250.118 and avoids debates about length, size, and listing."
+    ],
+    "warning": "Using a long flexible metal conduit whip as the only grounding path is one of the most common inspection failures. Check the length and the trade size before relying on the conduit.",
+    "keypoint": "Know which wiring methods are accepted on their own and which need a wire-type EGC added.",
+    "refs": [
+     "NEC 250.118"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Identifying, Installing, and Connecting Equipment Grounding Conductors",
+    "body": "Choosing an equipment grounding conductor type is half the job. The rest is making sure it is recognized, installed with the circuit conductors, and connected to the equipment it grounds. Section 250.119 covers identification, 250.120 covers installation, and 250.134 states how fixed equipment and equipment connected with permanent wiring is grounded. Which equipment must be grounded in the first place is set out in 250.110 through 250.114.",
+    "def_grid": [
+     {
+      "term": "Identification, 250.119",
+      "body": "Insulated EGCs 6 AWG and smaller are continuous green or green with one or more yellow stripes. Insulated EGCs 4 AWG and larger may instead be identified by stripping insulation along the exposed length, coloring it green, or marking with green tape or labels at each end and at accessible points."
+     },
+     {
+      "term": "Installation, 250.120",
+      "body": "An EGC must be installed so that it is continuous. Aluminum or copper-clad aluminum EGCs may not be in direct contact with masonry or earth, may not be exposed to corrosive conditions, and may not terminate within 18 in. of the earth outdoors."
+     },
+     {
+      "term": "Fixed equipment, 250.134",
+      "body": "Equipment fastened in place or connected by permanent wiring methods is grounded either by an EGC type from 250.118 or by an EGC contained in the same raceway or cable or otherwise run with the circuit conductors."
+     },
+     {
+      "term": "Cord-and-plug equipment, 250.114",
+      "body": "Certain cord-and-plug equipment must have an EGC regardless of voltage, including in dwellings refrigerators, freezers, air conditioners, clothes washers and dryers, dishwashers, information technology equipment, sump pumps, and aquarium equipment."
+     }
+    ],
+    "bullets": [
+     "Ranges and clothes dryers: in new installations, 250.140 requires the frame to be connected to the EGC, which means a four-wire circuit. The use of the neutral for the frame is limited to certain existing installations.",
+     "A snap switch, like a receptacle, must be connected to an EGC or grounded by one of the Code's listed means. The 2023 edition extended this requirement in 250.130(C) to snap switches.",
+     "EGC connections inside boxes must be made so that removing one device does not break continuity for the others (250.148)."
+    ],
+    "keypoint": "The EGC travels with the circuit conductors, is identified green, and is sized from Table 250.122.",
+    "refs": [
+     "NEC 250.119",
+     "NEC 250.120",
+     "NEC 250.134",
+     "NEC 250.114",
+     "NEC 250.140"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "Worked Example, Part 1: Sizing the EGC from Table 250.122",
+    "body": "Table 250.122 selects the minimum equipment grounding conductor from the rating of the overcurrent device ahead of the circuit, not from the size of the load or of the circuit conductors. The table lists a device rating and the copper or aluminum EGC for it. If the actual device rating falls between two rows, use the row for the next higher rating shown in the table. Section 250.122(A) adds that the EGC does not have to be larger than the circuit conductors.",
+    "table": {
+     "h": [
+      "Overcurrent device rating (amperes, not exceeding)",
+      "Copper EGC"
+     ],
+     "r": [
+      [
+       "15",
+       "14 AWG"
+      ],
+      [
+       "20",
+       "12 AWG"
+      ],
+      [
+       "60",
+       "10 AWG"
+      ],
+      [
+       "100",
+       "8 AWG"
+      ],
+      [
+       "200",
+       "6 AWG"
+      ],
+      [
+       "300",
+       "4 AWG"
+      ],
+      [
+       "400",
+       "3 AWG"
+      ],
+      [
+       "500",
+       "2 AWG"
+      ],
+      [
+       "600",
+       "1 AWG"
+      ],
+      [
+       "800",
+       "1/0 AWG"
+      ],
+      [
+       "1000",
+       "2/0 AWG"
+      ],
+      [
+       "1200",
+       "3/0 AWG"
+      ]
+     ]
+    },
+    "step_list": [
+     "20 A circuit. Device 20 A. Table row 20: 12 AWG copper. Circuit conductors are 12 AWG, so the EGC is the same size.",
+     "60 A circuit. Device 60 A. Table row 60: 10 AWG copper. Circuit conductors are typically 6 AWG, so the EGC is smaller.",
+     "100 A circuit. Device 100 A. Table row 100: 8 AWG copper. Circuit conductors typically 3 AWG copper at 75 C.",
+     "200 A circuit. Device 200 A. Table row 200: 6 AWG copper. Circuit conductors typically 3/0 AWG copper.",
+     "400 A circuit. Device 400 A. Table row 400: 3 AWG copper. Circuit conductors typically 600 kcmil copper.",
+     "In-between ratings: a 125 A breaker falls above 100 and not above 200, so row 200 gives 6 AWG; a 450 A breaker falls above 400 and not above 500, so row 500 gives 2 AWG; a 90 A breaker falls under row 100, so 8 AWG."
+    ],
+    "warning": "The circuit conductor sizes shown in the steps are typical values at 75 C terminals, used only to show that the EGC is not required to be larger than the circuit conductors. Size circuit conductors by the rules in Article 310 and 240.",
+    "keypoint": "Enter Table 250.122 with the overcurrent device rating and read across to the copper column.",
+    "refs": [
+     "NEC 250.122",
+     "NEC Table 250.122",
+     "NEC Table 310.16"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "Worked Example, Part 2: Increased Conductors, Shared Raceways, and Parallel Sets",
+    "body": "Three situations change the answer from the basic table lookup. Where the ungrounded conductors are increased in size, 250.122(B) increases the EGC proportionally. Where several circuits share one raceway, one EGC can serve them all. Where conductors are paralleled in separate raceways, each raceway needs its own full-size EGC. The steps below work each case with real numbers.",
+    "step_list": [
+     "Case A, voltage drop upsizing. A 60 A circuit normally uses 6 AWG copper (26,240 cmil). The designer increases the ungrounded conductors to 3 AWG (52,620 cmil) for voltage drop.",
+     "Base EGC from Table 250.122 for 60 A: 10 AWG (10,380 cmil).",
+     "Proportional factor: 52,620 / 26,240 = 2.005. Required EGC area: 10,380 x 2.005 = 20,815 cmil.",
+     "Pick the smallest standard size with at least 20,815 cmil. 8 AWG is 16,510 (too small); 6 AWG is 26,240. Answer: 6 AWG copper. Since 6 AWG is smaller than the 3 AWG circuit conductors, 250.122(A) is satisfied.",
+     "Note: since the 2020 edition, 250.122(B) applies this increase only when conductors are enlarged for reasons such as voltage drop, not when they are enlarged only because of adjustment or correction factors.",
+     "Case B, shared raceway. Three circuits protected at 20 A, 30 A, and 60 A share one raceway. One EGC may serve all, sized for the largest device. 60 A gives 10 AWG copper.",
+     "Case C, parallel sets. A 400 A feeder runs as two parallel sets in two separate raceways. Each raceway gets an EGC sized from the 400 A device: 3 AWG copper in each raceway. It is not split in half, because each raceway must provide a complete ground-fault path."
+    ],
+    "info": "In every case the starting point is the rating of the overcurrent device ahead of the circuit, never the load current.",
+    "keypoint": "Upsizing for voltage drop raises the EGC in proportion to circular mils, shared raceways use the largest device, and parallel sets get a full-size EGC in every raceway.",
+    "refs": [
+     "NEC 250.122",
+     "NEC Table 250.122",
+     "NEC Chapter 9 Table 8"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "Bonding Service Equipment: 250.92",
+    "body": "At a service, the metal parts that are part of the service equipment have to be bonded so a fault anywhere on the service side can reach the grounded conductor. Section 250.92(A) names what is bonded: the service raceways, cable trays, cable armor, and enclosures, including meter fittings, boxes and similar parts, and any raceway or enclosure containing a grounding electrode conductor. Section 250.92(B) then lists approved ways to make that bond. The line between acceptable and unacceptable bonds is one of the most examined points in the article.",
+    "table": {
+     "h": [
+      "250.92(B) method",
+      "What qualifies",
+      "Field note"
+     ],
+     "r": [
+      [
+       "Grounded service conductor",
+       "Bonded to the service equipment through the connection of the grounded conductor at the service, as 250.8 permits",
+       "The main bonding jumper completes it."
+      ],
+      [
+       "Threaded couplings and bosses",
+       "Made up wrenchtight",
+       "Includes threaded entries to enclosures. The 2023 edition added threaded entries to this method."
+      ],
+      [
+       "Threadless couplings and connectors",
+       "Made up tight for metal raceways and metal-clad cables",
+       "Set-screw or compression fittings must be tightened and, for EMT, listed."
+      ],
+      [
+       "Bonding jumpers",
+       "Bonding-type locknuts, bushings, wedges, or a jumper around concentric knockouts or oversized openings",
+       "Use a bonding jumper sized per 250.102 and connect it per 250.8."
+      ],
+      [
+       "Other listed devices",
+       "Listed bonding devices such as bonding-type fittings",
+       "Check the listing for the raceway type."
+      ]
+     ]
+    },
+    "bullets": [
+     "Standard locknuts and bushings alone are not accepted as bonding at the service, because the connection depends on ridges that can loosen or be painted over.",
+     "Expansion fittings and telescoping sections must be made electrically continuous by equipment bonding jumpers or other means (250.98).",
+     "Bond raceways and enclosures that carry a grounding electrode conductor to the conductor at both ends (250.64(E))."
+    ],
+    "warning": "Reducing washers and concentric knockouts around a service raceway are the classic problem spots: the ring of contact is small or missing, so use a bonding-type bushing and jumper.",
+    "keypoint": "At the service, bond with threaded or threadless fittings made up tight, or with bonding jumpers and bonding-type devices. A standard locknut is not enough.",
+    "refs": [
+     "NEC 250.92",
+     "NEC 250.8",
+     "NEC 250.64"
+    ]
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Bonding Metal Water Piping and Other Metal Piping: 250.104",
+    "body": "Metal piping systems that could become energized have to be bonded so they cannot hold a different potential from the electrical system. Section 250.104(A) requires interior metal water piping to be bonded to the service equipment enclosure, to the grounded conductor at the service, to the grounding electrode conductor where it is large enough, or to one or more of the electrodes. Section 250.104(B) covers other metal piping, such as gas piping, and sizes the jumper by the circuit that could energize it.",
+    "step_list": [
+     "Dwelling with 4/0 AWG copper service conductors. Table 250.102(C)(1): 4/0 AWG copper (211,600 cmil) falls in over 3/0 through 350 kcmil, so the water pipe bonding jumper is 2 AWG copper.",
+     "Large service. 1500 kcmil copper ungrounded conductors. The table gives 12.5 percent of 1,500,000 = 187,500 cmil, which rounds up to 4/0 AWG (211,600 cmil). Since the 2020 edition 250.104(A)(1) says the jumper does not need to exceed 3/0 AWG copper, so the answer is 3/0 AWG copper.",
+     "Building fed by a feeder, not a service. The jumper is sized from Table 250.122 using the rating of the feeder overcurrent device. A 100 A feeder breaker gives 8 AWG copper.",
+     "Gas piping. A gas furnace is supplied by a 20 A branch circuit. Under 250.104(B) the jumper is sized from Table 250.122 using the 20 A rating of the circuit most likely to energize the piping: 12 AWG copper. The gas piping can be bonded through the equipment grounding conductor of that circuit.",
+     "Where it connects: the jumper terminates at the service equipment enclosure, the grounded conductor at the service, the grounding electrode conductor, or an electrode, using a listed fitting, at a point that is accessible."
+    ],
+    "bullets": [
+     "Structural steel that may become energized is bonded under 250.104(C).",
+     "Bonding does not make piping an electrode. Underground gas piping is never a grounding electrode, even if it is bonded.",
+     "Do not confuse bonding the interior water piping with the water pipe electrode. The metal underground water pipe may be both an electrode and an interior piping system that needs to be bonded."
+    ],
+    "keypoint": "Size the water pipe bonding jumper from Table 250.102(C)(1) at a service, and size jumpers to other piping from Table 250.122 using the circuit likely to energize it.",
+    "refs": [
+     "NEC 250.104",
+     "NEC Table 250.102(C)(1)",
+     "NEC Table 250.122"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Continuity of the Fault Path: 250.96 and 250.97",
+    "body": "Section 250.96(A) requires non-current-carrying metal parts of raceways, cable trays, cable armor, enclosures, frames, and fittings to be connected together to ensure electrical continuity and the capacity to safely conduct any fault current likely to be imposed. Section 250.97 adds a stronger requirement for circuits over 250 volts to ground, where standard locknuts and bushings cannot be the sole means of bonding at knockouts. The deciding quantity is voltage to ground, not the nominal system voltage.",
+    "table": {
+     "h": [
+      "System",
+      "Voltage to ground",
+      "250.97 applies?"
+     ],
+     "r": [
+      [
+       "120/240 V single-phase",
+       "120 V",
+       "No"
+      ],
+      [
+       "208Y/120 V three-phase",
+       "120 V",
+       "No"
+      ],
+      [
+       "240 V three-phase delta, high leg",
+       "208 V on the high leg",
+       "No (208 V does not exceed 250 V)"
+      ],
+      [
+       "480Y/277 V three-phase",
+       "277 V",
+       "Yes"
+      ],
+      [
+       "480 V delta, corner-grounded or ungrounded",
+       "480 V",
+       "Yes"
+      ],
+      [
+       "600Y/347 V three-phase",
+       "347 V",
+       "Yes"
+      ]
+     ]
+    },
+    "bullets": [
+     "Methods allowed for the over 250 V condition include threaded couplings or bosses, threadless couplings made up tight, bonding jumpers with bonding-type locknuts or bushings, and other listed devices. Concentric or eccentric knockouts that are listed to provide the path, or that have been tested for it, are an exception.",
+     "In hazardous (classified) locations, 250.100 requires bonding to be maintained regardless of voltage, including around loose-jointed fittings.",
+     "An isolated ground receptacle under 250.96(B) is a deliberate exception to bonding the EGC terminal to the box, but the isolated EGC must still run back to the source."
+    ],
+    "info": "For an ungrounded circuit, voltage to ground is the greatest voltage between the conductor and any other conductor of the circuit, which is why a 480 V ungrounded delta is over 250 V to ground.",
+    "keypoint": "Circuits with more than 250 volts to ground, such as 480Y/277, need real bonding at knockouts rather than locknuts alone.",
+    "refs": [
+     "NEC 250.96",
+     "NEC 250.97",
+     "NEC 250.92",
+     "NEC 250.100"
+    ]
+   },
+   {
+    "tag": "M3·S8",
+    "title": "Supply-Side or Load-Side: Selecting the Jumper Table in 250.102",
+    "body": "Section 250.102 is the home of bonding jumper sizing, and the first decision is the type of jumper. Jumpers on the supply side of a service or system disconnect, including the main bonding jumper, the system bonding jumper, and the supply-side bonding jumper, are sized from Table 250.102(C)(1) by the largest ungrounded conductor. Equipment bonding jumpers on the load side of an overcurrent device are sized under 250.102(D) using Table 250.122, by the overcurrent device rating. The jumper type decides the table.",
+    "table": {
+     "h": [
+      "Jumper",
+      "Table",
+      "Entered with"
+     ],
+     "r": [
+      [
+       "Main bonding jumper (250.28)",
+       "Table 250.102(C)(1)",
+       "Largest ungrounded service conductor (combined area if paralleled)"
+      ],
+      [
+       "System bonding jumper at a separately derived system (250.30)",
+       "Table 250.102(C)(1)",
+       "Largest derived ungrounded conductor"
+      ],
+      [
+       "Supply-side bonding jumper (250.102(C))",
+       "Table 250.102(C)(1)",
+       "Ungrounded conductors in the raceway or cable it follows"
+      ],
+      [
+       "Equipment bonding jumper, load side (250.102(D))",
+       "Table 250.122",
+       "Rating of the overcurrent device ahead of the circuit"
+      ],
+      [
+       "Water piping jumper at a service (250.104(A))",
+       "Table 250.102(C)(1)",
+       "Largest ungrounded service conductor, 3/0 AWG copper maximum"
+      ],
+      [
+       "Other metal piping jumper (250.104(B))",
+       "Table 250.122",
+       "Rating of the circuit likely to energize the piping"
+      ]
+     ]
+    },
+    "step_list": [
+     "Parallel raceways example. A service has four parallel sets of 350 kcmil copper, one set per raceway, with a supply-side bonding jumper in each raceway. For 250.102(C), each jumper is sized from the ungrounded conductors in its own raceway: 350 kcmil copper falls in over 3/0 through 350 kcmil, so each jumper is 2 AWG copper.",
+     "Load-side example. A subpanel feeder is protected by a 400 A breaker. A load-side bonding jumper or EGC uses Table 250.122: row 400 gives 3 AWG copper.",
+     "Installation limit: a bonding jumper on the outside of a raceway is limited to 6 ft and must be routed with the raceway (250.102(E))."
+    ],
+    "keypoint": "Supply side: Table 250.102(C)(1), entered by conductor size. Load side: Table 250.122, entered by overcurrent device rating.",
+    "refs": [
+     "NEC 250.102",
+     "NEC Table 250.102(C)(1)",
+     "NEC Table 250.122",
+     "NEC 250.28"
+    ]
+   },
+   {
+    "tag": "M3·S9",
+    "title": "Code Book Exercise Part 1: Four Bonding Jumper Scenarios",
+    "body": "In this exercise you decide which section and which table applies to each of four bonding jumpers, and then select the size. Work with a 200 A service built with 4/0 AWG copper ungrounded conductors. For each scenario, write down the section, the table, the entry value you used, and the answer. The table of contents of Article 250 will take you to Part V, Bonding, for the main rules.",
+    "step_list": [
+     "Scenario 1, main bonding jumper at the service. Section 250.28(D) sends you to Table 250.102(C)(1). Entry: 4/0 AWG copper (211,600 cmil), row over 3/0 through 350 kcmil. Answer: 2 AWG copper.",
+     "Scenario 2, supply-side bonding jumper to a separate meter enclosure ahead of the service disconnect, run with the same conductors. Section 250.102(C) sends you to Table 250.102(C)(1). Same entry, same row. Answer: 2 AWG copper.",
+     "Scenario 3, load-side bonding jumper to a subpanel fed by a 100 A breaker. Section 250.102(D) sends you to Table 250.122. Entry: 100 A device. Answer: 8 AWG copper.",
+     "Scenario 4, bonding jumper to gas piping that is likely to be energized by a 20 A circuit (a gas furnace blower). Section 250.104(B) sends you to Table 250.122. Entry: 20 A circuit. Answer: 12 AWG copper.",
+     "Write the reference for each: 250.28(D) with Table 250.102(C)(1); 250.102(C) with Table 250.102(C)(1); 250.102(D) with Table 250.122; 250.104(B) with Table 250.122.",
+     "Check your work: scenarios 1 and 2 use conductor size, scenarios 3 and 4 use overcurrent device rating."
+    ],
+    "info": "Keep a sticky tab on Table 250.102(C)(1) and Table 250.122. Most grounding problems on the exam come down to choosing between them.",
+    "keypoint": "Pick the jumper type first, then the table, then read the size.",
+    "refs": [
+     "NEC 250.102",
+     "NEC 250.104",
+     "NEC Table 250.102(C)(1)",
+     "NEC Table 250.122"
+    ]
+   },
+   {
+    "tag": "M3·S10",
+    "title": "Code Book Exercise Part 2: Comparing Table 250.102(C)(1) with Table 250.66",
+    "body": "Place the two tables side by side. Both are entered by the size of the largest ungrounded conductor, and for copper the values match through 1100 kcmil. The difference appears above 1100 kcmil, where Table 250.66 caps the grounding electrode conductor at 3/0 AWG copper while Table 250.102(C)(1) calls for 12.5 percent of the area of the largest ungrounded conductor. Knowing why they differ prevents mixing them up: one connects to earth, the other carries fault current.",
+    "table": {
+     "h": [
+      "Largest ungrounded conductor (copper)",
+      "Grounding electrode conductor, Table 250.66",
+      "Main or supply-side bonding jumper, Table 250.102(C)(1)"
+     ],
+     "r": [
+      [
+       "4/0 AWG",
+       "2 AWG",
+       "2 AWG"
+      ],
+      [
+       "500 kcmil",
+       "1/0 AWG",
+       "1/0 AWG"
+      ],
+      [
+       "1000 kcmil",
+       "2/0 AWG",
+       "2/0 AWG"
+      ],
+      [
+       "1500 kcmil",
+       "3/0 AWG",
+       "12.5 percent = 187,500 cmil, so 4/0 AWG"
+      ]
+     ]
+    },
+    "step_list": [
+     "Step 1: classify the conductor you are sizing: connects to an electrode (Table 250.66), carries supply-side fault current (Table 250.102(C)(1)), or is a load-side jumper or EGC (Table 250.122).",
+     "Step 2: find the right entry value: largest ungrounded conductor for the first two, overcurrent device rating for the third.",
+     "Step 3: read the copper or aluminum column that matches the material you are installing.",
+     "Step 4: apply any cap or limit: 250.66(A) to (C) for the electrode conductor, 3/0 AWG copper for water pipe bonding at a service, and the rule that an EGC need not be larger than the circuit conductors.",
+     "Step 5: write the Code reference next to the answer so an inspector can follow your reasoning."
+    ],
+    "warning": "The Code does not let you use Table 250.122 as a substitute for Table 250.66, or the reverse. They answer different questions.",
+    "keypoint": "The tables agree for most services, but not above 1100 kcmil, and they apply to different conductors.",
+    "refs": [
+     "NEC Table 250.66",
+     "NEC Table 250.102(C)(1)",
+     "NEC Table 250.122"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A 15 HP, 460 V, three-phase motor circuit is protected by a 40 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "10 AWG",
+     "12 AWG",
+     "8 AWG",
+     "6 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (40 A) → 10 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "What is the system bonding jumper?",
+    "opts": [
+     "The conductor from the service equipment to the grounding electrode",
+     "The bonding jumper around a water meter",
+     "The connection between the grounded conductor and the equipment grounding conductor at the service",
+     "The connection between the grounded circuit conductor and the supply-side bonding jumper or equipment grounding conductor (or both) at a separately derived system"
+    ],
+    "correct": 3,
+    "explain": "A system bonding jumper is used at separately derived systems. The equivalent connection at the service is the main bonding jumper. [NEC 250.2]"
+   },
+   {
+    "q": "A 200 HP, 230 V, three-phase motor circuit is protected by a 1000 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "2/0 AWG",
+     "1/0 AWG",
+     "4/0 AWG",
+     "3/0 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (1000 A) → 2/0 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 75 HP, 208 V, three-phase motor circuit is protected by a 700 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "1/0 AWG",
+     "1 AWG",
+     "2/0 AWG",
+     "3/0 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (700 A) → 1/0 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "What is the minimum size copper equipment grounding conductor for a feeder protected by a 600-ampere overcurrent device?",
+    "opts": [
+     "1/0 AWG",
+     "3 AWG",
+     "1 AWG",
+     "2 AWG"
+    ],
+    "correct": 2,
+    "explain": "Table 250.122 specifies 1 AWG copper for a 600 A overcurrent device. [NEC 250.122, Table 250.122]"
+   },
+   {
+    "q": "A 7-1/2 HP, 115 V, single-phase motor circuit is protected by a 150 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "6 AWG",
+     "3 AWG",
+     "4 AWG",
+     "8 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (150 A) → 6 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "What is the minimum size copper equipment grounding conductor for a feeder protected by a 1000-ampere overcurrent device?",
+    "opts": [
+     "2/0 AWG",
+     "3/0 AWG",
+     "1/0 AWG",
+     "4/0 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 specifies 2/0 AWG copper for a 1000 A overcurrent device. [NEC 250.122, Table 250.122]"
+   },
+   {
+    "q": "A 3 HP, 115 V, single-phase motor circuit is protected by a 60 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "10 AWG",
+     "6 AWG",
+     "12 AWG",
+     "8 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (60 A) → 10 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   }
+  ]
+ },
+ {
+  "title": "Special applications, 2023 changes and review",
+  "time": "60 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "What a separately derived system is and how the system bonding jumper is used (250.30)",
+   "Electrode, grounding electrode conductor, and the transfer switch test",
+   "Grounding and bonding of solar photovoltaic systems (Article 690)",
+   "Portable and permanently installed generators (250.34, 250.35)",
+   "A reported list of 2023 changes to Articles 200 and 250",
+   "How to compare editions and classify each change",
+   "A complete 400 ampere service calculation: GEC, main bonding jumper, water pipe jumper, EGCs",
+   "Final review and course wrap-up"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "Separately Derived Systems: What They Are and How They Are Bonded",
+    "body": "A separately derived system is a premises wiring system whose power comes from a source other than a service, such as a transformer, a generator, or a converter, and which has no direct connection between the circuit conductors of the source and those of another system other than through grounding and bonding connections. Section 250.30 gives the grounding and bonding rules. The central rule is that a grounded separately derived system gets exactly one connection between its grounded conductor and the grounding and bonding path, called the system bonding jumper.",
+    "def_grid": [
+     {
+      "term": "System bonding jumper",
+      "body": "Connects the grounded conductor of the derived system to the supply-side bonding jumper or equipment grounding conductor, or both. Installed at any single point from the source to the first system disconnecting means or overcurrent device, not at both."
+     },
+     {
+      "term": "Supply-side bonding jumper",
+      "body": "Runs from the source to the first disconnecting means when they are in separate enclosures, and bonds the source enclosure to that disconnect. Sized from Table 250.102(C)(1) using the derived ungrounded conductors."
+     },
+     {
+      "term": "Grounding electrode conductor",
+      "body": "Connects the grounded conductor of the derived system to the grounding electrode, and is sized from Table 250.66 using the derived ungrounded conductors."
+     },
+     {
+      "term": "What qualifies",
+      "body": "A transformer with isolated primary and secondary windings, for example 480 V delta primary to 208Y/120 V secondary, is the common case. An autotransformer does not qualify because its circuit conductors are directly connected. Generators qualify depending on how the neutral is switched in the transfer equipment."
+     }
+    ],
+    "bullets": [
+     "Bond at one point only. A second bond puts neutral current on the equipment grounding path, exactly as in the service case study in module 1.",
+     "The 2023 edition revised the grounded-conductor provision in 250.30(A)(3)(b); read the current text before designing."
+    ],
+    "warning": "Never bond the neutral at the transformer and again at the first panel. Choose the transformer or the first disconnect and keep the other neutral bar isolated.",
+    "keypoint": "A separately derived system is treated like a mini-service: one system bonding jumper, one electrode connection, and a supply-side bonding jumper to the first disconnect.",
+    "refs": [
+     "NEC 250.30",
+     "NEC Article 100",
+     "NEC Table 250.102(C)(1)"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "Separately Derived Systems: Electrode, Sizing, and the Transfer Switch Test",
+    "body": "The grounding electrode for a separately derived system is chosen under 250.30 and is generally the nearest available electrode of a specified type, such as an effectively grounded structural metal member or metal water pipe, before other electrodes are considered. The grounding electrode conductor is sized from Table 250.66. Before any of this is decided, the first question for a generator is whether it is separately derived at all, and that depends on how the transfer equipment treats the neutral.",
+    "step_list": [
+     "Size the grounding electrode conductor. A 3-phase transformer secondary has 4/0 AWG copper derived ungrounded conductors (211,600 cmil). Table 250.66, row over 3/0 through 350 kcmil, gives 2 AWG copper.",
+     "Pick the electrode. Use the nearest available electrode of the type 250.30 lists first (structural metal or water pipe close to the source). If none is available, use another electrode from 250.52(A) such as the concrete-encased electrode, a ground ring, or a rod.",
+     "Apply the transfer switch test. If the generator feeds a building through a 3-pole transfer switch that switches only the ungrounded conductors, the neutral is solidly connected between the utility and generator. The generator is not separately derived and the neutral is not bonded again at the generator.",
+     "If the transfer switch is 4-pole and switches the neutral, the generator is a separately derived system. Apply 250.30: one system bonding jumper, a grounding electrode conductor to an electrode, and an equipment grounding conductor to the transfer equipment.",
+     "Record the type. Write the transfer switch type on the single-line diagram so the next electrician does not re-bond a neutral that should be solid."
+    ],
+    "info": "The same test applies to portable generators connected through an inlet and a transfer switch. Identify the switch before deciding whether the generator frame or neutral gets bonded.",
+    "keypoint": "Identify the transfer equipment first: if the neutral is switched, the source is separately derived, and if it is solidly connected, it is not.",
+    "refs": [
+     "NEC 250.30",
+     "NEC Table 250.66",
+     "NEC 250.35"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Grounding Solar Photovoltaic Systems: Article 690",
+    "body": "Photovoltaic systems add their own grounding rules in Article 690, which supplements or modifies Article 250. Section 690.41 covers system grounding of the dc side, 690.43 covers equipment grounding and bonding of module frames and equipment, 690.45 covers the size of the equipment grounding conductor, and 690.47 covers the grounding electrode system. The PV equipment grounding conductor is sized with the same Table 250.122 used elsewhere, but using an assumed overcurrent device rating where the circuit has none.",
+    "step_list": [
+     "Exposed metal parts of module frames, racking, and equipment are grounded and bonded under 690.43 regardless of system voltage, using listed devices where required. Check the equipment instructions as well.",
+     "690.45 sizes the EGC with Table 250.122. Where the circuit has no overcurrent device, use an assumed device rating based on 690.9(B), which is 1.25 x 1.25 x the short-circuit current of the circuit (1.25 for continuous operation, 1.25 for the overcurrent device margin).",
+     "Example 1: one string with Isc of 8 A, no overcurrent device. Assumed device = 8 x 1.25 x 1.25 = 12.5 A. Table 250.122 row 15: 14 AWG copper.",
+     "Example 2: four strings of 10 A each combined in an output circuit with no overcurrent device. Assumed device = 4 x 10 x 1.25 x 1.25 = 62.5 A. That exceeds 60 and does not exceed 100, so Table 250.122 row 100 applies: 8 AWG copper.",
+     "Increasing the EGC for voltage drop is not required in PV circuits under 690.45.",
+     "Grounding electrode system: 690.47 directs how a PV array on a building connects to the building electrode system, with dc and ac side conductors, and permits additional auxiliary electrodes at the array."
+    ],
+    "warning": "Rapid shutdown, ground-fault protection, and system voltage marking are separate PV requirements. This lesson covers grounding and bonding only.",
+    "keypoint": "In a PV system, size the EGC from Table 250.122 using the actual overcurrent device or, where there is none, an assumed device rating computed from the short-circuit current.",
+    "refs": [
+     "NEC 690.41",
+     "NEC 690.43",
+     "NEC 690.45",
+     "NEC 690.47",
+     "NEC Table 250.122"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Grounding Generators: 250.34 and 250.35",
+    "body": "Section 250.34 covers portable and vehicle-mounted generators, and 250.35 covers permanently installed generators. The key question in both is whether the generator is a separately derived system, which in turn depends on whether the transfer equipment switches the neutral. For a portable generator, the frame can serve as the grounding reference without an earth connection when the generator supplies only equipment mounted on it or cord-and-plug equipment through receptacles on it.",
+    "table": {
+     "h": [
+      "Generator situation",
+      "Treatment",
+      "Bonding action"
+     ],
+     "r": [
+      [
+       "Portable generator supplying only equipment mounted on it or cord-and-plug equipment through receptacles on the generator, with metal parts and receptacle ground terminals bonded to the frame",
+       "Frame serves as the reference. No grounding electrode required (250.34(A)).",
+       "Bond the equipment parts and receptacle grounding terminals to the frame."
+      ],
+      [
+       "Portable or vehicle-mounted generator that is a component of a separately derived system",
+       "System conductor required to be grounded is bonded to the generator frame.",
+       "Follow 250.30 for the rest of the system."
+      ],
+      [
+       "Permanent generator, 3-pole transfer switch, neutral not switched (solidly connected)",
+       "Not separately derived.",
+       "Do not bond the neutral at the generator. Run an EGC with the supply conductors between generator and transfer equipment."
+      ],
+      [
+       "Permanent generator, 4-pole transfer switch that switches the neutral",
+       "Separately derived system.",
+       "Bond and ground per 250.30: system bonding jumper at one point, grounding electrode conductor to the electrode."
+      ]
+     ]
+    },
+    "bullets": [
+     "The same generator can be separately derived or not depending on the transfer equipment installed. A job that adds or replaces a transfer switch changes the grounding answer.",
+     "A generator connected to premises wiring that does not meet the portable generator conditions (for example, one that feeds a building system) needs the full treatment under 250.30 or the nonseparately derived rules.",
+     "Always check the manufacturer instructions: many portable generators ship with the neutral bonded to the frame and with a means to unbond it when used as a nonseparately derived source."
+    ],
+    "warning": "Backfeeding a panel with a generator through a dryer outlet or a double-ended cord is dangerous and not permitted. Use listed transfer equipment.",
+    "keypoint": "Portable generators with only on-board receptacles need no electrode, and permanently installed generators follow the transfer switch test.",
+    "refs": [
+     "NEC 250.34",
+     "NEC 250.35",
+     "NEC 250.30"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "What Changed in 2023: Articles 200 and 250",
+    "body": "The 2023 NEC carries many edits to Articles 200 and 250. Most are clarifications, but a handful change what an installer must do. The table lists the changes identified in published 2023 change summaries, with the effect where a summary states one. Where a summary gave only a section title, the table says to read the text. This is a starting list, not a complete record, so use it to direct your reading of the 2023 book.",
+    "table": {
+     "h": [
+      "Section",
+      "Change reported",
+      "Practical effect"
+     ],
+     "r": [
+      [
+       "200.6",
+       "Editorial clean-up; incorrect reference to 690.41 corrected",
+       "No field change"
+      ],
+      [
+       "250.52(A)(3)",
+       "Concrete-encased electrode wording revised: 1/2 in. rebar in a continuous 20 ft length or tied pieces",
+       "Clarifies how rebar qualifies"
+      ],
+      [
+       "250.53",
+       "Nonconductive coating requirement moved to (A); (E) bonding jumper may be copper-clad aluminum",
+       "Wider jumper material choice"
+      ],
+      [
+       "250.64",
+       "Copper-clad aluminum added to (B); cable armor added to the title of (E); new (G) bars a grounding electrode conductor from passing through enclosure ventilation openings",
+       "Reroute conductors that pass through vent slots"
+      ],
+      [
+       "250.66, 250.68",
+       "250.66 opening paragraph trimmed; 250.68 clarifies how the water-piping connection point is measured",
+       "Editorial or clarifying"
+      ],
+      [
+       "250.92(B)",
+       "Threaded entries added as an acceptable bonding method",
+       "Threaded hubs and entries recognized"
+      ],
+      [
+       "250.94",
+       "Revisions to intersystem bonding termination requirements in (A) and (B) (location at the service or meter enclosure, listed connectors on busbar devices)",
+       "Read the text before installing an intersystem bonding termination"
+      ],
+      [
+       "250.102(C)",
+       "Clarified, with new (C)(2) language for parallel conductors in two or more raceways",
+       "No technical change reported"
+      ],
+      [
+       "250.109",
+       "Plaster (mud) rings and extension rings added as parts that must maintain the path",
+       "Metal rings must be bonded to the box"
+      ],
+      [
+       "250.130(C)",
+       "Snap switches must be connected to an EGC or grounded by an allowed alternative, as receptacles are",
+       "Switch replacement in older wiring"
+      ],
+      [
+       "250.148",
+       "Clarified which EGCs must connect to each other or to the box; box connection sized from Table 250.122",
+       "Splice and box bonding clarified"
+      ],
+      [
+       "250.6(C), 250.24, 250.28(C), 250.30(A)(3)(b), 250.97, 250.114, 250.118, 250.119, 250.136, 250.140",
+       "Listed as revised in change summaries without a summary of the change",
+       "Read each section in the 2023 book"
+      ]
+     ]
+    },
+    "bullets": [
+     "Section 250.35 did not appear on the change lists used to prepare this course. If your comparison shows no change, that is a valid answer.",
+     "Adoption varies. Check which edition your jurisdiction enforces before applying a 2023-only rule on a permit job."
+    ],
+    "keypoint": "A few 2023 changes affect field work: the vent opening rule for grounding electrode conductors, plaster rings and extension rings in the grounding path, and snap switch grounding.",
+    "refs": [
+     "NEC Article 200",
+     "NEC Article 250",
+     "NEC 250.94"
+    ]
+   },
+   {
+    "tag": "M4·S6",
+    "title": "Code Book Exercise: Comparing the 2020 and 2023 Text",
+    "body": "This exercise teaches you to compare editions the way a plan reviewer does. You will read 250.94 in both editions, then Article 200, then 250.30 and 250.35, and write down every difference you find. The point is to practice careful reading, not to trust a summary. Use the table on the previous slide as a map for where to look, then verify each item in the book.",
+    "step_list": [
+     "Set up: open a 2020 NEC and a 2023 NEC, or use a redline resource if your instructor provides one. The printed book does not mark every change for you, so read slowly.",
+     "Task 1, 250.94: read the paragraph on the intersystem bonding termination in both editions. Compare where the termination must be, how many connections it must accept (at least three in the 2020 text), what conductor connects it (6 AWG copper minimum in the 2020 text), and what (B) says about busbar devices and aluminum. Write each difference.",
+     "Task 2, Article 200: scan 200.1 through 200.11 in both editions. List any renumbered or reworded sections. Check 200.6(A) and 200.6(D) for wording changes such as the added words nominal voltage.",
+     "Task 3, 250.30 and 250.35: compare the bonding and grounding paragraphs for separately derived systems and generators. Note the grounded conductor text at 250.30(A)(3)(b). If nothing changed in 250.35, say so.",
+     "Classify each finding: new requirement, relaxed requirement, clarification, relocation, or editorial. Only the first two change how you wire.",
+     "Discussion questions for the instructor: how does each change affect plan review (what to look for on drawings) and field inspection (what to look at on site)? Pick one change from this module and describe how you would explain it to a helper."
+    ],
+    "info": "Do not copy long passages when you take notes. Paraphrase the requirement and write the section number so you can find it again.",
+    "keypoint": "Read both editions side by side, quote only what you need, and note whether each difference is technical or editorial.",
+    "refs": [
+     "NEC Article 200",
+     "NEC Article 250",
+     "NEC 250.94",
+     "NEC 250.30",
+     "NEC 250.35"
+    ]
+   },
+   {
+    "tag": "M4·S7",
+    "title": "Worked Example, Part 1: Grounding Electrode Conductor and Bonding Jumpers for a 400 A Service",
+    "body": "This example brings together the tables from modules 2 and 3. The service is 400 amperes, 3-phase, with two parallel sets of 3/0 AWG copper per phase, one set in each of two raceways, protected by a 400 A main breaker. The grounding electrode system consists of a concrete-encased electrode in the footing and a metal underground water pipe. The steps give every number, and the next slide finishes the equipment grounding conductors and the table of results.",
+    "step_list": [
+     "Combined area of the largest ungrounded conductor. Chapter 9 Table 8: 3/0 AWG = 167,800 cmil. Two sets per phase: 2 x 167,800 = 335,600 cmil.",
+     "Grounding electrode conductor, Table 250.66. 335,600 cmil is more than 167,800 and not more than 350,000, so the row is over 3/0 through 350 kcmil. Copper: 2 AWG.",
+     "Portion that connects only to the concrete-encased electrode: 250.66(B) allows the conductor to be no larger than 4 AWG copper. 2 AWG is larger than 4 AWG, so the cap controls and 4 AWG copper is permitted for that portion.",
+     "Portion that connects to the water pipe, or any conductor that serves both electrodes: full table size, 2 AWG copper. If a separate run goes only to a ground rod, 250.66(A) allows 6 AWG copper.",
+     "Main bonding jumper, 250.28(D) with Table 250.102(C)(1). With the paralleled conductors in two raceways, use the combined area: 335,600 cmil, row over 3/0 through 350 kcmil. Copper: 2 AWG.",
+     "Water pipe bonding jumper, 250.104(A)(1) with Table 250.102(C)(1). Same row: 2 AWG copper. It does not exceed the 3/0 AWG copper limit, so 2 AWG copper is the answer.",
+     "Supply-side bonding jumpers in each raceway, 250.102(C). Size each from the ungrounded conductors in its own raceway: 3/0 AWG (167,800 cmil) falls in 2/0 or 3/0, so 4 AWG copper in each raceway."
+    ],
+    "info": "Note how one calculation, the combined area, feeds three answers. The service ampere rating is never used in these tables.",
+    "keypoint": "Compute the combined area once, then use it for Table 250.66, the main bonding jumper, and the water pipe jumper.",
+    "refs": [
+     "NEC Table 250.66",
+     "NEC 250.66",
+     "NEC 250.28",
+     "NEC 250.104",
+     "NEC Table 250.102(C)(1)",
+     "NEC Chapter 9 Table 8"
+    ]
+   },
+   {
+    "tag": "M4·S8",
+    "title": "Worked Example, Part 2: Equipment Grounding Conductors and the Results Table",
+    "body": "The same 400 A service feeds two downstream circuits. A 200 A feeder is protected by a 200 A breaker, and a 400 A feeder runs in two parallel raceways from a 400 A breaker. Equipment grounding conductors use Table 250.122, entered by the breaker rating. Then the whole example is summarized in one table with the Code reference for each result, which is exactly the form an inspector or exam grader expects.",
+    "step_list": [
+     "Feeder A, 200 A breaker. Table 250.122, row 200: 6 AWG copper EGC.",
+     "Feeder B, 400 A breaker, two parallel sets in two raceways. Table 250.122, row 400: 3 AWG copper. A full-size 3 AWG copper EGC is installed in each raceway, for two EGCs total, because each raceway must provide a complete fault path.",
+     "Check against circuit conductors: 250.122(A) does not require the EGC to be larger than the circuit conductors. Both EGCs are smaller than the feeder conductors, so the table sizes stand.",
+     "Collect and verify: every answer in the table below traces to a table row and an entry value."
+    ],
+    "table": {
+     "h": [
+      "Item",
+      "Entry value",
+      "Result (copper)",
+      "Reference"
+     ],
+     "r": [
+      [
+       "Grounding electrode conductor, full size",
+       "335,600 cmil combined",
+       "2 AWG",
+       "250.66, Table 250.66"
+      ],
+      [
+       "GEC portion to concrete-encased electrode only",
+       "Cap",
+       "4 AWG",
+       "250.66(B)"
+      ],
+      [
+       "GEC portion to a ground rod only",
+       "Cap",
+       "6 AWG",
+       "250.66(A)"
+      ],
+      [
+       "Main bonding jumper",
+       "335,600 cmil combined",
+       "2 AWG",
+       "250.28(D), Table 250.102(C)(1)"
+      ],
+      [
+       "Water pipe bonding jumper",
+       "335,600 cmil combined",
+       "2 AWG",
+       "250.104(A), Table 250.102(C)(1)"
+      ],
+      [
+       "Supply-side bonding jumper, each raceway",
+       "167,800 cmil",
+       "4 AWG",
+       "250.102(C), Table 250.102(C)(1)"
+      ],
+      [
+       "EGC, 200 A feeder",
+       "200 A breaker",
+       "6 AWG",
+       "250.122, Table 250.122"
+      ],
+      [
+       "EGC, 400 A feeder, each raceway",
+       "400 A breaker",
+       "3 AWG",
+       "250.122, Table 250.122"
+      ]
+     ]
+    },
+    "warning": "Also size the grounded (neutral) conductor for the load under Article 220, and make sure parallel conductors meet the paralleling rules of Article 310. Grounding and bonding sizes do not replace those checks.",
+    "keypoint": "EGCs come from the breaker rating: 6 AWG copper for 200 A, 3 AWG copper for 400 A, with a full-size EGC in each parallel raceway.",
+    "refs": [
+     "NEC Table 250.122",
+     "NEC 250.122",
+     "NEC 250.66",
+     "NEC 250.102"
+    ]
+   },
+   {
+    "tag": "M4·S9",
+    "title": "Final Review: Performance Rules, Tables, and Electrodes",
+    "body": "Use this slide as a closing checklist before the exam. The first group is the performance rules in 250.4(A) and the idea of an effective ground-fault current path. The second is the table-selection discipline that decides most calculation questions. The third is the electrode list and installation rules. Answer each self-check question aloud and name the Code section as you do.",
+    "table": {
+     "h": [
+      "Self-check question",
+      "Answer and Code reference"
+     ],
+     "r": [
+      [
+       "What are the five performance requirements of grounded systems?",
+       "System grounding, equipment grounding, bonding of equipment, bonding of other conductive materials, and the effective ground-fault current path (250.4(A)(1) through (A)(5))."
+      ],
+      [
+       "Can the earth clear a ground fault?",
+       "No. The earth is not considered an effective ground-fault current path (250.4(A)(5))."
+      ],
+      [
+       "Which table sizes a grounding electrode conductor?",
+       "Table 250.66, entered by the largest ungrounded service-entrance conductor or equivalent area."
+      ],
+      [
+       "Which table sizes an equipment grounding conductor or a load-side bonding jumper?",
+       "Table 250.122, entered by the overcurrent device rating."
+      ],
+      [
+       "Which table sizes a main or supply-side bonding jumper?",
+       "Table 250.102(C)(1), entered by the largest ungrounded conductor, with 12.5 percent above 1100 kcmil copper."
+      ],
+      [
+       "How much rod must be in the soil, and when is a second electrode needed?",
+       "8 ft (250.53), and a single rod, pipe, or plate needs a supplement unless it measures 25 ohms or less (250.53(A)(2))."
+      ],
+      [
+       "Which electrodes must be bonded together?",
+       "All present electrodes in 250.52(A)(1) through (A)(7) (250.50)."
+      ],
+      [
+       "Where is the neutral bonded to ground?",
+       "At the service (main bonding jumper) or at a separately derived system (system bonding jumper), at a single point."
+      ]
+     ]
+    },
+    "bullets": [
+     "Common traps: using the service ampere rating in Table 250.66, using Table 250.122 for a main bonding jumper, and bonding a neutral twice.",
+     "Rod and plate rules, 25 ohms, 8 ft, 6 ft spacing, 30 in. burial, are quick points that appear often on exams."
+    ],
+    "keypoint": "Name the section, name the table, state the entry value, then read the answer.",
+    "refs": [
+     "NEC 250.4",
+     "NEC 250.52",
+     "NEC 250.66",
+     "NEC 250.122",
+     "NEC Table 250.102(C)(1)"
+    ]
+   },
+   {
+    "tag": "M4·S10",
+    "title": "Course Wrap-Up: Grounding and Bonding per NEC 2023",
+    "body": "You have worked from the purpose of grounding and bonding through service grounding, the electrode system, equipment grounding, bonding jumpers, separately derived systems, and the 2023 changes. The thread running through all of it is the effective ground-fault current path: a continuous, low-impedance, permanent metallic loop back to the source, joined to the neutral at one point, with the earth connection there to stabilize voltage and limit surges. Take that idea and the three tables with you.",
+    "bullets": [
+     "Ground to stabilize voltage, bond to clear faults, and never rely on the earth to do the second job.",
+     "Bond the neutral to the grounding path at one point: the service or the separately derived source.",
+     "Bond all electrodes together, supplement a lone rod or water pipe, and keep gas piping and aluminum out of the electrode list.",
+     "Pick the right table: Table 250.66 for electrode conductors, Table 250.102(C)(1) for supply-side and main bonding jumpers, Table 250.122 for EGCs and load-side jumpers.",
+     "Read the 2023 text for the changes that touch your work, particularly 250.64(G), 250.109, 250.130(C), and 250.94.",
+     "Confirm which NEC edition and local amendments your jurisdiction enforces before you apply anything from this course on a job."
+    ],
+    "info": "Keep your marked-up code book and your exercise answers. Re-working the four bonding jumper scenarios and the 400 A service example is the fastest way to review.",
+    "keypoint": "Think loop first: if you can trace the fault current from the energized part back to the source through code-compliant metal, the installation will pass.",
+    "refs": [
+     "NEC 250.4",
+     "NEC Article 250"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which statement is correct about a grounded (neutral) conductor and a grounding conductor?",
+    "opts": [
+     "The neutral carries normal load current; the equipment grounding conductor does not except during faults",
+     "They are interchangeable",
+     "The grounding conductor carries all return current",
+     "Both carry normal load current equally"
+    ],
+    "correct": 0,
+    "explain": "The neutral is a current-carrying circuit conductor. The EGC is a safety conductor and should carry current only during a fault or from leakage. [Grounded vs grounding]"
+   },
+   {
+    "q": "If the neutral and equipment ground are improperly connected downstream of the service, the result is",
+    "opts": [
+     "GFCI protection becomes more effective",
+     "the circuit operates more safely",
+     "normal neutral current flows on metal parts and the ground path, creating shock hazards",
+     "lower voltage drop on the conductor"
+    ],
+    "correct": 2,
+    "explain": "Neutral current is diverted onto conduit and equipment frames, which will carry load current and can energize metal. GFCI devices may also nuisance trip. [Neutral-ground]"
+   },
+   {
+    "q": "Which fastener is not permitted for connecting grounding and bonding conductors and equipment?",
+    "opts": [
+     "Machine screws secured with a nut",
+     "Thread-forming machine screws engaging at least two threads",
+     "Sheet-metal screws",
+     "Machine screws engaging at least two threads"
+    ],
+    "correct": 2,
+    "explain": "Sheet-metal screws are not permitted to connect grounding or bonding conductors or equipment to the enclosure. The other fasteners are recognized in 250.8(A). [NEC 250.8(B)]"
+   },
+   {
+    "q": "In the 2023 NEC, section 250.36 is titled:",
+    "opts": [
+     "Impedance Grounded Systems, 480 Volts to 1000 Volts",
+     "Ungrounded Systems, 480 Volts to 1000 Volts",
+     "Solidly Grounded Systems, 480 Volts to 1000 Volts",
+     "High-Impedance Grounded Neutral Systems, 480 Volts to 1000 Volts"
+    ],
+    "correct": 0,
+    "explain": "2020 NEC: the section addressed high-impedance grounded neutral systems. 2023 NEC: the title dropped 'High' and 'Neutral' and now reads Impedance Grounded Systems, 480 Volts to 1000 Volts, matching the new Article 100 terms for impedance grounded systems and conductors. [NEC 250.36 (2023)]"
+   },
+   {
+    "q": "Where may an aluminum grounding electrode conductor be installed outside above ground?",
+    "opts": [
+     "Embedded in concrete",
+     "Directly buried in earth",
+     "Within 6 in of the earth if painted",
+     "Not within 18 in of the earth and not in direct contact with masonry"
+    ],
+    "correct": 3,
+    "explain": "Aluminum or copper-clad aluminum grounding electrode conductors cannot be in direct contact with masonry or earth and cannot be terminated within 18 in of the earth outdoors. [NEC 250.64(A)]"
+   },
+   {
+    "q": "A 1/2 HP, 208 V, three-phase motor circuit is protected by a 15 A device (inverse-time circuit breaker). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "8 AWG",
+     "14 AWG",
+     "10 AWG",
+     "12 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "An 8 AWG copper grounding electrode conductor is run on the surface of a building. How must it be installed?",
+    "opts": [
+     "Run bare through open framing",
+     "Exposed and stapled to the surface",
+     "In a raceway or cable armor, since conductors smaller than 6 AWG must be protected",
+     "Buried 6 in deep without protection"
+    ],
+    "correct": 2,
+    "explain": "Grounding electrode conductors smaller than 6 AWG must be installed in rigid metal conduit, IMC, PVC, RTRC, EMT, or cable armor. [NEC 250.64(B)]"
+   },
+   {
+    "q": "A 100 HP, 208 V, three-phase motor circuit is protected by a 1000 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "3/0 AWG",
+     "2/0 AWG",
+     "4/0 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (1000 A) → 2/0 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 150 HP, 460 V, three-phase motor circuit is protected by a 350 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "2 AWG",
+     "4 AWG",
+     "3 AWG",
+     "1 AWG"
+    ],
+    "correct": 2,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (350 A) → 3 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A service uses 4/0 AWG copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "2/0 AWG",
+     "1/0 AWG",
+     "4 AWG",
+     "2 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.66: copper service conductor 4/0 AWG → 2 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   },
+   {
+    "q": "Which circuit must NOT be grounded?",
+    "opts": [
+     "A 120/208-volt receptacle circuit",
+     "Isolated power system circuits in patient care wet procedure locations",
+     "The grounded conductor of a 120/240 volt residence",
+     "A 277-volt lighting circuit"
+    ],
+    "correct": 1,
+    "explain": "Circuits in health care facilities covered by 517.20 and 517.160 (isolated power in wet procedure locations) are among those not to be grounded. [NEC 250.22]"
+   },
+   {
+    "q": "Several buildings on a property each have services. At one building the ac system is grounded to an electrode. What does the NEC require for the electrode used for conductor enclosures and equipment in or on that building?",
+    "opts": [
+     "The same electrode must be used to ground the conductor enclosures and equipment in or on that building",
+     "A separate electrode must be used for equipment",
+     "A separate electrode must be installed for each circuit",
+     "No electrode is permitted for conductor enclosures"
+    ],
+    "correct": 0,
+    "explain": "A common grounding electrode is required for the ac system and the equipment/enclosures in or on a building to prevent voltage differences between separate grounding systems. [NEC 250.58]"
+   },
+   {
+    "q": "The top end of a driven ground rod and its grounding electrode conductor connection are subject to physical damage. What must be done?",
+    "opts": [
+     "Cover the clamp with duct tape",
+     "Protect the above-ground end and the connection against physical damage",
+     "Nothing, because ground rods are always allowed to stick out",
+     "Cut the rod off below grade and use a splice"
+    ],
+    "correct": 1,
+    "explain": "The upper end must be flush with or below ground level unless the above-ground end and the conductor attachment are protected against physical damage. [NEC 250.53(G)]"
+   },
+   {
+    "q": "A service uses 600 kcmil copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "3/0 AWG",
+     "2 AWG",
+     "2/0 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.66: copper service conductor 600 kcmil → 1/0 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   },
+   {
+    "q": "A 5 HP, 230 V, three-phase motor circuit is protected by a 30 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "12 AWG",
+     "6 AWG",
+     "8 AWG",
+     "10 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (30 A) → 10 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "Service conductors are 500 kcmil copper and the grounding electrode conductor runs to a single driven ground rod. What is the largest copper GEC required for that connection?",
+    "opts": [
+     "2 AWG",
+     "4 AWG",
+     "6 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 2,
+    "explain": "Where the grounding electrode conductor connects to a rod, pipe, or plate electrode, it is not required to be larger than 6 AWG copper. [NEC 250.66(A)]"
+   },
+   {
+    "q": "Service conductors are 500 kcmil copper and the grounding electrode conductor runs only to a concrete-encased electrode. What is the largest copper GEC required for that connection?",
+    "opts": [
+     "1/0 AWG",
+     "6 AWG",
+     "2 AWG",
+     "4 AWG"
+    ],
+    "correct": 3,
+    "explain": "The portion of a GEC that connects to a concrete-encased electrode is not required to be larger than 4 AWG copper. [NEC 250.66(B)]"
+   },
+   {
+    "q": "A 125 HP, 460 V, three-phase motor circuit is protected by a 500 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "2 AWG",
+     "3 AWG",
+     "1/0 AWG",
+     "1 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (500 A) → 2 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 1 HP, 230 V, three-phase motor circuit is protected by a 15 A device (inverse-time circuit breaker). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "8 AWG",
+     "14 AWG",
+     "12 AWG",
+     "10 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "What is the minimum size copper equipment grounding conductor for a circuit protected by a 70 A overcurrent device?",
+    "opts": [
+     "8 AWG",
+     "10 AWG",
+     "6 AWG",
+     "4 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122: a device rated 70 A (up to 100 A) requires 8 AWG copper. [NEC Table 250.122]"
+   },
+   {
+    "q": "What is the minimum size copper equipment grounding conductor for a feeder protected by an 800-ampere overcurrent device?",
+    "opts": [
+     "1/0 AWG",
+     "2/0 AWG",
+     "2 AWG",
+     "1 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 specifies 1/0 AWG copper for an 800 A overcurrent device. [NEC 250.122, Table 250.122]"
+   },
+   {
+    "q": "A 3/4 HP, 230 V, three-phase motor circuit is protected by a 15 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "10 AWG",
+     "8 AWG",
+     "12 AWG",
+     "14 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "What is the minimum size copper equipment grounding conductor for a circuit protected by a 40 A overcurrent device?",
+    "opts": [
+     "10 AWG",
+     "8 AWG",
+     "12 AWG",
+     "6 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122: a device rated 40 A (up to 60 A) requires 10 AWG copper. [NEC Table 250.122]"
+   },
+   {
+    "q": "A dwelling has 4/0 AWG copper service conductors. What is the minimum size copper bonding jumper required for the interior metal water piping system under the general rule?",
+    "opts": [
+     "6 AWG",
+     "2 AWG",
+     "4 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Metal water piping is bonded using Table 250.102(C)(1) based on the service conductors; 4/0 copper gives 2 AWG copper. [NEC 250.104(A), Table 250.102(C)(1)]"
+   },
+   {
+    "q": "A grounding electrode conductor connects to a ground ring made of 2 AWG copper. The largest GEC required for that connection is:",
+    "opts": [
+     "1/0 AWG copper",
+     "2 AWG copper, the size of the ring conductor",
+     "4 AWG copper",
+     "6 AWG copper"
+    ],
+    "correct": 1,
+    "explain": "A GEC to a ground ring need not be larger than the conductor used for the ground ring. [NEC 250.66(C)]"
+   },
+   {
+    "q": "Which item was added in 2026 as a type of bonding jumper under 250.102(A)?",
+    "opts": [
+     "Flexible nonmetallic conduit",
+     "Aluminum foil tape",
+     "Listed plastic raceway",
+     "Non-flexible metal raceway and fittings"
+    ],
+    "correct": 3,
+    "explain": "2026: 250.102(A) adds non-flexible metal raceway and fittings as a bonding jumper type, coordinated with 250.30(A)(2). The summaries do not state the 2023 text. [NEC 250.102(A) (2026)]"
+   },
+   {
+    "q": "A 1 HP, 115 V, single-phase motor circuit is protected by a 30 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "12 AWG",
+     "6 AWG",
+     "8 AWG",
+     "10 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (30 A) → 10 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 20 HP, 460 V, three-phase motor circuit is protected by a 90 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "8 AWG",
+     "10 AWG",
+     "4 AWG",
+     "6 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (90 A) → 8 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "Under the 2020 NEC, which is prohibited?",
+    "opts": [
+     "Using a concrete-encased electrode as a grounding electrode",
+     "Using a ground rod electrode",
+     "Using rebar as the conductor to interconnect grounding electrodes",
+     "Extending rebar to a connection point if tied or continuous and protected from earth contact"
+    ],
+    "correct": 2,
+    "explain": "250.53 and 250.68(C)(3) in 2020 say rebar may not interconnect electrodes. A concrete-encased electrode is still allowed. Find it in the 2020 NEC at 250.53; the Ref line shows where the 2017 text sat. The usual trap is answering with the older 2017 rule. [NEC 250.53 (2020); 250.68(C)(3) (2020)]"
+   },
+   {
+    "q": "For a separately derived system with a grounded conductor, the system bonding jumper is installed:",
+    "opts": [
+     "At each load served by the system",
+     "At a single point, at the source or at the first system disconnecting means",
+     "At every panelboard fed from the system",
+     "Only at the grounding electrode"
+    ],
+    "correct": 1,
+    "explain": "The system bonding jumper ties the grounded conductor to the supply-side bonding jumper or equipment grounding conductor at one point so neutral current cannot parallel the grounding path. [NEC 250.30(A)(1)]"
+   },
+   {
+    "q": "Under the 2020 NEC, when phase conductors are increased in size solely because of adjustment factors for more than three current-carrying conductors, the EGC must be:",
+    "opts": [
+     "Increased to the same size as the phase conductors",
+     "Increased proportionately",
+     "Sized per Table 250.122 without increasing it proportionately",
+     "Replaced by a bonding jumper"
+    ],
+    "correct": 2,
+    "explain": "250.122(B) in 2020 excludes increases made for adjustment or correction factors. The 2017 rule applied to any upsizing. Find it in the 2020 NEC at 250.122(B); the Ref line shows where the 2017 text sat. The usual trap is answering with the older 2017 rule. [NEC 250.122(B) (2020); 250.122(B) (2017)]"
+   },
+   {
+    "q": "A 1 HP, 208 V, three-phase motor circuit is protected by a 15 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "14 AWG",
+     "8 AWG",
+     "10 AWG",
+     "12 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 3 HP, 460 V, three-phase motor circuit is protected by a 15 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "8 AWG",
+     "10 AWG",
+     "14 AWG",
+     "12 AWG"
+    ],
+    "correct": 2,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "In a new installation, how is the frame of an electric range grounded?",
+    "opts": [
+     "By connection to a nearby water pipe only",
+     "By connection to the equipment grounding conductor",
+     "By connection to the grounded (neutral) conductor",
+     "It need not be grounded"
+    ],
+    "correct": 1,
+    "explain": "New installations require the frames of ranges, wall-mounted ovens, counter-mounted cooking units, and clothes dryers to be connected to the equipment grounding conductor (four-wire circuit). Use of the neutral is limited to certain existing installations. [NEC 250.140]"
+   },
+   {
+    "q": "Under the 2020 NEC, what type of PVC is specified to protect a grounding electrode conductor from physical damage?",
+    "opts": [
+     "Schedule 20 PVC",
+     "Schedule 40 PVC",
+     "Any thin-wall PVC",
+     "Schedule 80 PVC"
+    ],
+    "correct": 3,
+    "explain": "The 2020 NEC calls for Schedule 80 PVC in 250.64(B) where PVC protection is used. Find it in the 2020 NEC at 250.64(B); the Ref line shows where the 2017 text sat. The usual trap is answering with the older 2017 rule. [NEC 250.64(B) (2020)]"
+   },
+   {
+    "q": "A 10 HP, 115 V, single-phase motor circuit is protected by a 300 A device (non-time-delay fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "3 AWG",
+     "2 AWG",
+     "6 AWG",
+     "4 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (300 A) → 4 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "When circuit conductors are spliced in a box containing the EGCs of more than one circuit, how must the EGCs be arranged?",
+    "opts": [
+     "Connected to the device terminals in series",
+     "Spliced or joined within the box so that removal of a device does not interrupt continuity of the other EGCs",
+     "Connected to the neutral splice",
+     "Left unspliced and capped"
+    ],
+    "correct": 1,
+    "explain": "EGCs must be spliced so that disconnection of a receptacle or device does not interrupt grounding continuity for other devices. [NEC 250.148]"
+   },
+   {
+    "q": "A 24-volt ac control system is supplied by a transformer whose primary is fed from a 480Y/277-volt system. Under the NEC, the 24-volt system:",
+    "opts": [
+     "Is not permitted to be grounded",
+     "Must be grounded only if it is run overhead",
+     "Must be grounded, because the transformer supply system exceeds 150 volts to ground",
+     "Need not be grounded because it is less than 50 volts"
+    ],
+    "correct": 2,
+    "explain": "AC systems under 50 volts must be grounded when supplied by a transformer whose supply system exceeds 150 volts to ground (277 V here), when supply is ungrounded, or when run overhead outside buildings. [NEC 250.20(A)]"
+   },
+   {
+    "q": "A 60 HP, 208 V, three-phase motor circuit is protected by a 450 A device (inverse-time circuit breaker). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "3 AWG",
+     "1 AWG",
+     "1/0 AWG",
+     "2 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (450 A) → 2 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 40 HP, 460 V, three-phase motor circuit is protected by a 100 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "10 AWG",
+     "6 AWG",
+     "8 AWG",
+     "4 AWG"
+    ],
+    "correct": 2,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (100 A) → 8 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A service uses 300 kcmil copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "4 AWG",
+     "2/0 AWG",
+     "1/0 AWG",
+     "2 AWG"
+    ],
+    "correct": 3,
+    "explain": "Table 250.66: copper service conductor 300 kcmil → 2 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   },
+   {
+    "q": "A 2 HP, 460 V, three-phase motor circuit is protected by a 15 A device (inverse-time circuit breaker). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "10 AWG",
+     "14 AWG",
+     "12 AWG",
+     "8 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "Interior metal water piping located more than ____ from the point of entrance to the building cannot be used as part of the grounding electrode system or as a conductor to interconnect electrodes.",
+    "opts": [
+     "5 ft",
+     "10 ft",
+     "3 ft",
+     "20 ft"
+    ],
+    "correct": 0,
+    "explain": "Only the first 5 ft of interior metal water pipe from the entrance may be used as part of the grounding electrode system or as an interconnecting conductor. [NEC 250.68(C)(1)]"
+   },
+   {
+    "q": "Which grounding electrode conductor connections are not required to be accessible?",
+    "opts": [
+     "Connections encased in concrete or buried",
+     "Connections to the water pipe",
+     "Connections to the service equipment",
+     "Connections made with listed clamps"
+    ],
+    "correct": 0,
+    "explain": "Encased or buried connections to electrodes are exempt from the accessibility requirement. [NEC 250.68(A) Exception]"
+   },
+   {
+    "q": "A 150 HP, 230 V, three-phase motor circuit is protected by a 1000 A device (inverse-time circuit breaker). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "3/0 AWG",
+     "2/0 AWG",
+     "4/0 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (1000 A) → 2/0 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 5 HP, 230 V, single-phase motor circuit is protected by a 50 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "8 AWG",
+     "10 AWG",
+     "12 AWG",
+     "6 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (50 A) → 10 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "What is the minimum size copper equipment grounding conductor for a circuit protected by a 250 A overcurrent device?",
+    "opts": [
+     "4 AWG",
+     "2 AWG",
+     "6 AWG",
+     "3 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122: a device rated 250 A (up to 300 A) requires 4 AWG copper. [NEC Table 250.122]"
+   },
+   {
+    "q": "A 10 HP, 208 V, three-phase motor circuit is protected by a 60 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "10 AWG",
+     "6 AWG",
+     "8 AWG",
+     "12 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (60 A) → 10 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "A 3 HP, 460 V, three-phase motor circuit is protected by a 15 A device (dual-element (time-delay) fuse). What is the minimum size copper equipment grounding conductor?",
+    "opts": [
+     "14 AWG",
+     "10 AWG",
+     "8 AWG",
+     "12 AWG"
+    ],
+    "correct": 0,
+    "explain": "Table 250.122 is based on the rating of the device ahead of the circuit (15 A) → 14 AWG copper. [NEC Table 250.122, 250.122(D)]"
+   },
+   {
+    "q": "Which is a purpose of system grounding?",
+    "opts": [
+     "To eliminate the need for overcurrent devices",
+     "To limit voltage imposed by lightning, line surges, or unintentional contact with higher-voltage lines, and to stabilize voltage to ground during normal operation",
+     "To reduce the ampacity needed for branch circuits",
+     "To make the earth the path that clears ground faults"
+    ],
+    "correct": 1,
+    "explain": "System grounding limits voltage and stabilizes it relative to earth. The fault-clearing path must be a low-impedance bonded path back to the source, not earth. [NEC 250.4(A)(1)]"
+   },
+   {
+    "q": "A service uses 800 kcmil copper ungrounded conductors. What is the minimum size copper grounding electrode conductor to a metal water pipe electrode?",
+    "opts": [
+     "2 AWG",
+     "2/0 AWG",
+     "1/0 AWG",
+     "3/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Table 250.66: copper service conductor 800 kcmil → 2/0 AWG copper GEC. [NEC Table 250.66, 250.64]"
+   },
+   {
+    "q": "An intersystem bonding termination must be capable of connecting at least how many intersystem bonding conductors?",
+    "opts": [
+     "One",
+     "Six",
+     "Three",
+     "Two"
+    ],
+    "correct": 2,
+    "explain": "The termination must provide for connection of not fewer than three intersystem bonding conductors and must not interfere with opening of any enclosure. [NEC 250.94(A)]"
+   }
+  ],
+  "isFinal": true
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">Grounding and Bonding per NEC 2023</div>
+      <div class="cert-detail">4.0 CE hours · Journeyman & Master Electrician<br>2023 NEC (NFPA 70-2023)<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>

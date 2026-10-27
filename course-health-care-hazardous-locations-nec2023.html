@@ -1,0 +1,3469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Care Facilities and Hazardous Locations per NEC 2023 | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">Health Care Facilities and Hazardous Locations per NEC 2023</div>
+      <div class="pills">
+        <span class="pill red">4.0 CE hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">NEC Arts. 500-517</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds (total 4 hours)
+const MOD_MINS = [60*60, 50*60, 40*60, 75*60, 15*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "Classified locations basics",
+  "time": "60 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "Why electrical equipment is controlled where flammable gases, dusts and fibers can be present",
+   "Class I, II and III locations and what defines each (500.5)",
+   "Division 1 and Division 2, and the material group letters (500.5, 500.6)",
+   "The zone system in Articles 505 and 506 and how it compares with divisions",
+   "Protection techniques and equipment marking, including temperature codes (500.7, 500.8)",
+   "Area classification documentation (500.4, 505.4) and who is responsible for it",
+   "Applying class, group and division to a paint spray booth and a grain handling room"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "Why Areas Are Classified: Class I, II and III",
+    "body": "A fire or explosion needs fuel, air and a source of ignition. In a classified location the fuel and the air are assumed to be present at times, so the Code controls the third element: electrical equipment must not become the source of ignition. Section 500.5 sorts hazardous (classified) locations into three classes according to the kind of material that creates the hazard.",
+    "def_grid": [
+     {
+      "term": "Class I",
+      "body": "Flammable gases, flammable liquid-produced vapors or combustible liquid-produced vapors may be present in quantities that can form an ignitible mixture. Examples: gasoline vapor, natural gas, solvent vapor. Wiring rules are in Article 501."
+     },
+     {
+      "term": "Class II",
+      "body": "Combustible dust is present. Dust is a hazard both as a cloud in the air and as layers that can ignite or be disturbed into a cloud. Examples: grain, flour, coal, metal powders. Wiring rules are in Article 502."
+     },
+     {
+      "term": "Class III",
+      "body": "Easily ignitible fibers or flyings are handled, made or used, but they are not likely to be suspended in the air in quantities that could produce an ignitible mixture. Examples: textile and woodworking operations. Wiring rules are in Article 503."
+     }
+    ],
+    "bullets": [
+     "The class tells you what kind of material is involved. The division, covered next, tells you how likely it is to be present.",
+     "Classification describes the atmosphere around equipment, so one building can contain unclassified space, Division 2 space and Division 1 space.",
+     "Article 500 holds the definitions and general rules. Articles 501, 502 and 503 hold the class-specific rules.",
+     "Occupancy articles such as 511 (garages), 514 (fuel dispensing) and 516 (spray application) apply the class rules to a specific use."
+    ],
+    "warning": "Classification is not the installer's decision. It is made by the owner, designer or engineer and recorded in documentation. The electrician builds to that documented classification and asks questions when the field conditions do not match it.",
+    "keypoint": "The class names the type of hazardous material (gas or vapor, dust, or fiber), and each class has its own article of wiring and equipment rules.",
+    "refs": [
+     "NEC 500.5",
+     "NEC Article 501",
+     "NEC Article 502",
+     "NEC Article 503"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "Divisions and Material Groups",
+    "body": "Within each class, the division expresses how likely the hazard is. In Division 1, ignitible concentrations exist under normal operating conditions, frequently because of repair, maintenance or leakage, or where a breakdown could both release the material and cause the electrical equipment itself to fail as an ignition source. In Division 2, the material is normally confined in closed systems or containers, or is controlled by ventilation, so ignitible concentrations occur only under abnormal conditions such as a rupture or a ventilation failure.",
+    "table": {
+     "h": [
+      "Class",
+      "Group",
+      "Typical materials",
+      "Reference"
+     ],
+     "r": [
+      [
+       "I",
+       "A",
+       "Acetylene",
+       "500.6(A)"
+      ],
+      [
+       "I",
+       "B",
+       "Hydrogen and gases of equivalent hazard (also butadiene, ethylene oxide, propylene oxide, acrolein)",
+       "500.6(A)"
+      ],
+      [
+       "I",
+       "C",
+       "Ethylene",
+       "500.6(A)"
+      ],
+      [
+       "I",
+       "D",
+       "Gasoline, propane, butane, natural gas, acetone, benzene, hexane, methanol",
+       "500.6(A)"
+      ],
+      [
+       "II",
+       "E",
+       "Combustible metal dusts such as aluminum and magnesium",
+       "500.6(B)"
+      ],
+      [
+       "II",
+       "F",
+       "Carbonaceous dusts such as carbon black, charcoal, coal and coke",
+       "500.6(B)"
+      ],
+      [
+       "II",
+       "G",
+       "Flour, starch, grain, wood, plastic and other combustible dusts not in E or F",
+       "500.6(B)"
+      ],
+      [
+       "III",
+       "None",
+       "Fibers and flyings have no group letters",
+       "500.5(D), 500.6"
+      ]
+     ]
+    },
+    "bullets": [
+     "Equipment must be approved for the specific group present. Equipment marked only for Groups C and D is not suitable for hydrogen (Group B).",
+     "A closed system that releases vapor only through accidental rupture or abnormal operation is a Division 2 situation.",
+     "Group letters come from the properties of the material (how easily it ignites and how violent the explosion). Lists of materials are in NFPA 497 for gases and vapors and NFPA 499 for dusts, which the Code references in informational notes."
+    ],
+    "keypoint": "Division 1 means the hazard is expected in normal operation; Division 2 means it appears only under abnormal conditions. Groups A through D (gas and vapor) and E through G (dust) match equipment to the material.",
+    "refs": [
+     "NEC 500.5",
+     "NEC 500.6"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "The Zone System: Articles 505 and 506",
+    "body": "Articles 505 and 506 classify locations by zone instead of division. Article 505 covers gas and vapor locations in Zones 0, 1 and 2, and Article 506 covers combustible dust, fibers and flyings in Zones 20, 21 and 22. Zones divide the likelihood of the hazard into three steps, where the division system uses two.",
+    "table": {
+     "h": [
+      "Zone",
+      "Ignitible atmosphere is",
+      "Typical example"
+     ],
+     "r": [
+      [
+       "Zone 0 (gas)",
+       "Present continuously or for long periods",
+       "Vapor space of a closed vented flammable liquid tank"
+      ],
+      [
+       "Zone 1 (gas)",
+       "Likely under normal operation, or frequently because of repair, maintenance or leakage",
+       "Close to an open vent or a pump seal that leaks in normal service"
+      ],
+      [
+       "Zone 2 (gas)",
+       "Not likely in normal operation and, if it occurs, exists only briefly",
+       "Outer ring around a fuel dispenser"
+      ],
+      [
+       "Zone 20 (dust)",
+       "Present continuously or for long periods",
+       "Inside a dust collector"
+      ],
+      [
+       "Zone 21 (dust)",
+       "Likely to exist occasionally under normal operation",
+       "Near a bag-dumping station where dust is released"
+      ],
+      [
+       "Zone 22 (dust)",
+       "Not likely in normal operation and, if present, only for a short period",
+       "Area around a closed system that can leak dust only on a fault"
+      ]
+     ]
+    },
+    "def_grid": [
+     {
+      "term": "Gas groups (505.6)",
+      "body": "Group IIC (acetylene, hydrogen), Group IIB (ethylene), Group IIA (propane, gasoline). Group I is for mining and not part of surface industry classification."
+     },
+     {
+      "term": "Dust groups (506.6)",
+      "body": "Group IIIA combustible flyings, Group IIIB nonconductive dust, Group IIIC conductive dust such as metal powders."
+     }
+    ],
+    "info": "Group IIC is the most severe gas group, so equipment marked IIC is suitable for IIB and IIA atmospheres. The reverse is not true.",
+    "keypoint": "In the zone system a lower number means a more frequent or longer-lasting hazard: Zone 0 and Zone 20 are continuous or long-term, Zone 2 and Zone 22 are unlikely and brief.",
+    "refs": [
+     "NEC Article 505",
+     "NEC 505.5",
+     "NEC 505.6",
+     "NEC Article 506",
+     "NEC 506.5",
+     "NEC 506.6"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "Comparing a Division Diagram with a Zone Diagram",
+    "body": "The same area can be drawn in either system, and an electrician should be able to move between them. Division 1 roughly corresponds to Zone 0 plus Zone 1, and Division 2 roughly corresponds to Zone 2. The match is approximate, so the classification drawing, not a conversion table, governs.",
+    "table": {
+     "h": [
+      "Division system",
+      "Zone system",
+      "Approximate alignment"
+     ],
+     "r": [
+      [
+       "Class I, Division 1",
+       "Zone 0 and Zone 1",
+       "Hazard present normally or frequently"
+      ],
+      [
+       "Class I, Division 2",
+       "Zone 2",
+       "Hazard only under abnormal conditions"
+      ],
+      [
+       "Class II, Division 1",
+       "Zone 20 and Zone 21",
+       "Dust cloud normally or occasionally present"
+      ],
+      [
+       "Class II, Division 2",
+       "Zone 22",
+       "Dust only under abnormal conditions"
+      ],
+      [
+       "Groups A and B",
+       "Group IIC",
+       "Acetylene and hydrogen"
+      ],
+      [
+       "Group C",
+       "Group IIB",
+       "Ethylene"
+      ],
+      [
+       "Group D",
+       "Group IIA",
+       "Gasoline, propane and similar"
+      ]
+     ]
+    },
+    "step_list": [
+     "<b>Scenario.</b> A pump room holds a closed, vented tank of a Group D / IIA flammable liquid with a pump whose seal can weep in normal service.",
+     "<b>Inside the tank vapor space.</b> Vapor is always present: Zone 0 on a zone drawing, Division 1 on a division drawing.",
+     "<b>Around the open end of the vent and the pump seal.</b> Vapor is released in normal operation: Zone 1, Division 1.",
+     "<b>Rest of the pump room.</b> Vapor would appear only if a gasket, pipe or seal failed: Zone 2, Division 2.",
+     "<b>Compare the drawings.</b> The division drawing shows two shades and the zone drawing shows three. The Division 1 boundary on the first drawing encloses both the Zone 0 and Zone 1 areas on the second.",
+     "<b>Check the equipment.</b> Equipment for the Zone 1 area must be marked for Zone 1 or higher protection, or for Division 1 in the division system. Never assume that a Division 2 rating is acceptable for a Zone 1 area."
+    ],
+    "info": "Recent editions of the Code treat the division and zone systems as separate approaches, and the 2023 edition removed language in Article 505 that tied it to the division classes. Equipment and wiring rules are written separately for each system.",
+    "keypoint": "Divisions use two steps and zones use three; Division 1 spans Zones 0 and 1, and Division 2 aligns with Zone 2.",
+    "refs": [
+     "NEC Article 505",
+     "NEC 505.5",
+     "NEC 505.6",
+     "NEC 500.5",
+     "NEC 500.6"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Protection Techniques",
+    "body": "A protection technique is the method an equipment designer uses to prevent the equipment from igniting the surrounding atmosphere. Section 500.7 lists the techniques accepted in the division system, and Articles 505 and 506 list the techniques accepted by zone. The installer's job is to recognize the technique, confirm it matches the location, and install it as listed.",
+    "def_grid": [
+     {
+      "term": "Explosionproof (Class I)",
+      "body": "The enclosure withstands an explosion of the specified gas inside it and prevents flame or hot gas from igniting the atmosphere outside. The zone-system counterpart is flameproof, marked d."
+     },
+     {
+      "term": "Dust-ignitionproof (Class II)",
+      "body": "The enclosure excludes dust and does not allow arcs, sparks or heat inside it to ignite dust outside or dust layers on it."
+     },
+     {
+      "term": "Purged and pressurized",
+      "body": "A protective gas (clean air or inert gas) is kept at positive pressure in the enclosure so the hazardous atmosphere cannot enter. Marked p in the zone system."
+     },
+     {
+      "term": "Intrinsic safety",
+      "body": "The electrical energy in the circuit is limited so that normal or fault conditions cannot ignite the atmosphere. Article 504 covers installation. Marked ia (suitable for Zone 0) or ib (Zone 1 and 2)."
+     }
+    ],
+    "table": {
+     "h": [
+      "Zone marking",
+      "Technique",
+      "Where used"
+     ],
+     "r": [
+      [
+       "ia",
+       "Intrinsic safety, highest level",
+       "Zone 0, 1 and 2"
+      ],
+      [
+       "ib",
+       "Intrinsic safety",
+       "Zone 1 and 2"
+      ],
+      [
+       "d",
+       "Flameproof enclosure",
+       "Zone 1 and 2"
+      ],
+      [
+       "p",
+       "Purged and pressurized",
+       "Zone 1 and 2 (per type)"
+      ],
+      [
+       "e",
+       "Increased safety",
+       "Zone 1 and 2"
+      ],
+      [
+       "nA",
+       "Nonsparking",
+       "Zone 2"
+      ],
+      [
+       "ta, tb, tc",
+       "Dust protection by enclosure",
+       "Zone 20, 21, 22"
+      ]
+     ]
+    },
+    "info": "Other recognized techniques include nonincendive circuits and equipment, oil immersion and hermetic sealing. The 2023 edition added four techniques to the division-system list (electrical resistance trace heating, impedance heating, enclosed-break and sealed) and moved the suitability information to Chapter 9, Table 13.",
+    "keypoint": "Every technique either contains an internal explosion, excludes the atmosphere, or limits energy so ignition cannot occur. The marking tells you which technique the equipment uses.",
+    "refs": [
+     "NEC 500.7",
+     "NEC 500.8",
+     "NEC Article 504",
+     "NEC 505.8",
+     "NEC 506.8"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Equipment Marking and Temperature Codes",
+    "body": "Section 500.8 requires approved equipment to be marked with the class, the division or zone, the group, and the operating temperature or temperature class. The temperature must be below the ignition temperature of the specific gas, vapor or dust in the area, so the temperature class is as important as the group. Division 1 equipment may be used in a Division 2 location of the same class, group and temperature suitability, but Division 2 equipment may not be used in a Division 1 location.",
+    "table": {
+     "h": [
+      "Temperature class",
+      "Maximum surface temperature"
+     ],
+     "r": [
+      [
+       "T1",
+       "450 °C (842 °F)"
+      ],
+      [
+       "T2",
+       "300 °C"
+      ],
+      [
+       "T3",
+       "200 °C"
+      ],
+      [
+       "T4",
+       "135 °C (275 °F)"
+      ],
+      [
+       "T5",
+       "100 °C"
+      ],
+      [
+       "T6",
+       "85 °C"
+      ]
+     ]
+    },
+    "step_list": [
+     "<b>Nameplate A:</b> CLASS I, DIV 1, GROUPS C, D, T4. <b>Nameplate B:</b> CLASS I, ZONE 1, AEx db IIB T3 Gb.",
+     "<b>Question 1.</b> Is A suitable for a Class I, Division 2 area with diethyl ether vapor (Group C, ignition temperature about 160 °C)? Class, group and division all work (Division 1 equipment in Division 2). T4 is 135 °C, which is below 160 °C. Suitable.",
+     "<b>Question 2.</b> Is A suitable for a Class I, Division 2 battery room with hydrogen (Group B)? The nameplate lists only C and D. Not suitable.",
+     "<b>Question 3.</b> Is A suitable for gasoline vapor (Group D, ignition temperature roughly 280 °C) at a Division 2 location? Group D is listed and T4 (135 °C) is below 280 °C. Suitable.",
+     "<b>Question 4.</b> Is B suitable for ethylene (Group IIB, ignition temperature 450 °C) in a Zone 2 location? Zone 1 equipment can be used in Zone 2, IIB covers ethylene, and T3 (200 °C) is below 450 °C. Suitable.",
+     "<b>Question 5.</b> Is A suitable for a grain elevator (Class II, Group G)? Nameplate A carries no Class II marking. Not suitable."
+    ],
+    "info": "Temperature classes are measured at the ambient rating shown on the nameplate (usually 40 °C). If the nameplate shows a different ambient range, the temperature class applies at that range.",
+    "keypoint": "Suitability needs four matches: class, division or zone, group, and a temperature class whose surface temperature is below the ignition temperature of the material.",
+    "refs": [
+     "NEC 500.8",
+     "NEC Table 500.8(C)",
+     "NEC 505.9"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "Lookup Exercise: Where the Classification Is Documented",
+    "body": "Sections 500.4, 505.4 and 506.4 require classified areas to be documented, and the documentation must be available to the authority having jurisdiction and to the people who design, install, inspect, maintain or operate the equipment. The 2023 edition of 500.4 extends the documentation to unclassified areas that adjoin a classified location. This exercise has you find the sections and build a checklist of what a classification drawing should show.",
+    "step_list": [
+     "<b>Step 1.</b> Open the Code book to Chapter 5 and find Article 500. Locate 500.4, Documentation, and read its first paragraph. Note who must have access to the documentation.",
+     "<b>Step 2.</b> Move to Article 505 and find 505.4. Compare its wording with 500.4. Then look at Article 506 (506.4) and note that the same idea applies to dust zones.",
+     "<b>Step 3.</b> Read the informational notes. They point to NFPA 497 (flammable liquids, gases and vapors) and NFPA 499 (combustible dusts) as the usual source of classification guidance.",
+     "<b>Step 4.</b> List what a classification drawing should show so an installer can use it: the class and division or zone of each area, the material and its group, the ignition temperature or required temperature class, the boundaries in plan and in elevation, and the assumptions made about ventilation and containment.",
+     "<b>Step 5.</b> Add the practical items: the date and revision, who prepared and approved it, the adjoining unclassified spaces, and where the original is kept.",
+     "<b>Step 6.</b> Check your list against a real drawing if one is available. If the drawing is silent on a boundary, the question goes to the owner or engineer before conduit is run."
+    ],
+    "info": "Answer to expect: the documentation is required by 500.4, 505.4 and 506.4 and must be available to the AHJ and to those who design, install, inspect, maintain or operate the equipment.",
+    "keypoint": "Without current classification documentation the installer has no basis for choosing wiring methods or equipment, so the first question on a hazardous location job is: where is the drawing?",
+    "refs": [
+     "NEC 500.4",
+     "NEC 505.4",
+     "NEC 506.4"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Lookup Exercise: Assigning Class, Group and Division",
+    "body": "Once you have the drawing, you can check it against the Code. Section 500.5 gives the class and division definitions and 500.6 assigns the material to a group. The exercise below uses three materials and walks through the same lookup each time, then asks who is responsible for each decision.",
+    "step_list": [
+     "<b>Material 1: acetylene in a welding gas storage room.</b> 500.5 says flammable gas is Class I. 500.6(A) lists acetylene as Group A. If cylinders are stored closed and gas escapes only by accident, the area is Division 2; where acetylene is generated or released in normal operation, it is Division 1.",
+     "<b>Material 2: hydrogen from a battery charging room.</b> Flammable gas is Class I. Hydrogen is Group B. Hydrogen is released only if ventilation fails or equipment is abnormal, so Division 2 is common, but the designer confirms it.",
+     "<b>Material 3: magnesium powder from a grinding operation.</b> Combustible dust is Class II. Metal dusts such as aluminum and magnesium are Group E. If a dust cloud is present during normal operation, the area is Division 1.",
+     "<b>Next question for each.</b> What temperature class is required? Compare the ignition temperature of the material with the T-class table in 500.8(C).",
+     "<b>Who decides?</b> The owner and the engineer or designer determine the class, group, division and extent. The electrician checks that the equipment marking matches the documented classification and raises any difference between the drawing and the field condition."
+    ],
+    "bullets": [
+     "Be careful not to classify a space from its name. A battery room is not always Class I, and a mill is not always Class II. The classification follows the material, the process and the ventilation.",
+     "If the process changes (new solvent, new product, removal of ventilation), the classification must be reviewed.",
+     "The classification drawing is the controlling document. A quick table lookup tells you what to expect, but the drawing tells you what was decided."
+    ],
+    "keypoint": "Class comes from the type of material (500.5), group from the material itself (500.6), division from how likely it is to be present, and temperature class from the material's ignition temperature.",
+    "refs": [
+     "NEC 500.5",
+     "NEC 500.6",
+     "NEC 500.4"
+    ]
+   },
+   {
+    "tag": "M1·S9",
+    "title": "Case Study A: Paint Spray Booth",
+    "body": "A spray booth applies a flammable coating, and the overspray and solvent vapor make it a Class I location. Solvents used in coatings usually fall in Group D. The interior of the booth is treated as the most hazardous area, and the surrounding area is classified to a distance defined by Article 516 and the figures that accompany it. Everything in that classification depends on the exhaust ventilation actually running.",
+    "table": {
+     "h": [
+      "Question",
+      "Answer for the spray booth"
+     ],
+     "r": [
+      [
+       "Class",
+       "Class I (flammable vapors and mists from the coating and solvent)"
+      ],
+      [
+       "Group",
+       "Usually Group D (500.6); confirm from the safety data for the solvent"
+      ],
+      [
+       "Division",
+       "Booth interior is Division 1; areas near booth openings and exhaust ducts are classified as shown in Article 516; areas beyond are Division 2 or unclassified"
+      ],
+      [
+       "Extent",
+       "Taken from the Article 516 tables and figures and the engineer's drawing, not estimated by eye"
+      ],
+      [
+       "Temperature class",
+       "Below the ignition temperature of the solvent"
+      ]
+     ]
+    },
+    "bullets": [
+     "<b>Assumptions the classification depends on:</b> exhaust fans run before and during spraying, spray equipment is interlocked so it cannot operate without ventilation, and residue on surfaces is cleaned on schedule.",
+     "<b>Equipment categories likely suitable:</b> inside the booth, equipment identified for Class I, Division 1 (explosionproof or purged enclosures); wiring in threaded rigid metal conduit or threaded steel IMC with sealing fittings where required; luminaires either identified for the location or mounted outside the booth behind sealed glass panels as permitted by Article 516.",
+     "<b>Check:</b> if the exhaust fails, vapor is no longer swept out. The interlock should shut down the spray equipment, and any electrical equipment that is not suitable for the resulting atmosphere should de-energize."
+    ],
+    "keypoint": "Classification of a spray booth depends on assumptions: working exhaust ventilation, spray equipment interlocked with the exhaust, and residue kept under control.",
+    "refs": [
+     "NEC 500.5",
+     "NEC 500.6",
+     "NEC Article 502",
+     "NEC Article 516"
+    ]
+   },
+   {
+    "tag": "M1·S10",
+    "title": "Case Study B: Grain Handling Room",
+    "body": "Grain dust is combustible dust, so a grain handling area is Class II, and grain dust falls in Group G. Dust is normally present inside legs, spouts, bins and hoppers, and it can be released into the room air whenever grain is moved. The division depends on how often a dust cloud or hazardous dust accumulation can exist.",
+    "table": {
+     "h": [
+      "Question",
+      "Answer for the grain handling room"
+     ],
+     "r": [
+      [
+       "Class",
+       "Class II (combustible dust)"
+      ],
+      [
+       "Group",
+       "Group G (grain, flour, starch, wood and similar dusts, 500.6(B))"
+      ],
+      [
+       "Division",
+       "Division 1 where dust clouds exist in normal operation, such as inside enclosed conveyors and where grain is dumped; Division 2 where dust accumulates only through abnormal release or poor housekeeping"
+      ],
+      [
+       "Extent",
+       "Set by the designer from the process layout and dust control measures"
+      ],
+      [
+       "Temperature",
+       "Equipment surface temperature must be less than the ignition temperature of the dust involved (500.8(D)), and layered dust must be considered"
+      ]
+     ]
+    },
+    "bullets": [
+     "<b>Assumptions:</b> dust collection works, spills are cleaned promptly, and dust is not allowed to build up on beams, ledges and equipment where it can be disturbed.",
+     "<b>Equipment categories likely suitable:</b> in Division 1, dust-ignitionproof equipment marked for Class II, Group G; in Division 2, dusttight enclosures; threaded rigid metal conduit in Division 1 and also EMT in Division 2 (502.10); boxes without unused openings; dusttight flexible connectors where flexibility is needed.",
+     "<b>Compare with the spray booth:</b> a spray booth hazard disappears when the vapor is ventilated away, while a grain room hazard returns when dust accumulates. Both depend on the same idea, that the classification is only as good as the controls behind it."
+    ],
+    "keypoint": "Dust classification depends on housekeeping and dust collection as well as the process, and equipment must stay below the ignition temperature of both a dust cloud and a dust layer.",
+    "refs": [
+     "NEC 500.5",
+     "NEC 500.6",
+     "NEC Article 502"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "For underground installations at aircraft hangars, the 2026 NEC 513.8:",
+    "opts": [
+     "Requires Class II, Division 1",
+     "Requires Class I, Division 1 only within 5 ft",
+     "No longer requires them to be Class I, Division 1",
+     "Now prohibits underground wiring"
+    ],
+    "correct": 2,
+    "explain": "2023: Class I, Division 1 was required. 2026: that is no longer required, aligning with 514.8. [NEC 513.8 (2026)]"
+   },
+   {
+    "q": "In Class I, Zone 0, 1 and 2 locations, bonding by locknut-bushing or double locknut alone is:",
+    "opts": [
+     "Acceptable in Zone 2",
+     "Required",
+     "Not to be depended on",
+     "Sufficient"
+    ],
+    "correct": 2,
+    "explain": "Bonding jumpers with proper fittings are required. [NEC 505.30]"
+   },
+   {
+    "q": "Fixed wiring in an aircraft hangar that is not in a Class I location must be installed in:",
+    "opts": [
+     "Metal raceways or certain cables such as Type MC, MI, or TC, depending on location",
+     "Open wiring on insulators",
+     "Any wiring method acceptable in a dwelling",
+     "Type NM cable"
+    ],
+    "correct": 0,
+    "explain": "Fixed wiring above or outside Class I locations must be in metal raceways, or Type MC, MI, or TC cable (with listed fittings where required), or other methods listed in 513.7. [NEC 513.7(A)]"
+   },
+   {
+    "q": "A Class II, Division 1 location is one where combustible dust is:",
+    "opts": [
+     "Present in the air under normal operating conditions in quantities sufficient to produce explosive or ignitible mixtures",
+     "Never in the air",
+     "Only present on the floor",
+     "Stored in closed bags"
+    ],
+    "correct": 0,
+    "explain": "Class II Division 1 includes locations where combustible dust is in the air under normal operating conditions in sufficient quantity. [NEC 500.5(C)(1)]"
+   },
+   {
+    "q": "Equipment marked 'Class I, Zone 0, AEx ia IIC T6' has a maximum surface temperature of:",
+    "opts": [
+     "135 degrees C",
+     "85 degrees C",
+     "200 degrees C",
+     "100 degrees C"
+    ],
+    "correct": 1,
+    "explain": "T6 equals 85 degrees C. [NEC 505.9(C)]"
+   },
+   {
+    "q": "What is the maximum surface temperature represented by temperature class T4?",
+    "opts": [
+     "300 degrees C",
+     "100 degrees C",
+     "135 degrees C",
+     "200 degrees C"
+    ],
+    "correct": 2,
+    "explain": "T4 corresponds to 135 degrees C (275 degrees F). [NEC 500.8(C), Table 500.8(C)]"
+   },
+   {
+    "q": "Which temperature class denotes a maximum surface temperature of 135 degrees C?",
+    "opts": [
+     "T3",
+     "T4",
+     "T5",
+     "T6"
+    ],
+    "correct": 1,
+    "explain": "T4 is 135 degrees C. T3 is 200, T5 is 100, T6 is 85. [NEC 500.8(C)]"
+   },
+   {
+    "q": "When rigid metal conduit is threaded into a fitting in a hazardous (classified) location, a minimum of how many threads must be fully engaged?",
+    "opts": [
+     "Seven",
+     "Four",
+     "Three",
+     "Five"
+    ],
+    "correct": 3,
+    "explain": "Threaded joints in hazardous locations require at least five threads fully engaged (for example 501.10 and 500.8(E)). [NEC 500.8(E)(1)]"
+   }
+  ]
+ },
+ {
+  "title": "Class I, II and III wiring methods",
+  "time": "50 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "Wiring methods permitted in Class I, Division 1 locations (501.10(A))",
+   "Boxes, fittings, threaded joints, flexible connections and bonding in Class I locations",
+   "Class I, Division 2 wiring methods and what is relaxed from Division 1 (501.10(B))",
+   "Conduit seals: purpose, locations, compound and fill rules (501.15)",
+   "Finding seal locations on a conduit run from a classified pump to an unclassified panel",
+   "Class II dust locations: wiring methods and dust seals (Article 502)",
+   "Class III fiber and flyings locations (Article 503) and a comparison of the three classes"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "Class I, Division 1: Permitted Wiring Methods",
+    "body": "Section 501.10(A) limits Division 1 wiring to heavy, gas-tight methods that can contain an internal explosion and resist damage. The core methods are threaded rigid metal conduit and threaded steel intermediate metal conduit, with Type MI cable and a restricted use of Type MC-HL cable when terminated with fittings listed for the location. Boxes and fittings must be identified for Class I, Division 1.",
+    "table": {
+     "h": [
+      "Method",
+      "Conditions in Division 1"
+     ],
+     "r": [
+      [
+       "Threaded rigid metal conduit (RMC)",
+       "Permitted. Threaded joints, boxes and fittings identified for the location."
+      ],
+      [
+       "Threaded steel intermediate metal conduit (IMC)",
+       "Permitted on the same basis as RMC."
+      ],
+      [
+       "Type MI cable",
+       "Permitted with termination fittings listed for the location."
+      ],
+      [
+       "Type MC-HL cable",
+       "Permitted only if it has a gas/vaportight continuous corrugated metallic sheath, a suitable polymeric jacket and a separate equipment grounding conductor, and only in industrial establishments with restricted public access where only qualified persons service the installation."
+      ],
+      [
+       "Type P cable (2023)",
+       "The 2023 edition allows Type P cable with metal braid armor and an overall jacket when terminated with fittings listed for Division 1; confirm conditions in 501.10(A)."
+      ],
+      [
+       "Not permitted",
+       "EMT, nonmetallic raceways, Type NM, Type SE, general-purpose MC cable."
+      ]
+     ]
+    },
+    "bullets": [
+     "Threaded joints must be wrenchtight, with at least five threads fully engaged on threaded entries into explosionproof equipment (500.8(E)). Wrenchtight threads help maintain the flame path that makes the fitting explosionproof.",
+     "Do not leave knockouts open or substitute a general-purpose box with a threaded hub. The box must be identified for Division 1.",
+     "Seals and drainage are covered separately in 501.15, so plan them while you route the conduit rather than after it is installed."
+    ],
+    "warning": "Electrical metallic tubing is not a Division 1 wiring method. A proposal to use EMT with compression fittings in a pump room fails 501.10(A) regardless of the fitting rating.",
+    "keypoint": "In Division 1 use threaded rigid metal conduit or threaded steel IMC with explosionproof boxes and fittings; EMT and nonmetallic wiring methods are not permitted.",
+    "refs": [
+     "NEC 501.10",
+     "NEC 500.8"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "Class I, Division 1: Flexible Connections, Bonding and Equipment",
+    "body": "Where movement or vibration requires flexibility in Division 1, the Code allows explosionproof flexible fittings or flexible cord listed for extra-hard usage, terminated with listed fittings and containing a grounding conductor. Bonding in Class I locations must be positive: locknut-and-bushing connections and double locknuts are not relied on. Equipment that makes up the circuit (motors, switches, luminaires) must itself be identified for the location.",
+    "table": {
+     "h": [
+      "Item",
+      "Division 1 requirement",
+      "Section"
+     ],
+     "r": [
+      [
+       "Flexible connection",
+       "Explosionproof flexible fittings or extra-hard-usage cord with grounding conductor and listed fittings",
+       "501.10(A), 501.140"
+      ],
+      [
+       "Bonding",
+       "Bonding jumpers with proper fittings. Locknut-bushing and double-locknut contacts are not depended on",
+       "501.30(A)"
+      ],
+      [
+       "Switches, breakers, controllers",
+       "Enclosures identified for Class I, Division 1",
+       "501.115(A)"
+      ],
+      [
+       "Motors",
+       "Identified for Class I, Division 1, or one of the specifically permitted types such as totally enclosed pressure-ventilated machines",
+       "501.125(A)"
+      ],
+      [
+       "Fixed luminaires",
+       "Identified for Class I, Division 1 and marked with maximum wattage",
+       "501.130(A)"
+      ],
+      [
+       "Receptacles and plugs",
+       "Provide connection for the equipment grounding conductor and are listed for the location (2023)",
+       "501.145"
+      ]
+     ]
+    },
+    "bullets": [
+     "Cord used for portable equipment must be extra-hard-usage type with a grounding conductor, terminated in listed fittings and supported so there is no tension on the terminals (501.140).",
+     "Conductor insulation exposed to condensed vapors or liquids must be of a type suitable for them, or protected (501.20).",
+     "Ordinary flexible metal conduit and liquidtight flexible metal conduit with standard fittings are not Division 1 flexible connections."
+    ],
+    "keypoint": "Flexibility, bonding and equipment all need explicit Division 1 provisions; ordinary flexible metal conduit with locknuts does not meet them.",
+    "refs": [
+     "NEC 501.10",
+     "NEC 501.30",
+     "NEC 501.115",
+     "NEC 501.125",
+     "NEC 501.130",
+     "NEC 501.140",
+     "NEC 501.145"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Class I, Division 2: Wiring Methods",
+    "body": "Section 501.10(B) permits all the Division 1 methods and adds methods that would be unsuitable where an explosive atmosphere is routinely present. The Code still limits the list, so you cannot use any wiring method that is acceptable in an unclassified location. Boxes and fittings need not be explosionproof unless they enclose arcing or high-temperature devices.",
+    "table": {
+     "h": [
+      "Method or item",
+      "Division 2 treatment"
+     ],
+     "r": [
+      [
+       "Threaded RMC and threaded steel IMC",
+       "Permitted"
+      ],
+      [
+       "Type MC cable",
+       "Permitted when listed for the location and terminated with listed fittings"
+      ],
+      [
+       "Enclosed gasketed busways and wireways",
+       "Permitted"
+      ],
+      [
+       "Type PLTC and ITC cable",
+       "Permitted where installed under the conditions of 501.10(B)"
+      ],
+      [
+       "Boxes and fittings",
+       "Need not be explosionproof except where they enclose arcing or high-temperature devices as required by 501.105(B)(1), 501.115(B)(1) and 501.150(B)(1)"
+      ],
+      [
+       "Flexibility",
+       "Flexible metal conduit, liquidtight flexible metal or nonmetallic conduit with listed fittings, or extra-hard-usage cord. Wire-type equipment bonding jumper required (501.30(B))"
+      ],
+      [
+       "Equipment that makes or breaks current in normal operation",
+       "Division 1 enclosure unless the interruption is in a hermetically sealed chamber or oil-immersed (501.115(B))"
+      ]
+     ]
+    },
+    "bullets": [
+     "Plain induction motors with no sliding contacts, switching mechanisms or integral resistance devices may be of the open or nonexplosionproof type in Division 2 (501.125(B)).",
+     "Type NM cable, UF and AC cable are not Division 2 wiring methods.",
+     "The 2023 edition added a section on flexible cable for Division 2 (501.141) that permits Type P cable with cable connectors listed for Class I, Division 2."
+    ],
+    "info": "A common error is to treat Division 2 as 'almost unclassified.' Equipment that arcs in normal operation still needs Division 1 style enclosures or equivalent protection in a Division 2 area.",
+    "keypoint": "Division 2 allows more methods than Division 1, but it is a short list. EMT is not on it for Class I.",
+    "refs": [
+     "NEC 501.10",
+     "NEC 501.30",
+     "NEC 501.105",
+     "NEC 501.115",
+     "NEC 501.150"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Conduit Seals Under 501.15",
+    "body": "A conduit seal is a fitting filled with compound that blocks the passage of gas, vapor and flame through the raceway. Seals do two jobs: they limit an explosion inside an enclosure from traveling along the conduit, and they keep gas and vapor from migrating through the conduit from a classified area into an unclassified one. Section 501.15 sets where seals go, the distance from the enclosure and what the seal must be made of.",
+    "table": {
+     "h": [
+      "Location",
+      "Division 1",
+      "Division 2"
+     ],
+     "r": [
+      [
+       "Entry to an enclosure with arcing, sparking or high-temperature devices",
+       "Seal in each conduit run, within 450 mm (18 in.) of the enclosure, with no union, coupling, box or fitting between the seal and the enclosure except a listed explosionproof reducer (501.15(A)(1))",
+       "Seal at conduit entries to enclosures that must be explosionproof because of arcing or high-temperature devices (501.15(B)(1))"
+      ],
+      [
+       "Entry to an enclosure with only splices, taps or terminals",
+       "Seal where the conduit is trade size 2 in. (metric designator 53) or larger (501.15(A)(2))",
+       "The 2 in. trade size rule of the Division 1 paragraph is not repeated here; read 501.15(B) for the conditions"
+      ],
+      [
+       "Conduit leaving the classified area",
+       "Seal at the boundary, on either side, with no fittings between the seal and the boundary except explosionproof reducers (501.15(A)(4))",
+       "Seal at the boundary (501.15(B)(2)), with an exception for unbroken rigid metal conduit that passes completely through the Division 2 area with no unions, couplings, boxes or fittings in it or within 300 mm (12 in.) beyond each boundary"
+      ]
+     ]
+    },
+    "def_grid": [
+     {
+      "term": "Compound",
+      "body": "Not affected by the atmosphere or liquids, with a melting point of not less than 93 °C (200 °F)."
+     },
+     {
+      "term": "Thickness",
+      "body": "Not less than the trade size of the sealing fitting and never less than 16 mm (5/8 in.)."
+     },
+     {
+      "term": "Splices and taps",
+      "body": "Not permitted in a fitting intended only for sealing with compound. Use a separate listed enclosure."
+     },
+     {
+      "term": "Conductor fill",
+      "body": "Not more than 25 percent of the area of a rigid metal conduit of the same trade size unless the seal is identified for a higher percentage."
+     }
+    ],
+    "keypoint": "Seal at every conduit entry to an enclosure with arcing or high-temperature devices, at conduit 2 in. or larger entering splice-only enclosures in Division 1, and where conduit leaves a classified area.",
+    "refs": [
+     "NEC 501.15"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "Lookup Exercise: Where Do the Seals Go?",
+    "body": "In this exercise the conduit run carries a 3-phase motor circuit from a Division 1 pump motor, through a wall, to a motor starter panel in an unclassified electrical room. You will use 501.15 to mark every seal location. The aim is to find each location by naming the Code text that requires it.",
+    "step_list": [
+     "<b>Step 1. Draw the run.</b> Motor terminal housing (Division 1), 1 in. threaded RMC, wall penetration at the Division 1 boundary, continuing to the panel in the unclassified room.",
+     "<b>Step 2. Open Article 501, Part II, and find 501.15 (Sealing and Drainage).</b> Read (A), which covers Division 1, and then (B), which covers Division 2.",
+     "<b>Step 3. The motor end.</b> Does the terminal housing contain arcing or high-temperature devices? A plain motor terminal box with only terminations does not, so 501.15(A)(1) does not apply. Because the conduit is 1 in., smaller than the 2 in. threshold in 501.15(A)(2), no entry seal is required there. If the housing held a thermal switch or other arcing device, 501.15(A)(1) would apply and a seal would be required within 450 mm (18 in.) of the housing.",
+     "<b>Step 4. The boundary.</b> Conduit leaving the Division 1 area must be sealed at the boundary under 501.15(A)(4). Place the seal on either side of the wall, with no coupling, union, box or fitting between the seal and the wall except a listed explosionproof reducer.",
+     "<b>Step 5. The panel.</b> The panel is in an unclassified room, so the panel entry does not need a seal even if the starter inside makes and breaks current. The classification stops at the boundary.",
+     "<b>Step 6. Resolve differences by citing text.</b> Compare answers with a partner. Anyone whose count differs should name the section and paragraph that supports each seal; a seal without a cited reason, or a missing seal with a cited reason, is the difference to resolve."
+    ],
+    "info": "Expected answer for the base case: one seal, at the Division 1 boundary. An additional seal within 18 in. of the motor housing is needed only if that housing contains arcing or high-temperature devices (or the conduit is 2 in. or larger).",
+    "keypoint": "A seal is required for a reason: either the conduit enters an enclosure that can arc or heat, or the conduit leaves the classified area. Name the reason for each seal on the drawing.",
+    "refs": [
+     "NEC 501.15"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "Lookup Exercise: Seal Fill and Installation Rules",
+    "body": "After you place a seal, check that the fitting and the conductors in it comply with the sealing rules in 501.15(C). The compound dams, the thickness of compound and the fill are all checked at installation. Fill in a seal is limited to 25 percent of the cross-sectional area of a rigid metal conduit of the same trade size unless the seal is identified for a higher percentage.",
+    "step_list": [
+     "<b>Given.</b> Four 12 AWG THHN conductors (three phase conductors and one equipment grounding conductor) in a 1 in. sealing fitting.",
+     "<b>Table 5 area.</b> A 12 AWG THHN conductor has an area of 0.0133 sq in. Four conductors: 4 x 0.0133 = 0.0532 sq in.",
+     "<b>Table 4 area.</b> A 1 in. rigid metal conduit has a total internal area of 0.887 sq in.",
+     "<b>Limit.</b> 25 percent of 0.887 sq in. = 0.887 x 0.25 = 0.2218 sq in.",
+     "<b>Compare.</b> 0.0532 sq in. is 0.0532 / 0.887 = 6.0 percent of the conduit area, which is below 25 percent. Compliant.",
+     "<b>Maximum count.</b> 0.2218 / 0.0133 = 16.7, so no more than 16 conductors of this size could be placed in this sealing fitting.",
+     "<b>Compound.</b> Minimum thickness is the trade size of the fitting, here 1 in., and never less than 5/8 in. Compound melting point not less than 93 °C (200 °F). No splices in the fitting.",
+     "<b>Installation.</b> Use the compound and fitting as a listed pair, install the dam as instructed so the compound stays in place, and orient the fitting only as permitted by its listing (some are listed for vertical use only)."
+    ],
+    "info": "The Table 4 and Table 5 values above are the ones used in this course example. Always confirm the values in the Code book you are using.",
+    "keypoint": "Check fill against 25 percent of the rigid metal conduit area using Chapter 9, Table 4 for the conduit and Table 5 for the conductors.",
+    "refs": [
+     "NEC 501.15",
+     "NEC Chapter 9 Table 4",
+     "NEC Chapter 9 Table 5"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Class II Locations: Dusts and Article 502",
+    "body": "Article 502 protects against two things: dust entering enclosures, and equipment surfaces becoming hot enough to ignite dust. Wiring in Class II, Division 1 locations is threaded rigid metal conduit, threaded steel IMC, Type MI or other methods listed in 502.10(A), with dusttight boxes and fittings that have threaded bosses and no open holes. Division 2 relaxes the list to include EMT and dusttight wireways, but not nonmetallic wiring methods such as Type NM cable.",
+    "table": {
+     "h": [
+      "Topic",
+      "Class II, Division 1",
+      "Class II, Division 2"
+     ],
+     "r": [
+      [
+       "Wiring methods (502.10)",
+       "Threaded RMC, threaded steel IMC, Type MI and listed Type MC with listed fittings",
+       "Adds EMT and dusttight wireways to the Division 1 list; no NM or open wiring"
+      ],
+      [
+       "Boxes and fittings",
+       "Dusttight, threaded bosses for conduit, no openings through which dust can enter or sparks escape",
+       "Dusttight"
+      ],
+      [
+       "Flexibility",
+       "Dusttight flexible connectors, listed liquidtight flexible conduit, or extra-hard-usage cord",
+       "Same types"
+      ],
+      [
+       "Switches, breakers, controllers",
+       "Enclosures identified for Class II locations",
+       "Dusttight enclosures (502.115(B))"
+      ],
+      [
+       "Bonding",
+       "Wire-type bonding jumper with flexible metal conduit; locknut-bushing contacts not depended on",
+       "Same"
+      ]
+     ]
+    },
+    "bullets": [
+     "<b>Dust seal alternatives (502.15):</b> where a raceway connects a dust-ignitionproof enclosure to an enclosure that is not, dust can travel through the raceway. The Code accepts a permanent and effective seal, a horizontal raceway not less than 3.05 m (10 ft) long, or a vertical raceway not less than 1.5 m (5 ft) long extending downward from the dust-ignitionproof enclosure.",
+     "Dust seals are not explosionproof seals. They need not resist an explosion but must keep dust out.",
+     "The 2023 edition permits corrosion-protected conduit systems in Division 1 (502.10) and requires metal struts, angles and channels used for support to be bonded (502.30)."
+    ],
+    "keypoint": "In dust locations the key words are dusttight and no openings. Seal the raceway so dust cannot travel through it into a dust-ignitionproof enclosure.",
+    "refs": [
+     "NEC 502.10",
+     "NEC 502.15",
+     "NEC 502.30",
+     "NEC 502.115",
+     "NEC 502.130"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Class III Locations and a Comparison of the Three Classes",
+    "body": "Class III locations contain easily ignitible fibers or flyings that are not suspended in the air in quantities that would produce an ignitible mixture. The hazard is fire from deposits on or near equipment, not an explosion, so the rules focus on keeping fibers out of enclosures and limiting surface temperature. Section 503.10 lists the wiring methods, which are broader than in Class I or II, and requires dusttight boxes and fittings with no openings.",
+    "table": {
+     "h": [
+      "Feature",
+      "Class I",
+      "Class II",
+      "Class III"
+     ],
+     "r": [
+      [
+       "Hazard",
+       "Gas or vapor",
+       "Combustible dust",
+       "Ignitible fibers and flyings"
+      ],
+      [
+       "Groups",
+       "A, B, C, D",
+       "E, F, G",
+       "None"
+      ],
+      [
+       "Division 1 wiring",
+       "Threaded RMC/IMC, MI, MC-HL (501.10(A))",
+       "Threaded RMC/IMC, MI, MC (502.10(A))",
+       "RMC, IMC, EMT, dusttight wireways, MC, MI, Type P (503.10(A))"
+      ],
+      [
+       "EMT permitted",
+       "No",
+       "Division 2 only",
+       "Yes"
+      ],
+      [
+       "Boxes and fittings",
+       "Explosionproof in Division 1",
+       "Dusttight, threaded bosses in Division 1",
+       "Dusttight, no openings"
+      ],
+      [
+       "Keeping the hazard out of enclosures",
+       "501.15 compound seals",
+       "502.15 dust seals or 10 ft / 5 ft raceways",
+       "Dusttight fittings and boxes with no openings (503.10)"
+      ]
+     ]
+    },
+    "bullets": [
+     "<b>Temperature (503.5, 500.8(D)):</b> surface temperature must not exceed 165 °C (329 °F) for equipment that is not subject to overloading, and 120 °C (248 °F) for equipment that may be overloaded, such as motors and power transformers.",
+     "Class III has no group letters, so equipment is selected by division and temperature limit only.",
+     "Luminaires must keep fibers off the lamp and prevent escape of sparks or hot metal, and must be marked with maximum wattage (503.130). Motors in Division 1 are of totally enclosed types (503.125)."
+    ],
+    "keypoint": "Class III wiring prevents fibers from entering or being ignited: dusttight boxes, no open knockouts, and surface temperatures kept low so deposits do not dry out or carbonize.",
+    "refs": [
+     "NEC 503.10",
+     "NEC 503.5",
+     "NEC 500.8"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which wiring method is permitted in a Class I, Division 2 location of an aircraft hangar?",
+    "opts": [
+     "Open wiring on insulators",
+     "Threaded rigid metal conduit",
+     "Knob-and-tube",
+     "Type NM cable"
+    ],
+    "correct": 1,
+    "explain": "Division 2 permits all Division 1 wiring methods, including threaded RMC, plus others listed in 501.10(B). [NEC 501.10(B)]"
+   },
+   {
+    "q": "Class III locations are hazardous because of the presence of:",
+    "opts": [
+     "Flammable gases",
+     "Easily ignitible fibers or flyings that are not likely to be suspended in the air in ignitible quantities",
+     "Flammable liquids",
+     "Combustible metal dust"
+    ],
+    "correct": 1,
+    "explain": "Class III covers easily ignitible fibers and flyings handled, manufactured, or used where they are not likely to be airborne in ignitible quantities. [NEC 503.1, 500.5(D)]"
+   },
+   {
+    "q": "Which wiring method is permitted in Zone 20 locations?",
+    "opts": [
+     "Open wiring",
+     "Nonmetallic-sheathed cable",
+     "Type AC cable",
+     "Threaded rigid metal conduit"
+    ],
+    "correct": 3,
+    "explain": "Threaded RMC or threaded steel IMC is permitted in Zone 20. [NEC 506.15(A)]"
+   },
+   {
+    "q": "Receptacles and attachment plugs in Class II, Division 1 must:",
+    "opts": [
+     "Be ordinary",
+     "Provide a connection to the equipment grounding conductor and be identified for Class II locations",
+     "Be non-grounding",
+     "Be weatherproof"
+    ],
+    "correct": 1,
+    "explain": "Receptacles and plugs must be grounded types identified for the location. [NEC 502.145(A)]"
+   },
+   {
+    "q": "Stem-mounted pendant luminaires longer than 300 mm in a Class II location need:",
+    "opts": [
+     "Nothing",
+     "A chain only",
+     "Two locknuts only",
+     "Bracing or flexible connection within 300 mm of the supporting box or lower end"
+    ],
+    "correct": 3,
+    "explain": "Stems longer than 300 mm must be braced against lateral displacement or flexibly connected near the box. [NEC 502.130(A)(3)]"
+   },
+   {
+    "q": "A vertical raceway extending downward from a dust-ignitionproof enclosure can be used in lieu of a seal if it is not less than:",
+    "opts": [
+     "0.9 m (3 ft)",
+     "1.5 m (5 ft)",
+     "3.05 m (10 ft)",
+     "0.3 m (1 ft)"
+    ],
+    "correct": 1,
+    "explain": "The vertical raceway must be at least 1.5 m (5 ft) and extend downward from the dust-ignitionproof enclosure. [NEC 502.15(3)]"
+   }
+  ]
+ },
+ {
+  "title": "Garages and fuel dispensing",
+  "time": "40 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "How Article 511 classifies commercial garages: parking, repair, pits and adjoining spaces",
+   "Wiring above and within classified areas of a garage (511.4, 511.7)",
+   "Underground wiring, battery chargers, portable lamps and GFCI protection in repair garages",
+   "How Article 514 classifies the areas around fuel dispensers, vents and tanks",
+   "Wiring, underground raceways, seals and emergency shutoffs at fuel dispensing facilities",
+   "Reading Table 514.3(B)(1): rows, columns, notes and dimensions",
+   "Sketching classified areas and choosing wiring methods for each area"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "Commercial Garages: Classifying Areas Under Article 511",
+    "body": "Article 511 applies to locations used for service and repair of self-propelled vehicles, including passenger cars, buses and trucks, where volatile flammable liquids or flammable gases are used for fuel or power. Section 511.3 sets the classification. A garage used only for parking and storage, with no repair work, is not required to be classified, while a repair garage is classified Class I, Division 2 (or Zone 2) in the floor area up to 450 mm (18 in.) above the floor.",
+    "table": {
+     "h": [
+      "Area",
+      "Classification",
+      "Notes"
+     ],
+     "r": [
+      [
+       "Parking or storage only, no repair",
+       "May be unclassified",
+       "Classification is not required when no repair work is done"
+      ],
+      [
+       "Repair garage floor area, no pits or depressions",
+       "Class I, Division 2 or Zone 2 up to 18 in. above the floor",
+       "Where there is no mechanical ventilation, the entire floor area to 18 in. is classified"
+      ],
+      [
+       "Pits, depressions and areas below floor level",
+       "Classified more severely than the floor area above",
+       "Extent and the effect of ventilation are set out in 511.3; read the paragraph before applying"
+      ],
+      [
+       "Adjoining rooms such as stock rooms and restrooms",
+       "Can be unclassified",
+       "If flammable vapors are not likely to be released there and the room is mechanically ventilated at four air changes per hour, held at positive pressure, or cut off by walls or partitions (511.3)"
+      ]
+     ]
+    },
+    "bullets": [
+     "The area above the Division 2 level is not classified, but equipment installed there still has requirements under 511.7 because of the nearby hazard.",
+     "Section 511.3 also addresses vehicles fueled by lighter-than-air gases, where the hazard rises. Read that paragraph when natural gas or hydrogen vehicles are serviced.",
+     "<b>2023 change:</b> Article 511 was reworded so that it can be applied with either the division or zone approach, and a new 511.2 requires occupancies to comply with Table 511.2 as modified by this article."
+    ],
+    "keypoint": "Repair garages are classified because fuel vapor can leak from vehicles; the floor level is the main concern because gasoline vapor is heavier than air.",
+    "refs": [
+     "NEC 511.3",
+     "NEC 511.2",
+     "NEC 500.5"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Garage Wiring: 511.4, 511.7, 511.8 and 511.10",
+    "body": "Wiring within the classified area must follow the Division 2 (or Zone 2) rules of Article 501 or 505, as 511.4 directs. Above the classified area, 511.7 requires specific metal raceways or listed cables, and arc-producing equipment must be enclosed against the escape of sparks. Underground wiring and special equipment such as battery chargers have their own paragraphs.",
+    "table": {
+     "h": [
+      "Topic",
+      "Requirement",
+      "Section"
+     ],
+     "r": [
+      [
+       "Wiring within classified locations",
+       "Comply with Article 501 (division) or Article 505 (zone) as applicable",
+       "511.4"
+      ],
+      [
+       "Wiring above classified locations",
+       "Metal raceways and the other cable and conduit types listed in the section. The 2023 edition added several conduit and cable types to the list",
+       "511.7(A)"
+      ],
+      [
+       "Arcing or spark-producing fixed equipment",
+       "Less than 3.7 m (12 ft) above the floor must be totally enclosed or constructed to prevent escape of sparks or hot metal particles",
+       "511.7(B)"
+      ],
+      [
+       "Portable lamps",
+       "Handle, lampholder, hook and substantial guard; unswitched lampholder; no receptacle; nonconducting or insulated exterior",
+       "511.7(B)"
+      ],
+      [
+       "Underground wiring",
+       "Threaded RMC or threaded steel IMC, or nonmetallic conduit with at least 600 mm (2 ft) of cover and threaded RMC/IMC for the last 600 mm (2 ft) before emerging. The 2023 edition moved the former exception text into the section",
+       "511.8"
+      ],
+      [
+       "Battery chargers and their control equipment",
+       "Not located within the Class I locations",
+       "511.10(A)"
+      ],
+      [
+       "GFCI protection",
+       "125 V, single-phase, 15 and 20 A receptacles in areas where diagnostic equipment, hand tools or portable lighting are used",
+       "511.12"
+      ],
+      [
+       "Cords for pendant or portable equipment",
+       "Include a separate equipment grounding conductor",
+       "511.16"
+      ]
+     ]
+    },
+    "info": "Electric vehicle charging in a garage is addressed in 511.10 by reference to Article 625. Check the current text when installing EV charging equipment in a classified repair area.",
+    "keypoint": "Within the 18 in. zone, build to Class I, Division 2; above it, use the restricted methods of 511.7 and enclose arc-producing equipment within 12 ft of the floor.",
+    "refs": [
+     "NEC 511.4",
+     "NEC 511.7",
+     "NEC 511.8",
+     "NEC 511.10",
+     "NEC 511.12",
+     "NEC 511.16"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "Motor Fuel Dispensing: Classification Under 514.3",
+    "body": "Article 514 covers motor fuel dispensing facilities such as gasoline stations, marinas and other sites where Class I liquids are stored and dispensed. Section 514.3 sends you to Table 514.3(B)(1), which gives the Division 1 and Division 2 (or Zone) areas for each source: the dispenser, the dispenser pit, remote pumps, tank vents and tank fill points. Gasoline is Class I, Group D (Zone IIA).",
+    "table": {
+     "h": [
+      "Source (outdoor)",
+      "Division 1",
+      "Division 2"
+     ],
+     "r": [
+      [
+       "Dispenser (not overhead type)",
+       "Space inside the dispenser enclosure, and all electrical equipment in a dispenser pit or sump",
+       "Within 18 in. horizontally in all directions from the dispenser enclosure, extending to grade; and up to 18 in. above grade out to 20 ft horizontally"
+      ],
+      [
+       "Tank vent, open end",
+       "Within 3 ft (900 mm) of the open end of the vent, in all directions",
+       "Between 3 ft and 5 ft (1.5 m) from the open end, in all directions"
+      ],
+      [
+       "Other sources (remote pump, fill pipe, pits)",
+       "As listed in the table",
+       "As listed in the table"
+      ]
+     ]
+    },
+    "bullets": [
+     "Table 514.3(B)(1) has Division and Zone columns, and the notes under the table set the meaning of the dimensions (what is measured horizontally, what is measured from the vent, and what applies below grade).",
+     "Table 514.3(B)(2) is separate and covers compressed natural gas, liquefied natural gas and LP-gas dispensing.",
+     "<b>Indoor vs outdoor:</b> the dimensions above are for outdoor equipment. Indoor and enclosed locations have separate entries."
+    ],
+    "warning": "Use the table rows for the specific source and read the distances and reference points from the table in your edition. The values shown here are the commonly cited outdoor dispenser and vent dimensions and must be confirmed in the Code book.",
+    "keypoint": "Every classified area around a dispenser is listed in the table by source, and each dimension has a defined starting point and direction.",
+    "refs": [
+     "NEC 514.3",
+     "NEC Table 514.3(B)(1)"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "Fuel Dispensing Wiring: 514.4, 514.7, 514.8, 514.9 and 514.11",
+    "body": "Section 514.4 requires wiring and equipment within the classified locations to comply with Article 501 or 505, and 514.7 sends wiring above the classified area to 511.7. Underground wiring (514.8) is limited to heavy methods, seals are required at the dispenser and at the classified boundary (514.9), and 514.11 requires an emergency shutoff that disconnects power to the dispensers. The 2023 edition revised 514.4 and 514.7 to align with the changes made in Article 511.",
+    "table": {
+     "h": [
+      "Section",
+      "What it requires"
+     ],
+     "r": [
+      [
+       "514.4 Wiring and equipment within classified locations",
+       "Comply with the applicable requirements of Article 501 (Division) or Article 505 (Zone)"
+      ],
+      [
+       "514.7 Wiring and equipment above classified locations",
+       "Comply with 511.7, as for commercial garages"
+      ],
+      [
+       "514.8 Underground wiring",
+       "Threaded RMC or threaded steel IMC; nonmetallic conduit permitted when buried under at least 600 mm (2 ft) of cover, with threaded RMC or IMC for the last 600 mm (2 ft) to the equipment or point of emergence"
+      ],
+      [
+       "514.9 Sealing",
+       "A listed seal in each conduit run entering or leaving a dispenser, as the first fitting after the conduit emerges from the earth or concrete; and a seal at the boundary where a conduit passes from the classified location to an unclassified location, as provided in 501.15"
+      ],
+      [
+       "514.11 Emergency shutoff",
+       "Clearly identified emergency controls at locations specified in the section, remote from the dispensers, that shut off power to all dispensers and associated equipment; a deliberate reset is required to restore power. The section also covers circuit disconnects that open all conductors, including the grounded conductor"
+      ],
+      [
+       "514.13 Maintenance",
+       "Each dispenser must have a means to isolate it completely from all external sources of potential, including the grounded conductor if any"
+      ]
+     ]
+    },
+    "bullets": [
+     "The location of the emergency shutoff is stated as a distance range from the dispensers it serves, and it is tested in plan review. Confirm both the shutoff location and the shutoff scope in 514.11.",
+     "The general sealing rules of 501.15 apply in addition to 514.9, including the compound, thickness and fill requirements covered in Module 2.",
+     "Grounding and bonding of dispensers and remote pumps follow Article 250 with the added Class I requirements of 501.30 (514.16)."
+    ],
+    "keypoint": "Wire the classified area to Article 501, the area above it to 511.7, underground in threaded metal or buried nonmetallic conduit with metal at the transition, and provide a seal at the dispenser and an emergency shutoff.",
+    "refs": [
+     "NEC 514.4",
+     "NEC 514.7",
+     "NEC 514.8",
+     "NEC 514.9",
+     "NEC 514.11",
+     "NEC 514.13",
+     "NEC 501.15"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "Lookup Exercise: Finding and Reading Table 514.3(B)(1)",
+    "body": "This is a three-part exercise on one table. First find it and learn its layout. Then read the notes and identify which dimensions run horizontally and which vertically. Finally apply a row of the table to a specific dispenser. Tables in Chapter 5 are dense, and most mistakes come from skipping the notes.",
+    "step_list": [
+     "<b>Step 1. Locate the table.</b> Chapter 5, Special Occupancies, Article 514, Motor Fuel Dispensing Facilities. Section 514.3(B) directs you to Table 514.3(B)(1). Use the table of contents or index entry for 'Motor fuel dispensing facilities' if needed.",
+     "<b>Step 2. Learn the layout.</b> The first column names the location (dispenser, pit, remote pump, tank vent and so on). The next columns give the Class I Division 1 / Division 2 areas with Group D, and the corresponding Zone 1 / Zone 2 areas for Group IIA. There is also a column or note indicating the extent of each area.",
+     "<b>Step 3. Find the dispenser row.</b> For an outdoor dispenser (not overhead type), read the Division 1 entry and the Division 2 entries.",
+     "<b>Step 4. Read the notes below the table.</b> Note which distances are horizontal, which run to grade, and which are heights above grade. Check how a distance is measured: from the dispenser enclosure, from the edge of another classified area, or from the open end of a vent.",
+     "<b>Step 5. Record your results.</b> Division 1: inside the dispenser enclosure (and in the pit or sump). Division 2: 18 in. envelope from the enclosure to grade, and a low band up to 18 in. above grade extending 20 ft. Vent: Division 1 within 3 ft of the open end, Division 2 between 3 ft and 5 ft.",
+     "<b>Step 6. Cross-check against the figure.</b> The Code includes figures for dispenser classification. Compare your numbers with the figure to catch misreadings."
+    ],
+    "info": "Answer to expect: the inside of the dispenser enclosure is Division 1; the surrounding envelope and low ground-level band are Division 2; space above 18 in. and more than 18 in. from the enclosure is unclassified by the dispenser entry (but check other sources, such as vents).",
+    "keypoint": "Find the source row, read both the Division and Zone columns, then read the notes for the reference point of every dimension.",
+    "refs": [
+     "NEC Table 514.3(B)(1)",
+     "NEC 514.3"
+    ]
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Lookup Exercise: Sketching the Classified Area for a Dispenser",
+    "body": "Now apply the table to a layout. A single outdoor dispenser has an enclosure footprint of 4 ft by 2 ft. Draw the plan view and mark the classified areas using the dimensions found in the previous exercise. This is a plan-view sketch, so heights are noted beside the lines rather than drawn.",
+    "step_list": [
+     "<b>Dispenser footprint.</b> 4 ft x 2 ft. Mark the whole footprint, and the dispenser interior above it, as Division 1.",
+     "<b>Inner Division 2 envelope.</b> 18 in. = 1.5 ft all around, extending from grade to the top of the dispenser. Plan size: (4 + 1.5 + 1.5) x (2 + 1.5 + 1.5) = 7 ft x 5 ft.",
+     "<b>Outer Division 2 band.</b> Up to 18 in. above grade, extending 20 ft horizontally. If measured from the edge of the dispenser enclosure, the bounding rectangle is (4 + 20 + 20) x (2 + 20 + 20) = 44 ft x 42 ft; the true boundary is rounded at the corners when measured as a radius. If your edition measures from the edge of the 18 in. envelope, the band starts 1.5 ft farther out.",
+     "<b>Vents.</b> If a tank vent is within the area, add a Division 1 sphere of 3 ft radius around the open end and a Division 2 shell out to 5 ft.",
+     "<b>Seal points.</b> Mark where each conduit emerges from the island or slab and enters the dispenser. The seal is the first fitting after the conduit emerges from the earth or concrete (514.9). Mark the boundary seal where any conduit leaves the classified area toward the building (501.15).",
+     "<b>Conduit under the island.</b> Underground runs: threaded RMC or IMC, or buried nonmetallic conduit with at least 2 ft of cover and threaded metal for the last 2 ft (514.8)."
+    ],
+    "info": "The bounding-box arithmetic is a drawing aid. The classified area is defined by the dimensions in the table, not by the rectangle.",
+    "keypoint": "A Division 2 area has both a horizontal extent and a height. Mark both and note where each one is measured from.",
+    "refs": [
+     "NEC Table 514.3(B)(1)",
+     "NEC 514.9"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Lookup Exercise: Wiring Methods Suitable for Each Area",
+    "body": "The final part of the exercise lists wiring methods that suit each area of the sketch. Use the Division 1 and Division 2 methods of 501.10, and the garage-related sections 514.7 and 511.7 for the space above the classified areas. Include the seal in each case.",
+    "table": {
+     "h": [
+      "Area",
+      "Suitable wiring methods",
+      "Governing sections"
+     ],
+     "r": [
+      [
+       "Division 1 (inside dispenser, pits)",
+       "Threaded RMC, threaded steel IMC, Type MI with listed fittings, Type MC-HL where its conditions are met; explosionproof boxes and fittings; seals as the first fitting out of the earth or concrete",
+       "514.4, 501.10(A), 514.9"
+      ],
+      [
+       "Division 2 (envelope and low band)",
+       "Division 1 methods, plus Type MC with listed fittings, enclosed gasketed busways and wireways, and the other methods in 501.10(B); EMT is not permitted",
+       "514.4, 501.10(B)"
+      ],
+      [
+       "Above the classified area",
+       "Methods listed in 511.7(A); arc-producing equipment less than 12 ft above grade must be enclosed",
+       "514.7, 511.7"
+      ],
+      [
+       "Underground",
+       "Threaded RMC or IMC, or buried nonmetallic conduit with 2 ft cover and threaded metal for the last 2 ft",
+       "514.8"
+      ],
+      [
+       "Leaving the classified area",
+       "Seal at the boundary",
+       "514.9(B), 501.15"
+      ]
+     ]
+    },
+    "bullets": [
+     "Bonding: locknut-bushing and double-locknut contacts are not depended on in Class I locations (501.30(A)). Use bonding jumpers with proper fittings.",
+     "Disconnects: each circuit to or through the dispensers must open all conductors, including the grounded conductor, and an emergency shutoff must be provided (514.11).",
+     "Portable lighting and cord-connected equipment in Class I locations use extra-hard-usage cord with an equipment grounding conductor and listed fittings (501.140)."
+    ],
+    "keypoint": "Match the method to the area: threaded metal in Division 1, the Division 2 list outside it, 511.7 methods above it, and the 514.8 rules for underground runs.",
+    "refs": [
+     "NEC 501.10",
+     "NEC 514.4",
+     "NEC 514.7",
+     "NEC 514.8",
+     "NEC 514.9",
+     "NEC 511.7"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "For an outdoor aboveground Class I liquid storage tank at a bulk plant, the area within what distance of the shell, ends, or roof of the tank is classified Class I, Division 2?",
+    "opts": [
+     "18 in.",
+     "15 m (50 ft)",
+     "3 m (10 ft)",
+     "1.5 m (5 ft)"
+    ],
+    "correct": 2,
+    "explain": "Table 515.3 lists Division 2 within 3 m (10 ft) from the shell, ends, or roof of the tank. [NEC Table 515.3]"
+   },
+   {
+    "q": "The Class I, Division 2 area around the open end of a bulk plant tank vent extends:",
+    "opts": [
+     "Between 3 ft and 5 ft from the open end in all directions",
+     "Between 5 ft and 15 ft",
+     "Between 18 in. and 3 ft",
+     "Between 10 ft and 25 ft"
+    ],
+    "correct": 0,
+    "explain": "Division 2 is the area between 900 mm (3 ft) and 1.5 m (5 ft) from the open end of the vent. [NEC Table 515.3]"
+   },
+   {
+    "q": "The disconnecting means for circuits leading to or through dispensing equipment must disconnect which conductors?",
+    "opts": [
+     "All conductors of the circuit, including the grounded conductor, simultaneously",
+     "Only the conductor serving the pump motor",
+     "Only the equipment grounding conductor",
+     "Ungrounded conductors only"
+    ],
+    "correct": 0,
+    "explain": "Each circuit leading to or through dispensing equipment needs a clearly identified, readily accessible switch or other means, remote from the dispensing devices, that simultaneously disconnects all conductors including the grounded conductor. [NEC 514.11(A)]"
+   },
+   {
+    "q": "The Class I, Division 2 area around the open end of an underground gasoline tank vent extends between which distances?",
+    "opts": [
+     "Between 5 ft and 10 ft",
+     "Between 18 in. and 3 ft",
+     "Between 3 ft and 5 ft in all directions from the open end",
+     "Between 3 ft and 20 ft"
+    ],
+    "correct": 2,
+    "explain": "The Division 2 area is between 900 mm (3 ft) and 1.5 m (5 ft) from the open end of the vent in all directions. [NEC Table 514.3(B)(1)]"
+   },
+   {
+    "q": "A technician in a repair bay plugs a diagnostic scan tool into a 125-volt, 20-ampere, single-phase receptacle on the bay wall. Which statement is correct?",
+    "opts": [
+     "GFCI is not needed because the garage is a Class I location",
+     "GFCI is required only for 30-ampere and larger receptacles",
+     "The receptacle needs GFCI protection for personnel",
+     "The receptacle needs GFCI only if it is within 6 ft of a floor drain"
+    ],
+    "correct": 2,
+    "explain": "Receptacles of 125-volt, single-phase, 15 and 20 amperes in areas where electrical diagnostic equipment, hand tools, or portable lighting are used require GFCI protection for personnel. [NEC 511.12]"
+   }
+  ]
+ },
+ {
+  "title": "Health care facilities",
+  "time": "75 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "Patient care space categories 1 to 4 and the patient care vicinity (517.2)",
+   "Branch circuits and receptacles at patient bed locations (517.18, 517.19)",
+   "Grounding in patient care spaces: the redundant ground-fault path of 517.13",
+   "Building the Category 1 and Category 2 bed location requirements from the Code book",
+   "Essential electrical systems: the emergency system, life safety branch, critical branch and equipment system (517.30 to 517.34)",
+   "Restoration times, transfer switches and keeping the branches separate",
+   "Wet procedure locations (517.20) and isolated power systems with line isolation monitors (517.160)"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "Patient Care Space Categories",
+    "body": "Article 517 sorts patient care spaces by the risk to patients, staff and visitors if electrical equipment or the system fails. The facility's governing body assigns each space to a category through a risk assessment, and the electrician builds to the assigned category. In the 2023 edition the older terms (critical, general, basic and support care) are fully replaced by Category 1 through 4.",
+    "table": {
+     "h": [
+      "Category",
+      "If equipment or the system fails",
+      "Older term"
+     ],
+     "r": [
+      [
+       "Category 1",
+       "Likely to cause major injury or death of patients, staff or visitors",
+       "Critical care"
+      ],
+      [
+       "Category 2",
+       "Likely to cause minor injury to patients, staff or visitors",
+       "General care"
+      ],
+      [
+       "Category 3",
+       "Not likely to cause injury, but may cause patient discomfort",
+       "Basic care"
+      ],
+      [
+       "Category 4",
+       "Not likely to have an impact on patient care",
+       "Support"
+      ]
+     ]
+    },
+    "bullets": [
+     "A patient care space is a space intended for examination or treatment. Business offices, corridors, lounges, day rooms, nurses' stations and similar spaces are not patient care spaces.",
+     "The patient care vicinity extends 1.8 m (6 ft) beyond the normal location of the bed, chair, table or treadmill and vertically to at least 2.3 m (7 ft 6 in.) above the floor. Many grounding and receptacle rules apply inside this vicinity.",
+     "The reference grounding point is the ground bus of the panelboard or isolated power panel that serves the patient care space.",
+     "Part of 517.2 also defines the patient bed location (the location of a sleeping bed, or the bed or procedure table of a Category 1 space) and the wet procedure location, covered later in this module."
+    ],
+    "keypoint": "The category follows the consequence of failure, from Category 1 (major injury or death likely) to Category 4 (no impact on patient care), and it drives how many circuits and receptacles the Code requires.",
+    "refs": [
+     "NEC 517.2",
+     "NEC 517.18",
+     "NEC 517.19"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "Branch Circuits and Receptacles at Bed Locations: 517.18 and 517.19",
+    "body": "Section 517.18 covers Category 2 (general care) bed locations and 517.19 covers Category 1 (critical care) bed locations. Both require at least two branch circuits, with at least one from the emergency system and at least one from the normal system, and both require receptacles that are listed hospital grade. Category 1 spaces have more receptacles and tighter circuit rules because the patient depends more heavily on powered equipment.",
+    "table": {
+     "h": [
+      "Item",
+      "Category 2 (517.18)",
+      "Category 1 (517.19)"
+     ],
+     "r": [
+      [
+       "Branch circuits",
+       "At least two: one or more from the emergency system and one or more from the normal system",
+       "At least two: one or more from the emergency system and one or more from the normal system. At least one emergency circuit supplies outlets only at that bed location"
+      ],
+      [
+       "Normal-system circuits",
+       "Originate in the same panelboard",
+       "Originate in a single panelboard"
+      ],
+      [
+       "Minimum receptacles",
+       "Four, single or duplex (two duplex count as four)",
+       "Fourteen, single or duplex (seven duplex count as fourteen)"
+      ],
+      [
+       "Receptacle type",
+       "Listed hospital grade and so identified",
+       "Listed hospital grade and so identified"
+      ],
+      [
+       "Receptacle grounding terminal",
+       "Connected to the insulated copper equipment grounding conductor",
+       "Connected to the reference grounding point by an insulated copper conductor"
+      ],
+      [
+       "Identification",
+       "Emergency system receptacles identified, showing panelboard and circuit number",
+       "Same"
+      ]
+     ]
+    },
+    "bullets": [
+     "Branch circuits serving patient bed locations may not be part of a multiwire branch circuit (517.18(A)).",
+     "Receptacles in pediatric rooms, bathrooms, playrooms and activity rooms of a pediatric ward must be listed tamper-resistant or use a listed tamper-resistant cover (517.18(C)).",
+     "The category assigned by the governing body, not the room name, decides which section applies, so confirm the designation before ordering material."
+    ],
+    "keypoint": "Every bed location needs power from two sources, so a loss of the normal source leaves some outlets energized; Category 1 adds more receptacles and an emergency circuit dedicated to that bed.",
+    "refs": [
+     "NEC 517.18",
+     "NEC 517.19"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Grounding in Patient Care Spaces: Section 517.13",
+    "body": "Section 517.13 requires branch circuits serving patient care spaces to have two equipment grounding paths: a metal raceway system or a cable with a metallic armor or sheath that qualifies as an equipment grounding conductor under 250.118, and also an insulated copper equipment grounding conductor sized under 250.122. The goal is redundancy, because a single loose raceway connection must not leave a patient exposed to a fault. The 2023 edition changed the opening wording from wiring 'in' patient care spaces to wiring 'serving' patient care spaces, so the requirement applies to the full circuit.",
+    "table": {
+     "h": [
+      "Rule",
+      "General wiring",
+      "Patient care spaces (517.13)"
+     ],
+     "r": [
+      [
+       "Metal raceway or armor as the grounding path",
+       "Permitted by 250.118 as the only equipment grounding conductor",
+       "Required, and must qualify under 250.118"
+      ],
+      [
+       "Wire-type equipment grounding conductor",
+       "Optional if the raceway qualifies",
+       "Required: insulated copper, sized per 250.122, installed in the raceway or cable with the circuit conductors"
+      ],
+      [
+       "Receptacle grounding terminals",
+       "Connected to the equipment grounding means",
+       "Connected to the insulated copper equipment grounding conductor"
+      ],
+      [
+       "Fixed equipment likely to become energized and subject to personal contact, over 100 V",
+       "Grounded by the equipment grounding means",
+       "Connected to the insulated copper equipment grounding conductor"
+      ]
+     ]
+    },
+    "bullets": [
+     "Under 517.13(A) the wiring method itself acts as the grounding path. Under 517.13(B) the equipment is connected to the insulated conductor.",
+     "In the 2023 edition a former exception was moved into 517.13(B): luminaires more than about 2.3 m (7 ft 6 in.) above the floor and switches outside the patient care vicinity may rely on the metal raceway path, so the insulated conductor is not required for those.",
+     "Panelboards: where normal and essential panelboards serve the same patient care vicinity, their equipment grounding terminal buses are connected together with an insulated continuous copper conductor of not less than 10 AWG (517.14)."
+    ],
+    "warning": "A continuous EMT or MC armor that qualifies under 250.118 does not remove the need for the insulated copper equipment grounding conductor. Omitting it is a violation of 517.13 even though the same installation would be acceptable in a dwelling.",
+    "keypoint": "Two paths are required: a qualifying metal raceway or armor, and an insulated copper equipment grounding conductor in the same raceway or cable.",
+    "refs": [
+     "NEC 517.13",
+     "NEC 250.118",
+     "NEC 250.122"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Worked Example: Sizing the Equipment Grounding Conductor",
+    "body": "The insulated copper equipment grounding conductor in a patient care circuit is sized from Table 250.122 by the rating of the overcurrent device that protects the circuit. If the circuit conductors are increased in size, for example for voltage drop, the equipment grounding conductor is increased in proportion under 250.122(B). The steps below show both cases using circular mil areas from Chapter 9, Table 8.",
+    "step_list": [
+     "<b>Given.</b> A 120 V, 20 A receptacle circuit to a Category 2 bed location, run in EMT, protected by a 20 A breaker, with 12 AWG copper circuit conductors.",
+     "<b>Step 1. First path.</b> The EMT qualifies as an equipment grounding path under 250.118, and 517.13(A) requires that path.",
+     "<b>Step 2. Second path.</b> Table 250.122 gives 12 AWG copper for a 20 A overcurrent device. Install a 12 AWG insulated copper equipment grounding conductor in the EMT with the circuit conductors.",
+     "<b>Step 3. Connections.</b> Connect the receptacle grounding terminal to the insulated 12 AWG conductor, not only to the box or yoke.",
+     "<b>Variation: upsized circuit conductors.</b> Suppose the run is long and the circuit conductors are increased from 12 AWG to 10 AWG for voltage drop.",
+     "<b>Step 4. Ratio.</b> 12 AWG is 6,530 circular mils and 10 AWG is 10,380 circular mils. 10,380 / 6,530 = 1.59.",
+     "<b>Step 5. Proportional EGC.</b> The minimum EGC area is the Table 250.122 size multiplied by the ratio: 6,530 x 1.59 = 10,380 circular mils, which is a 10 AWG copper EGC.",
+     "<b>Check.</b> The insulated copper EGC is now the same size as the upsized circuit conductors, which is a common practical outcome when a 20 A circuit is upsized by one size."
+    ],
+    "info": "If the same circuit is protected by a 30 A device, Table 250.122 gives 10 AWG copper. Always confirm values in the Code book you are using.",
+    "keypoint": "Size the EGC from Table 250.122 using the overcurrent device rating, and increase it proportionally if the circuit conductors are upsized.",
+    "refs": [
+     "NEC 250.122",
+     "NEC 250.118",
+     "NEC 517.13",
+     "NEC Chapter 9 Table 8"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "Lookup Exercise: Bed Location Requirements",
+    "body": "Build a one-page table of the branch circuit and receptacle requirements for a general care (Category 2) bed location and a critical care (Category 1) bed location. Work from the Code text, not from memory. The finished table should let a colleague lay out a bed location without opening the book.",
+    "step_list": [
+     "<b>Step 1.</b> Open Chapter 5, Article 517, Part II (Wiring and Protection). Find 517.18, General Care Spaces (Category 2), and 517.19, Critical Care Spaces (Category 1). In the 2023 text the headings use the category numbers.",
+     "<b>Step 2.</b> In each section, read paragraph (A), Branch Circuits. Record how many circuits are required, which source they come from, and where the normal-system circuits originate.",
+     "<b>Step 3.</b> Read paragraph (B), Receptacles. Record the minimum number, whether single or duplex units count, the listing, and the grounding terminal connection.",
+     "<b>Step 4.</b> Read the remaining paragraphs for special locations such as pediatric areas, and for any exceptions.",
+     "<b>Step 5.</b> Build the table, one row per requirement, one column per category. Add a column for the emergency system and normal system to show which circuits come from which.",
+     "<b>Step 6.</b> Compare with a partner and reconcile differences by reading the paragraph aloud."
+    ],
+    "table": {
+     "h": [
+      "Requirement",
+      "Category 2 (general care)",
+      "Category 1 (critical care)"
+     ],
+     "r": [
+      [
+       "Emergency system circuit",
+       "At least one",
+       "At least one, serving outlets only at that bed location"
+      ],
+      [
+       "Normal system circuit",
+       "At least one; circuits from one panelboard",
+       "At least one; circuits from a single panelboard"
+      ],
+      [
+       "Receptacles, minimum",
+       "4",
+       "14"
+      ],
+      [
+       "Listing",
+       "Hospital grade",
+       "Hospital grade"
+      ],
+      [
+       "Wiring and EGC",
+       "517.13: metal path plus insulated copper EGC",
+       "517.13: metal path plus insulated copper EGC; receptacle grounding terminals to the reference grounding point"
+      ]
+     ]
+    },
+    "keypoint": "A good table cites a section for every cell. If you cannot cite it, find it before you rely on it.",
+    "refs": [
+     "NEC 517.18",
+     "NEC 517.19",
+     "NEC 517.13"
+    ]
+   },
+   {
+    "tag": "M4·S6",
+    "title": "Lookup Exercise: Applying 517.13 to a Circuit",
+    "body": "Take one circuit from the Category 1 bed location you just tabulated and select the wiring method and conductors. This ties the bed location rules to the grounding rules and shows how the choices fit together. Use a partner to check the selection against the Code text.",
+    "step_list": [
+     "<b>Given.</b> ICU bed location, Category 1. Emergency-system circuit EM-1, 120 V, 20 A, serving receptacles only at this bed. Normal-system circuit N-3, 120 V, 20 A, from the normal panelboard.",
+     "<b>Step 1. Source.</b> EM-1 originates at the emergency system panelboard fed through its transfer switch. N-3 originates at the normal panelboard. Both circuits are dedicated 2-wire circuits (no multiwire branch circuit at a bed location).",
+     "<b>Step 2. Wiring method.</b> Choose a metal raceway system such as EMT with listed fittings, or a metal-clad cable whose armor qualifies as an equipment grounding path under 250.118. Either gives the first path required by 517.13(A).",
+     "<b>Step 3. Conductors.</b> 12 AWG copper phase and neutral conductors, sized for the 20 A device. Add a 12 AWG insulated copper EGC from Table 250.122 as the second path (517.13(B)).",
+     "<b>Step 4. Terminations.</b> Hospital-grade receptacles. Receptacle grounding terminal to the insulated EGC. Mark the emergency receptacles with the panelboard and circuit number.",
+     "<b>Step 5. Panelboard bonding.</b> If both panelboards serve the same patient care vicinity, connect their grounding terminal buses with an insulated continuous copper conductor of not less than 10 AWG (517.14).",
+     "<b>Step 6. Check.</b> Count the receptacles (14 minimum at a Category 1 bed), confirm the type is hospital grade, and confirm that at least one emergency circuit serves only this bed."
+    ],
+    "keypoint": "For each circuit, state the source (emergency or normal), the wiring method that qualifies under 250.118, the circuit conductors, and the insulated copper EGC.",
+    "refs": [
+     "NEC 517.13",
+     "NEC 517.19",
+     "NEC 250.118",
+     "NEC 250.122"
+    ]
+   },
+   {
+    "tag": "M4·S7",
+    "title": "Essential Electrical Systems: Structure and Sources",
+    "body": "An essential electrical system (EES) supplies designated loads in a hospital when normal power is lost. Section 517.30 sets the general rules, and the system has two parts: the emergency system, which is made up of the life safety branch and the critical branch, and the equipment system. The 2023 edition rewrote 517.30 so that the EES must have two or more independent sources or sets of sources, each able to supply the entire EES, with at least one on site.",
+    "def_grid": [
+     {
+      "term": "Life safety branch",
+      "body": "Loads that protect people during an emergency: egress lighting and exit signs, alarm and alerting systems, emergency communications, and similar items listed in 517.32."
+     },
+     {
+      "term": "Critical branch",
+      "body": "Loads related to patient care in critical areas and selected other loads, such as nurse call and task lighting with selected receptacles, listed in 517.33."
+     },
+     {
+      "term": "Equipment system",
+      "body": "Major equipment needed for patient care and basic operation, such as medical air and suction, smoke control and selected HVAC, connected by delayed automatic or manual means (517.34)."
+     },
+     {
+      "term": "Independence",
+      "body": "The life safety and critical branches are kept entirely independent of all other wiring and equipment and do not share raceways, boxes or cabinets with other wiring, except in the limited cases the section lists (517.30)."
+     }
+    ],
+    "bullets": [
+     "Utility service may not serve as both the normal and the alternate source unless another section permits it (517.35 and 517.45 are the cross-references).",
+     "The 2023 edition adds health care microgrids as a source and replaces 'battery systems' with 'energy storage systems.'",
+     "Wiring for the emergency system uses protected methods, such as nonflexible metal raceways, Type MI cable or Schedule 80 rigid PVC; Schedule 40 PVC and other listed methods need 2 in. of concrete encasement (517.30)."
+    ],
+    "keypoint": "The EES is the emergency system (life safety branch plus critical branch) and the equipment system, each kept independent from the others and from ordinary wiring.",
+    "refs": [
+     "NEC 517.30",
+     "NEC 517.31",
+     "NEC 517.32",
+     "NEC 517.33",
+     "NEC 517.34",
+     "NEC 517.35"
+    ]
+   },
+   {
+    "tag": "M4·S8",
+    "title": "Which Loads Go on Which Branch",
+    "body": "The Code lists the loads on each branch, and the lists should be read, not recalled. As a first sort, the life safety branch holds loads whose loss endangers occupants, the critical branch holds patient care loads that need power within seconds, and the equipment system holds large mechanical loads that can be delayed. Use the table and then try the matching drill.",
+    "table": {
+     "h": [
+      "Branch",
+      "Typical loads (see the section for the full list)",
+      "Section"
+     ],
+     "r": [
+      [
+       "Life safety",
+       "Illumination of means of egress; exit signs; alarm and alerting systems including fire alarm and nonflammable medical gas alarms; communications used to issue emergency instructions; task lighting and selected receptacles at the generator set and transfer switch locations; elevator cab lighting, control, communications and signals; automatic doors used for egress",
+       "517.32"
+      ],
+      [
+       "Critical",
+       "Nurse call; blood, bone and tissue banks; telephone equipment rooms; task lighting and selected receptacles in areas such as infant nurseries, medication preparation and pharmacy dispensing; selected power circuits in intensive care, coronary care, cardiac catheterization, angiographic, hemodialysis, emergency room treatment and postoperative recovery areas",
+       "517.33"
+      ],
+      [
+       "Equipment (delayed automatic)",
+       "Central suction and compressed air for medical and surgical use; sump pumps and equipment protecting major apparatus; smoke control and stair pressurization; kitchen hood systems that must run during a fire; ventilation for airborne infectious isolation rooms",
+       "517.34(A)"
+      ],
+      [
+       "Equipment (delayed automatic or manual)",
+       "Heating equipment for patient rooms and related spaces; elevator service for releasing passengers; other loads the section allows",
+       "517.34(B)"
+      ]
+     ]
+    },
+    "step_list": [
+     "<b>Exit sign in a corridor.</b> Life safety branch. It is egress illumination (517.32).",
+     "<b>Hospital fire alarm panel.</b> Life safety branch, as an alarm and alerting system.",
+     "<b>Nurse call system.</b> Critical branch (517.33).",
+     "<b>ICU patient bed receptacles on the emergency circuit.</b> Critical branch.",
+     "<b>Medical air compressor.</b> Equipment system, delayed automatic connection (517.34).",
+     "<b>Sump pump protecting an elevator pit.</b> Equipment system, delayed automatic connection."
+    ],
+    "keypoint": "Egress and alarm loads go to the life safety branch, selected patient care loads go to the critical branch, and major mechanical equipment goes to the equipment system.",
+    "refs": [
+     "NEC 517.32",
+     "NEC 517.33",
+     "NEC 517.34"
+    ]
+   },
+   {
+    "tag": "M4·S9",
+    "title": "Case Study: Transfer Switches and Restoration Times",
+    "body": "When normal power fails, the emergency system must be restored to operation within 10 seconds, and the equipment system is connected afterward by a delayed automatic or manual method. This timing is what lets the generator pick up the loads that protect people first and then add the large mechanical loads in steps. Transfer equipment has to be automatic and identified for emergency use, and the approach to counting transfer switches has limits.",
+    "table": {
+     "h": [
+      "Part of EES",
+      "Restoration",
+      "Typical transfer arrangement"
+     ],
+     "r": [
+      [
+       "Life safety branch",
+       "Automatically within 10 seconds of loss of the normal source",
+       "Dedicated automatic transfer switch (or switches)"
+      ],
+      [
+       "Critical branch",
+       "Automatically within 10 seconds",
+       "Separate automatic transfer switch (or switches)"
+      ],
+      [
+       "Equipment system",
+       "Delayed automatic connection after the emergency system is restored; some loads by delayed automatic or manual connection",
+       "Separate transfer switch with a load-shedding or sequencing arrangement"
+      ]
+     ]
+    },
+    "bullets": [
+     "The number of transfer switches is a design decision based on reliability, design and load. One transfer switch may serve one or more branches or systems where the maximum demand on the EES is 150 kVA or less; above that, more than one is used.",
+     "Transfer equipment for the life safety branch must also meet Article 700 requirements, including 700.5 on transfer equipment, except as amended by Article 517.",
+     "Exit sign lit in 8 seconds and a kitchen hood fan starting after 30 seconds are both acceptable: the first is within the 10-second limit and the second belongs to the delayed equipment system."
+    ],
+    "keypoint": "Life safety and critical branch loads are restored within 10 seconds; equipment system loads follow in a delayed sequence so the generator is not overloaded at pickup.",
+    "refs": [
+     "NEC 517.31",
+     "NEC 517.34",
+     "NEC 517.30",
+     "NEC 700.5"
+    ]
+   },
+   {
+    "tag": "M4·S10",
+    "title": "Case Study: Reading a One-Line Diagram",
+    "body": "A one-line diagram shows how the branches stay separate. Study it by following each branch from the source to its loads, identifying the transfer switch that serves it, and checking that no wiring is shared between the life safety branch, the critical branch, the equipment system and ordinary circuits. This case also shows why the delayed connection of the equipment system is useful.",
+    "step_list": [
+     "<b>The diagram (hypothetical).</b> A 600 kW generator and the utility feed three automatic transfer switches: ATS-LS (life safety branch, 40 kW), ATS-CR (critical branch, 160 kW) and ATS-EQ (equipment system, three load groups: medical air and suction 90 kW, smoke control and stair pressurization 60 kW, chiller 120 kW).",
+     "<b>Step 1. Identify each branch.</b> ATS-LS feeds the life safety panel (egress lighting, fire alarm). ATS-CR feeds the critical panel (nurse call, ICU receptacles). ATS-EQ feeds the equipment system.",
+     "<b>Step 2. Restoration within 10 seconds.</b> ATS-LS and ATS-CR both transfer immediately: 40 + 160 = 200 kW on the generator, which is 200 / 600 = 33 percent of its rating.",
+     "<b>Step 3. Delayed connection.</b> The equipment system loads are added in steps: medical air and suction: 200 + 90 = 290 kW (48 percent); smoke control and stair pressurization: 290 + 60 = 350 kW (58 percent); chiller: 350 + 120 = 470 kW (78 percent).",
+     "<b>Step 4. Check capacity.</b> Total 470 kW is within 600 kW. Motor starting current and the order of the steps would be checked in a real design; this example ignores them.",
+     "<b>Step 5. Check separation.</b> The one-line diagram shows each branch with its own feeder and panel. Wiring of the life safety and critical branches must not share raceways, boxes or cabinets with each other or with other wiring, except in the cases 517.30 permits.",
+     "<b>Discussion.</b> Separate switches mean that a failure in the equipment system transfer does not delay egress lighting, and a maintenance bypass for one branch does not de-energize another."
+    ],
+    "keypoint": "Separate transfer switches support the Code requirement to keep the branches independent: a fault in one branch does not take out the others, and loads can be added to the generator in steps.",
+    "refs": [
+     "NEC 517.30",
+     "NEC 517.31",
+     "NEC 517.34",
+     "NEC 700.5"
+    ]
+   },
+   {
+    "tag": "M4·S11",
+    "title": "Wet Procedure Locations: Section 517.20",
+    "body": "A wet procedure location is a space within a patient care space where a procedure is performed and where wet conditions are normal while patients are present, such as standing fluids on the floor or drenching of the work area. Routine housekeeping and incidental spillage do not make a space a wet procedure location. The health care facility designates these spaces, and 517.20 then requires protection against shock from the receptacles and fixed equipment in them.",
+    "table": {
+     "h": [
+      "Condition",
+      "Protection required for receptacles and fixed equipment"
+     ],
+     "r": [
+      [
+       "Interruption of power on a first ground fault can be tolerated",
+       "Ground-fault circuit-interrupter protection for personnel"
+      ],
+      [
+       "Interruption of power on a first ground fault cannot be tolerated",
+       "Served by an isolated power system, listed as isolated power equipment and installed in accordance with 517.160"
+      ],
+      [
+       "Routine mopping and incidental spills only",
+       "Not a wet procedure location; general rules apply"
+      ]
+     ]
+    },
+    "bullets": [
+     "The designation is a facility decision based on how the room is used. An interventional or surgical room may or may not be designated.",
+     "Isolated power system circuits are not grounded. Section 250.22 lists circuits in 517.20 and 517.160 among those that are not to be grounded.",
+     "Ask for the designation in writing before choosing between GFCI protection and an isolated power system."
+    ],
+    "keypoint": "In a wet procedure location use GFCI protection if power interruption on a first ground fault is tolerable; use an isolated power system if the interruption cannot be tolerated.",
+    "refs": [
+     "NEC 517.2",
+     "NEC 517.20",
+     "NEC 517.160",
+     "NEC 250.22"
+    ]
+   },
+   {
+    "tag": "M4·S12",
+    "title": "Isolated Power Systems and the Line Isolation Monitor: 517.160",
+    "body": "An isolated power system (IPS) is made up of an isolating transformer or equivalent, a line isolation monitor (LIM) and ungrounded circuit conductors. Because neither conductor is connected to ground, a first ground fault produces only a small current and the system keeps operating, so power is not lost during a procedure. The LIM watches the isolation and warns staff when the total hazard current reaches 5 milliamperes, so that the fault can be corrected before a second one occurs.",
+    "def_grid": [
+     {
+      "term": "Isolated power system",
+      "body": "Isolating transformer (or equivalent), line isolation monitor and ungrounded conductors. The voltage between conductors of each circuit may not exceed 600 V."
+     },
+     {
+      "term": "Line isolation monitor",
+      "body": "Measures the impedance to ground of both conductors. Green lamp lit when isolation is adequate; red lamp and audible alarm operate when total hazard current reaches 5 mA under nominal line voltage."
+     },
+     {
+      "term": "Total hazard current",
+      "body": "The current that would flow through a low impedance connected from either isolated conductor to ground, including both resistive and capacitive leakage."
+     },
+     {
+      "term": "Conductor identification",
+      "body": "Single-phase isolated conductors are orange and brown, each with a distinctive stripe that is not white, green or gray; the third conductor of a three-phase system is yellow with a stripe."
+     }
+    ],
+    "step_list": [
+     "<b>Simplified hazard current example (resistive leakage only).</b> Nominal 120 V isolated system. Hazard current = V / R.",
+     "<b>Threshold impedance.</b> 5 mA alarm: R = 120 / 0.005 = 24,000 ohms. A leak from one conductor to ground lower than 24 kilohms alarms.",
+     "<b>Case A.</b> A damaged cord gives 12,000 ohms: 120 / 12,000 = 0.010 A = 10 mA, above 5 mA. The red lamp and audible alarm operate. Power stays on.",
+     "<b>Case B.</b> A damp fixture gives 40,000 ohms: 120 / 40,000 = 0.003 A = 3 mA, below 5 mA. No alarm; the green lamp stays on.",
+     "<b>Second fault.</b> If a second fault connects the other conductor to ground, the result is a conductor-to-conductor fault through ground and the overcurrent device operates. The LIM alarm exists to prevent that situation."
+    ],
+    "info": "The Code also limits how sensitive the monitor is on the low side, so that it does not alarm for small fault hazard currents. Read 517.160 for the exact low-side value and any tolerance.",
+    "keypoint": "An ungrounded system rides through a first fault but must be monitored; the LIM green lamp shows adequate isolation and the red lamp and audible alarm operate at 5 mA of total hazard current.",
+    "refs": [
+     "NEC 517.160",
+     "NEC 517.20",
+     "NEC 250.22"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "The nominal voltage between conductors of each isolated power system circuit must not exceed:",
+    "opts": [
+     "1000 volts",
+     "250 volts",
+     "120 volts",
+     "600 volts"
+    ],
+    "correct": 3,
+    "explain": "Isolated circuits are limited to 600 volts between conductors. [NEC 517.160(A)(1)]"
+   },
+   {
+    "q": "According to the new 2023 NEC 517.6, reconditioned-equipment provisions do NOT apply to:",
+    "opts": [
+     "Patient care-related electrical equipment",
+     "Luminaires in corridors",
+     "Panelboards in the facility",
+     "Receptacles in business offices"
+    ],
+    "correct": 0,
+    "explain": "The 2020 NEC reconditioned-equipment rules applied broadly. The 2023 NEC added 517.6 stating that those provisions do not apply to patient care-related electrical equipment, which is regulated by other standards. Panelboards, luminaires and business-office receptacles are still covered by the NEC reconditioning rules. Look in 517.6. [NEC 517.6 (2023)]"
+   },
+   {
+    "q": "The grounding terminal of each receptacle at a Category 1 bed location must be connected to the reference grounding point by:",
+    "opts": [
+     "An insulated copper conductor sized per 250.122",
+     "An uninsulated aluminum wire",
+     "Nothing; a metal raceway is sufficient",
+     "The metal faceplate only"
+    ],
+    "correct": 0,
+    "explain": "Each receptacle's grounding terminal is connected to the reference grounding point by an insulated copper conductor. [NEC 517.19(B)]"
+   },
+   {
+    "q": "On a line isolation monitor, what indicates that the system is adequately isolated from ground?",
+    "opts": [
+     "A green signal lamp, conspicuously visible, remains lighted",
+     "A blue lamp",
+     "A flashing red lamp",
+     "An audible tone"
+    ],
+    "correct": 0,
+    "explain": "A green lamp remains lit when adequately isolated; an adjacent red lamp and audible signal energize at the threshold. [NEC 517.160(B)]"
+   },
+   {
+    "q": "At a bulk plant, what is the extent of the Class I, Division 1 area around the open end of an aboveground tank vent?",
+    "opts": [
+     "Within 10 ft of the open end",
+     "Within 18 in. of the open end",
+     "Within 25 ft of the open end",
+     "Within 3 ft of the open end, in all directions"
+    ],
+    "correct": 3,
+    "explain": "Table 515.3 classifies the area within 900 mm (3 ft) of the open end of the vent in all directions as Division 1. [NEC Table 515.3]"
+   },
+   {
+    "q": "Receptacles in pediatric rooms, bathrooms, playrooms, and activity rooms of a pediatric ward must be:",
+    "opts": [
+     "Isolated ground type",
+     "Only GFCI protected",
+     "Listed tamper-resistant or employ a listed tamper-resistant cover",
+     "Located at least 8 ft above the floor"
+    ],
+    "correct": 2,
+    "explain": "Pediatric locations require listed tamper-resistant receptacles or listed tamper-resistant covers. [NEC 517.18(C)]"
+   },
+   {
+    "q": "When ground-fault protection equipment under 517.17 is first installed, what must be done?",
+    "opts": [
+     "Each level must be performance tested to ensure compliance with the selectivity requirement",
+     "It must be tested annually only",
+     "Nothing; testing is optional",
+     "It must be replaced after one year"
+    ],
+    "correct": 0,
+    "explain": "When first installed, each level must be performance tested to verify selectivity. [NEC 517.17(D)]"
+   },
+   {
+    "q": "Which of the following is correctly assigned to the equipment system of a hospital rather than the life safety branch?",
+    "opts": [
+     "Exit signs",
+     "Elevator cab lighting",
+     "Fire alarm",
+     "Kitchen hood exhaust required to operate during a fire"
+    ],
+    "correct": 3,
+    "explain": "Exit signs, fire alarm, and elevator cab lighting are life safety branch loads; kitchen hood exhaust is an equipment system load. [NEC 517.32, 517.34]"
+   },
+   {
+    "q": "The 2026 NEC 512.6 adds prohibited locations for which process, drawn from NFPA 1?",
+    "opts": [
+     "Grain milling",
+     "Cannabis extraction",
+     "Paint spraying",
+     "Battery charging"
+    ],
+    "correct": 1,
+    "explain": "2026: 512.6 adds prohibited locations for cannabis extraction, taken from NFPA 1, 8.6.1.1.3. The summaries do not state the 2023 text. [NEC 512.6 (2026)]"
+   }
+  ]
+ },
+ {
+  "title": "2023 changes and review",
+  "time": "15 min",
+  "modMin": MOD_MINS[4],
+  "overview": [
+   "Rapid review of class, group and division definitions (500.5, 500.6)",
+   "Review of wiring methods and sealing for Class I, II and III and for garages and fuel dispensing",
+   "Review of the key health care requirements of Article 517",
+   "Changes in the 2023 edition for Articles 500 to 517",
+   "Lookup activity: comparing the 2023 and 2020 text of 501.15, 514.11, 517.13 and 517.160",
+   "Course wrap-up and how to keep your code knowledge current"
+  ],
+  "slides": [
+   {
+    "tag": "M5·S1",
+    "title": "Review: Class, Group and Division",
+    "body": "Use this slide as a rapid check. Cover the right-hand column, answer each prompt aloud, and cite the section that supports your answer. Citing the section is part of the answer, because plan review and inspection are decided by the text, not by memory.",
+    "table": {
+     "h": [
+      "Prompt",
+      "Answer",
+      "Section"
+     ],
+     "r": [
+      [
+       "Flammable gas or vapor",
+       "Class I",
+       "500.5"
+      ],
+      [
+       "Combustible dust",
+       "Class II",
+       "500.5"
+      ],
+      [
+       "Easily ignitible fibers or flyings",
+       "Class III (no groups)",
+       "500.5(D), 500.6"
+      ],
+      [
+       "Hazard present in normal operation",
+       "Division 1",
+       "500.5"
+      ],
+      [
+       "Hazard present only under abnormal conditions",
+       "Division 2",
+       "500.5"
+      ],
+      [
+       "Acetylene, hydrogen, ethylene, gasoline and propane",
+       "Groups A, B, C and D",
+       "500.6(A)"
+      ],
+      [
+       "Metal dust, coal dust, grain dust",
+       "Groups E, F and G",
+       "500.6(B)"
+      ],
+      [
+       "Zones for gas / for dust",
+       "0, 1, 2 (Article 505) / 20, 21, 22 (Article 506)",
+       "505.5, 506.5"
+      ],
+      [
+       "Surface temperature for T4",
+       "135 °C",
+       "Table 500.8(C)"
+      ],
+      [
+       "Where is the classification documented?",
+       "In documentation available to the AHJ and to designers, installers, inspectors and maintainers",
+       "500.4, 505.4"
+      ]
+     ]
+    },
+    "bullets": [
+     "<b>Scenario 1.</b> A battery room releases hydrogen only if ventilation fails. Class I, Group B, usually Division 2. Equipment must be marked for Group B, not only C and D.",
+     "<b>Scenario 2.</b> A coal handling area has dust clouds during normal conveying. Class II, Group F, Division 1. Threaded RMC, dusttight boxes with no open knockouts.",
+     "<b>Scenario 3.</b> A nameplate reads Class I, Division 1, Groups C and D, T4. It may be used in a Division 2 gasoline area (Group D, ignition temperature far above 135 °C), but not for hydrogen or a Class II dust."
+    ],
+    "keypoint": "If you can state the class, group, division and temperature class for a material and cite 500.5, 500.6 and 500.8, you can check any equipment nameplate.",
+    "refs": [
+     "NEC 500.5",
+     "NEC 500.6",
+     "NEC 500.8"
+    ]
+   },
+   {
+    "tag": "M5·S2",
+    "title": "Review: Wiring Methods, Seals, Garages and Fuel Dispensing",
+    "body": "The second review compares the wiring and sealing rules that you worked with in Modules 2 and 3. The pattern is the same in each article: a short list of heavy wiring methods in the most hazardous areas, a longer list where the hazard is less likely, and a rule that stops the hazard from traveling through the raceway system.",
+    "table": {
+     "h": [
+      "Topic",
+      "Key points to recall"
+     ],
+     "r": [
+      [
+       "Class I, Division 1 methods",
+       "Threaded RMC and threaded steel IMC, MI, restricted MC-HL; explosionproof boxes and fittings; five threads engaged"
+      ],
+      [
+       "Class I, Division 2 methods",
+       "Division 1 methods plus Type MC with listed fittings, enclosed gasketed busways and wireways, and others in 501.10(B); no EMT"
+      ],
+      [
+       "Seals (501.15)",
+       "18 in. from arcing-device enclosures; 2 in. or larger into splice-only enclosures in Division 1; at the boundary; compound 200 °F melting point, thickness at least the trade size and 5/8 in.; fill 25 percent; no splices"
+      ],
+      [
+       "Class II (502)",
+       "Dusttight; EMT only in Division 2; dust seals or 10 ft horizontal or 5 ft vertical raceway"
+      ],
+      [
+       "Class III (503)",
+       "Dusttight boxes without openings; EMT permitted; surface temperature limits of 165 °C and 120 °C"
+      ],
+      [
+       "Garages (511)",
+       "Division 2 to 18 in. above the floor in repair garages; 511.7 above; battery chargers outside the classified area; GFCI for receptacles used with tools"
+      ],
+      [
+       "Fuel dispensing (514)",
+       "Table 514.3(B)(1); seal as the first fitting out of the earth; 2 ft cover for nonmetallic underground runs with threaded metal at the end; emergency shutoff"
+      ]
+     ]
+    },
+    "keypoint": "In Class I, EMT is not permitted in either division; seals go at arcing-device enclosures and at the classified boundary; garages and fuel facilities follow Article 501 inside the classified area and 511.7 above it.",
+    "refs": [
+     "NEC 501.10",
+     "NEC 501.15",
+     "NEC 502.10",
+     "NEC 502.15",
+     "NEC 503.10",
+     "NEC 511.7",
+     "NEC 514.9"
+    ]
+   },
+   {
+    "tag": "M5·S3",
+    "title": "Review: Health Care Facilities",
+    "body": "The third review covers the numbers and rules of Article 517 that appear most often in plans and inspections. Read each row and say what it applies to, then cite the section. Remember that the facility's governing body assigns the space category, so the category drives the rest.",
+    "table": {
+     "h": [
+      "Topic",
+      "Key points to recall",
+      "Section"
+     ],
+     "r": [
+      [
+       "Categories",
+       "1 major injury or death; 2 minor injury; 3 discomfort; 4 no impact",
+       "517.2"
+      ],
+      [
+       "Patient care vicinity",
+       "6 ft beyond the bed location and 7 ft 6 in. above the floor",
+       "517.2"
+      ],
+      [
+       "Bed location circuits",
+       "At least two circuits, one emergency and one normal",
+       "517.18, 517.19"
+      ],
+      [
+       "Receptacles",
+       "4 at Category 2, 14 at Category 1, hospital grade",
+       "517.18(B), 517.19(B)"
+      ],
+      [
+       "Grounding",
+       "Metal raceway or qualifying armor, plus insulated copper EGC sized per 250.122",
+       "517.13"
+      ],
+      [
+       "Essential electrical system",
+       "Emergency system (life safety and critical branches) plus equipment system, kept independent",
+       "517.30 to 517.34"
+      ],
+      [
+       "Restoration",
+       "Emergency system within 10 seconds; equipment system delayed",
+       "517.31, 517.34"
+      ],
+      [
+       "Wet procedure locations",
+       "GFCI if interruption is tolerable; isolated power if not",
+       "517.20"
+      ],
+      [
+       "Isolated power",
+       "Ungrounded, 600 V maximum, LIM alarm at 5 mA total hazard current",
+       "517.160"
+      ]
+     ]
+    },
+    "bullets": [
+     "<b>Check 1.</b> A Category 1 bed location has seven duplex receptacles on the headwall. That is 14 receptacles, so the count is met, provided they are hospital grade.",
+     "<b>Check 2.</b> A circuit in continuous EMT has no wire-type equipment grounding conductor. It fails 517.13 even though the EMT qualifies under 250.118.",
+     "<b>Check 3.</b> Exit signs light in 8 seconds and a kitchen hood fan starts after 30 seconds. Both are acceptable: the life safety branch is within 10 seconds and the equipment system is delayed."
+    ],
+    "keypoint": "Category sets the receptacle count, grounding must be redundant, the emergency system returns within 10 seconds, and the LIM alarms at 5 mA.",
+    "refs": [
+     "NEC 517.2",
+     "NEC 517.13",
+     "NEC 517.18",
+     "NEC 517.19",
+     "NEC 517.30",
+     "NEC 517.31",
+     "NEC 517.160"
+    ]
+   },
+   {
+    "tag": "M5·S4",
+    "title": "2023 Changes and the Lookup Activity",
+    "body": "Published summaries of the 2023 NEC identify the changes below in Articles 500 to 517. Use them as a map, then confirm each one in the Code text. The activity at the end asks you to compare the 2023 and 2020 text of four sections and report what you find.",
+    "table": {
+     "h": [
+      "Article or section",
+      "Change reported in published 2023 summaries"
+     ],
+     "r": [
+      [
+       "500.1, 500.4",
+       "Scope split into covered and not covered; documentation now also covers unclassified areas that adjoin classified locations"
+      ],
+      [
+       "500.6, 500.7, 500.8",
+       "New provisions for Class III fibers and flyings; four added protection techniques (electrical resistance trace heating, impedance heating, enclosed-break, sealed) with suitability moved to Chapter 9 Table 13; 165 °C added for Class III; listed blanking elements allowed"
+      ],
+      [
+       "501.10, 501.141, 501.145",
+       "Type P cable added as a wiring method and a new flexible cable section for Division 2; receptacles and plugs must be listed for the location"
+      ],
+      [
+       "502.10, 502.15, 502.30",
+       "Corrosion-protected conduit systems in Division 1; sealing putty note became text; bonding of metal struts, angles and channels"
+      ],
+      [
+       "503.10, 505, 506",
+       "Type P cable in Class III; new protection techniques in 505.8; 506.30 now separates grounding and bonding"
+      ],
+      [
+       "511.2, 511.7, 511.8",
+       "New 511.2 and Table 511.2; added conduit and cable types in 511.7(A); underground exception moved into text"
+      ],
+      [
+       "512",
+       "New article for cannabis oil extraction equipment and systems"
+      ],
+      [
+       "514.4, 514.7",
+       "Revised to align with Article 511"
+      ],
+      [
+       "517 terminology, 517.6, 517.13",
+       "Category 1 to 4 terminology complete; new 517.6 on patient care-related reconditioned equipment; 517.13 now covers wiring serving patient care spaces and the luminaire and switch exception moved into 517.13(B)"
+      ],
+      [
+       "517.22, 517.30, 517.41, Part V",
+       "New demand factor reference to 220.48; rewritten sources of power (two or more independent sources, microgrids, energy storage); nursing home sources aligned; Part V retitled for diagnostic imaging and treatment equipment"
+      ]
+     ]
+    },
+    "step_list": [
+     "<b>Step 1.</b> Open the 2023 text of 501.15, 514.11, 517.13 and 517.160. If a 2020 edition is available, open the same sections.",
+     "<b>Step 2.</b> Read each section and compare paragraph structure, wording, numbers, exceptions and informational notes. Mark differences.",
+     "<b>Step 3.</b> Record each difference as: section, what changed, and whether it changes the installation requirement or only the wording.",
+     "<b>Step 4.</b> Discuss how each revision affects plan review: drawings, submittals, inspections and the questions an inspector might ask.",
+     "<b>Step 5.</b> Cite the Code section for every answer in the group question and answer session."
+    ],
+    "info": "The summaries consulted for this course report a change to 517.13 but do not report a change to 501.15, 514.11 or 517.160. Do not assume either way. Compare the text and report what you actually find.",
+    "keypoint": "The 2023 edition tightened documentation, expanded protection techniques and cable options in classified locations, aligned garage and fuel dispensing wiring rules, and finished the Category 1 to 4 terminology in Article 517.",
+    "refs": [
+     "NEC 500.4",
+     "NEC 501.15",
+     "NEC 514.11",
+     "NEC 517.13",
+     "NEC 517.160"
+    ]
+   },
+   {
+    "tag": "M5·S5",
+    "title": "Course Wrap-Up",
+    "body": "This course covered how the NEC 2023 handles the places where fire, explosion and patient safety drive the wiring rules. You classified locations by class, group and division or zone, selected wiring methods and seals, applied the garage and fuel dispensing rules, and worked through the grounding, essential electrical system and isolated power requirements for health care facilities.",
+    "bullets": [
+     "Hazardous locations: confirm the documented class, group, division or zone and temperature class before choosing equipment or wiring methods (500.4, 500.5, 500.6, 500.8).",
+     "Class I seals: arcing-device entries, large splice-only entries in Division 1, and the classified boundary (501.15), with the compound and fill rules.",
+     "Garages and fuel dispensing: classify from Article 511 and Table 514.3(B)(1), wire the classified area to Article 501, and seal and disconnect as 514.9 and 514.11 require.",
+     "Health care: category sets the circuits and receptacles; both a metal path and an insulated copper EGC are required (517.13); the emergency system returns in 10 seconds; wet procedure locations use GFCI or isolated power (517.20, 517.160).",
+     "Edition awareness: confirm which edition your jurisdiction has adopted and any local amendments, and read the section text for the edition that applies to your job.",
+     "Classification and system design belong to the owner and the engineer. When the field condition differs from the drawing, stop and ask before you install."
+    ],
+    "keypoint": "Classification and documentation come first, equipment marking must match the classification, and every seal, ground path and branch assignment is justified by a cited section.",
+    "refs": [
+     "NEC Article 500",
+     "NEC Article 501",
+     "NEC Article 511",
+     "NEC Article 514",
+     "NEC Article 517"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "At a bulk plant, which non-current-carrying metal parts of electrical equipment must be grounded?",
+    "opts": [
+     "Only parts in Division 1 locations",
+     "All metal raceways, cable armor, and non-current-carrying metal parts of fixed and portable equipment, regardless of voltage",
+     "Only portable equipment",
+     "Only parts operating at over 150 volts to ground"
+    ],
+    "correct": 1,
+    "explain": "Metal raceways, cable armor, and non-current-carrying metal parts of fixed and portable electrical equipment are grounded regardless of voltage. [NEC 515.16]"
+   },
+   {
+    "q": "A 125-volt, 20-ampere receptacle is installed in the commercial kitchen of a banquet hall. What protection is required?",
+    "opts": [
+     "A dedicated neutral only",
+     "AFCI protection only",
+     "GFCI protection for personnel",
+     "No special protection"
+    ],
+    "correct": 2,
+    "explain": "210.8(B) requires GFCI protection for personnel for receptacles in kitchens of nondwelling occupancies. [NEC 210.8(B)]"
+   },
+   {
+    "q": "Cotton lint (flyings) is classified in which dust zone group?",
+    "opts": [
+     "Group IIIB",
+     "Group IIA",
+     "Group IIIC",
+     "Group IIIA"
+    ],
+    "correct": 3,
+    "explain": "Combustible flyings are Group IIIA. [NEC 506.6]"
+   },
+   {
+    "q": "Aircraft batteries that are installed in an aircraft:",
+    "opts": [
+     "May be charged anywhere in the hangar",
+     "May be charged only with a 12-volt charger",
+     "May be charged only within 5 ft of the engine",
+     "Shall not be charged where installed in an aircraft located inside or partially inside a hangar"
+    ],
+    "correct": 3,
+    "explain": "Aircraft batteries must not be charged while installed in an aircraft that is inside or partially inside a hangar. [NEC 513.10(B)]"
+   },
+   {
+    "q": "Underground wiring in a hangar using rigid nonmetallic conduit buried with 2 ft of cover requires what at the point where the conduit emerges from the ground?",
+    "opts": [
+     "No change in wiring method",
+     "Flexible nonmetallic conduit",
+     "Threaded rigid metal conduit or threaded steel IMC for the last 2 ft of the run",
+     "EMT with a compression fitting"
+    ],
+    "correct": 2,
+    "explain": "Where rigid nonmetallic conduit is used underground, threaded RMC or threaded steel IMC is required for the last 600 mm (2 ft) to the equipment or point of emergence. [NEC 513.8]"
+   },
+   {
+    "q": "A contractor wants to install Zone 2 equipment marked only for Zone 2 in a Zone 1 location. The result is:",
+    "opts": [
+     "Not acceptable",
+     "Acceptable if gasketed",
+     "Acceptable if T6",
+     "Acceptable"
+    ],
+    "correct": 0,
+    "explain": "Zone 2 equipment is not suitable for Zone 1. [NEC 505.20(B)]"
+   },
+   {
+    "q": "Communications systems used to issue instructions during emergency conditions in a hospital are on the:",
+    "opts": [
+     "Equipment system",
+     "Life safety branch",
+     "Critical branch",
+     "Normal system"
+    ],
+    "correct": 1,
+    "explain": "Communications systems used to issue instructions during emergencies are life safety branch loads. [NEC 517.32(D)]"
+   },
+   {
+    "q": "A Zone 22 location is one in which ignitible concentrations of combustible dust are:",
+    "opts": [
+     "Not likely in normal operation and, if present, exist only for a short period",
+     "Occasional in normal operation",
+     "Continuously present",
+     "Always present in layers"
+    ],
+    "correct": 0,
+    "explain": "Zone 22 is where concentrations are not likely in normal operation or, if they occur, persist only briefly (or dust is confined in closed containers). [NEC 506.5(B)(3)]"
+   },
+   {
+    "q": "An isolated power system, as used in Article 517, is a system comprising:",
+    "opts": [
+     "An isolating transformer or equivalent, a line isolation monitor, and its ungrounded circuit conductors",
+     "A UPS and a battery",
+     "A generator and a transfer switch",
+     "A grounded wye service and a GFCI"
+    ],
+    "correct": 0,
+    "explain": "An isolated power system consists of an isolating transformer (or equivalent), a line isolation monitor, and ungrounded circuit conductors. [NEC 517.2]"
+   },
+   {
+    "q": "In an aircraft hangar, the entire hangar floor area that is not cut off or ventilated from the hangar, up to what height above the floor, is classified Class I, Division 2 or Zone 2?",
+    "opts": [
+     "18 in.",
+     "5 ft",
+     "3 ft",
+     "6 in."
+    ],
+    "correct": 0,
+    "explain": "The entire area of the hangar, including adjacent communicating areas not suitably cut off, is Class I, Division 2 or Zone 2 up to a level 450 mm (18 in.) above the floor. [NEC 513.3(B)]"
+   },
+   {
+    "q": "A nurses' station is not adequately lit by corridor luminaires. Under the critical branch list, what is supplied from the critical branch?",
+    "opts": [
+     "Nothing; nurses' stations are unclassified",
+     "Task illumination and selected receptacles",
+     "Only the call buttons",
+     "Only the exit sign"
+    ],
+    "correct": 1,
+    "explain": "Task illumination and selected receptacles in nurses' stations are critical branch loads unless adequately lighted by corridor luminaires. [NEC 517.33(A)]"
+   },
+   {
+    "q": "The 2026 NEC 500.8(G) now applies to optical equipment located:",
+    "opts": [
+     "Only inside Class I, Division 1 locations",
+     "Only in Zone 20",
+     "Only in cannabis extraction rooms",
+     "Outside a classified location when optical radiation extends into it"
+    ],
+    "correct": 3,
+    "explain": "2026: 500.8(G) applies to optical equipment outside a classified location when its radiation extends into the location. The summaries do not state the 2023 text. [NEC 500.8(G) (2026)]"
+   },
+   {
+    "q": "Dry-type transformers in Class III locations must be installed in:",
+    "opts": [
+     "Louvered cabinets",
+     "Ventilated enclosures",
+     "Open racks",
+     "Tight metal housings without ventilating openings, or in vaults"
+    ],
+    "correct": 3,
+    "explain": "Transformers without flammable liquid must be in vaults or tight metal housings without ventilating openings. [NEC 503.100]"
+   },
+   {
+    "q": "In an aircraft hangar, fixed lighting, switches, and other arc-producing equipment located less than 10 ft above the upper surface of wings and engine enclosures must be:",
+    "opts": [
+     "Supplied only by 24-volt circuits",
+     "Totally enclosed type or constructed to prevent escape of sparks or hot metal particles",
+     "Installed with an arc-fault circuit interrupter",
+     "Explosionproof Class I, Division 1 equipment"
+    ],
+    "correct": 1,
+    "explain": "Equipment less than 3.0 m (10 ft) above wings and engine enclosures that may produce arcs, sparks, or hot particles must be totally enclosed or constructed to prevent their escape. [NEC 513.7(B)]"
+   },
+   {
+    "q": "Which describes a Class I, Zone 2 location, such as the outer ring around a gasoline dispenser?",
+    "opts": [
+     "Combustible dust is present continuously",
+     "Ignitable concentrations are likely to exist under normal operating conditions",
+     "Ignitable concentrations are not likely to occur in normal operation and, if they do, will exist only for a short time",
+     "Ignitable concentrations are present continuously"
+    ],
+    "correct": 2,
+    "explain": "Zone 2 means not likely to occur in normal operation and, if it does, only for a short period. [NEC 505.5(B)(3)]"
+   },
+   {
+    "q": "Illumination of the means of egress in a hospital is supplied from which branch?",
+    "opts": [
+     "Normal system only",
+     "Equipment system",
+     "Life safety branch",
+     "Critical branch"
+    ],
+    "correct": 2,
+    "explain": "Illumination of means of egress is a life safety branch load. [NEC 517.32(A)]"
+   },
+   {
+    "q": "Central suction systems serving medical and surgical functions in a hospital are connected to:",
+    "opts": [
+     "Critical branch, 10 seconds",
+     "Normal system only",
+     "Equipment system, delayed automatic connection",
+     "Life safety branch"
+    ],
+    "correct": 2,
+    "explain": "Central suction systems serving medical and surgical functions are equipment system loads with delayed automatic connection. [NEC 517.34(A)]"
+   },
+   {
+    "q": "In 511.7 of the 2023 NEC, the term \"Class I\" was replaced with:",
+    "opts": [
+     "Division 2",
+     "Hazardous (Classified)",
+     "Zone 2",
+     "Flammable"
+    ],
+    "correct": 1,
+    "explain": "The 2020 NEC 511.7 referred to wiring and equipment above Class I locations. The 2023 NEC replaces \"Class I\" with \"Hazardous (Classified)\" and reorganizes the section into a list with requirements for listed fittings and equipment grounding conductors. [NEC 511.7 (2023)]"
+   },
+   {
+    "q": "The life safety and critical branches of the emergency system must be:",
+    "opts": [
+     "Run in the same raceway as normal circuits",
+     "Run on the same panelboard as normal loads",
+     "Kept entirely independent of all other wiring and equipment, not occupying the same raceway, box, or cabinet with other wiring",
+     "Combined into one cable"
+    ],
+    "correct": 2,
+    "explain": "These branches must be kept independent and may not enter the same raceway, box, or cabinet with other wiring, except in specific listed cases such as transfer switches. [NEC 517.30(C)]"
+   },
+   {
+    "q": "Which of these is permitted in a Class I, Division 2 location?",
+    "opts": [
+     "Open wiring on insulators",
+     "Enclosed gasketed busways",
+     "Open busways",
+     "Open ladder cable tray with unlisted cable"
+    ],
+    "correct": 1,
+    "explain": "Enclosed gasketed busways and wireways are listed Division 2 wiring methods. [NEC 501.10(B)(1)]"
+   },
+   {
+    "q": "A threaded rigid metal conduit passes completely through a Class I, Division 2 location with no unions, couplings, boxes or fittings in the Division 2 area, and has no fittings within 300 mm (12 in.) beyond each boundary, ending in unclassified locations. Is a seal required at the boundary?",
+    "opts": [
+     "No, it is exempt",
+     "Yes, at both boundaries",
+     "Only if over 30 m",
+     "Yes, at one end"
+    ],
+    "correct": 0,
+    "explain": "The exception exempts unbroken metal conduit passing through a Division 2 location with no fittings less than 300 mm beyond each boundary. [NEC 501.15(B)(2) Exception]"
+   },
+   {
+    "q": "A hydrogen process room (Zone 1) plans to install equipment marked Group IIA. What is the result?",
+    "opts": [
+     "Acceptable",
+     "Acceptable with a seal",
+     "Not acceptable; equipment must be marked IIC",
+     "Acceptable if T6"
+    ],
+    "correct": 2,
+    "explain": "Hydrogen is Group IIC; IIA equipment is suitable only for IIA atmospheres. [NEC 505.6, 505.9]"
+   },
+   {
+    "q": "Emergency system wiring is installed in Schedule 40 PVC conduit in a hospital. What additional protection is required?",
+    "opts": [
+     "Encasement in not less than 2 in. of concrete",
+     "A 12 in. steel sleeve",
+     "Encasement in 6 in. of sand",
+     "None"
+    ],
+    "correct": 0,
+    "explain": "Schedule 40 PVC, flexible nonmetallic or jacketed metallic raceways, or Type MC cable may be used where encased in not less than 50 mm (2 in.) of concrete. [NEC 517.30(C)]"
+   },
+   {
+    "q": "A hospital addition has a maximum essential electrical system demand of 400 kVA. How many transfer switches are needed?",
+    "opts": [
+     "Four, one per 100 kVA",
+     "None, because the generator output is protected by its own breaker",
+     "One is always sufficient",
+     "More than one; a single switch is permitted only up to 150 kVA demand"
+    ],
+    "correct": 3,
+    "explain": "Above 150 kVA, a single transfer switch may not serve all branches; the number is based on reliability, design, and load, so more than one is required. [NEC 517.30(B)]"
+   },
+   {
+    "q": "Receptacles and attachment plugs in Class I locations must:",
+    "opts": [
+     "Be nonlocking only",
+     "Have no grounding",
+     "Provide connection for the equipment grounding conductor of the flexible cord and be identified for the location",
+     "Be ordinary 2-wire devices"
+    ],
+    "correct": 2,
+    "explain": "They must provide for grounding and be identified for the Class I location. [NEC 501.145]"
+   },
+   {
+    "q": "Pendant luminaire stems in a Class I location longer than 300 mm (12 in.) require:",
+    "opts": [
+     "No special support",
+     "A chain at the lower end only",
+     "Set screws to be omitted",
+     "Permanent and effective bracing against lateral displacement within 300 mm of the lower end, or a flexible connection with a listed fitting"
+    ],
+    "correct": 3,
+    "explain": "Stems over 300 mm must be braced against lateral displacement or flexibly connected using a listed fitting within 300 mm of the supporting box. [NEC 501.130(A)(3)]"
+   },
+   {
+    "q": "A legally required standby system serves a community center assembly hall. Within what time must it supply power to the load after loss of normal power?",
+    "opts": [
+     "10 seconds",
+     "60 seconds",
+     "30 seconds",
+     "5 minutes"
+    ],
+    "correct": 1,
+    "explain": "701.12 requires legally required standby power to be available within 60 seconds. The 10-second limit applies to emergency systems. [NEC 701.12]"
+   },
+   {
+    "q": "What does the NEC require of aircraft electrical systems while the aircraft is in a hangar and undergoing maintenance, repair, or storage?",
+    "opts": [
+     "They must be bonded to a ground rod only",
+     "They shall be de-energized where possible",
+     "They must remain energized to prevent corrosion",
+     "They must be energized from a 24-volt source only"
+    ],
+    "correct": 1,
+    "explain": "Aircraft electrical systems should be de-energized while the aircraft is in the hangar for maintenance or repairs, when practicable. [NEC 513.10(A)]"
+   },
+   {
+    "q": "Wiring methods permitted in Class III, Division 2 locations are generally:",
+    "opts": [
+     "The same as in Class III, Division 1",
+     "Only MI cable",
+     "Any method in Chapter 3",
+     "Only explosionproof"
+    ],
+    "correct": 0,
+    "explain": "Division 2 wiring follows the Division 1 methods in 503.10(A). [NEC 503.10(B)]"
+   },
+   {
+    "q": "A threaded RMC run leaves a classified area at a fuel dispenser. An installer uses double locknuts at each box entry and relies on them for bonding. Is this acceptable?",
+    "opts": [
+     "No; bonding jumpers with proper fittings or other approved means must be used",
+     "Yes, if sealing compound is used",
+     "Yes, double locknuts are acceptable bonding",
+     "Yes, if the conduit is galvanized"
+    ],
+    "correct": 0,
+    "explain": "Locknut-bushing and double-locknut contacts must not be depended on for bonding in Class I locations. [NEC 501.30(A)]"
+   },
+   {
+    "q": "An enclosure marked explosionproof for Class I locations is best described as one that:",
+    "opts": [
+     "Keeps equipment surface temperature below 40 degrees C",
+     "Is gasketed to keep all vapors out",
+     "Is made only from cast aluminum",
+     "Withstands an internal explosion of the specified gas and prevents ignition of the surrounding atmosphere"
+    ],
+    "correct": 3,
+    "explain": "Explosionproof apparatus can withstand an explosion of a specified gas or vapor inside and prevent ignition outside by sparks, flashes, or explosion within it. [NEC 500.2]"
+   },
+   {
+    "q": "A conduit leaves a Class I, Division 2 location in a bulk plant and enters an unclassified area. Where may the seal be installed, and what limits fittings between the seal and the boundary?",
+    "opts": [
+     "No seal is required for Division 2 boundaries",
+     "On either side of the boundary, with no union, coupling, box, or fitting (except listed explosionproof reducers at the seal) between the seal and the boundary",
+     "Only on the unclassified side, with any fittings allowed",
+     "Only inside the classified area, with a pull box between the seal and boundary"
+    ],
+    "correct": 1,
+    "explain": "For Division 2 boundary seals, the seal may be on either side and the conduit between the seal and the point where it leaves the Division 2 location must contain no union, coupling, box, or fitting other than listed explosionproof reducers at the seal. [NEC 501.15(B)(2)]"
+   },
+   {
+    "q": "An installer proposes placing a conduit seal 24 in. from an explosionproof enclosure containing a circuit breaker in a Class I, Division 1 location. What is the issue?",
+    "opts": [
+     "The seal must be within 450 mm (18 in.) of the enclosure",
+     "The seal must be at least 36 in. away",
+     "24 in. is acceptable",
+     "Seals are never needed there"
+    ],
+    "correct": 0,
+    "explain": "The required seal must be placed within 450 mm (18 in.) of the enclosure. [NEC 501.15(A)(1)]"
+   },
+   {
+    "q": "Coronary care units have task illumination, selected receptacles, and power circuits supplied from the:",
+    "opts": [
+     "Equipment system, delayed automatic",
+     "Life safety branch",
+     "Normal system only",
+     "Critical branch"
+    ],
+    "correct": 3,
+    "explain": "Coronary care units are listed under the critical branch. [NEC 517.33(E)]"
+   },
+   {
+    "q": "Where liquidtight flexible metal conduit is used in a Class I location as permitted by 501.10(B), the grounding means must include:",
+    "opts": [
+     "No bonding if under 1.8 m",
+     "The conduit alone",
+     "A locknut only",
+     "A wire-type equipment bonding jumper"
+    ],
+    "correct": 3,
+    "explain": "Flexible metal conduit and LFMC in Class I locations require an equipment bonding jumper of the wire type in parallel, complying with 250.102. [NEC 501.30(B)]"
+   },
+   {
+    "q": "What flexible cord type is required in a Class I, Division 1 location?",
+    "opts": [
+     "Any SPT cord",
+     "Lamp cord",
+     "Extra-hard usage, listed, with an equipment grounding conductor",
+     "Hard-usage cord without ground"
+    ],
+    "correct": 2,
+    "explain": "Flexible cords in Class I locations must be listed for extra-hard usage and include a grounding conductor. [NEC 501.140(A)]"
+   },
+   {
+    "q": "In a Class I, Division 2 location, an induction motor without brushes, switching mechanisms, or integral resistance devices may be:",
+    "opts": [
+     "Of the open or nonexplosionproof type",
+     "Required to be explosionproof",
+     "Prohibited",
+     "Allowed only if totally enclosed"
+    ],
+    "correct": 0,
+    "explain": "Plain induction motors without sliding contacts, switching or resistance devices are permitted to be general-purpose in Division 2. [NEC 501.125(B)]"
+   },
+   {
+    "q": "May a union be installed between a Class I, Division 1 explosionproof enclosure containing arcing devices and its required conduit seal?",
+    "opts": [
+     "No, except a listed explosionproof reducer",
+     "Yes, if threaded",
+     "Yes, if the union is taped",
+     "Yes, any union"
+    ],
+    "correct": 0,
+    "explain": "No union, coupling, box, or fitting is allowed between the seal and enclosure except listed explosionproof reducers. [NEC 501.15(A)(1)]"
+   },
+   {
+    "q": "An outdoor gasoline dispenser is surrounded by pavement. A receptacle is to be installed 24 in. above grade on a wall 30 ft horizontally from the dispenser enclosure. Under the table for a typical outdoor dispenser, how is that receptacle location classified?",
+    "opts": [
+     "Class I, Division 1",
+     "Class I, Zone 0",
+     "Unclassified by the dispenser rules, because it is more than 18 in. above grade and more than 20 ft away",
+     "Class I, Division 2"
+    ],
+    "correct": 2,
+    "explain": "Classified areas at an outdoor dispenser are limited to the enclosure, the 18 in. envelope, and the area up to 18 in. above grade within 20 ft. A point 24 in. above grade and 30 ft away is outside all of them. [NEC Table 514.3(B)(1)]"
+   },
+   {
+    "q": "Hazardous location equipment marking must include which of the following?",
+    "opts": [
+     "Only the ampere rating",
+     "Only the voltage",
+     "Class, division or zone, group, and temperature class",
+     "Only the manufacturer name"
+    ],
+    "correct": 2,
+    "explain": "Equipment marking includes class, division or zone, group, and operating temperature or temperature class. [NEC 500.8(C)]"
+   },
+   {
+    "q": "Locations classified as zone-system hazardous locations must be:",
+    "opts": [
+     "Documented only for Zone 0",
+     "Properly documented and available to those authorized to design, install, inspect, or maintain",
+     "Noted by signs only",
+     "Left undocumented"
+    ],
+    "correct": 1,
+    "explain": "Classified areas must be documented. [NEC 505.4(A)]"
+   },
+   {
+    "q": "A location where ignitable gas concentrations are likely to exist under normal operation is classified as:",
+    "opts": [
+     "Zone 1",
+     "Zone 22",
+     "Zone 2",
+     "Zone 0"
+    ],
+    "correct": 0,
+    "explain": "Zone 1 is likely under normal operating conditions; Zone 0 is continuous; Zone 2 is not likely. [NEC 505.5(B)]"
+   },
+   {
+    "q": "Group I equipment in the zone system is intended for:",
+    "opts": [
+     "Gasoline",
+     "Mining applications (methane)",
+     "Hydrogen",
+     "Grain dust"
+    ],
+    "correct": 1,
+    "explain": "Group I is mining; surface industry equipment is Group II (IIA, IIB, IIC). [NEC 505.6]"
+   },
+   {
+    "q": "The patient care vicinity, within which receptacles and equipment of a patient bed location must meet special requirements, extends how far from the bed perimeter and how high above the floor?",
+    "opts": [
+     "6 ft beyond the bed perimeter, and at least 7 ft 6 in. above the floor",
+     "6 ft beyond the bed, and 10 ft above the floor",
+     "10 ft beyond the bed, and to the ceiling",
+     "3 ft beyond the bed, and 6 ft above the floor"
+    ],
+    "correct": 0,
+    "explain": "The patient vicinity is 1.8 m (6 ft) beyond the perimeter of the bed in its nominal location and extends vertically not less than 2.3 m (7 ft 6 in.) above the floor. [NEC 517.2]"
+   },
+   {
+    "q": "Which protection technique limits electrical and thermal energy so that it cannot ignite a specific hazardous atmosphere?",
+    "opts": [
+     "Explosionproof enclosure",
+     "Purging",
+     "Intrinsic safety",
+     "Oil immersion"
+    ],
+    "correct": 2,
+    "explain": "Intrinsic safety limits energy in circuits to a level below that needed to ignite the atmosphere. [NEC 500.7(E)]"
+   },
+   {
+    "q": "A Class I, Zone 1 location is one in which ignitible concentrations are likely to exist:",
+    "opts": [
+     "Under normal operating conditions",
+     "Only in rupture",
+     "Never",
+     "Continuously"
+    ],
+    "correct": 0,
+    "explain": "Zone 1 includes locations where ignitible concentrations are likely under normal operation, or frequently due to repair, maintenance, or leakage. [NEC 505.5(B)(2)]"
+   },
+   {
+    "q": "In Class II locations, bonding using only locknut-bushing or double-locknut contacts is:",
+    "opts": [
+     "Acceptable",
+     "Permitted for Division 2 only",
+     "Required",
+     "Not to be depended on"
+    ],
+    "correct": 3,
+    "explain": "Bonding jumpers with proper fittings must be used; locknuts and bushings are not relied upon. [NEC 502.30(A)]"
+   },
+   {
+    "q": "A coal-dust (Group F) Class II, Division 2 area needs a motor starter. The enclosure must be:",
+    "opts": [
+     "Open-type",
+     "Drip-proof",
+     "Dusttight",
+     "Ventilated"
+    ],
+    "correct": 2,
+    "explain": "Division 2 motor controllers require dusttight enclosures. [NEC 502.115(B)]"
+   },
+   {
+    "q": "Lacquer solvent vapors fall into which Class I group?",
+    "opts": [
+     "Group B",
+     "Group C",
+     "Group A",
+     "Group D"
+    ],
+    "correct": 3,
+    "explain": "Lacquer solvent vapors, acetone, alcohol, benzol, gasoline, naphtha are Group D. [NEC 500.6(A)]"
+   },
+   {
+    "q": "In Class III locations, locknut-bushing and double-locknut types for bonding are:",
+    "opts": [
+     "Not to be depended on",
+     "Required",
+     "Acceptable",
+     "Permitted in Division 2 only"
+    ],
+    "correct": 0,
+    "explain": "Bonding must use proper fittings or jumpers, not locknuts alone. [NEC 503.30(A)]"
+   },
+   {
+    "q": "Where flexibility is necessary in a Class I, Division 1 location, which of these is permitted?",
+    "opts": [
+     "Standard flexible metal conduit with ordinary connectors",
+     "Explosionproof flexible fittings or extra-hard-usage flexible cord with a grounding conductor and listed fittings",
+     "Liquidtight flexible nonmetallic conduit with standard fittings",
+     "Type NM cable"
+    ],
+    "correct": 1,
+    "explain": "Division 1 flexibility is by listed explosionproof flexible fittings or extra-hard-usage flexible cord terminated with listed fittings. [NEC 501.10(A)(2), 501.140]"
+   },
+   {
+    "q": "Elevator cab lighting, control, communications, and signal systems in a hospital are connected to:",
+    "opts": [
+     "Normal system only",
+     "Life safety branch",
+     "Critical branch",
+     "Equipment system, manual connection only"
+    ],
+    "correct": 1,
+    "explain": "Elevator cab lighting, control, communications, and signal systems are life safety branch loads. [NEC 517.32(F)]"
+   },
+   {
+    "q": "In a Class I, Division 1 location, where an electrical conduit enters an explosionproof enclosure containing a switch that may produce arcs, a conduit seal must be installed within what distance of the enclosure?",
+    "opts": [
+     "450 mm (18 in.)",
+     "900 mm (3 ft)",
+     "150 mm (6 in.)",
+     "1.2 m (4 ft)"
+    ],
+    "correct": 0,
+    "explain": "The seal must be within 450 mm (18 in.) of the enclosure, with no union, coupling, box, or fitting between the seal and the enclosure except a listed explosionproof reducer. [NEC 501.15(A)(1)]"
+   }
+  ],
+  "isFinal": true
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">Health Care Facilities and Hazardous Locations per NEC 2023</div>
+      <div class="cert-detail">4.0 CE hours · Journeyman & Master Electrician<br>2023 NEC (NFPA 70-2023)<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>

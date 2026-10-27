@@ -1,0 +1,3258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV, Solar and Energy Storage Systems per NEC 2023 | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">EV, Solar and Energy Storage Systems per NEC 2023</div>
+      <div class="pills">
+        <span class="pill red">4.0 CE hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">NEC Arts. 625, 690, 705, 706</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds (total 4 hours)
+const MOD_MINS = [70*60, 70*60, 70*60, 30*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "Electric vehicle power transfer systems",
+  "time": "70 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "Article 625 scope and the vocabulary of EVSE, couplers and cable management",
+   "Level 1, Level 2 and dc fast charging classified by equipment and circuit",
+   "Individual branch circuits and the 125 percent continuous-load rule (625.40 to 625.42)",
+   "Conductor sizing, termination temperatures and Table 310.16",
+   "Worked examples for 40 A and 48 A EVSE, including the equipment grounding conductor",
+   "Disconnecting means, ventilation and GFCI protection (625.43, 625.52, 625.54)",
+   "Automatic load management, the 220.57 EVSE load and bidirectional equipment",
+   "Common installation errors and a plan review sequence"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "Article 625 and the Vocabulary of EV Charging",
+    "body": "Article 625 covers the conductors and equipment that sit outside the vehicle and connect it to a supply of electricity, whether the purpose is charging, power export or bidirectional flow. Terms used in the article are defined in 625.2, and learning them precisely makes the rest of the article much easier to read. The key boundary is the vehicle inlet: everything on the premises side of it is the installer's responsibility, and the charger built into the vehicle is not.",
+    "def_grid": [
+     {
+      "term": "EVSE",
+      "body": "Electric vehicle supply equipment: the conductors, EV connectors, attachment plugs and other fittings and apparatus installed specifically to transfer energy between the premises wiring and the vehicle. This is the equipment the installer buys, mounts and wires."
+     },
+     {
+      "term": "EV connector and EV inlet",
+      "body": "The connector is the device on the EVSE cable that is inserted into the vehicle to establish the electrical connection and exchange information. The inlet is the matching receptacle on the vehicle."
+     },
+     {
+      "term": "EV coupler",
+      "body": "The mating pair formed when an EV connector is engaged with an EV inlet. The coupler is where the premises system ends and the vehicle begins."
+     },
+     {
+      "term": "Cable management system",
+      "body": "Equipment designed to control and organize unused lengths of the EVSE output cable, such as a retractor or hook system. Its presence affects how long the output cable is allowed to be."
+     }
+    ],
+    "bullets": [
+     "The onboard charger, battery and vehicle wiring are evaluated under vehicle standards, not the NEC. When a vehicle is said to have a 'Level 2 charger' it means the onboard charger can accept that supply, not that an EVSE is built into the car.",
+     "Article 625 applies to charging, to power export (vehicle powering a load) and to bidirectional current flow, so bidirectional equipment is within its scope.",
+     "Electrical materials, devices, fittings and associated equipment used in Article 625 installations must be listed or labeled."
+    ],
+    "keypoint": "EVSE is everything between the premises wiring and the vehicle inlet; the onboard charger is part of the vehicle and is not EVSE.",
+    "info": "Always read the definition in the edition you are working under. Definitions can be revised or relocated between code cycles, so confirm 625.2 and Article 100 in your adopted edition.",
+    "refs": [
+     "NEC Article 625",
+     "NEC 625.1",
+     "NEC 625.2"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "Level 1, Level 2 and DC Fast Charging by Equipment and Circuit",
+    "body": "The terms Level 1, Level 2 and DC fast charging are industry shorthand, mostly from SAE J1772 and vehicle literature, and the NEC does not use them to set requirements. What matters to the installer is the supply voltage, the EVSE current rating, whether the equipment is cord-and-plug or hardwired, and where the ac to dc conversion takes place. The listing label gives the maximum output current that every later calculation depends on.",
+    "table": {
+     "h": [
+      "Category",
+      "Typical supply to the equipment",
+      "Typical EVSE rating",
+      "Typical premises circuit and notes"
+     ],
+     "r": [
+      [
+       "Level 1 (ac)",
+       "120 volts, single phase",
+       "12 to 16 A (16 A x 120 V = 1,920 VA)",
+       "15 or 20 ampere branch circuit with a receptacle; often a portable, cord-and-plug unit. A 16 A unit needs a 20 A circuit because 16 x 1.25 = 20."
+      ],
+      [
+       "Level 2 (ac)",
+       "208 or 240 volts, single phase (208 volts three phase at some commercial sites)",
+       "16 to 80 A (80 A x 240 V = 19,200 VA)",
+       "Dedicated 20 A to 100 A circuit. Residential units are commonly 32, 40 or 48 A. Hardwired or plug-in (for example a 50 A receptacle)."
+      ],
+      [
+       "DC fast charging",
+       "Three-phase ac, often 480 volts, feeding a charger that converts to dc outside the vehicle",
+       "Tens to hundreds of kW",
+       "Feeder or branch circuit sized from the charger nameplate. At 480Y/277 volts the supply is more than 150 volts to ground, so a disconnecting means is required by 625.43."
+      ]
+     ]
+    },
+    "bullets": [
+     "The ratings in the table are typical only. Products vary, so always use the marked rating on the EVSE and its installation instructions.",
+     "Some EVSE has an adjustable current setting. The marked and instructed maximum, together with any restricted-access adjustment allowed by the listing, determines the load.",
+     "Output cable length is limited unless the EVSE includes a cable management system, so check the listing and the installation instructions before choosing a mounting location.",
+     "A dc fast charger is still supplied with ac. The 'dc' describes the conversion that happens inside the charger, so the supply-side wiring is designed like any other ac feeder or branch circuit."
+    ],
+    "keypoint": "Classify EVSE by supply voltage, rated current and connection method, then use the nameplate or listing label rating for every calculation.",
+    "warning": "Do not size a circuit from the product name or the vehicle's advertised charge rate. Size it from the listed EVSE rating on the label.",
+    "refs": [
+     "NEC Article 625",
+     "NEC 625.2",
+     "NEC 625.43"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "Individual Branch Circuits and the 125 Percent Rule",
+    "body": "Section 625.40 requires each outlet installed for EV charging to be supplied by an individual branch circuit that has no other outlets. Section 625.42 treats the EVSE load as a continuous load, and 625.41 requires the overcurrent device protecting a feeder or branch circuit supplying EVSE to be rated at least 125 percent of the maximum load of the EVSE. Sections 210.19(A)(1) and 210.20(A) express the same continuous-load idea for ordinary branch circuits, so the result is consistent wherever you read it.",
+    "def_grid": [
+     {
+      "term": "625.40 Branch circuit",
+      "body": "One EVSE outlet, one branch circuit, no other outlets on it. A 240 volt EV receptacle cannot also feed a second garage receptacle for tools."
+     },
+     {
+      "term": "625.41 Overcurrent protection",
+      "body": "The device protecting the feeder or branch circuit must be rated not less than 125 percent of the EVSE maximum load."
+     },
+     {
+      "term": "625.42 Rating",
+      "body": "EVSE is treated as a continuous load, which is why the 125 percent factor applies. The same section addresses automatic load management for service and feeder loads."
+     },
+     {
+      "term": "210.19(A)(1) and 210.20(A)",
+      "body": "General rules that size branch-circuit conductors and overcurrent devices for continuous loads at 125 percent, unless the assembly is listed for continuous operation at 100 percent of its rating."
+     }
+    ],
+    "bullets": [
+     "A continuous load is one where the maximum current is expected to continue for three hours or more (Article 100). EV charging commonly runs longer than that, so the NEC does not leave it to judgement.",
+     "Working backward: a 50 ampere breaker can supply a continuous EVSE load of no more than 50 / 1.25 = 40 amperes; a 20 ampere circuit supports 16 amperes; a 60 ampere circuit supports 48 amperes.",
+     "A 2023 exception to 625.40 allows certain small 120 volt EVSE units to share a circuit when operated in island mode. It is narrow and does not change the normal rule."
+    ],
+    "keypoint": "The branch circuit serves only the EVSE, and both the conductor ampacity and the overcurrent device must be at least 125 percent of the EVSE rating.",
+    "info": "Overcurrent device sizes come from the standard ratings in 240.6(A). The sequence used most often here is 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110 and 125 amperes.",
+    "refs": [
+     "NEC 625.40",
+     "NEC 625.41",
+     "NEC 625.42",
+     "NEC 210.19",
+     "NEC 210.20"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "Conductor Ampacity, Terminal Temperatures and Table 310.16",
+    "body": "The conductor must have an ampacity of at least 125 percent of the EVSE rating, and the ampacity you read from Table 310.16 is limited by the temperature rating of the terminations, not just the insulation. Section 110.14(C) generally limits circuits rated 100 amperes or less to the 60 degree C column unless the equipment is marked for higher temperature, and most listed EVSE terminals are marked for 75 degrees C. Always check the EVSE and the breaker or panel terminals before choosing a column.",
+    "table": {
+     "h": [
+      "EVSE rating",
+      "Minimum conductor and breaker basis",
+      "Standard breaker (240.6(A))",
+      "Smallest copper at 75 C (Table 310.16)"
+     ],
+     "r": [
+      [
+       "16 A",
+       "16 x 1.25 = 20 A",
+       "20 A",
+       "14 AWG (20 A)"
+      ],
+      [
+       "24 A",
+       "24 x 1.25 = 30 A",
+       "30 A",
+       "10 AWG (35 A)"
+      ],
+      [
+       "32 A",
+       "32 x 1.25 = 40 A",
+       "40 A",
+       "8 AWG (50 A)"
+      ],
+      [
+       "40 A",
+       "40 x 1.25 = 50 A",
+       "50 A",
+       "8 AWG (50 A)"
+      ],
+      [
+       "48 A",
+       "48 x 1.25 = 60 A",
+       "60 A",
+       "6 AWG (65 A)"
+      ],
+      [
+       "60 A",
+       "60 x 1.25 = 75 A",
+       "80 A",
+       "4 AWG (85 A)"
+      ],
+      [
+       "80 A",
+       "80 x 1.25 = 100 A",
+       "100 A",
+       "3 AWG (100 A)"
+      ]
+     ]
+    },
+    "bullets": [
+     "The copper 75 degree C ampacities used above are: 12 AWG 25 A, 10 AWG 35 A, 8 AWG 50 A, 6 AWG 65 A, 4 AWG 85 A and 3 AWG 100 A. The 60 degree C column is lower: 10 AWG is 30 A, 8 AWG is 40 A and 6 AWG is 55 A.",
+     "If a 40 ampere EVSE on a 50 ampere circuit had terminals rated only for 60 degrees C, 8 AWG (40 A at 60 degrees C) would be too small, and 6 AWG (55 A at 60 degrees C) would be the minimum.",
+     "For a 60 ampere EVSE the calculated 75 amperes is not a standard size, so the next standard rating of 80 amperes is used, with 4 AWG copper (85 A at 75 degrees C).",
+     "Small conductor limits in 240.4(D) still apply: 12 AWG copper is limited to a 20 ampere overcurrent device and 10 AWG copper to 30 amperes, which is why a 24 ampere EVSE on a 30 ampere circuit needs 10 AWG, not 12 AWG."
+    ],
+    "keypoint": "Pick the Table 310.16 column that the weakest termination allows, then confirm the ampacity is at least 125 percent of the EVSE rating.",
+    "info": "Temperature correction and conductor bundling adjustments apply if the installation conditions require them. For indoor residential runs they usually do not change the result, but a long run through a hot attic or a conduit with other circuits can.",
+    "refs": [
+     "NEC 110.14",
+     "NEC Table 310.16",
+     "NEC 240.4",
+     "NEC 240.6",
+     "NEC 625.41",
+     "NEC 625.42"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Worked Example 1: 40-Ampere EVSE Branch Circuit",
+    "body": "A homeowner is installing a hardwired, listed EVSE whose label shows a maximum output of 40 amperes at 240 volts, single phase. The task is to select the breaker, the conductors and the equipment grounding conductor. Work through the steps in order, writing the Code reference beside each one.",
+    "bullets": [
+     "Aluminum alternative: for a 50 A circuit, 6 AWG aluminum is rated 50 A at 75 degrees C and 8 AWG aluminum is only 40 A, so 6 AWG aluminum would be the minimum.",
+     "If the terminals were rated only for 60 degrees C, use the 60 degree C column and move up to 6 AWG copper (55 A)."
+    ],
+    "step_list": [
+     "Read the EVSE label: 40 A maximum output, 240 V single phase, listed. Load = 40 A x 240 V = 9,600 VA (9.6 kVA).",
+     "Apply the continuous-load rule (625.42, 625.41): 40 A x 1.25 = 50 A minimum for the overcurrent device and the conductor ampacity.",
+     "Select the overcurrent device from 240.6(A): 50 A is a standard size, so a 50 ampere, 2-pole breaker is selected.",
+     "Check the terminations (110.14(C)): the EVSE and the breaker are both marked for 75 degrees C, so the 75 degree C column of Table 310.16 may be used.",
+     "Select the conductor from Table 310.16, copper, 75 degree C column: 10 AWG = 35 A (too small), 8 AWG = 50 A (not less than the 50 A required, acceptable). Use 8 AWG copper.",
+     "Select the equipment grounding conductor from Table 250.122 using the 50 A overcurrent device: 10 AWG copper.",
+     "Final check: the 50 A breaker is 125 percent of 40 A, the conductor ampacity of 50 A equals the 50 A required, and the EVSE is listed for the circuit. Disconnect rule (625.43): a 40 A, 240 V single-phase unit is not above 60 A or 150 V to ground, so Article 625 does not require a separate disconnect."
+    ],
+    "keypoint": "A 40 ampere EVSE requires a 50 ampere breaker, 8 AWG copper (75 degrees C) and a 10 AWG copper equipment grounding conductor.",
+    "refs": [
+     "NEC 625.41",
+     "NEC 625.42",
+     "NEC 240.6",
+     "NEC Table 310.16",
+     "NEC 110.14",
+     "NEC Table 250.122"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Worked Example 2: 48-Ampere EVSE Branch Circuit",
+    "body": "Now repeat the procedure for a hardwired, listed EVSE marked 48 amperes at 240 volts. The numbers land exactly on standard values, which makes this a good model for checking your method: calculate, round up to a standard device, then choose a conductor that is not smaller than the calculation. The unit is also not above 60 amperes and is only 120 volts to ground, so the disconnect rule is checked at the end.",
+    "table": {
+     "h": [
+      "Quantity",
+      "40 A EVSE",
+      "48 A EVSE"
+     ],
+     "r": [
+      [
+       "Load at 240 V",
+       "9,600 VA",
+       "11,520 VA"
+      ],
+      [
+       "Required ampacity and OCPD (x 1.25)",
+       "50 A",
+       "60 A"
+      ],
+      [
+       "Breaker",
+       "50 A",
+       "60 A"
+      ],
+      [
+       "Copper at 75 C",
+       "8 AWG (50 A)",
+       "6 AWG (65 A)"
+      ],
+      [
+       "EGC, Table 250.122",
+       "10 AWG Cu",
+       "10 AWG Cu"
+      ],
+      [
+       "Separate disconnect (625.43)",
+       "Not required",
+       "Not required"
+      ]
+     ]
+    },
+    "step_list": [
+     "Read the label: 48 A maximum, 240 V single phase. Load = 48 x 240 = 11,520 VA (11.52 kVA).",
+     "Continuous-load rule: 48 A x 1.25 = 60 A.",
+     "Overcurrent device: 60 A is a standard size in 240.6(A). Select a 60 ampere, 2-pole breaker.",
+     "Conductor, copper, 75 degree C column of Table 310.16: 8 AWG = 50 A (too small, less than 60 A), 6 AWG = 65 A (adequate). Use 6 AWG copper.",
+     "Protection check: the 65 A conductor ampacity is above the 60 A breaker rating, so the conductor is protected by the breaker.",
+     "Equipment grounding conductor, Table 250.122, 60 A overcurrent device: 10 AWG copper.",
+     "Disconnect check (625.43): the unit is not rated more than 60 A and is 120 V to ground (240 V single phase), so Article 625 does not require a separate EVSE disconnect. A utility, the AHJ or the manufacturer may still require one.",
+     "Aluminum alternative: 4 AWG aluminum at 75 degrees C is 65 A (6 AWG aluminum is only 50 A), so 4 AWG aluminum would be the minimum."
+    ],
+    "keypoint": "A 48 ampere EVSE requires a 60 ampere breaker, 6 AWG copper at 75 degrees C (65 A) and a 10 AWG copper equipment grounding conductor.",
+    "warning": "A 48 ampere EVSE on an 8 AWG circuit is a common field error. 8 AWG copper is 50 A at 75 degrees C and cannot carry the 60 A required.",
+    "refs": [
+     "NEC 625.41",
+     "NEC 625.42",
+     "NEC 240.6",
+     "NEC Table 310.16",
+     "NEC Table 250.122",
+     "NEC 625.43"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "Disconnecting Means: Section 625.43",
+    "body": "Section 625.43 requires a readily accessible disconnecting means for EVSE rated more than 60 amperes or more than 150 volts to ground, and the disconnect must be capable of being locked in the open position. Either threshold is enough by itself. This surprises many installers because a 240 volt single-phase circuit is only 120 volts to ground, while a 480Y/277 volt three-phase circuit is 277 volts to ground and always crosses the 150 volt line.",
+    "table": {
+     "h": [
+      "EVSE",
+      "Current",
+      "Voltage to ground",
+      "Disconnect required by 625.43?"
+     ],
+     "r": [
+      [
+       "240 V single phase",
+       "48 A",
+       "120 V",
+       "No (not more than 60 A, not more than 150 V)"
+      ],
+      [
+       "240 V single phase",
+       "60 A",
+       "120 V",
+       "No (60 A is not more than 60 A)"
+      ],
+      [
+       "240 V single phase",
+       "80 A",
+       "120 V",
+       "Yes (more than 60 A)"
+      ],
+      [
+       "208Y/120 V three phase",
+       "60 A",
+       "120 V",
+       "No"
+      ],
+      [
+       "208Y/120 V three phase",
+       "100 A",
+       "120 V",
+       "Yes (more than 60 A)"
+      ],
+      [
+       "480Y/277 V three phase",
+       "40 A",
+       "277 V",
+       "Yes (more than 150 V to ground)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Readily accessible means capable of being reached quickly without climbing over or removing obstacles. Verify the disconnect will not end up behind a parked vehicle or a locked gate.",
+     "Lockable in the open position means the provision for locking must remain in place with or without the lock installed. See 110.25 for the general rules on lockable disconnecting means.",
+     "A circuit breaker in a panelboard may serve as the disconnect if it meets the location and lockability requirements.",
+     "Article 625 sets the minimum. The AHJ, the utility, the manufacturer's instructions or a commercial site design may call for a disconnect even when 625.43 does not."
+    ],
+    "keypoint": "A disconnect is required if the EVSE is rated more than 60 A or more than 150 V to ground, and it must be lockable in the open position.",
+    "info": "Count from the unit label and the supply system, not from the breaker alone. A 60 ampere breaker feeding a 40 ampere EVSE is judged as a 40 ampere EVSE for the 60 ampere threshold.",
+    "refs": [
+     "NEC 625.43",
+     "NEC 110.25"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Ventilation and GFCI Protection: 625.52, 625.54 and 210.8",
+    "body": "Ventilation under 625.52 is tied to the equipment: the installer checks the listing and marking of the EVSE and the vehicle to decide whether the article requires ventilation, rather than assuming it is always needed. GFCI protection for personnel under 625.54 applies to receptacles installed for EV charging, and 210.8 may apply at the same time because it is driven by the location, such as a dwelling garage. A hardwired EVSE carries its own listed personnel protection system, so the question is different for receptacle outlets than for hardwired units.",
+    "table": {
+     "h": [
+      "Scenario",
+      "GFCI answer",
+      "Why"
+     ],
+     "r": [
+      [
+       "240 V, 50 A receptacle for EV charging in an attached dwelling garage",
+       "Required",
+       "625.54 covers EV charging receptacles, and 210.8 covers 125 to 250 V receptacles in dwelling garages"
+      ],
+      [
+       "125 V, 20 A receptacle in a commercial parking garage used to plug in a portable EVSE",
+       "Required",
+       "625.54 applies to the EV charging receptacle, and 210.8 covers garages in other than dwelling units"
+      ],
+      [
+       "125 V, 15 A receptacle on the outside wall of a dwelling used for EV charging",
+       "Required",
+       "625.54 and the outdoor receptacle rule in 210.8"
+      ],
+      [
+       "Hardwired, listed EVSE",
+       "Protection is built into the equipment",
+       "625.22 requires EVSE to incorporate a listed personnel protection system; follow the manufacturer's instructions on any additional GFCI breaker"
+      ]
+     ]
+    },
+    "bullets": [
+     "To decide on ventilation, read the EVSE and vehicle markings. The section is written around equipment that is listed or marked as requiring ventilation, so most installations with modern vehicles need no special ventilation.",
+     "If both 625.54 and 210.8 apply to the same receptacle there is no conflict: provide GFCI protection once, with a GFCI receptacle or breaker acceptable to the listing of the EVSE.",
+     "A GFCI breaker feeding a hardwired EVSE can cause nuisance tripping if the EVSE already has its own protection. Follow the installation instructions rather than adding protection by habit."
+    ],
+    "keypoint": "Ventilation follows the listing and marking; GFCI protection applies to EV charging receptacles under 625.54 and can also be required by the location rules in 210.8.",
+    "warning": "Do not skip GFCI protection because the receptacle is 240 volts. The 210.8 rule for dwelling garages covers 125 through 250 volt receptacles.",
+    "refs": [
+     "NEC 625.52",
+     "NEC 625.54",
+     "NEC 625.22",
+     "NEC 210.8"
+    ]
+   },
+   {
+    "tag": "M1·S9",
+    "title": "Automatic Load Management and the 220.57 EVSE Load",
+    "body": "An automatic load management system (ALMS) monitors the electrical system and limits the current drawn by EVSE so that the total stays under a set value. When one is installed, the EVSE load used for the service or feeder calculation is the maximum load the load management system permits, which can allow more chargers on an existing service without upsizing it. Where no managed limit applies, 220.57 sets the EVSE load for service and feeder calculations at 7,200 watts or the nameplate rating, whichever is larger.",
+    "table": {
+     "h": [
+      "EVSE nameplate",
+      "Load used under 220.57",
+      "Reason"
+     ],
+     "r": [
+      [
+       "12 A at 120 V (1,440 VA)",
+       "7,200 VA",
+       "Nameplate is below 7,200"
+      ],
+      [
+       "20 A at 240 V (4,800 VA)",
+       "7,200 VA",
+       "Nameplate is below 7,200"
+      ],
+      [
+       "32 A at 240 V (7,680 VA)",
+       "7,680 VA",
+       "Nameplate exceeds 7,200"
+      ],
+      [
+       "40 A at 240 V (9,600 VA)",
+       "9,600 VA",
+       "Nameplate exceeds 7,200"
+      ],
+      [
+       "Two units: 9,600 VA and 3,840 VA",
+       "16,800 VA",
+       "9,600 + 7,200 (the smaller unit is raised to 7,200)"
+      ],
+      [
+       "Five units, 7,200 VA each",
+       "36,000 VA",
+       "5 x 7,200"
+      ]
+     ]
+    },
+    "step_list": [
+     "Two 48 A, 240 V EVSE units, no load management: each is 48 x 240 = 11,520 VA, above 7,200 VA, so the nameplate governs. Total = 2 x 11,520 = 23,040 VA, or 96 A at 240 V.",
+     "The same two units on an ALMS that holds the pair to 48 A in total: the load for the calculation is the managed maximum, 48 x 240 = 11,520 VA, or 48 A.",
+     "Difference: 11,520 VA (48 A) of service capacity is not needed because of the managed limit."
+    ],
+    "keypoint": "With load management, the calculation uses the managed maximum; without it, 220.57 requires the larger of 7,200 watts or the nameplate rating for each EVSE.",
+    "info": "Load management affects the service and feeder calculation. The branch circuit for each EVSE is still sized from that unit's rating (125 percent) unless the product listing allows a reduced setting. Read the ALMS listing and the EVSE instructions; the 2023 edition also added Article 750 for energy management systems.",
+    "refs": [
+     "NEC 625.42",
+     "NEC 220.57",
+     "NEC Article 750"
+    ]
+   },
+   {
+    "tag": "M1·S10",
+    "title": "Bidirectional EVSE and Power Control Systems",
+    "body": "Bidirectional EVSE can export power from the vehicle to the premises or the grid, which changes how the installation is treated. Section 625.48 requires equipment with a power export function to be listed and marked as suitable for that purpose, and 625.46 requires that energy cannot be back-fed through EVSE on loss of the primary source unless the bidirectional rules permit it. Which other article applies depends on how the system runs: isolated standby operation brings in Article 702, and operation in parallel with the utility brings in Article 705.",
+    "table": {
+     "h": [
+      "Use of the vehicle as a source",
+      "Article that applies with 625",
+      "What to confirm"
+     ],
+     "r": [
+      [
+       "Backup power to selected loads during an outage, isolated from the utility by transfer equipment",
+       "Article 702 (optional standby systems)",
+       "Transfer equipment, load calculation or load management for the standby source, and listing for export"
+      ],
+      [
+       "Operation in parallel with the utility, exporting or exchanging energy",
+       "Article 705 (interconnected power sources)",
+       "Point of connection (705.11 or 705.12), source disconnect, overcurrent protection, labeling and utility interconnection approval"
+      ],
+      [
+       "Charging only, no export",
+       "Article 625 alone",
+       "Normal EVSE branch-circuit rules"
+      ]
+     ]
+    },
+    "bullets": [
+     "Control systems limit the current on busbars and conductors so that combined source output does not exceed equipment ratings. In the 2023 edition 705.13 is titled Energy Management Systems, replacing the earlier title Power Control Systems, with fewer requirements.",
+     "Document the listing and settings of any control or energy management system for the inspector, because busbar and conductor calculations may rely on the setting rather than on the rating of the source.",
+     "Bidirectional charging must also meet the utility's interconnection requirements, which are separate from the Code. Contact the utility before design is finished."
+    ],
+    "keypoint": "Bidirectional EVSE must be listed and marked for export, and the use case decides whether Article 702 (standby) or Article 705 (interconnected) applies.",
+    "info": "Treat the vehicle as a power source when it can export. The same disconnect, labeling and overcurrent rules that apply to a PV inverter then apply to it.",
+    "refs": [
+     "NEC 625.46",
+     "NEC 625.48",
+     "NEC Article 702",
+     "NEC Article 705",
+     "NEC 705.13"
+    ]
+   },
+   {
+    "tag": "M1·S11",
+    "title": "Common EV Installation Errors: Sizing and Circuits",
+    "body": "Most failed EV charger inspections trace back to a small number of mistakes that are easy to catch if you know where to look. This lesson lists the sizing and circuit errors, why each is wrong and which section resolves it on a plan review. Use the table as a template for your own review checklist.",
+    "table": {
+     "h": [
+      "Error found on the plan",
+      "Why it is wrong",
+      "Section that resolves it"
+     ],
+     "r": [
+      [
+       "40 A EVSE on a 40 A breaker",
+       "40 x 1.25 = 50, so the breaker must be at least 50 A. A 40 A breaker can supply only 32 A of continuous load (80 percent)",
+       "625.41, 210.20(A)"
+      ],
+      [
+       "50 A EVSE on a 50 A breaker",
+       "50 x 1.25 = 62.5 A, so the next standard size is 70 A with conductors rated at least 62.5 A",
+       "625.41, 240.6(A)"
+      ],
+      [
+       "EV receptacle and garage tool receptacle on one circuit",
+       "Each EV outlet must be an individual branch circuit with no other outlets",
+       "625.40"
+      ],
+      [
+       "12 AWG conductors on a 30 A breaker for a 24 A EVSE",
+       "12 AWG copper is limited to a 20 A device; 10 AWG is the minimum",
+       "240.4(D), Table 310.16"
+      ],
+      [
+       "8 AWG copper for a 48 A EVSE",
+       "8 AWG at 75 C is 50 A; 60 A is required so 6 AWG is the minimum",
+       "Table 310.16, 625.41"
+      ],
+      [
+       "Conductor chosen from the 75 C column when the terminals are 60 C",
+       "The termination limits the usable ampacity",
+       "110.14(C)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Check the arithmetic for each row yourself. For the second row: 50 A x 1.25 = 62.5 A, and the next standard size above that is 70 A.",
+     "In every case the question to ask is the same: what is the marked EVSE rating, and does the circuit meet 125 percent of it at the breaker and at the conductor?"
+    ],
+    "keypoint": "Most EVSE errors come from forgetting that charging is a continuous load or from using the wrong table column; the fix is always a specific section.",
+    "refs": [
+     "NEC 625.40",
+     "NEC 625.41",
+     "NEC 625.42",
+     "NEC 240.4",
+     "NEC Table 310.16",
+     "NEC 110.14",
+     "NEC 210.20"
+    ]
+   },
+   {
+    "tag": "M1·S12",
+    "title": "Common EV Installation Errors: Protection, Disconnects and Plan Review",
+    "body": "The second group of errors concerns protection and equipment placement: missing GFCI protection, missing disconnects, EVSE mounted at the wrong height, and installation instructions ignored. A plan review works best as a repeatable sequence in which each question is tied to a Code reference. Work through the sequence on a real set of drawings, naming the section that resolves each item you find.",
+    "step_list": [
+     "Find the EVSE rating on the drawing or product data sheet. If the plans only say 'EV charger', ask for the listed rating (listing label, Article 625 listing requirement).",
+     "Confirm each EVSE outlet has its own branch circuit with no other outlets. (625.40)",
+     "Check the breaker rating is at least 125 percent of the EVSE rating. (625.41, 625.42)",
+     "Check conductor size against Table 310.16 using the termination temperature column, with the 240.4(D) limits for small conductors. (110.14(C), 240.4(D))",
+     "Check the equipment grounding conductor against Table 250.122. (250.122)",
+     "Is the EVSE rated more than 60 A or more than 150 V to ground? If so, show a lockable disconnect. (625.43)",
+     "Is the EVSE a receptacle outlet or in a location covered by 210.8? If so, show GFCI protection. (625.54, 210.8)",
+     "Check the mounting height of the coupling means. Indoors it is generally not less than 18 inches and not more than 4 feet above the floor, and outdoors not less than 24 inches above grade, unless the equipment is listed and marked otherwise. (625.50)",
+     "Check the service or feeder calculation: 7,200 VA or nameplate, whichever is larger, per EVSE, or the managed maximum if load management is used. (220.57, 625.42)"
+    ],
+    "keypoint": "A good plan review asks the same questions in the same order and ties each answer to a section number.",
+    "warning": "Writing 'per code' next to an item does not satisfy a reviewer. Give the section number so the inspector can check the same line you did.",
+    "refs": [
+     "NEC 625.43",
+     "NEC 625.54",
+     "NEC 625.50",
+     "NEC 625.40",
+     "NEC 625.41",
+     "NEC 220.57"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A 240-volt single-phase EVSE operates continuously at 40 amperes. What is the load in kilovolt-amperes?",
+    "opts": [
+     "9.6 kVA",
+     "12.0 kVA",
+     "6.4 kVA",
+     "7.2 kVA"
+    ],
+    "correct": 0,
+    "explain": "40 A x 240 V = 9,600 VA = 9.6 kVA. [NEC 625.42, 220.57]"
+   },
+   {
+    "q": "What is the maximum continuous EVSE load on a 100-ampere branch circuit?",
+    "opts": [
+     "80 A",
+     "90 A",
+     "100 A",
+     "70 A"
+    ],
+    "correct": 0,
+    "explain": "80 percent of 100 A is 80 A. [NEC 625.42]"
+   },
+   {
+    "q": "A dwelling has a 120-volt, 12-ampere EVSE (1,440 VA nameplate). The EVSE load in the service calculation is:",
+    "opts": [
+     "3,600 VA",
+     "1,440 VA",
+     "1,800 VA",
+     "7,200 VA"
+    ],
+    "correct": 3,
+    "explain": "The load is 7,200 W or the nameplate rating, whichever is larger, so 7,200 VA. [NEC 220.57]"
+   },
+   {
+    "q": "For indoor locations, the maximum height of the EVSE coupling means above the floor (unless listed and marked otherwise) is:",
+    "opts": [
+     "5 ft",
+     "6 ft",
+     "3 ft",
+     "4 ft"
+    ],
+    "correct": 3,
+    "explain": "The upper limit indoors is 1.2 m (4 ft). [NEC 625.50]"
+   },
+   {
+    "q": "A 125-volt, 20-ampere receptacle in a commercial (nondwelling) parking garage used for plugging in a portable EVSE must have:",
+    "opts": [
+     "AFCI protection",
+     "GFCI protection for personnel",
+     "A twist-lock configuration only",
+     "No special protection"
+    ],
+    "correct": 1,
+    "explain": "Section 210.8(B) requires GFCI protection for 125-250 volt receptacles in garages, service bays, and similar areas other than vehicle exhibition halls and showrooms. [NEC 210.8(B)]"
+   },
+   {
+    "q": "Which vehicle type is included in the Article 625 definition of electric vehicle?",
+    "opts": [
+     "Industrial forklifts",
+     "Neighborhood electric vehicles for on-road use",
+     "Airline ground support equipment",
+     "Electric boats"
+    ],
+    "correct": 1,
+    "explain": "On-road automotive-type vehicles, including neighborhood electric vehicles, are included. Industrial trucks, ground support equipment, and boats are not. [NEC 625.2]"
+   },
+   {
+    "q": "An EV with a bidirectional charger is used to back up a dwelling during an outage through transfer equipment, isolated from the utility. Which article's rules apply to the optional standby arrangement?",
+    "opts": [
+     "Article 702",
+     "Article 701",
+     "Article 708",
+     "Article 700"
+    ],
+    "correct": 0,
+    "explain": "Optional standby systems are covered by Article 702. Where interconnected with the utility, Article 705 applies. [NEC 625.48, 702]"
+   },
+   {
+    "q": "A 16-ampere EVSE on a 20 A circuit may use which minimum copper conductor size (75 degrees C terminations)?",
+    "opts": [
+     "10 AWG",
+     "8 AWG",
+     "12 AWG",
+     "14 AWG"
+    ],
+    "correct": 2,
+    "explain": "The conductor must carry 20 A and 12 AWG copper is rated 20 A (60 degrees C) or 25 A (75 degrees C). 14 AWG is limited to 15 A overcurrent protection. [NEC 210.19(A)(1), 240.4(D)]"
+   },
+   {
+    "q": "EVSE is listed and marked for mounting with its coupling means lower than the 18-inch indoor minimum. Is this permitted?",
+    "opts": [
+     "Yes, because the height requirement applies unless specifically listed and marked for the location",
+     "No, never",
+     "Yes, in all installations",
+     "Only for commercial occupancies"
+    ],
+    "correct": 0,
+    "explain": "The height requirement applies unless the equipment is specifically listed and marked for the location. [NEC 625.50]"
+   }
+  ]
+ },
+ {
+  "title": "Solar photovoltaic systems",
+  "time": "70 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "Maximum PV circuit voltage and cold-temperature correction (690.7)",
+   "Maximum current and the two 125 percent factors (690.8)",
+   "Worked examples: source circuit conductor, overcurrent device and parallel strings",
+   "Rapid shutdown boundaries, voltage limits, initiation devices and exceptions (690.12)",
+   "PV disconnecting means and isolating devices (690.13, 690.15)",
+   "Code book lookup of PV grounding and wiring methods (690.41 to 690.47, 690.31)",
+   "Markings and labels, and how to cite them (690.56, 705.10, 690.12(D))"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "PV Circuit Voltage: Section 690.7",
+    "body": "Section 690.7 requires the maximum voltage of PV system dc circuits to be calculated, because module open-circuit voltage rises as temperature falls and the circuit can be much higher than the nameplate sum. The calculation uses the sum of the series-connected module open-circuit voltages, corrected for the lowest expected ambient temperature using either the manufacturer's temperature coefficient or the correction table in 690.7. The result must not exceed the rating of the conductors, the equipment and the inverter input, and it must stay within the limit set for the type of building.",
+    "bullets": [
+     "The table method in 690.7 uses factors tied to the lowest temperature range and applies to crystalline and multicrystalline silicon modules. Use the coefficient method when the module data sheet gives one, and for other module types.",
+     "Cold weather produces the highest voltage. In a cold-climate state like Wisconsin the cold-temperature correction is large, so adding even one more module to a string can push the circuit over an equipment rating.",
+     "A 2023 addition requires the highest maximum dc voltage to be marked at a specified location, so that others working on the system know the highest voltage that can be present."
+    ],
+    "step_list": [
+     "Module data (illustrative): Voc = 49.5 V at standard test conditions (25 C), 10 modules in series, temperature coefficient of Voc = -0.27 percent per degree C.",
+     "Lowest expected ambient temperature (illustrative design value): -25 C. A real design uses the lowest expected temperature for the project location, not this example.",
+     "Temperature difference from 25 C: 25 - (-25) = 50 degrees C.",
+     "Correction factor: 1 + (50 x 0.0027) = 1.135.",
+     "String Voc at STC: 10 x 49.5 = 495 V.",
+     "Maximum voltage = 495 x 1.135 = 561.8 V (about 562 V).",
+     "Compare: the result must not exceed the voltage rating of the modules, wiring, disconnects, fuses and the inverter maximum dc input, and must stay within the limit that 690.7 sets for the occupancy."
+    ],
+    "keypoint": "Calculate maximum PV voltage from module Voc corrected for the lowest expected temperature, and compare it with every component in the circuit.",
+    "warning": "Never size a string from nameplate Voc alone. At the lowest expected temperature the voltage is higher, and exceeding equipment ratings is both a Code violation and a safety hazard.",
+    "refs": [
+     "NEC 690.7"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "Maximum Current and Conductor Ampacity: Section 690.8",
+    "body": "Section 690.8(A) sets the maximum current of a PV source circuit as the sum of the parallel module rated short-circuit currents multiplied by 125 percent. Section 690.8(B) then requires conductors to be sized for the greater of two tests: 125 percent of that maximum current with no adjustment or correction factors, or the maximum current after temperature correction and conduit fill adjustment have been applied. The two 125 percent factors have different purposes and are applied separately.",
+    "table": {
+     "h": [
+      "Case",
+      "Sum of Isc",
+      "690.8(A) maximum current",
+      "Minimum ampacity, test 1 (x 1.25 again)"
+     ],
+     "r": [
+      [
+       "1 string, Isc 9.2 A",
+       "9.2 A",
+       "11.50 A",
+       "14.38 A"
+      ],
+      [
+       "1 string, Isc 10 A",
+       "10 A",
+       "12.5 A",
+       "15.62 A"
+      ],
+      [
+       "2 parallel strings, Isc 11 A each",
+       "22 A",
+       "27.5 A",
+       "34.38 A"
+      ],
+      [
+       "4 parallel strings, Isc 10 A each",
+       "40 A",
+       "50 A",
+       "62.5 A"
+      ]
+     ]
+    },
+    "def_grid": [
+     {
+      "term": "First 125 percent (690.8(A))",
+      "body": "Applies to the sum of module Isc values. It reflects that sunlight can exceed the 1,000 W per square meter used for the nameplate, so real current can exceed Isc."
+     },
+     {
+      "term": "Second 125 percent (690.8(B))",
+      "body": "Treats the maximum current as continuous (three hours or more). Conductors must have this ampacity before any temperature or conduit fill factors are applied."
+     },
+     {
+      "term": "Alternative test (690.8(B))",
+      "body": "The conductor ampacity after correction and adjustment must be at least the 690.8(A) maximum current. Both tests are run and the larger requirement controls."
+     },
+     {
+      "term": "Combining circuits",
+      "body": "For parallel strings the Isc values are added first, then multiplied by 125 percent. Do not multiply each string and then add again."
+     }
+    ],
+    "keypoint": "The first 125 percent accounts for irradiance higher than standard test conditions; the second accounts for continuous operation, and they are multiplied together for the conductor test.",
+    "warning": "Applying 125 percent twice to find 690.8(A), or only once when sizing conductors, is the most common calculation error on this topic. Keep the two steps labeled.",
+    "refs": [
+     "NEC 690.8",
+     "NEC 690.9",
+     "NEC 310.15",
+     "NEC Table 310.16"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Worked Example 1: Maximum Current and Minimum Ampacity",
+    "body": "A single PV source circuit consists of one string of series-connected modules. Each module has a short-circuit current of 11 amperes on its nameplate. The goal is to find the maximum circuit current and the minimum conductor ampacity before correction and adjustment.",
+    "bullets": [
+     "Round up when comparing to a conductor ampacity and never round down: 17.19 A means 'at least 17.19 A'.",
+     "The 13.75 A figure also feeds the overcurrent device sizing in 690.9(B), covered next. Keep it written on your worksheet."
+    ],
+    "step_list": [
+     "Read the module nameplate: Isc = 11 A. One string in series, so the sum of parallel Isc values is 11 A.",
+     "690.8(A) maximum circuit current: 11 x 1.25 = 13.75 A.",
+     "690.8(B) minimum conductor ampacity before adjustment: 13.75 x 1.25 = 17.1875, which rounds to 17.19 A.",
+     "Second test: after temperature correction and conduit fill adjustment, the conductor ampacity must be at least 13.75 A. This is checked on the next slide.",
+     "Compare to a conductor: 12 AWG with a 90 degree C ampacity of 30 A (Table 310.16, 90 C column) is above 17.19 A and passes test 1."
+    ],
+    "keypoint": "For an 11 A Isc string the maximum circuit current is 13.75 A and the minimum conductor ampacity before adjustment is 17.19 A.",
+    "refs": [
+     "NEC 690.8",
+     "NEC 690.9"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Worked Example 2: Overcurrent Device and Adjustment Check",
+    "body": "Section 690.9(B) requires an overcurrent device in a PV circuit to be rated at least 125 percent of the 690.8(A) maximum current, unless the assembly is listed for continuous operation at 100 percent of its rating. The conductor is then checked a second time using the temperature correction and conduit fill adjustment from 310.15, with the 90 degree C ampacity compared to the 690.8(A) maximum current. In this example the conduit is on a hot roof and carries four current-carrying conductors.",
+    "step_list": [
+     "Maximum circuit current (from the previous slide): 13.75 A.",
+     "690.9(B) minimum device rating: 13.75 x 1.25 = 17.19 A. The next standard size in 240.6(A) is 20 A, so a 20 ampere dc-rated fuse or breaker listed for PV use is selected.",
+     "Conductor test 1 (no adjustment): 12 AWG, 90 C column = 30 A, which is not less than 17.19 A. Passes.",
+     "Conductor test 2: assume a design ambient of 56 to 60 C in the 90 C column (correction factor 0.71) and 4 current-carrying conductors in the raceway (adjustment factor 0.8). Adjusted ampacity = 30 x 0.71 x 0.8 = 17.04 A.",
+     "Compare: 17.04 A is not less than the 690.8(A) maximum current of 13.75 A. Passes.",
+     "Device versus conductor: the adjusted 17.04 A is slightly below the 20 A device. The next-size-up allowance in 240.4(B) covers a conductor whose ampacity does not match a standard device rating, so the 12 AWG conductor is accepted.",
+     "Conclusion: 12 AWG PV wire in the raceway with a 20 A device passes. Document the assumed ambient and the number of current-carrying conductors on the worksheet."
+    ],
+    "keypoint": "Size the device at 125 percent of 13.75 A (17.19 A, so 20 A), then prove the conductor passes after correction and adjustment.",
+    "warning": "Where an assembly is listed for continuous operation at 100 percent of its rating, the manufacturer's instructions control. Do not apply the 100 percent exception unless the marking says so.",
+    "info": "The ambient and conductor count above are assumptions for the example. Use the temperature your jurisdiction and the installation conditions require, including any adder for conduit exposed to sunlight on a roof, and count the current-carrying conductors actually in the raceway.",
+    "refs": [
+     "NEC 690.8",
+     "NEC 690.9",
+     "NEC 310.15",
+     "NEC 240.6",
+     "NEC 240.4",
+     "NEC Table 310.16"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "Worked Example 3: How Many Parallel Strings Need Overcurrent Protection",
+    "body": "Overcurrent protection is not always required on PV source circuits, and 690.9(A) allows it to be omitted when no source can deliver more fault current than the conductors and modules can withstand. The deciding factor is the current that the other parallel strings can drive backward into a faulted string. Each additional string adds 11 amperes of potential backfeed in this example.",
+    "table": {
+     "h": [
+      "Parallel strings",
+      "Backfeed into one faulted string ((n - 1) x 11 A)",
+      "Module maximum series fuse rating (assumed)",
+      "Overcurrent protection per string"
+     ],
+     "r": [
+      [
+       "1",
+       "0 A",
+       "20 A",
+       "Not required by backfeed"
+      ],
+      [
+       "2",
+       "11 A",
+       "20 A",
+       "Not required by backfeed"
+      ],
+      [
+       "3",
+       "22 A",
+       "20 A",
+       "Required"
+      ],
+      [
+       "4",
+       "33 A",
+       "20 A",
+       "Required"
+      ]
+     ]
+    },
+    "step_list": [
+     "Assume module Isc = 11 A and a module maximum series fuse rating of 20 A from the data sheet.",
+     "With 2 strings in parallel the faulted string sees (2 - 1) x 11 = 11 A from the other string, which is below 20 A, so protection is not required by this test. The conductors must also carry that current, which a 12 AWG 90 C conductor does.",
+     "With 3 strings the faulted string sees (3 - 1) x 11 = 22 A, above the 20 A module rating, so overcurrent protection is required on each string.",
+     "Output circuit for 3 strings: sum of Isc = 3 x 11 = 33 A; 690.8(A) maximum current = 33 x 1.25 = 41.25 A; 690.9(B) device = 41.25 x 1.25 = 51.56 A, so the next standard device is 60 A."
+    ],
+    "keypoint": "Protection is required when the backfeed from the other parallel strings exceeds the conductor ampacity or the module maximum series fuse rating.",
+    "info": "Where overcurrent devices are used, they must be listed for PV dc service and rated for the circuit voltage. Verify the number of parallel strings against the module maximum series fuse rating on the data sheet.",
+    "refs": [
+     "NEC 690.9",
+     "NEC 690.8",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "Rapid Shutdown: Purpose and Boundaries",
+    "body": "Section 690.12 requires PV system circuits on or in buildings to include a rapid shutdown function that reduces shock hazard for firefighters. The requirement controls the conductors that run outside the array boundary and more than a short distance inside a building, and it separately addresses the conductors inside the array. The 2023 edition kept the structure of the 2020 edition while adding exceptions and moving the labeling requirements into 690.12.",
+    "def_grid": [
+     {
+      "term": "Array boundary",
+      "body": "A plane segment 1 foot (305 mm) from the array in all directions. Conductors beyond it are controlled conductors."
+     },
+     {
+      "term": "Controlled conductors",
+      "body": "PV circuit conductors outside the array boundary, or more than 1 meter (3 feet) from the point of entry inside a building."
+     },
+     {
+      "term": "Exemptions (2023)",
+      "body": "PV equipment and circuits on non-enclosed detached structures, such as carports, are exempt (Exception No. 2), and circuits of arrays not attached to a building that terminate on the building exterior and are installed per 230.6 are not treated as controlled conductors."
+     },
+     {
+      "term": "Initiation",
+      "body": "A defined action, such as opening the service disconnect or operating a switch, that starts the shutdown. The function must operate when initiated."
+     }
+    ],
+    "bullets": [
+     "A detached garage with an enclosed roof is a building and is not exempt. A carport with no walls, a trellis or a shade structure usually is.",
+     "On the roof plan, mark the array boundary 1 foot around the modules, then mark every conductor segment as inside the boundary, outside the boundary, or in the building. Classify each segment before choosing equipment.",
+     "Rapid shutdown reduces shock hazard to firefighters. It does not make a PV system safe for installers or maintenance personnel to work on without further isolation."
+    ],
+    "keypoint": "Rapid shutdown applies to PV circuits on or in buildings and works by controlling conductors outside the array boundary and more than 3 feet inside the building.",
+    "warning": "An enclosed detached building is not exempt from rapid shutdown just because it is not the main house. Only the specific non-enclosed structures in the exception are exempt.",
+    "refs": [
+     "NEC 690.12"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Rapid Shutdown: Voltage Limits, Initiation Devices and Marking",
+    "body": "Controlled conductors outside the array boundary must be reduced to 30 volts and 240 volt-amperes within 30 seconds of initiating rapid shutdown. Inside the array boundary, the 2023 edition points to equipment evaluated under the listed PV hazard control approach (UL 3741) rather than the older option that relied on a fixed set of module-level methods. For one- and two-family dwellings, an initiation device must be readily accessible and located outside the building so emergency responders can operate it.",
+    "table": {
+     "h": [
+      "Item",
+      "Requirement (paraphrased)"
+     ],
+     "r": [
+      [
+       "Outside array boundary",
+       "Controlled conductors limited to 30 V and 240 VA within 30 seconds of initiation"
+      ],
+      [
+       "Inside array boundary",
+       "Meet the limits through equipment listed for the purpose, such as a listed PV hazard control system, following the manufacturer's instructions and listing"
+      ],
+      [
+       "Initiation device",
+       "Service disconnecting means, PV system disconnecting means, or a readily accessible switch that clearly shows on or off; on one- and two-family dwellings the device must be at a readily accessible location outside the building"
+      ],
+      [
+       "Equipment",
+       "Rapid shutdown equipment is installed according to its listing and manufacturer's instructions"
+      ],
+      [
+       "Marking (690.12(D))",
+       "Label or placard at the locations required, with wording, color and size per the section; the requirements were in 690.56(C) before the 2023 edition"
+      ]
+     ]
+    },
+    "bullets": [
+     "Field practice: on a roof plan, trace each string from the last module to the point of entry. Where the circuit crosses the array boundary a rapid shutdown device (often at the module or optimizer) must be present, and the mix of equipment must be listed as a compatible set.",
+     "Rapid shutdown equipment and inverters are matched sets. Do not mix manufacturers unless the listing allows it.",
+     "A rapid shutdown initiation device must be readily accessible: not locked away, not behind other equipment, and for a one- or two-family dwelling not inside the building."
+    ],
+    "keypoint": "Outside the array boundary the limit is 30 V and 240 VA within 30 seconds; the initiation device and the required marking must be easy for responders to find.",
+    "refs": [
+     "NEC 690.12",
+     "NEC 690.56",
+     "NEC 705.10"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Disconnecting Means for PV Systems: 690.13 and 690.15",
+    "body": "Section 690.13 requires a PV system disconnecting means that isolates the PV system conductors from all other wiring systems, including power systems, energy storage systems and utilization equipment. It must be readily accessible, permanently marked, show whether it is open or closed, and be rated for the maximum circuit current, available fault current and voltage at its terminals. Section 690.15 covers isolating devices, which let you disconnect equipment such as inverters, batteries, charge controllers and fuses for service.",
+    "def_grid": [
+     {
+      "term": "PV system disconnecting means (690.13)",
+      "body": "A manually operable switch or circuit breaker, externally operable without exposing the operator to live parts, with a clear on/off indication, that disconnects PV system conductors from other systems and simultaneously disconnects all ungrounded conductors."
+     },
+     {
+      "term": "Marking and warning (690.13)",
+      "body": "Permanently marked as a PV system disconnect. Where the line and load terminals can both be energized in the open position, a permanent warning is required."
+     },
+     {
+      "term": "Isolating device (690.15)",
+      "body": "A means to isolate equipment such as inverters, batteries, charge controllers and fuses from all ungrounded conductors of all sources. It is not required to have an interrupting rating."
+     },
+     {
+      "term": "Not for load break (690.15)",
+      "body": "An isolating device not rated to interrupt the circuit current must be marked to indicate it must not be opened under load, or carry an equivalent warning."
+     }
+    ],
+    "bullets": [
+     "Dc is harder to interrupt than ac. A switch rated for 240 volts ac is not necessarily rated to break 600 volts dc, so look for dc voltage and current ratings on the nameplate and listing.",
+     "Examples of acceptable isolating devices include listed connectors, finger-safe fuse holders, and isolating switches that require a tool to open.",
+     "A PV disconnect and a rapid shutdown initiation device can be the same device, but they have separate requirements. Make sure the device chosen satisfies both."
+    ],
+    "keypoint": "A PV system disconnect must be dc-rated, readily accessible, marked and able to isolate the PV conductors from all other systems; isolating devices serve equipment maintenance.",
+    "warning": "Do not use an ac-rated disconnect for dc circuits unless it is listed for the dc voltage and current. A dc arc does not extinguish at a current zero crossing the way an ac arc does.",
+    "refs": [
+     "NEC 690.13",
+     "NEC 690.15"
+    ]
+   },
+   {
+    "tag": "M2·S9",
+    "title": "Code Book Lookup Exercise 1: Grounding in Article 690",
+    "body": "This exercise has you find the PV grounding rules in the 2023 NEC using the article table of contents. Article 690 is organized in parts, and grounding and bonding has its own part. Work through each question with your code book open, and write the section number and your finding next to each question before reading further.",
+    "step_list": [
+     "Open the Article 690 table of contents and find the part titled Grounding and Bonding. Note the first and last section numbers in that part in your edition.",
+     "Question A: where is system grounding addressed? Turn to 690.41. It covers the grounding of PV dc systems, including whether the system is grounded or ungrounded and the protection required in each case. Note the subsection that applies to PV dc circuits.",
+     "Question B: where is equipment grounding addressed? Turn to 690.43. It requires exposed metal parts of PV modules, equipment and conductor enclosures to be connected to an equipment grounding conductor, and addresses equipment listed and identified for bonding and grounding of module frames.",
+     "Question C: how is the equipment grounding conductor sized? Turn to 690.45. It directs you to Table 250.122, using the rating of the overcurrent device in the PV circuit.",
+     "Follow the pointer to Table 250.122 and read the row for the overcurrent device rating. For the 20 A device from the previous worked example, the copper row is 12 AWG.",
+     "Look for the special cases in 690.45: where no overcurrent device is used in the circuit, an assumed device rating based on the 690.9(B) calculation is used to enter the table, and the section states a minimum conductor size.",
+     "Record for each question: the section found, the rule in your own words, and any exceptions noted. Check your answers against the next exercise, which continues with the electrode system and wiring methods."
+    ],
+    "keypoint": "PV grounding rules are in the grounding part of Article 690, and the equipment grounding conductor size points back to Table 250.122.",
+    "info": "Always confirm the section and letter in the current edition. Section numbers and paragraph letters in Article 690 changed between the 2017, 2020 and 2023 editions.",
+    "refs": [
+     "NEC 690.41",
+     "NEC 690.43",
+     "NEC 690.45",
+     "NEC Table 250.122"
+    ]
+   },
+   {
+    "tag": "M2·S10",
+    "title": "Code Book Lookup Exercise 2: Grounding Electrodes and Wiring Methods",
+    "body": "The second half of the exercise covers the grounding electrode system and the wiring methods that apply to PV source circuits. These come from two different places in Article 690, and each then points elsewhere in the Code for details. Practice following the cross-references, which is a skill licensing exams test as heavily as the rules themselves.",
+    "step_list": [
+     "Question D: grounding electrode system. Turn to 690.47. It addresses how PV system grounding connects to the building or structure grounding electrode system. In general the PV equipment grounding conductor is connected to the existing building electrode system, and the section points to Article 250 for electrode and conductor details.",
+     "Decide: is a separate PV array electrode required, or does the building grounding electrode system serve? Read the subsections for buildings that support an array and for arrays not on buildings.",
+     "Question E: wiring methods. Turn to 690.31. Find the subsection for single-conductor cable in exposed outdoor locations, which allows USE-2 and listed PV wire or PV cable for module interconnections in the array.",
+     "Find the subsection for dc circuits inside a building. These must be in metal raceways, Type MC cable, or metal enclosures from the point of penetration to the first readily accessible disconnecting means.",
+     "Find the rule for mixing PV dc circuits with other conductors in the same raceway or box: not permitted unless separated by a partition or connected together. Find the grouping rule for conductors of more than one PV system in a junction box with a removable cover: grouped at least once and at intervals not exceeding 6 feet.",
+     "List the wiring methods permitted for exposed PV source circuits on a roof: PV wire or cable and USE-2 within the array, and raceways or other Chapter 3 methods outside the array as permitted by 690.31 and the roof environment.",
+     "Summarize: 690.45 sizes the equipment grounding conductor (Table 250.122), 690.47 ties the PV system into the grounding electrode system (Article 250), and 690.31 sets the wiring methods (Chapter 3, and Article 400 for flexible cords on tracking arrays)."
+    ],
+    "keypoint": "690.47 connects the PV grounding electrode system to the building system, and 690.31 limits the wiring methods allowed for PV circuits, especially on roofs and inside buildings.",
+    "warning": "PV dc conductors inside a building have to be in metal raceway, MC cable or metal enclosures until the first readily accessible disconnect. Do not run bare PV wire through an attic.",
+    "refs": [
+     "NEC 690.47",
+     "NEC 690.31",
+     "NEC Article 250"
+    ]
+   },
+   {
+    "tag": "M2·S11",
+    "title": "Markings and Labels on PV Systems: What Is Required",
+    "body": "Section 690.56 and the sections it points to require identification of power sources and rapid shutdown information at the service equipment and at other locations where the PV disconnect or inverter is installed. In the 2023 edition, 690.56 points to 705.10 for the plaque or directory that identifies the power production sources, and the rapid shutdown label requirements moved to 690.12(D). Missing, inaccurate or unreadable labels are one of the most common reasons for a failed PV inspection.",
+    "table": {
+     "h": [
+      "Marking",
+      "Where",
+      "Section (verify for 2023)"
+     ],
+     "r": [
+      [
+       "Identification of power sources: plaque or directory showing the location of all power production sources and disconnects",
+       "At the service disconnecting means, or another approved readily visible location",
+       "705.10 (referenced by 690.56)"
+      ],
+      [
+       "Rapid shutdown label or placard identifying the initiation device",
+       "At the locations required by 690.12(D)",
+       "690.12(D) (previously 690.56(C))"
+      ],
+      [
+       "PV system disconnect marking",
+       "On the disconnecting means",
+       "690.13"
+      ],
+      [
+       "Warning where line and load terminals may both be energized when open",
+       "On the disconnecting means",
+       "690.13"
+      ],
+      [
+       "Maximum dc circuit voltage marking",
+       "At the location required by 690.7",
+       "690.7(D), new in 2023"
+      ],
+      [
+       "Field-applied hazard markings",
+       "Wherever applied in the field",
+       "110.21(B)"
+      ]
+     ]
+    },
+    "bullets": [
+     "A plaque must show the information the section requires and must be readable and durable. Handwritten labels or labels that fade in sunlight do not meet this requirement.",
+     "Label wording, color and size are specified in the sections cited above. Copy them from the current edition rather than from memory."
+    ],
+    "keypoint": "Every PV system needs durable, accurate markings at the service and at its equipment, and inspectors check them against the specific sections.",
+    "refs": [
+     "NEC 690.56",
+     "NEC 690.12",
+     "NEC 690.13",
+     "NEC 705.10",
+     "NEC 110.21"
+    ]
+   },
+   {
+    "tag": "M2·S12",
+    "title": "Discussion: Reading Label Photos and Citing the Section",
+    "body": "In this discussion activity you compare label text and location on three sample photos and cite the section that applies to each one. The structured questions below turn a photo into a Code citation. Apply the same questions to any real label you inspect.",
+    "bullets": [
+     "Typical field defects: label too small to read from standing distance, label on the wrong panel, label showing a different inverter than the one installed, missing directory after a system addition, adhesive labels on a hot surface.",
+     "Cite the section before giving your opinion. 'It looks wrong' is not enough for a correction notice."
+    ],
+    "step_list": [
+     "Photo 1: a placard near the meter that lists 'PV system on roof, inverter in garage' with disconnect locations. Ask: which section requires it (705.10 via 690.56), is it at the service disconnecting means or another approved location, and does it show every source and disconnect?",
+     "Photo 2: a label on or near the rapid shutdown switch. Ask: does the text identify the device as the rapid shutdown initiation, is it at the location 690.12(D) requires, and are the color and lettering size consistent with the section?",
+     "Photo 3: a sticker on a dc disconnect that has faded until it is unreadable. Ask: does it still identify the device (690.13), is the warning about terminals energized in the open position (if applicable) still legible, and does it meet the durability expectations in 110.21(B)?",
+     "For each photo, write the finding in one sentence: 'This is acceptable / not acceptable because the label at [location] does not [requirement of section].'",
+     "Discuss why inspectors treat labels as functional equipment: firefighters and utility workers rely on them to find disconnects and to know that more than one source can energize equipment."
+    ],
+    "keypoint": "Describe what the label says, where it is, and which section requires it; then judge whether it is durable and legible for the environment.",
+    "info": "Durable, legible and suitable for the environment are the practical tests. A label that is correct on day one but peels in two summers will fail a later inspection or a service call.",
+    "refs": [
+     "NEC 690.56",
+     "NEC 690.12",
+     "NEC 705.10",
+     "NEC 110.21"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Where PV circuit conductors leave the vicinity of the PV array, the equipment grounding conductor must be:",
+    "opts": [
+     "run separately along the structure",
+     "omitted",
+     "run with the PV circuit conductors",
+     "replaced by a grounding electrode"
+    ],
+    "correct": 2,
+    "explain": "The array EGC must be contained within the same raceway or cable, or otherwise run with the PV array circuit conductors, when they leave the array vicinity. [NEC 690.43(C)]"
+   },
+   {
+    "q": "A new 2023 NEC provision in 690.4 addresses:",
+    "opts": [
+     "PV rooftop vent clearances",
+     "PV systems on aircraft",
+     "PV used only for pools",
+     "PV equipment floating on bodies of water"
+    ],
+    "correct": 3,
+    "explain": "The 2020 NEC had no specific rules for floating PV. The 2023 NEC added floating PV system provisions to 690.4: equipment must be listed or identified for the environment (water and wave action) and wiring must be suitable for movement, including flexible or floating-rated wiring. PV on aircraft and pool-only PV are not what the section covers. Look in 690.4. [NEC 690.4(G) (2023)]"
+   },
+   {
+    "q": "PV system dc circuits that run inside a building must be contained in what, from the point of penetration to the first readily accessible disconnecting means?",
+    "opts": [
+     "Metal raceways, Type MC cable, or metal enclosures",
+     "PVC conduit",
+     "Type UF cable",
+     "Type NM cable"
+    ],
+    "correct": 0,
+    "explain": "Inside buildings, dc PV circuits must be in metal raceways, Type MC cable complying with 250.118(10), or metal enclosures. [NEC 690.31(D)]"
+   },
+   {
+    "q": "12 AWG PV wire rated 90 C (30 A in Table 310.16) is installed in conduit in a 50 C ambient (correction factor 0.82) with 6 current-carrying conductors (adjustment factor 0.80). What is its adjusted ampacity?",
+    "opts": [
+     "24.6 A",
+     "30 A",
+     "19.7 A",
+     "24.0 A"
+    ],
+    "correct": 2,
+    "explain": "30 A x 0.82 x 0.80 = 19.7 A. Using only one of the two factors overstates the ampacity. [NEC 690.8(B), 310.15(B), 310.15(C)(1), Table 310.16]"
+   },
+   {
+    "q": "For a PV array mounted on a building that has a grounding electrode system for its ac service, how should the PV grounding be connected?",
+    "opts": [
+     "To a separate isolated electrode only",
+     "It is not grounded",
+     "To a gas pipe",
+     "To the building grounding electrode system"
+    ],
+    "correct": 3,
+    "explain": "The PV dc grounding electrode conductor and array EGC connect to the building's existing grounding electrode system. [NEC 690.47, 250.166]"
+   },
+   {
+    "q": "In the 2026 NEC 690.7(A), what happened to the 100 kW inverter threshold?",
+    "opts": [
+     "It was raised to 250 kW",
+     "It was removed, allowing engineering calculation for any PV system size",
+     "It was lowered to 50 kW",
+     "It applies only to residential systems"
+    ],
+    "correct": 1,
+    "explain": "2023: a 100 kW threshold applied. 2026: 690.7(A) is limited to dc voltages and the threshold is removed. [NEC 690.7(A) (2026)]"
+   },
+   {
+    "q": "An isolating device in a PV system that is not rated to interrupt the circuit current must be:",
+    "opts": [
+     "marked to indicate not to open under load, or an equivalent warning",
+     "rated for 1000 volts",
+     "installed only inside the inverter",
+     "a molded-case circuit breaker"
+    ],
+    "correct": 0,
+    "explain": "An isolating device is not required to have an interrupting rating, but where not rated for interrupting the circuit current it must be marked not to be opened under load. [NEC 690.15(C)]"
+   },
+   {
+    "q": "In a PV system, the circuit conductors between the PV source circuits and the inverter or dc utilization equipment are called the:",
+    "opts": [
+     "branch circuit",
+     "inverter output circuit",
+     "feeder",
+     "PV output circuit"
+    ],
+    "correct": 3,
+    "explain": "The PV output circuit is the circuit between the PV source circuit(s) and the inverter or dc utilization equipment. [NEC Art. 100 (PV output circuit)]"
+   },
+   {
+    "q": "A single PV string has a module Isc of 9 A. What is the minimum conductor ampacity, before correction and adjustment factors, required by 690.8(B)?",
+    "opts": [
+     "9 A",
+     "14.1 A",
+     "18 A",
+     "11.3 A"
+    ],
+    "correct": 1,
+    "explain": "9 A x 1.25 = 11.25 A (maximum circuit current), then x 1.25 again = 14.06 A for the before-adjustment ampacity test. [NEC 690.8(B)]"
+   }
+  ]
+ },
+ {
+  "title": "Interconnected sources and energy storage",
+  "time": "70 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "Choosing a source connection: supply side (705.11) or load side (705.12)",
+   "The 120 percent busbar rule with worked examples, including a failing case and the options",
+   "Source disconnects, overcurrent protection and plaques (705.20, 705.30, 705.10)",
+   "Energy management systems and documentation (705.13, 705.28)",
+   "Article 706 scope, listing and ratings used for sizing",
+   "ESS disconnecting means and circuit sizing (706.15, 706.31)",
+   "Garage ESS case study: working space, location and protection",
+   "Interconnection errors and a pre-energization checklist"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "Connecting Power Sources: Supply Side or Load Side",
+    "body": "Article 705 covers sources that operate in parallel with a primary source such as the utility, including PV systems, energy storage systems and interactive generators. The first design decision is where the source connects to the premises wiring. Section 705.11 covers supply-side connections made ahead of the service disconnecting means, and 705.12 covers load-side connections made on the feeder or the busbar of equipment downstream of the service.",
+    "table": {
+     "h": [
+      "Method",
+      "Where the source connects",
+      "Governing section",
+      "Main limiting factor"
+     ],
+     "r": [
+      [
+       "Supply-side connection",
+       "Ahead of the service disconnecting means, using listed equipment and conductors",
+       "705.11",
+       "Conductor sizing and protection, listed equipment, utility approval of meter-socket work, bonding"
+      ],
+      [
+       "Load-side, feeder connection",
+       "On a feeder or at feeder equipment downstream of the service disconnect",
+       "705.12(A) (feeders and feeder taps)",
+       "Feeder ampacity and overcurrent protection relative to the source current"
+      ],
+      [
+       "Load-side, busbar connection",
+       "A backfed breaker or other connection on the busbar of a panelboard or switchboard",
+       "705.12(B) (busbars)",
+       "Busbar rating, commonly summarized as the 120 percent rule"
+      ],
+      [
+       "Dedicated overcurrent device",
+       "A source overcurrent device installed in the equipment to protect the source circuit",
+       "705.12 and 705.30",
+       "Device rating and suitability for backfeed"
+      ]
+     ]
+    },
+    "bullets": [
+     "A load-side busbar connection is the most common residential choice because it needs only a breaker, but it is limited by the busbar and the main breaker ratings.",
+     "A supply-side connection is often chosen when the busbar cannot accept the source, because it avoids the busbar rule altogether. It brings other requirements, so it is not simply a way around the limit.",
+     "Each connection point requires its own source overcurrent protection and a disconnect, covered later in this module."
+    ],
+    "keypoint": "Choose the connection point first: supply side under 705.11 or load side under 705.12; the rest of the design follows from that choice.",
+    "info": "The 2023 edition reorganized 705.11 and 705.12. The section numbers used here come from the 2023 NEC, so older study material and online posts may cite different paragraph numbers.",
+    "refs": [
+     "NEC 705.11",
+     "NEC 705.12",
+     "NEC Article 705"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Load-Side Methods in Detail and the Supply-Side Requirements",
+    "body": "On the load side, a feeder connection is judged by the feeder ampacity, and a busbar connection is judged by the busbar rating against the sum of the overcurrent devices that can supply it. On the supply side, 705.11 requires listed equipment, conductors with an ampacity of at least 125 percent of the source current, a minimum conductor size, a service disconnect and overcurrent protection that follow the service rules in Article 230, and proper bonding. Both sides give the designer a menu of compliant options, and the choice depends on the existing equipment.",
+    "def_grid": [
+     {
+      "term": "Feeder connection (705.12(A))",
+      "body": "The source can connect to a feeder on the load side of the service disconnect. The feeder must have ampacity of at least 125 percent of the source nameplate current, and where the connection is not at the end of the feeder opposite the feeder overcurrent device, the load-side conductor ampacity must satisfy the rule in the section."
+     },
+     {
+      "term": "Busbar connection (705.12(B))",
+      "body": "The 120 percent rule: the sum of the rating of the overcurrent device protecting the busbar and 125 percent of the source output current must not exceed 120 percent of the busbar rating."
+     },
+     {
+      "term": "Supply-side conductors (705.11(B))",
+      "body": "Ampacity at least 125 percent of the continuous source current and not smaller than the minimum size stated in the section (6 AWG copper or 4 AWG aluminum, as summarized in published guidance; confirm in the book)."
+     },
+     {
+      "term": "Supply-side connections (705.11(C) to (F))",
+      "body": "Splices and taps made per the service-conductor rules, equipment modified only per manufacturer instructions or field evaluation, a disconnect per Article 230, bonding per Article 250 and overcurrent protection per Article 230."
+     }
+    ],
+    "bullets": [
+     "Using the 120 percent rule, the maximum source current depends on the bus rating and on the main breaker rating. For other combinations, the arithmetic is the same: (bus rating x 1.2) minus main breaker rating, divided by 1.25.",
+     "Multiple sources on the same busbar are added together. A PV inverter and an ESS inverter on one panel must be summed before comparing to the limit.",
+     "In the 2023 edition 705.28 holds circuit sizing and current requirements for sources, and 705.30 holds overcurrent protection requirements."
+    ],
+    "keypoint": "The busbar method limits the sum of the main breaker and 125 percent of the source current to 120 percent of the busbar rating; the supply-side method moves the connection ahead of the main.",
+    "warning": "Do not use a rule you learned from the 2017 or 2020 edition without checking the 2023 paragraph. Several limits were moved or reworded.",
+    "refs": [
+     "NEC 705.11",
+     "NEC 705.12",
+     "NEC 705.28",
+     "NEC 705.30",
+     "NEC Article 230"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "Worked Example 1: The 120 Percent Busbar Rule",
+    "body": "A residence has a 200 ampere busbar protected by a 200 ampere main breaker, and the owner wants to connect a PV inverter with a 32 ampere output. The busbar limit is 120 percent of the busbar rating, and the main breaker and the source breaker both contribute to the sum. Work out the limit, the room left for the source, and then check the inverter.",
+    "table": {
+     "h": [
+      "Busbar",
+      "Main breaker",
+      "Busbar limit (x 1.2)",
+      "Room for source",
+      "Maximum source output current"
+     ],
+     "r": [
+      [
+       "100 A",
+       "100 A",
+       "100 x 1.2 = 120 A",
+       "20 A",
+       "20 / 1.25 = 16 A"
+      ],
+      [
+       "125 A",
+       "100 A",
+       "125 x 1.2 = 150 A",
+       "50 A",
+       "50 / 1.25 = 40 A"
+      ],
+      [
+       "200 A",
+       "200 A",
+       "200 x 1.2 = 240 A",
+       "40 A",
+       "40 / 1.25 = 32 A"
+      ],
+      [
+       "225 A",
+       "200 A",
+       "225 x 1.2 = 270 A",
+       "70 A",
+       "70 / 1.25 = 56 A"
+      ],
+      [
+       "400 A",
+       "400 A",
+       "400 x 1.2 = 480 A",
+       "80 A",
+       "80 / 1.25 = 64 A"
+      ]
+     ]
+    },
+    "step_list": [
+     "Busbar limit: 200 A x 120 percent = 240 A.",
+     "Rating of the overcurrent device protecting the busbar (the main): 200 A.",
+     "Room left for the source: 240 - 200 = 40 A. This is the most that 125 percent of the source output current can be.",
+     "Maximum source output current: 40 / 1.25 = 32 A.",
+     "Check a 32 A inverter: 32 x 1.25 = 40 A. The sum is 200 + 40 = 240 A, which does not exceed 240 A. Passes (equal to the limit is permitted).",
+     "Source breaker: 125 percent of 32 A = 40 A, a standard rating, so a 40 A breaker is selected (705.30 and 240.6(A)).",
+     "Cite for each step: busbar limit and sum test (705.12(B)), source output current and conductor ampacity (705.28), breaker rating (705.30)."
+    ],
+    "keypoint": "A 200 A busbar with a 200 A main leaves 40 A of room, which supports a 32 A inverter output with a 40 A breaker.",
+    "info": "Equal to the limit passes. A sum above the limit does not, even by a fraction of an ampere.",
+    "refs": [
+     "NEC 705.12",
+     "NEC 705.30",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "Worked Example 2: When the Inverter Does Not Fit",
+    "body": "Now test a larger inverter with a 38 ampere output on the same 200 ampere busbar with a 200 ampere main. The calculation fails, and the real skill is knowing the compliant options that remain. Each option has its own tradeoffs and its own Code sections.",
+    "step_list": [
+     "125 percent of the inverter output: 38 x 1.25 = 47.5 A.",
+     "Sum with the main: 200 + 47.5 = 247.5 A.",
+     "Limit: 200 x 1.2 = 240 A. Since 247.5 A is more than 240 A, the load-side busbar connection fails (705.12(B)).",
+     "Option 1, supply-side connection (705.11): the conductors need ampacity of at least 47.5 A; 6 AWG copper at 75 C (65 A) meets that and the 6 AWG copper minimum noted in the section. A disconnect, overcurrent protection and bonding follow the service rules.",
+     "Option 2, reduce the main breaker: with a 175 A main, 175 + 47.5 = 222.5 A, which is not more than 240 A, so it passes. This requires a load calculation showing 175 A is adequate for the service (Article 220).",
+     "Option 3, reduce the inverter output or choose a different model: 32 A passes as shown in the previous example.",
+     "Option 4, limit the source current with an energy management system (705.13), so the controlled value rather than the nameplate is used, if the listing and the section allow it.",
+     "Option 5, install a new feeder-connected subpanel or use a load-side feeder connection (705.12(A)), if the feeder ampacity rule is satisfied."
+    ],
+    "keypoint": "A 38 A inverter produces a sum of 247.5 A against a 240 A limit, so the connection fails and one of several options must be used.",
+    "warning": "A supply-side connection is not a loophole. It changes who must approve the work, what equipment is allowed ahead of the main, and which conductors and protection are required. Check with the utility and AHJ before choosing it.",
+    "refs": [
+     "NEC 705.11",
+     "NEC 705.12",
+     "NEC 705.13",
+     "NEC 705.30",
+     "NEC 230.79"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "Source Disconnects, Overcurrent Protection and Labels",
+    "body": "Section 705.20 requires a source disconnecting means for each power source, and 705.30 covers overcurrent protection for the source output circuits. The disconnect must be one of the listed types, be externally operable without exposing the operator to live parts, and be capable of being locked in the open position. Plaques and labels identify the sources so that workers know more than one source can energize equipment.",
+    "table": {
+     "h": [
+      "Requirement",
+      "What it says (paraphrased)",
+      "Section"
+     ],
+     "r": [
+      [
+       "Source disconnecting means",
+       "A disconnect for the output of each power source, of a type recognized by the section (for example a load-break rated switch or circuit breaker), externally operable and lockable in the open position",
+       "705.20"
+      ],
+      [
+       "Overcurrent protection of source output conductors",
+       "Protection is required from all sources of current; the output device is rated at least 125 percent of the source nameplate current unless the assembly is listed for 100 percent",
+       "705.30, 705.28"
+      ],
+      [
+       "Equipment fed by more than one source",
+       "Marked to show all sources so the next worker knows",
+       "705.30"
+      ],
+      [
+       "Backfeed suitability of breakers",
+       "Breakers not marked 'line' and 'load' are generally suitable for backfeed; those marked 'line' and 'load' are suitable only if specifically rated for it",
+       "705.30"
+      ],
+      [
+       "Identification of power sources",
+       "Plaque, label or directory at the service disconnect location or other approved location, listing emergency contact information for off-site parties that service the sources",
+       "705.10"
+      ]
+     ]
+    },
+    "bullets": [
+     "Check the panel or switchboard manufacturer's instructions for the allowed backfed breaker and the retention requirements. A listed panel limits which breakers may be installed and how they must be secured.",
+     "The disconnect location is stated in the section. Do not assume that a breaker in the main panel is automatically acceptable. Verify the location, accessibility and lockability requirements.",
+     "Rapid shutdown, PV disconnect and ESS disconnect requirements are additional to Article 705, and one device can sometimes satisfy several of them."
+    ],
+    "keypoint": "Each source needs a disconnect that can be locked open, source overcurrent protection sized from the source current, and labels that identify every source.",
+    "refs": [
+     "NEC 705.20",
+     "NEC 705.30",
+     "NEC 705.10",
+     "NEC 110.25"
+    ]
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Energy Management Systems, Documentation and Multiple Sources",
+    "body": "Systems that control how much current flows through a busbar or conductor can change the calculation, because the controlled setting rather than the nameplate may be used. The 2023 edition titles section 705.13 Energy Management Systems and places the related circuit sizing rules in 705.28. Whatever control method is used, the settings, the listing and the intended operation must be documented for the inspector and for future workers.",
+    "def_grid": [
+     {
+      "term": "What the controller does",
+      "body": "It monitors current and limits the output of one or more sources or loads so that a busbar, feeder or service rating is not exceeded."
+     },
+     {
+      "term": "Why it changes the calculation",
+      "body": "Section 705.28 allows the total output current of the power production equipment to be taken as the current setting of the energy management system, where the system is used."
+     },
+     {
+      "term": "What to document",
+      "body": "The model and listing, the current limit setting, the protected busbar or conductor, who may change the setting, and what happens on loss of communication or controller failure."
+     },
+     {
+      "term": "Related new article (2023)",
+      "body": "Article 750 covers energy management systems as a new article, so loads and sources can be managed under a single set of rules."
+     }
+    ],
+    "bullets": [
+     "Example of a hazard: an ESS added to a panel that was sized with a PV system only. If the control setting is not recorded or is changed later, the busbar can end up with more source current than its rating allows.",
+     "Ask for the control settings at the final inspection and put them on a label or in the permit documents where the code or the AHJ requires it.",
+     "If a manufacturer's instructions require a specific setting to meet a busbar limit, treat the setting as a safety requirement, not as a preference."
+    ],
+    "keypoint": "An energy management system can limit source current for the calculation, but only if it is listed, correctly set and documented.",
+    "info": "The course outline refers to power control systems. In the 2023 NEC the term and the section title were changed to energy management systems; older references to power control systems usually map to this area of the code.",
+    "refs": [
+     "NEC 705.13",
+     "NEC 705.28",
+     "NEC Article 750",
+     "NEC 705.10"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Energy Storage Systems: Scope and Equipment",
+    "body": "Article 706 applies to permanently installed energy storage systems (ESS), whether they operate stand-alone or interactive with other sources. It covers battery-based systems and other storage technologies, such as flywheels, which have their own section in the 2023 edition. An informational note directs stationary standby batteries, which are designed for backup and do not normally cycle, to Article 480.",
+    "def_grid": [
+     {
+      "term": "Scope (706.1)",
+      "body": "Applies to permanently installed ESS, stand-alone or interactive. Read 706.1 for the capacity and voltage language and the informational notes that point to other articles."
+     },
+     {
+      "term": "Qualified persons (706.3)",
+      "body": "Installation and maintenance are limited to qualified persons."
+     },
+     {
+      "term": "Listing (706.5)",
+      "body": "Each ESS must be listed. The nameplate marking supplies the ratings used for conductor and overcurrent sizing."
+     },
+     {
+      "term": "Commissioning (706.7)",
+      "body": "In the 2023 edition, 706.7 is divided into commissioning and maintenance. Commissioning is required on installation, with an exception for one- and two-family dwellings."
+     }
+    ],
+    "bullets": [
+     "Several definitions that were in Article 706 were moved to Article 100 in the 2023 edition. When you meet an unfamiliar ESS term, check Article 100 first.",
+     "The 2023 edition removed the stand-alone section on storage batteries (706.8) and added a section for flywheel ESS (706.51), so older study material may refer to sections that no longer exist.",
+     "Ratings that matter for sizing: maximum charge and discharge current, nominal and maximum voltage, and the overcurrent protection data. Always take them from the ESS listing label and the manufacturer's instructions."
+    ],
+    "keypoint": "Article 706 covers permanently installed ESS of all technologies; ESS equipment must be listed and the installer must be a qualified person.",
+    "warning": "The course outline summarizes a voltage threshold for the scope of Article 706. Read 706.1 in your edition for the actual scope language before quoting a threshold.",
+    "refs": [
+     "NEC Article 706",
+     "NEC 706.1",
+     "NEC 706.3",
+     "NEC 706.5",
+     "NEC Article 480"
+    ]
+   },
+   {
+    "tag": "M3·S8",
+    "title": "ESS Ratings, Disconnecting Means and Circuit Sizing",
+    "body": "Section 706.15 requires a means to disconnect the ESS from all wiring systems, and in the 2023 edition it must be readily accessible and located inside the ESS or within sight of it, or lockable if not in sight. One- and two-family dwellings also need an emergency shutdown function with an initiation device located outside the building, which is a control function and not a disconnect. Circuit conductors and overcurrent devices are sized from the ESS ratings, generally at 125 percent of the nameplate current.",
+    "table": {
+     "h": [
+      "Item",
+      "Requirement (paraphrased)",
+      "Section"
+     ],
+     "r": [
+      [
+       "Disconnect scope",
+       "Means to disconnect the ESS from all wiring systems, including power systems, utilization equipment and premises wiring",
+       "706.15(A)"
+      ],
+      [
+       "Disconnect location",
+       "Readily accessible, and inside the ESS, or within sight of the ESS and within 10 ft, or capable of being locked per 110.25 if not in sight",
+       "706.15(B)"
+      ],
+      [
+       "Emergency shutdown (one- and two-family dwellings)",
+       "ESS function that stops export of power to the premises wiring, with an initiation device readily accessible outside the building that shows on/off",
+       "706.15 (see current text)"
+      ],
+      [
+       "Field-serviced batteries",
+       "Where the battery is separate from the electronics and serviced in the field, a disconnect within sight of the battery and other provisions apply",
+       "706.15(E)"
+      ],
+      [
+       "Circuit current ratings",
+       "Based on the nameplate, inverter output, inverter input, utilization output and converter output as applicable",
+       "706.30(A)"
+      ],
+      [
+       "Conductors and overcurrent device",
+       "Ampacity and device rating at least 125 percent of the ESS current rating, unless listed for 100 percent",
+       "706.31"
+      ]
+     ]
+    },
+    "step_list": [
+     "Illustrative ESS: 5,000 W continuous output at 240 V single phase. Output current = 5,000 / 240 = 20.83 A.",
+     "Conductor ampacity and overcurrent device: 20.83 x 1.25 = 26.04 A.",
+     "Overcurrent device: the next standard size from 240.6(A) is 30 A.",
+     "Conductor: copper at 75 C, minimum 10 AWG (35 A) from Table 310.16, assuming no further adjustment. Use the nameplate current if it is given, because it already accounts for the inverter and battery limits.",
+     "Busbar impact: this ESS adds 26.04 A to the 125 percent sum in the busbar test of 705.12(B), together with any PV source on the same busbar."
+    ],
+    "keypoint": "The ESS disconnect must be readily accessible and in sight (within 10 feet) or lockable; conductors and overcurrent devices are sized at 125 percent of the nameplate current.",
+    "info": "The example is hypothetical. Real ratings come from the listing label and installation manual, and some products state a continuous current and a separate peak current.",
+    "refs": [
+     "NEC 706.15",
+     "NEC 706.30",
+     "NEC 706.31",
+     "NEC 110.25",
+     "NEC 240.6"
+    ]
+   },
+   {
+    "tag": "M3·S9",
+    "title": "Case Study Part 1: A Wall-Mounted Battery in a Garage",
+    "body": "A homeowner has bought a wall-mounted battery system and wants it installed in the attached garage of a one-family dwelling, on the wall in front of where the vehicle parks, next to the water heater. The conductors come out of the panel through the garage wall, the disconnect is in a hallway closet inside the house, and the existing shelving is about two feet in front of the battery. List every spacing and protection problem you can find before you read the table.",
+    "table": {
+     "h": [
+      "Observation",
+      "Concern",
+      "Where to look"
+     ],
+     "r": [
+      [
+       "Battery is on the wall at the front of the parking space",
+       "Vehicle impact; the fire code or model residential code may require protection and limits on location in garages",
+       "Local fire code, NFPA 855, model residential code; manufacturer instructions"
+      ],
+      [
+       "Shelving about 2 ft in front of the battery",
+       "Working space of 3 ft in depth and the width of the equipment (at least 30 in.) must stay clear",
+       "110.26(A)"
+      ],
+      [
+       "Disconnect is in a hallway closet, out of sight of the battery",
+       "The ESS disconnect must be readily accessible and in sight of the ESS and within 10 ft, or lockable if not in sight",
+       "706.15(B), 110.25"
+      ],
+      [
+       "Water heater beside the battery",
+       "Manufacturer clearances to other equipment, heat sources and combustible storage",
+       "Manufacturer instructions, 110.26"
+      ],
+      [
+       "No labels or directory",
+       "Source identification and ESS disconnect marking are missing",
+       "705.10, 706.15"
+      ],
+      [
+       "Dwelling with no emergency shutdown outside",
+       "One- and two-family dwellings need an ESS emergency shutdown initiation device readily accessible outside",
+       "706.15"
+      ]
+     ]
+    },
+    "bullets": [
+     "Fire and building codes such as NFPA 855 and the model residential code add location limits and capacity limits for ESS in dwellings and garages. These vary by jurisdiction, so check with the AHJ and fire authority before design.",
+     "The electrician's job is to verify the NEC items and to flag the non-NEC items to the owner and the AHJ, not to ignore them."
+    ],
+    "keypoint": "Location, working space, disconnect placement and vehicle protection are the typical problem areas in a garage ESS installation.",
+    "info": "The scenario is fictional. It is built to combine the typical issues in one picture.",
+    "refs": [
+     "NEC 706.15",
+     "NEC 110.26",
+     "NEC Article 706"
+    ]
+   },
+   {
+    "tag": "M3·S10",
+    "title": "Case Study Part 2: Revised Layout and Citations",
+    "body": "The revised layout moves the battery to a wall away from the parking position, restores working space, puts the disconnect where it can be seen from the battery and adds labels. Each change has a Code or manufacturer reference, which is what you should list when you present the revised plan to the inspector. Use the steps as a model for writing your own proposal.",
+    "step_list": [
+     "Move the battery to the side wall of the garage, away from the vehicle path, at the height the manufacturer allows. Cite: manufacturer instructions and listing (706.5), and the local fire and residential code requirements for ESS in garages.",
+     "Establish working space in front of the battery: for equipment up to 150 volts to ground (a 120/240 volt system is 120 volts to ground) the depth is 3 ft, the width is 30 in. or the width of the equipment (whichever is greater) and the height is 6.5 ft or the equipment height (whichever is greater). Remove the shelving from this zone. Cite: 110.26(A).",
+     "Mount the ESS disconnect inside the battery cabinet if it has one, or on the wall within sight of the battery and within 10 ft, readily accessible, and lockable. Cite: 706.15(B), 110.25.",
+     "Keep the water heater clear of the manufacturer's required clearances; relocate it or the battery if the instructions are not met. Cite: manufacturer instructions.",
+     "Install the emergency shutdown initiation device outside the building where it is readily accessible, and label it. Cite: 706.15.",
+     "Install the plaque or directory showing all power sources and disconnects at the service equipment. Cite: 705.10.",
+     "Size the battery circuit from the nameplate at 125 percent and confirm the busbar sum still passes with the ESS output added to any PV source. Cite: 706.31, 705.12(B), 705.30.",
+     "Write the revised plan as a list of changes with citations, and ask the AHJ to confirm the items that depend on local fire or residential code."
+    ],
+    "keypoint": "A good proposal names each problem, the change that fixes it and the section that requires the change.",
+    "warning": "Do not use the case-study layout as a template for your own jobs. Local fire codes may restrict or prohibit locations that the NEC alone does not.",
+    "refs": [
+     "NEC 110.26",
+     "NEC 706.15",
+     "NEC 705.10",
+     "NEC 705.30"
+    ]
+   },
+   {
+    "tag": "M3·S11",
+    "title": "Discussion: Common Interconnection Errors",
+    "body": "Interconnection errors tend to repeat from job to job. Sizing the connection from inverter power instead of output current, omitting labels, and forgetting control settings account for most of them. Discuss each error, the section that addresses it and the correction.",
+    "table": {
+     "h": [
+      "Common error",
+      "Why it fails",
+      "Correction and reference"
+     ],
+     "r": [
+      [
+       "Using inverter kW instead of output current x 125 percent in the busbar test",
+       "The rule is based on current at the system voltage, and the 125 percent factor accounts for continuous duty",
+       "Take the output current from the listing label; apply 705.12(B)"
+      ],
+      [
+       "Ignoring the ESS when checking the busbar",
+       "The ESS output also counts as a source",
+       "Add 125 percent of every source on the bus, 705.12(B)"
+      ],
+      [
+       "No source disconnect or disconnect not lockable",
+       "Workers cannot isolate the source safely",
+       "Provide the disconnect in 705.20; for ESS 706.15"
+      ],
+      [
+       "Missing plaque, directory or multiple-source marking",
+       "Anyone working on the equipment may not know about the second source",
+       "705.10 and 705.30; 690.56 and 706 as applicable"
+      ],
+      [
+       "Backfed breaker not suitable or not secured as the panel manufacturer requires",
+       "The panel listing may limit backfeed breakers",
+       "Follow the panel instructions; 705.30"
+      ],
+      [
+       "Energy management system settings not checked at commissioning",
+       "Busbar can be overloaded if the setting is wrong",
+       "Verify and document settings; 705.13, 705.28"
+      ]
+     ]
+    },
+    "bullets": [
+     "Use arithmetic on every discussion item. For example: a 7.6 kW inverter at 240 V has an output current of 7,600 / 240 = 31.7 A, so 125 percent is 39.6 A, not 7.6 and not 9.5.",
+     "Ask who will read the label in an emergency, and write the label for them."
+    ],
+    "keypoint": "Most interconnection errors are caused by using the wrong number in the calculation or by leaving out a required marking or disconnect.",
+    "refs": [
+     "NEC 705.12",
+     "NEC 705.20",
+     "NEC 705.10",
+     "NEC 705.13",
+     "NEC Article 706"
+    ]
+   },
+   {
+    "tag": "M3·S12",
+    "title": "Pre-Energization Checklist for Articles 705 and 706",
+    "body": "A pre-energization checklist turns the errors of the previous lesson into a sequence the installer follows every time. The checklist below is built from Articles 705 and 706 and from the calculations used in this module. Complete it before the utility or the inspector arrives, and keep the calculations with the job file.",
+    "step_list": [
+     "Confirm the connection method (supply side under 705.11, or load side under 705.12) and that the equipment is listed for that use.",
+     "Repeat the busbar calculation with final ratings: main or busbar overcurrent device, 125 percent of each source output current, 120 percent of the busbar rating. Record the numbers.",
+     "Check source overcurrent protection ratings and that backfed breakers are of an approved type and secured as the panel instructions require. (705.30)",
+     "Verify every source has a disconnecting means that is located, rated and lockable as required. (705.20, 706.15, 690.13)",
+     "Verify rapid shutdown operation, the initiation device location and the labels. (690.12)",
+     "Verify the ESS emergency shutdown function and initiation device for one- and two-family dwellings, and the ESS disconnect within sight or lockable. (706.15)",
+     "Verify working space and clear spaces around the equipment, including garage protection and fire-code items agreed with the AHJ. (110.26, Article 706)",
+     "Verify the plaque, directory and equipment labels are installed, durable and accurate. (705.10, 690.56, 110.21(B))",
+     "Record the settings of any energy management system and confirm they match the design. (705.13, 705.28)",
+     "Commission the ESS where required, and keep records of the commissioning. (706.7)"
+    ],
+    "keypoint": "Complete the calculation, the labels, the disconnects and the control settings checks before energizing any interconnected source.",
+    "info": "Commissioning is not required by 706.7 for one- and two-family dwellings, but a manufacturer may still require a start-up procedure.",
+    "refs": [
+     "NEC Article 705",
+     "NEC Article 706",
+     "NEC 705.12",
+     "NEC 705.20",
+     "NEC 706.15"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "The maximum circuit current of an ESS output is 64 A. What is the minimum ampacity of the output conductors based on the 125 percent requirement?",
+    "opts": [
+     "64 A",
+     "90 A",
+     "80 A",
+     "72 A"
+    ],
+    "correct": 2,
+    "explain": "64 A x 1.25 = 80 A. [NEC 706.31]"
+   },
+   {
+    "q": "May more than one energy storage system be installed on a single premises?",
+    "opts": [
+     "No, only one ESS is permitted per premises",
+     "Only with written approval from the utility for each additional unit",
+     "Yes, multiple ESS are permitted on a premises",
+     "Only if each is on a separate service"
+    ],
+    "correct": 2,
+    "explain": "706.6 permits multiple energy storage systems to be installed in or on a single premises. [NEC 706.6]"
+   },
+   {
+    "q": "A supply-side connection made inside a meter socket enclosure that is used exclusively by the utility is permitted only:",
+    "opts": [
+     "if the source is under 5 kW",
+     "with the approval of the serving utility",
+     "with no approval",
+     "if the enclosure is NEMA 3R"
+    ],
+    "correct": 1,
+    "explain": "Supply-side connections inside utility-exclusive meter sockets require utility approval. [NEC 705.11(C)]"
+   },
+   {
+    "q": "Article 706 applies to energy storage systems having a capacity greater than what amount?",
+    "opts": [
+     "0.5 kWh",
+     "10 kWh",
+     "1 kWh (3.6 MJ)",
+     "5 kWh"
+    ],
+    "correct": 2,
+    "explain": "Article 706 covers ESS with capacity greater than 3.6 MJ (1 kWh) that are stand-alone or interactive with other power sources. [NEC 706.1]"
+   },
+   {
+    "q": "Metal enclosures and raceways containing supply-side source conductors must be:",
+    "opts": [
+     "bonded in accordance with Article 250",
+     "left unbonded",
+     "grounded to a separate rod only",
+     "insulated from the service equipment"
+    ],
+    "correct": 0,
+    "explain": "Supply-side conductor metal raceways and enclosures must be bonded per the Article 250 requirements for service conductors. [NEC 705.11(E)]"
+   },
+   {
+    "q": "Where ground-fault protection is used, the output of an interactive system must be connected to:",
+    "opts": [
+     "the supply side of the ground-fault protection",
+     "the load side of the ground-fault protection",
+     "the grounded conductor",
+     "the equipment grounding conductor"
+    ],
+    "correct": 0,
+    "explain": "The output is connected to the supply side unless equipment ground-fault protection covers all sources. [NEC 705.32]"
+   },
+   {
+    "q": "A battery that is separate from the ESS electronics and subject to field servicing requires a disconnecting means. Where must it be located?",
+    "opts": [
+     "Readily accessible and within sight of the battery",
+     "At the inverter only",
+     "Within 50 ft of the main service",
+     "Inside the battery enclosure only"
+    ],
+    "correct": 0,
+    "explain": "706.15(E) requires a readily accessible disconnecting means within sight of the battery for batteries separate from the electronics and subject to field servicing. [NEC 706.15(E)]"
+   },
+   {
+    "q": "An ESS disconnect is located more than 10 ft from the ESS and out of sight. Which condition makes this acceptable?",
+    "opts": [
+     "The disconnect is rated at least 125 percent of the ESS current",
+     "The disconnect is capable of being locked in accordance with 110.25",
+     "A label on the ESS stating where the disconnect is",
+     "The disconnect is installed above 6.5 ft"
+    ],
+    "correct": 1,
+    "explain": "706.15(B) permits a disconnect not within sight if it is lockable per 110.25. [NEC 706.15(B), 110.25]"
+   },
+   {
+    "q": "A 100 A busbar is protected by a 100 A main breaker. What is the largest source breaker permitted under the 120 percent rule?",
+    "opts": [
+     "30 A",
+     "10 A",
+     "25 A",
+     "20 A"
+    ],
+    "correct": 3,
+    "explain": "100 x 1.2 = 120 A; 120 - 100 = 20 A. [NEC 705.12(B)]"
+   }
+  ]
+ },
+ {
+  "title": "2023 changes, calculations and review",
+  "time": "30 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "Changes for 2023 in Articles 625, 690, 705 and 706, and the new Article 750",
+   "How to compare editions section by section",
+   "Combined worked example: EV circuit, PV conductor and service load",
+   "Review of the 125 percent and 120 percent rules",
+   "Disconnect requirements compared: 625.43, 690.13, 705.20 and 706.15",
+   "Section-citation drill",
+   "Course wrap-up"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "What Changed for 2023: Articles 625 and 220.57",
+    "body": "The 2023 NEC revised several EV-related rules, and a good way to learn them is to read the 2020 and 2023 text side by side. For Article 625 this lesson lists the changes that published summaries confirm, and then gives you a method to compare the sections that the course outline asks you to review: 625.42, 625.43, 625.52 and 625.54. Section 220.57 provides the EVSE load rule for service and feeder calculations.",
+    "table": {
+     "h": [
+      "Section",
+      "Change reported for 2023",
+      "How to verify"
+     ],
+     "r": [
+      [
+       "625.40",
+       "A new exception allows multiple small 120 V EVSE units (16 A or less) to share a circuit when operated in island mode",
+       "Read the exception in the 2023 book and note its conditions"
+      ],
+      [
+       "625.42",
+       "Rating and automatic load management language: EVSE is a continuous load, and a load management system sets the maximum load used for a service or feeder",
+       "Compare paragraph letters and wording with the 2020 edition"
+      ],
+      [
+       "220.57",
+       "EVSE load calculated at 7,200 W or the nameplate rating, whichever is larger",
+       "Compare with the 2020 text and read its occupancy and per-outlet language"
+      ],
+      [
+       "625.43",
+       "Disconnecting means for EVSE rated more than 60 A or more than 150 V to ground, lockable",
+       "Compare thresholds and any new exceptions"
+      ],
+      [
+       "625.52 and 625.54",
+       "Ventilation tied to listing and marking; GFCI protection for personnel on EV charging receptacles",
+       "Compare wording and cross-references to 210.8"
+      ],
+      [
+       "625.48",
+       "Power export and bidirectional equipment, with Articles 702 and 705 applying by use",
+       "Compare with 2020 interactive-system text"
+      ]
+     ]
+    },
+    "step_list": [
+     "Open both editions to the same section number and read the 2023 text first.",
+     "Mark each phrase that is new, removed or reworded, and label it as scope, threshold, exception or cross-reference.",
+     "Write one sentence stating what an installer must do differently on a job because of the change, or 'no change in practice'.",
+     "Repeat for 625.42, 625.43, 625.52 and 625.54, and keep the notes with your study materials."
+    ],
+    "keypoint": "Compare the old and new text of each section yourself and record the difference; do not rely on memory of an earlier edition.",
+    "info": "Not every difference between editions is a change in practice. Editorial rewording and reorganization are common, and the substantive items are the thresholds, the exceptions and the new sections.",
+    "refs": [
+     "NEC 625.40",
+     "NEC 625.42",
+     "NEC 625.43",
+     "NEC 625.52",
+     "NEC 625.54",
+     "NEC 220.57"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "What Changed for 2023: Articles 690, 705, 706 and the New Article 750",
+    "body": "For PV systems the 2023 edition kept the core rules of 690.8 and 690.9, added marking of maximum dc voltage in 690.7, added exceptions to rapid shutdown, and moved the rapid shutdown labeling into 690.12. Article 705 was substantially reorganized, including 705.11, 705.12, 705.13, 705.20, 705.28 and 705.30. Article 706 changed in commissioning, disconnects and several new or removed sections, and a new Article 750 covers energy management systems.",
+    "table": {
+     "h": [
+      "Article",
+      "Reported 2023 change",
+      "Effect on practice"
+     ],
+     "r": [
+      [
+       "690.7",
+       "New 690.7(D) requires marking the highest maximum dc voltage; the section was broken into subparagraphs",
+       "Add the voltage marking at the specified location"
+      ],
+      [
+       "690.8, 690.9",
+       "Sizing language consolidated and reworded; 690.9(D) transformers now refer to 705.30(F)",
+       "Same arithmetic; cite the 2023 paragraphs"
+      ],
+      [
+       "690.12",
+       "Exception for non-enclosed detached structures; exception for ground-mount circuits terminating on a building exterior; inside-array options refer to listed PV hazard control systems; marking moved here from 690.56(C)",
+       "Check structure type first; use listed equipment sets; cite 690.12(D) for labels"
+      ],
+      [
+       "690.13",
+       "Location paragraph split into readily accessible and enclosure/door/cover parts",
+       "Same device, clearer location rule"
+      ],
+      [
+       "705.11",
+       "Retitled supply-side source connections and rewritten",
+       "Check conductor, disconnect and bonding requirements before choosing a supply-side tap"
+      ],
+      [
+       "705.12",
+       "Load-side connections reorganized into feeders and feeder taps (A) and busbars (B)",
+       "Re-read the busbar test in (B)"
+      ],
+      [
+       "705.13, 705.28",
+       "Energy management systems replace power control systems; circuit sizing adds EMS material",
+       "Document controller settings"
+      ],
+      [
+       "705.20, 705.30",
+       "Source disconnect requirements revised; overcurrent protection expanded into subsections",
+       "Use the 2023 paragraph numbers in plans"
+      ],
+      [
+       "706.7, 706.15, 706.51",
+       "Commissioning and maintenance split; disconnect rules expanded including field-serviced batteries; flywheel ESS added; storage battery section 706.8 removed",
+       "Commission non-dwelling ESS; check disconnect location"
+      ],
+      [
+       "Article 750",
+       "New article for energy management systems",
+       "Check when load or source control is part of the design"
+      ]
+     ]
+    },
+    "bullets": [
+     "Where to find the details: the 2023 NEC annex or a publisher's list of changes shows each revision with its section number, and the NEC itself marks changed text in the print edition.",
+     "Local adoption matters. Confirm which edition your jurisdiction has adopted and any local amendments before applying 2023 rules to a permit."
+    ],
+    "keypoint": "The calculations in this course still work in 2023, but several section numbers and titles moved, so cite the 2023 paragraphs.",
+    "refs": [
+     "NEC 690.7",
+     "NEC 690.12",
+     "NEC 705.11",
+     "NEC 705.12",
+     "NEC 705.13",
+     "NEC Article 706",
+     "NEC Article 750"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Worked Examples: EV Branch Circuit, PV Conductor and Service Load Together",
+    "body": "This worked example combines the three calculations of the course on one dwelling: an EV branch circuit, a PV source circuit, and the effect of the EVSE on the service load. Write the Code section next to every step. Each step uses a calculation shown earlier in the course, so you can check your work against the earlier slides.",
+    "step_list": [
+     "A. EV branch circuit. EVSE label: 48 A at 240 V. Continuous-load rule (625.41, 625.42): 48 x 1.25 = 60 A. Breaker: 60 A (240.6(A)). Conductor: 6 AWG copper, 75 C column, 65 A (Table 310.16, 110.14(C)). Equipment grounding conductor: 10 AWG copper (Table 250.122).",
+     "B. PV source circuit. Module Isc = 11 A. Maximum current (690.8(A)): 11 x 1.25 = 13.75 A. Minimum conductor ampacity before adjustment (690.8(B)): 13.75 x 1.25 = 17.19 A. Overcurrent device where required (690.9(B)): 17.19 A rounds up to 20 A (240.6(A)).",
+     "C. Service load with the EVSE. Assume the dwelling calculation before the EVSE is 28,800 VA. EVSE load (220.57): larger of 7,200 W or nameplate; nameplate = 48 x 240 = 11,520 VA, so use 11,520 VA.",
+     "D. New total: 28,800 + 11,520 = 40,320 VA. Current at 240 V: 40,320 / 240 = 168.0 A. Compare to a 200 A service: 168.0 A is within 200 A.",
+     "E. If a PV inverter is also connected on the load side, repeat the 120 percent busbar test (705.12(B)): for a 200 A busbar and 200 A main, 125 percent of the inverter output may not exceed 40 A, so the inverter output is limited to 32 A.",
+     "F. State the section for each step before you move on. The answer is not only the number but the citation that supports it."
+    ],
+    "keypoint": "Every calculation in the course reduces to a rating from a label, a 125 percent factor, a standard device size, a table lookup and a section citation.",
+    "info": "The 28,800 VA starting load is an assumption for teaching. Use the full dwelling calculation for the real service, and check whether the standard or the optional method applies; 220.57 may be handled differently in an optional calculation.",
+    "refs": [
+     "NEC 625.41",
+     "NEC 625.42",
+     "NEC 690.8",
+     "NEC 690.9",
+     "NEC 220.57",
+     "NEC 705.12"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Final Review: Rules to Cite by Section",
+    "body": "This review collects the rules students most often confuse. First, the 125 percent continuous-load rule appears for EVSE and for PV circuits, but the details differ: EVSE uses one 125 percent factor, and PV circuits use two separate factors. Second, the 120 percent busbar rule and the supply-side alternative are the two ways to connect a source, and third, each system has its own disconnecting means with its own location rules.",
+    "table": {
+     "h": [
+      "Topic",
+      "Rule in one line",
+      "Section"
+     ],
+     "r": [
+      [
+       "EVSE circuit sizing",
+       "Breaker and conductor at least 125 percent of EVSE rating; individual branch circuit",
+       "625.40, 625.41, 625.42"
+      ],
+      [
+       "PV circuit sizing",
+       "Maximum current is sum of Isc x 125 percent; conductor at least 125 percent of that before adjustment",
+       "690.8, 690.9"
+      ],
+      [
+       "Busbar connection",
+       "Main breaker plus 125 percent of source current not over 120 percent of busbar rating",
+       "705.12(B)"
+      ],
+      [
+       "Supply-side alternative",
+       "Connect ahead of the service disconnect with listed equipment and sized conductors",
+       "705.11"
+      ],
+      [
+       "EVSE disconnect",
+       "Required over 60 A or over 150 V to ground; lockable",
+       "625.43"
+      ],
+      [
+       "PV disconnect",
+       "Readily accessible, dc-rated, marked, isolates PV from all other systems",
+       "690.13"
+      ],
+      [
+       "Source disconnect",
+       "Lockable disconnect for each power source",
+       "705.20"
+      ],
+      [
+       "ESS disconnect",
+       "Readily accessible, in the ESS or in sight within 10 ft, or lockable",
+       "706.15"
+      ]
+     ]
+    },
+    "bullets": [
+     "Question-and-answer drill: cover the third column and give the section for each rule, then cover the second column and recite the rule for each section.",
+     "Practice answer: what size breaker for a 32 A EVSE? 32 x 1.25 = 40 A, 625.41. What is the maximum inverter on a 225 A busbar with a 200 A main? (225 x 1.2 - 200) / 1.25 = 56 A, 705.12(B). What is the maximum PV circuit current for 3 parallel 8 A strings? 3 x 8 x 1.25 = 30 A, 690.8(A).",
+     "Cite the section first, then the number. Inspectors and exam writers value the citation as much as the answer."
+    ],
+    "keypoint": "Know the rule, the number and the section for the 125 percent factors, the 120 percent busbar rule and the four disconnect requirements.",
+    "refs": [
+     "NEC 625.43",
+     "NEC 690.13",
+     "NEC 705.12",
+     "NEC 705.20",
+     "NEC 706.15"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "Course Wrap-Up",
+    "body": "This course covered EV charging systems under Article 625, solar photovoltaic systems under Article 690, interconnected sources under Article 705 and energy storage systems under Article 706, with the changes made in the 2023 NEC. The common thread is the pattern of calculation: read the label, apply the correct factor, choose the standard size, check the table, and cite the section. The calculations should be rehearsed until the steps are routine, and the section numbers should be checked against the adopted edition each time.",
+    "bullets": [
+     "EV charging: individual branch circuit, 125 percent for breaker and conductor, disconnect over 60 A or 150 V to ground, GFCI protection for receptacles, load calculation per 220.57 or the managed maximum.",
+     "PV: voltage corrected for cold temperature, two separate 125 percent factors on current, overcurrent protection only where backfeed or Code requires it, rapid shutdown, dc-rated disconnects, markings.",
+     "Interconnection: choose supply side or load side, run the 120 percent test with every source on the busbar, provide source disconnects, labels and documented control settings.",
+     "Energy storage: listed equipment, disconnect in sight or lockable, emergency shutdown for one- and two-family dwellings, working space and local fire code items.",
+     "2023 changes: article reorganizations in 705, rapid shutdown exceptions and label relocation, ESS commissioning and disconnect revisions, and the new Article 750.",
+     "Next steps: keep the worksheets from this course, check your jurisdiction's adopted edition and amendments, and verify any figure in your code book before using it on a permit."
+    ],
+    "keypoint": "Read the rating, apply the factor, choose the standard size, check the table and cite the section.",
+    "info": "This course teaches how to apply the Code. It does not replace the NEC text, the manufacturer's instructions or the decisions of the authority having jurisdiction.",
+    "refs": [
+     "NEC Article 625",
+     "NEC Article 690",
+     "NEC Article 705",
+     "NEC Article 706"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "In the 2026 NEC, Article 130 Part II covers:",
+    "opts": [
+     "Fire pump controllers",
+     "Power control systems (PCS)",
+     "Optional standby systems",
+     "Overvoltage protection"
+    ],
+    "correct": 1,
+    "explain": "EC&M's top-25 article, Minnesota DLI's change summary and Electrical Contractor magazine (NECA article) describe Article 130 Part II and note EMS/PCS must be listed (informational notes reference UL 916 and UL 3141). [NEC Art. 130, 130.2, 130.50 (2026)]"
+   },
+   {
+    "q": "For which EVSE is the 625.18 interlock not required?",
+    "opts": [
+     "DC supplies of less than 60 volts dc",
+     "Units installed outdoors",
+     "Any unit rated under 30 A",
+     "All 240-volt ac units"
+    ],
+    "correct": 0,
+    "explain": "An interlock is not required for dc supplies of less than 60 volts dc. [NEC 625.18]"
+   },
+   {
+    "q": "Receptacles installed for the connection of electric vehicle charging are required to have:",
+    "opts": [
+     "Surge protection only",
+     "GFCI protection for personnel",
+     "No additional protection",
+     "AFCI protection only"
+    ],
+    "correct": 1,
+    "explain": "Section 625.54 requires GFCI protection for personnel on receptacles installed for EV charging. [NEC 625.54]"
+   },
+   {
+    "q": "A one-family dwelling has an ESS. Which additional function must the ESS include under 706.15(B)?",
+    "opts": [
+     "An automatic fire sprinkler interlock",
+     "A shutdown switch inside the garage only",
+     "An emergency shutdown function that stops power export to premises wiring, with the initiating device readily accessible outside the building",
+     "A rapid shutdown device at each battery module"
+    ],
+    "correct": 2,
+    "explain": "For one- and two-family dwellings, 706.15(B) requires an emergency shutdown function with a readily accessible initiating device outside the building, clearly marked on/off. [NEC 706.15(B)]"
+   },
+   {
+    "q": "12 AWG PV conductors rated 90 C (30 A in Table 310.16) are in a raceway on a roof with a 60 C ambient (correction factor 0.71) and 4 current-carrying conductors (adjustment factor 0.80). What is the adjusted ampacity?",
+    "opts": [
+     "24.0 A",
+     "21.3 A",
+     "17.0 A",
+     "30 A"
+    ],
+    "correct": 2,
+    "explain": "30 A x 0.71 x 0.80 = 17.0 A. Both the correction and adjustment factors must be applied. [NEC 690.8(B), 310.15(B), 310.15(C)(1), Table 310.16]"
+   },
+   {
+    "q": "A premises electrical power system that includes one or more power sources, loads, and can operate in grid-connected or island mode is a:",
+    "opts": [
+     "feeder",
+     "separately derived system",
+     "service",
+     "microgrid system"
+    ],
+    "correct": 3,
+    "explain": "A microgrid system can operate connected to the primary source or in island mode. [NEC Art. 100 (microgrid system)]"
+   },
+   {
+    "q": "Which of the following may serve as the initiation device for the rapid shutdown function?",
+    "opts": [
+     "A smoke detector tied to the inverter",
+     "A fused disconnect located at the array",
+     "Any branch-circuit breaker in the main panel",
+     "A readily accessible switch that plainly indicates whether it is in the on or off position"
+    ],
+    "correct": 3,
+    "explain": "Initiation devices are the service disconnecting means, the PV system disconnecting means, or a readily accessible switch that plainly indicates on and off. [NEC 690.12(C)]"
+   },
+   {
+    "q": "Exposed non-current-carrying metal parts of PV module frames, electrical equipment, and conductor enclosures must be connected to an equipment grounding conductor:",
+    "opts": [
+     "only above 150 volts",
+     "regardless of voltage",
+     "only on dwellings",
+     "only above 50 volts"
+    ],
+    "correct": 1,
+    "explain": "690.43 requires bonding of exposed metal parts to an EGC regardless of system voltage. [NEC 690.43(A)]"
+   },
+   {
+    "q": "Equipment containing overcurrent devices in circuits supplied by multiple sources must be:",
+    "opts": [
+     "painted red",
+     "marked only with the utility",
+     "left unmarked",
+     "marked to indicate the presence of all sources"
+    ],
+    "correct": 3,
+    "explain": "705.30 requires marking where more than one source feeds the equipment. [NEC 705.30]"
+   },
+   {
+    "q": "Mating PV connectors from different manufacturers may be used together only if:",
+    "opts": [
+     "both are rated for 600 volts",
+     "they are installed in a raceway",
+     "they are listed and identified as intermatable",
+     "both have the same color"
+    ],
+    "correct": 2,
+    "explain": "Where mating connectors are not of the identical type and brand, they must be listed and identified for intermatability. [NEC 690.33]"
+   },
+   {
+    "q": "Which description best matches the Article 100/706 definition of an energy storage system?",
+    "opts": [
+     "One or more components assembled together capable of storing energy for use at a future time",
+     "A utility meter with a backup battery",
+     "A device that only converts dc to ac",
+     "A generator driven by an engine"
+    ],
+    "correct": 0,
+    "explain": "The definition of an energy storage system is one or more components assembled together capable of storing energy for use at a future time. [NEC 706.2]"
+   },
+   {
+    "q": "Under 690.9(B), the rating of an overcurrent protective device in a PV system dc circuit must be at least what percentage of the maximum circuit current calculated under 690.8(A)?",
+    "opts": [
+     "80 percent",
+     "125 percent",
+     "100 percent",
+     "156 percent"
+    ],
+    "correct": 1,
+    "explain": "PV overcurrent devices are sized at not less than 125 percent of the 690.8(A) maximum current, unless the assembly is listed for continuous operation at 100 percent of its rating. [NEC 690.9(B)]"
+   },
+   {
+    "q": "Which of the following is required of a source disconnecting means under 705.20?",
+    "opts": [
+     "It must be inside the inverter only",
+     "It must be externally operable without exposing the operator to live parts and plainly indicate open or closed",
+     "It must be a plug and cord",
+     "It must be unmarked"
+    ],
+    "correct": 1,
+    "explain": "705.20 requires an externally operable disconnect that plainly indicates its position and has ratings sufficient for the circuit. [NEC 705.20]"
+   },
+   {
+    "q": "Which of the following may be used to bond PV modules to the mounting structure?",
+    "opts": [
+     "Devices identified and listed for bonding PV modules",
+     "Painted rail clips",
+     "Unlisted self-tapping screws",
+     "Plastic spacers"
+    ],
+    "correct": 0,
+    "explain": "Listed devices that bond module frames to mounting structures are permitted for equipment bonding. [NEC 690.43]"
+   },
+   {
+    "q": "A PV system dc circuit that has an electrical reference to ground that is not solidly grounded is described as:",
+    "opts": [
+     "ungrounded",
+     "bipolar",
+     "functionally grounded",
+     "solidly grounded"
+    ],
+    "correct": 2,
+    "explain": "A functionally grounded PV system has an electrical reference to ground that is not a solid connection to ground, such as through a ground-fault protection device. [NEC Art. 100 (functionally grounded PV system)]"
+   },
+   {
+    "q": "A PV output circuit combines four strings each with an Isc of 10 A and has no overcurrent device. What copper EGC size applies using the assumed overcurrent device value of 690.9(B)?",
+    "opts": [
+     "6 AWG",
+     "12 AWG",
+     "8 AWG",
+     "10 AWG"
+    ],
+    "correct": 2,
+    "explain": "4 x 10 x 1.25 = 50 A; x 1.25 = 62.5 A assumed rating. That exceeds 60 A in Table 250.122, which requires 8 AWG copper. [NEC 690.45, Table 250.122]"
+   },
+   {
+    "q": "Under the 2023 NEC 625.40, more than one EVSE may be supplied by a single branch circuit when:",
+    "opts": [
+     "An energy management system controls the EVSE loads",
+     "All the EVSE are installed in the same garage",
+     "Each EVSE is rated 120 V",
+     "A GFCI breaker protects the circuit"
+    ],
+    "correct": 0,
+    "explain": "The 2020 rule was strictly one individual branch circuit per EVSE. The 2023 NEC allows sharing under an EMS (625.42, 750.30). Same garage, voltage and GFCI do not by themselves allow sharing. Look in 625.40. [NEC 625.40 (2023); 625.40 (2020)]"
+   },
+   {
+    "q": "What is the maximum dc PV system voltage permitted on or inside a one- or two-family dwelling?",
+    "opts": [
+     "300 volts",
+     "150 volts",
+     "600 volts",
+     "1000 volts"
+    ],
+    "correct": 2,
+    "explain": "690.7 limits dc circuits on or inside one- and two-family dwellings to 600 volts or less. [NEC 690.7]"
+   },
+   {
+    "q": "A 60-ampere, 208Y/120-volt three-phase EVSE is installed. Under Article 625, a separate EVSE disconnecting means is:",
+    "opts": [
+     "Required, since it exceeds 50 A",
+     "Not required, since it is not over 60 A and not over 150 V to ground",
+     "Required, since it is three-phase",
+     "Required, since it is over 120 V line-to-line"
+    ],
+    "correct": 1,
+    "explain": "The thresholds are more than 60 A or more than 150 V to ground. This unit is 60 A (not more) and 120 V to ground. [NEC 625.43]"
+   },
+   {
+    "q": "An inverter has a nameplate continuous output current of 48 A. What is the minimum ampacity of the output circuit conductors before correction and adjustment?",
+    "opts": [
+     "75 A",
+     "48 A",
+     "60 A",
+     "50 A"
+    ],
+    "correct": 2,
+    "explain": "48 A x 1.25 = 60 A. [NEC 705.28(A)]"
+   },
+   {
+    "q": "A string of 8 modules each has a rated Voc of 48 V and a temperature correction factor of 1.13. What is the maximum PV system voltage?",
+    "opts": [
+     "434 V",
+     "384 V",
+     "480 V",
+     "542 V"
+    ],
+    "correct": 0,
+    "explain": "8 x 48 = 384 V; x 1.13 = 433.9 V, or about 434 V. [NEC 690.7(A)]"
+   },
+   {
+    "q": "The minimum width of working space in front of electrical equipment such as an EVSE panelboard is:",
+    "opts": [
+     "30 in.",
+     "24 in.",
+     "36 in.",
+     "20 in."
+    ],
+    "correct": 0,
+    "explain": "The working space width must be the width of the equipment or 30 in., whichever is greater. [NEC 110.26(A)(2)]"
+   },
+   {
+    "q": "A single PV string has a module Isc of 12.8 A. What is the minimum overcurrent device rating, as a calculated value, required by 690.9(B) if overcurrent protection is used?",
+    "opts": [
+     "25 A",
+     "20 A",
+     "12.8 A",
+     "16 A"
+    ],
+    "correct": 1,
+    "explain": "Overcurrent devices must be rated not less than 125 percent of the 690.8(A) current. 12.8 x 1.25 = 16 A, and 16 x 1.25 = 20 A. [NEC 690.9(B), 690.8(A)]"
+   },
+   {
+    "q": "6 AWG conductors rated 90 C (75 A in Table 310.16) are in a raceway with 8 current-carrying conductors (adjustment factor 0.70) in a 55 C ambient (correction factor 0.76). What is the adjusted ampacity?",
+    "opts": [
+     "39.9 A",
+     "75 A",
+     "57 A",
+     "52.5 A"
+    ],
+    "correct": 0,
+    "explain": "75 A x 0.76 x 0.70 = 39.9 A. [NEC 690.8(B), 310.15(B), 310.15(C)(1), Table 310.16]"
+   },
+   {
+    "q": "A 48-ampere EVSE requires an overcurrent device rated at least:",
+    "opts": [
+     "70 A",
+     "50 A",
+     "60 A",
+     "48 A"
+    ],
+    "correct": 2,
+    "explain": "48 A x 1.25 = 60 A, a standard size. [NEC 625.41]"
+   },
+   {
+    "q": "Which of the following is acceptable as an isolating device under 690.15?",
+    "opts": [
+     "A plug-in cord set",
+     "A finger-safe fuse holder",
+     "A standard cartridge fuse in a bare clip",
+     "An ordinary snap switch rated 15 A"
+    ],
+    "correct": 1,
+    "explain": "Acceptable isolating devices include listed connectors, finger-safe fuse holders, isolating switches that require a tool to open, and devices listed for the purpose. [NEC 690.15(C)]"
+   },
+   {
+    "q": "An 80-ampere EVSE requires conductors with ampacity of at least 100 A. Using copper with 75 degrees C terminations, the minimum size is:",
+    "opts": [
+     "4 AWG",
+     "2 AWG",
+     "3 AWG",
+     "1 AWG"
+    ],
+    "correct": 2,
+    "explain": "3 AWG copper is rated 100 A at 75 degrees C in Table 310.16. 4 AWG is 85 A. [NEC 210.19(A)(1), Table 310.16]"
+   },
+   {
+    "q": "A PV source circuit charges a 400 amp-hour battery and the maximum charging current multiplied by one hour is below 3 percent of the battery capacity. What is the maximum charging current that qualifies as self-regulated?",
+    "opts": [
+     "Less than 8 A",
+     "Less than 16 A",
+     "Less than 40 A",
+     "Less than 12 A"
+    ],
+    "correct": 3,
+    "explain": "3 percent of 400 Ah is 12 Ah. If charging current x 1 hour is below that, the source is considered self-regulated, provided it is within the battery manufacturer's recommended charge rate. [NEC 690.72]"
+   },
+   {
+    "q": "Two PV strings are connected in parallel. Each string has an Isc of 9 A, the conductors are rated 30 A, and the module maximum series fuse rating is 20 A. What does 690.9(A) require for string overcurrent protection?",
+    "opts": [
+     "A circuit breaker rated 30 A on each string",
+     "A 15 A fuse in the positive conductor only",
+     "A fuse in each string rated 20 A",
+     "None, because the fault current from the other string (9 A) does not exceed the conductor ampacity or the module series fuse rating"
+    ],
+    "correct": 3,
+    "explain": "The most backfeed current into a faulted string is the Isc of the one other string (9 A), which is less than both the 30 A conductor ampacity and the 20 A module rating, so overcurrent protection is not required. [NEC 690.9(A)]"
+   },
+   {
+    "q": "A continuous load is one where the maximum current is expected to continue for how long?",
+    "opts": [
+     "5 hours or more",
+     "1 hour or more",
+     "15 minutes or more",
+     "3 hours or more"
+    ],
+    "correct": 3,
+    "explain": "The NEC defines a continuous load as one expected to continue for 3 hours or more. [NEC Article 100]"
+   },
+   {
+    "q": "A dwelling EVSE has a 7,680 VA nameplate (32 A at 240 V). The load used is:",
+    "opts": [
+     "9,600 VA",
+     "6,144 VA",
+     "7,680 VA",
+     "7,200 VA"
+    ],
+    "correct": 2,
+    "explain": "7,680 VA exceeds 7,200 VA, so the nameplate value is used. [NEC 220.57]"
+   },
+   {
+    "q": "An equipment grounding conductor smaller than 6 AWG that is not routed with the circuit conductors must be protected from physical damage by:",
+    "opts": [
+     "nothing, if it is bare",
+     "a raceway or cable armor, unless installed in hollow spaces of framing and not subject to damage",
+     "tape alone",
+     "a plastic sleeve"
+    ],
+    "correct": 1,
+    "explain": "EGCs smaller than 6 AWG not run with the circuit conductors must be in an identified raceway or cable armor unless in framing hollow spaces and not subject to damage. [NEC 250.120(C), 690.43]"
+   },
+   {
+    "q": "Under Article 625, electrical materials, devices, fittings, and associated equipment must be:",
+    "opts": [
+     "Installed by the utility",
+     "Rated at 600 volts",
+     "Approved by the vehicle maker only",
+     "Listed or labeled"
+    ],
+    "correct": 3,
+    "explain": "Article 625 requires all electrical materials, devices, fittings, and associated equipment to be listed or labeled. [NEC 625.5]"
+   },
+   {
+    "q": "A dwelling has an EVSE with a nameplate rating of 20 A at 240 V (4,800 VA). The load used in the calculation is:",
+    "opts": [
+     "7,200 VA",
+     "4,800 VA",
+     "3,840 VA",
+     "6,000 VA"
+    ],
+    "correct": 0,
+    "explain": "The load is the larger of 7,200 W and the nameplate rating, so 7,200 VA applies. [NEC 220.57]"
+   },
+   {
+    "q": "An inverter has a continuous output current of 20 A. What is the minimum calculated overcurrent device rating?",
+    "opts": [
+     "20 A",
+     "15 A",
+     "25 A",
+     "30 A"
+    ],
+    "correct": 2,
+    "explain": "20 A x 1.25 = 25 A. [NEC 705.30, 705.28]"
+   },
+   {
+    "q": "A complete, environmentally protected unit consisting of solar cells, an inverter, and other components designed to generate ac power when exposed to sunlight is a(n):",
+    "opts": [
+     "PV array",
+     "ac module",
+     "dc-to-dc converter",
+     "charge controller"
+    ],
+    "correct": 1,
+    "explain": "An ac module integrates the PV module and inverter into one unit with an ac output. [NEC Art. 100 (alternating-current module)]"
+   },
+   {
+    "q": "A single PV string with an Isc of 6 A has no overcurrent device. What copper EGC size applies under 690.45 using the assumed overcurrent device value of 690.9(B)?",
+    "opts": [
+     "10 AWG",
+     "12 AWG",
+     "16 AWG",
+     "14 AWG"
+    ],
+    "correct": 3,
+    "explain": "6 x 1.25 x 1.25 = 9.4 A, so Table 250.122 gives 14 AWG, which is also the minimum EGC size allowed in a PV circuit. [NEC 690.45, Table 250.122]"
+   },
+   {
+    "q": "An ESS in a one-family dwelling includes an emergency shutdown function. Which statement about what this function does is correct?",
+    "opts": [
+     "It disconnects the utility service",
+     "It de-energizes the batteries internal cells",
+     "It replaces the ESS disconnecting means",
+     "It stops power export from the ESS to other premises wiring"
+    ],
+    "correct": 3,
+    "explain": "The emergency shutdown stops power export to other premises wiring; it is not the disconnecting means itself. [NEC 706.15(B)]"
+   },
+   {
+    "q": "A homeowner wants to run one 50 A, 240 V circuit to an EV charging receptacle and also tap a second garage receptacle from it for tools. This is:",
+    "opts": [
+     "Permitted if both are 240 V",
+     "Not permitted, since the EV circuit must be an individual branch circuit",
+     "Permitted if the tool receptacle is on the same strap",
+     "Permitted if GFCI protected"
+    ],
+    "correct": 1,
+    "explain": "The EVSE circuit must be individual with no other outlets. [NEC 625.40, 210.17]"
+   },
+   {
+    "q": "Where a building has a PV system, which section governs the required plaque or directory identifying power sources?",
+    "opts": [
+     "690.53",
+     "705.10",
+     "230.2",
+     "110.21"
+    ],
+    "correct": 1,
+    "explain": "690.56 directs identification of power sources to the directory requirements of 705.10. [NEC 690.56, 705.10]"
+   },
+   {
+    "q": "A PV system has one string of series-connected modules connected to an inverter. There are no batteries, no parallel strings, and no backfeed sources, and the module short-circuit current does not exceed the conductor ampacity or the module maximum series fuse rating. Is an overcurrent device required in the string circuit?",
+    "opts": [
+     "Yes, a circuit breaker is required at the roof",
+     "Yes, but only in the positive conductor",
+     "No, overcurrent protection is not required under these conditions",
+     "Yes, a fuse is required in each string conductor"
+    ],
+    "correct": 2,
+    "explain": "690.9(A) does not require overcurrent protection where there are no external sources of fault current and all available short-circuit currents are within the conductor ampacity and the module maximum series fuse rating. [NEC 690.9(A)]"
+   },
+   {
+    "q": "Why must PV connectors be noninterchangeable with receptacles of other systems on the premises?",
+    "opts": [
+     "To allow connection to ac receptacles",
+     "To eliminate the need for grounding",
+     "To reduce the cost of the connector",
+     "To prevent PV dc circuits from being connected to other wiring systems by mistake"
+    ],
+    "correct": 3,
+    "explain": "Noninterchangeable connectors prevent misconnection of dc PV conductors to ac or other circuits. [NEC 690.33]"
+   },
+   {
+    "q": "Upon loss of voltage from the utility, EVSE must be arranged so that:",
+    "opts": [
+     "The GFCI resets",
+     "The vehicle automatically powers the building",
+     "Energy cannot be back-fed through the EVSE to the premises wiring, unless permitted by 625.48 and 702.6",
+     "The disconnect closes"
+    ],
+    "correct": 2,
+    "explain": "Section 625.46 requires means to prevent back-feed through the EVSE on loss of primary source, unless bidirectional operation is permitted. [NEC 625.46]"
+   },
+   {
+    "q": "Who is permitted to install PV system equipment and its associated wiring and interconnections?",
+    "opts": [
+     "Any homeowner",
+     "Only licensed roofers",
+     "Only qualified persons",
+     "Only utility employees"
+    ],
+    "correct": 2,
+    "explain": "690.4 requires the installation to be performed only by qualified persons. [NEC 690.4(C)]"
+   },
+   {
+    "q": "Upon loss of voltage in the primary source, an electric power production source must:",
+    "opts": [
+     "switch to the grounded conductor",
+     "operate in parallel",
+     "automatically disconnect from the primary source and not re-energize until the source is restored",
+     "continue to export power"
+    ],
+    "correct": 2,
+    "explain": "705.40 prohibits energizing the primary source when it has lost voltage. [NEC 705.40]"
+   },
+   {
+    "q": "An electric power production system operating in parallel with and capable of delivering energy to an electric primary source supply system is called a(n):",
+    "opts": [
+     "battery system",
+     "stand-alone system",
+     "interactive system",
+     "isolated system"
+    ],
+    "correct": 2,
+    "explain": "An interactive system operates in parallel with the primary source and can deliver energy to it. [NEC Art. 100 (interactive system)]"
+   },
+   {
+    "q": "Four PV strings, each with a module Isc of 8.7 A, are paralleled in a combiner. What is the maximum circuit current of the PV output circuit under 690.8(A)?",
+    "opts": [
+     "34.8 A",
+     "54.4 A",
+     "43.5 A",
+     "37.5 A"
+    ],
+    "correct": 2,
+    "explain": "4 x 8.7 A = 34.8 A, multiplied by 125 percent equals 43.5 A. [NEC 690.8(A)]"
+   },
+   {
+    "q": "Six PV source circuits, each with an Isc of 5.5 A, are combined in parallel. What is the maximum circuit current of the PV output circuit under 690.8(A)?",
+    "opts": [
+     "27.5 A",
+     "41.25 A",
+     "51.6 A",
+     "33 A"
+    ],
+    "correct": 1,
+    "explain": "6 x 5.5 = 33 A; x 1.25 = 41.25 A. [NEC 690.8(A)]"
+   },
+   {
+    "q": "What is the maximum continuous EVSE load on a 30-ampere branch circuit?",
+    "opts": [
+     "27 A",
+     "30 A",
+     "20 A",
+     "24 A"
+    ],
+    "correct": 3,
+    "explain": "80 percent of 30 A is 24 A. [NEC 625.42, 625.41]"
+   }
+  ],
+  "isFinal": true
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">EV, Solar and Energy Storage Systems per NEC 2023</div>
+      <div class="cert-detail">4.0 CE hours · Journeyman & Master Electrician<br>2023 NEC (NFPA 70-2023)<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>

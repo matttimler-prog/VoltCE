@@ -1,0 +1,3305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service and Load Calculations per NEC 2023 | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">Service and Load Calculations per NEC 2023</div>
+      <div class="pills">
+        <span class="pill red">4.0 CE hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">NEC Arts. 220, 230, 240</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds (total 4 hours)
+const MOD_MINS = [50*60, 70*60, 70*60, 50*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "Load calculation fundamentals",
+  "time": "50 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "How Article 220 is organized and where each part is used",
+   "Nominal calculation voltages and the 220.5 rounding rule",
+   "Continuous and noncontinuous loads and the 125 percent factor",
+   "Termination temperatures and conductor selection from Table 310.16",
+   "What a demand factor is and where the NEC allows one",
+   "The demand factor tables used most often (220.42, 220.44, 220.53, 220.56)",
+   "A worked continuous-load sizing example including the 240.4(D) check",
+   "Code book exercise to locate every calculation table"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "How Article 220 Is Organized",
+    "body": "Every service, feeder and branch-circuit size starts with a load calculation, and in the 2023 NEC those rules live in Article 220, <b>Branch-Circuit, Feeder, and Service Load Calculations</b>. The article is arranged in parts so that you can move from the smallest circuit up to the whole service. Knowing which part you are in tells you whether you are looking at a minimum rule for one circuit or a demand-adjusted rule for a feeder or service.",
+    "table": {
+     "h": [
+      "Part of Article 220",
+      "Subject",
+      "Typical use in this course"
+     ],
+     "r": [
+      [
+       "Part I",
+       "General requirements, including nominal voltages and rounding in 220.5",
+       "Setting the calculation voltage and rounding amperes"
+      ],
+      [
+       "Part II",
+       "Branch-circuit load calculations, including general lighting (220.12) and receptacle outlet loads (220.14)",
+       "Unit loads per square foot, small-appliance and receptacle loads"
+      ],
+      [
+       "Part III",
+       "Feeder and service load calculations (the standard method), including demand factors for lighting, appliances, ranges, dryers, heating and neutral",
+       "The dwelling standard method and commercial feeder loads"
+      ],
+      [
+       "Part IV",
+       "Optional feeder and service load calculations, including 220.82, 220.83 and 220.84",
+       "Optional dwelling method, existing dwellings, multifamily"
+      ],
+      [
+       "Part V",
+       "Farm load calculations",
+       "Not covered in this course"
+      ]
+     ]
+    },
+    "bullets": [
+     "Article 220 tells you how large the load is. Other articles tell you what to do with the number: Article 215 for feeders, Article 230 for services, Article 240 for overcurrent protection, and Article 310 for conductor ampacity.",
+     "Within Article 220, rules for one circuit are in Part II. Demand factors that reduce a group of loads for a feeder or service are in Parts III and IV. A demand factor is never valid for sizing a single branch circuit.",
+     "Tab the first page of each part in your code book now. You will move between Parts II, III and IV on almost every problem in this course.",
+     "Always confirm the edition adopted by the authority having jurisdiction. Wisconsin work is governed by the edition the state has adopted, and section numbers can move between editions."
+    ],
+    "info": "This course uses 2023 NEC numbering throughout. Load calculations are in Article 220 in the 2023 edition. The 2026 edition reorganizes the calculation rules, so when you work under a different edition verify every section number against that edition (NFPA 70-2026).",
+    "keypoint": "Article 220 is built in layers: branch-circuit loads (Part II) feed into feeder and service loads (Part III) or the optional methods (Part IV), and you must know which layer a rule belongs to before you use it.",
+    "refs": [
+     "NEC Article 220",
+     "NEC 220.5"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "Calculation Voltage and Rounding (220.5)",
+    "body": "Section 220.5 settles two details that otherwise cause small but real differences between answers. First, calculations are performed using the nominal system voltages in the section, not the measured voltage at the panel. Second, when a calculation ends in a fraction of an ampere, the section tells you when to round up and when to drop the fraction. Using these rules consistently is what makes your answer match the answer key on the exam and the plan reviewer's check.",
+    "table": {
+     "h": [
+      "Nominal system voltage",
+      "Voltage used in the calculation"
+     ],
+     "r": [
+      [
+       "120/240 V single-phase",
+       "240 V for single-phase VA to amperes (120 V for line-to-neutral loads)"
+      ],
+      [
+       "208Y/120 V three-phase",
+       "208 V line to line, using 1.732 for three-phase"
+      ],
+      [
+       "240 V",
+       "240 V"
+      ],
+      [
+       "480Y/277 V three-phase",
+       "480 V line to line, using 1.732 for three-phase"
+      ]
+     ]
+    },
+    "step_list": [
+     "Divide the load in VA by the nominal voltage. A 34,445 VA single-phase load at 240 V gives 34,445 / 240 = 143.52 A.",
+     "Look at the digit after the decimal point. 0.52 is 0.5 or larger, so round up to 144 A.",
+     "A load of 26,860 VA at 240 V is 26,860 / 240 = 111.92 A, which rounds up to 112 A.",
+     "A load of 21,450 VA at 240 V is 21,450 / 240 = 89.375 A. The fraction is 0.375, which is less than 0.5, so the answer is 89 A.",
+     "Round only the final amperes. Do not round intermediate VA figures, because rounding early can shift the result by a full ampere."
+    ],
+    "warning": "Rounding down a fraction of 0.5 or larger understates the load. Rounding up everything is also wrong on an exam that asks for the Code-based answer.",
+    "keypoint": "Calculate with nominal voltages (for example 120/240 or 208Y/120), then round the final amperes: a fraction of 0.5 or larger goes up to the next whole ampere, and a smaller fraction is dropped.",
+    "refs": [
+     "NEC 220.5"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "Continuous and Noncontinuous Loads",
+    "body": "A <b>continuous load</b> is one in which the maximum current is expected to continue for three hours or more (Article 100 definition). Lighting in a store, an electric vehicle charger and many process loads are continuous. A <b>noncontinuous load</b> runs for shorter periods. Conductors and overcurrent devices heat up more under long-duration current, so the NEC adds a margin: the continuous portion is counted at 125 percent when circuits, feeders and services are sized, while the noncontinuous portion is counted at 100 percent.",
+    "def_grid": [
+     {
+      "term": "Branch circuits",
+      "body": "210.19(A)(1) sets the minimum conductor ampacity and 210.20(A) sets the minimum overcurrent device rating at noncontinuous load plus 125 percent of continuous load."
+     },
+     {
+      "term": "Feeders",
+      "body": "215.2(A)(1) applies the same 125 percent margin to feeder conductors, and 215.3 does so for feeder overcurrent protection."
+     },
+     {
+      "term": "Services",
+      "body": "230.42 requires service-entrance conductors to carry the calculated load including the 125 percent continuous factor."
+     },
+     {
+      "term": "Listed for 100 percent",
+      "body": "An assembly that includes the overcurrent device may be permitted to carry the continuous load at 100 percent where it is listed for that duty. Check the listing before relying on this."
+     }
+    ],
+    "bullets": [
+     "Minimum rating = (noncontinuous load) + (1.25 x continuous load). Both loads are in amperes or both in VA, never mixed.",
+     "Examples of loads that are usually continuous: store and office lighting, parking lot lighting, EVSE (625.42 treats EVSE loads as continuous), sign lighting and some HVAC.",
+     "Examples of usually noncontinuous loads: receptacles for general-purpose use, a clothes dryer, a range and most cycling appliances.",
+     "In a lighting-only commercial calculation, apply 125 percent to the lighting VA first, and then add the rest of the loads at their own factors."
+    ],
+    "keypoint": "The minimum size of a circuit, feeder or service is the noncontinuous load plus 125 percent of the continuous load, and this margin is built into the load before conductors and overcurrent devices are chosen.",
+    "refs": [
+     "NEC 220.18",
+     "NEC 210.19(A)(1)",
+     "NEC 210.20(A)",
+     "NEC 215.2(A)(1)",
+     "NEC 230.42",
+     "NEC Article 100"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "Termination Temperature and the 125 Percent Result",
+    "body": "After the 125 percent margin is applied, a conductor must still be chosen from Table 310.16. Section 110.14(C) adds a second check: the conductor cannot be used at an ampacity higher than the temperature rating of the equipment terminations allows. In practice that means you pick the column in Table 310.16 that matches the lowest-rated termination in the circuit. For many circuits over 100 A the 75°C column is the column to use.",
+    "table": {
+     "h": [
+      "Copper size (AWG)",
+      "60°C column (A)",
+      "75°C column (A)"
+     ],
+     "r": [
+      [
+       "12",
+       "20",
+       "25"
+      ],
+      [
+       "10",
+       "30",
+       "35"
+      ],
+      [
+       "8",
+       "40",
+       "50"
+      ],
+      [
+       "6",
+       "55",
+       "65"
+      ],
+      [
+       "4",
+       "70",
+       "85"
+      ],
+      [
+       "3",
+       "85",
+       "100"
+      ],
+      [
+       "2",
+       "95",
+       "115"
+      ],
+      [
+       "1",
+       "110",
+       "130"
+      ],
+      [
+       "1/0",
+       "125",
+       "150"
+      ],
+      [
+       "2/0",
+       "145",
+       "175"
+      ],
+      [
+       "3/0",
+       "165",
+       "200"
+      ],
+      [
+       "4/0",
+       "195",
+       "230"
+      ]
+     ]
+    },
+    "step_list": [
+     "Example: a continuous load of 40 A on a circuit whose equipment terminals are rated only 60°C.",
+     "Multiply by 125 percent: 40 x 1.25 = 50 A minimum ampacity.",
+     "Using the 60°C column of Table 310.16, 8 AWG copper is 40 A, which is too small. 6 AWG copper is 55 A and meets the 50 A requirement.",
+     "If the terminals are rated 75°C, 8 AWG copper is 50 A in the 75°C column and the smaller conductor can be used.",
+     "The 90°C column may be used for ampacity adjustment and correction calculations, but the final ampacity cannot exceed the value from the termination column."
+    ],
+    "info": "Equipment generally is marked with its terminal temperature rating. When it is not marked, 110.14(C) supplies the default assumptions based on circuit rating and conductor size.",
+    "keypoint": "Size the conductor from the Table 310.16 column that matches the termination temperature rating, and use the 125 percent result as the minimum ampacity, not the load alone.",
+    "refs": [
+     "NEC 110.14(C)",
+     "Table 310.16",
+     "NEC 210.19(A)(1)"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Demand Factors: What They Are and Where They Are Allowed",
+    "body": "Not every connected load runs at once. A <b>demand factor</b> is a percentage that converts the connected load of a group of loads into the maximum load that is realistically expected, and the NEC allows it only where a specific section or table says so. Used correctly, demand factors keep services economical and safe. Used outside the sections that authorize them, they undersize the equipment. Treat each demand factor as a rule that belongs to a specific table and a specific kind of load.",
+    "def_grid": [
+     {
+      "term": "Connected load",
+      "body": "The sum of the ratings of the loads before any reduction. For most appliances this is the nameplate rating in VA or watts."
+     },
+     {
+      "term": "Demand factor",
+      "body": "The ratio of the maximum demand to the total connected load, expressed as a percentage. For example, 35 percent means only 35 percent of that portion of the load is counted."
+     },
+     {
+      "term": "Demand load",
+      "body": "The connected load after the demand factor has been applied. This is the value carried into the feeder or service size."
+     },
+     {
+      "term": "Where factors do not apply",
+      "body": "Branch circuits are not reduced by demand factors. A 20 A receptacle circuit is sized for its own load and overcurrent device, not for the group."
+     }
+    ],
+    "bullets": [
+     "Dwelling lighting and small-appliance loads are grouped and then reduced by Table 220.42.",
+     "Nondwelling receptacle loads are reduced by Table 220.44 after the first 10 kVA.",
+     "Four or more fastened-in-place dwelling appliances are reduced to 75 percent under 220.53.",
+     "Commercial cooking equipment is reduced by Table 220.56.",
+     "Always apply a factor to the right slice of the load. For instance, the first 3,000 VA of dwelling lighting stays at 100 percent and only the portion above 3,000 VA is multiplied by 35 percent."
+    ],
+    "keypoint": "A demand factor may be used only where a section of the NEC permits it, and only for the loads and the occupancy that section names.",
+    "refs": [
+     "NEC Article 220",
+     "Table 220.42",
+     "Table 220.44"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Demand Factor Tables You Will Use Most",
+    "body": "Four sets of factors appear in almost every calculation in this course. Learn what each one applies to and the slice it applies to. The values below should be confirmed against your code book when you work problems, but you should be able to recite the common ones from memory.",
+    "table": {
+     "h": [
+      "Rule",
+      "Load it applies to",
+      "Factor"
+     ],
+     "r": [
+      [
+       "Table 220.42 (dwelling unit)",
+       "General lighting, small-appliance and laundry loads combined",
+       "First 3,000 VA at 100%; 3,001 to 120,000 VA at 35%; above 120,000 VA at 25%"
+      ],
+      [
+       "Table 220.42 (hospitals)",
+       "General lighting",
+       "First 50,000 VA at 40%; above 50,000 VA at 20%"
+      ],
+      [
+       "Table 220.42 (hotels and motels)",
+       "General lighting",
+       "First 20,000 VA at 50%; 20,001 to 100,000 VA at 40%; above 100,000 VA at 30%"
+      ],
+      [
+       "Table 220.42 (warehouses)",
+       "General lighting",
+       "First 12,500 VA at 100%; above 12,500 VA at 50%"
+      ],
+      [
+       "Table 220.42 (all others)",
+       "General lighting",
+       "100%"
+      ],
+      [
+       "Table 220.44",
+       "Nondwelling receptacle loads",
+       "First 10 kVA at 100%; remainder at 50%"
+      ],
+      [
+       "220.53",
+       "Four or more fastened-in-place dwelling appliances (not ranges, dryers, heating or A/C)",
+       "75%"
+      ],
+      [
+       "Table 220.56",
+       "Commercial electric cooking and kitchen equipment",
+       "1 to 2 units 100%; 3 units 90%; 4 units 80%; 5 units 70%; 6 or more 65%"
+      ]
+     ]
+    },
+    "step_list": [
+     "Dwelling lighting example: 15,000 VA of lighting and small-appliance load. 3,000 + (15,000 - 3,000) x 0.35 = 3,000 + 4,200 = 7,200 VA.",
+     "Nondwelling receptacle example: 100 receptacles x 180 VA = 18,000 VA. 10,000 + (18,000 - 10,000) x 0.50 = 14,000 VA.",
+     "Appliance example: four appliances totaling 7,200 VA x 0.75 = 5,400 VA."
+    ],
+    "keypoint": "Memorize the shape of Tables 220.42 and 220.44 and the 75 percent rule in 220.53, because they appear in nearly every dwelling and commercial calculation.",
+    "refs": [
+     "Table 220.42",
+     "Table 220.44",
+     "NEC 220.53",
+     "Table 220.56"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "Worked Example: Sizing for a Continuous Load",
+    "body": "A feeder-style circuit supplies 20 A of continuous load and 8 A of noncontinuous load. The goal is to find the minimum ampacity, the overcurrent device, and the smallest copper conductor that satisfies the 125 percent rule, the standard device ratings and the small-conductor limits of 240.4(D). This example shows why the first conductor that fits the ampacity is not always the correct one.",
+    "step_list": [
+     "Continuous portion: 20 A x 1.25 = 25 A.",
+     "Add the noncontinuous portion: 25 + 8 = 33 A. This is the minimum conductor ampacity under 210.19(A)(1) and the minimum overcurrent device rating under 210.20(A).",
+     "Standard device rating: 33 A is not a standard size in Table 240.6(A). The next higher standard size is 35 A, which 240.4(B) permits to be used where its conditions are met.",
+     "First conductor trial using the 75°C column of Table 310.16: 10 AWG copper is 35 A, which is at least 33 A.",
+     "Check 240.4(D): 10 AWG copper may not be protected at more than 30 A. A 35 A device is above that limit, so 10 AWG fails with a 35 A device. A 30 A device is below the 33 A minimum, so that does not work either.",
+     "Move up one size: 8 AWG copper is 50 A at 75°C, and 240.4(D) does not limit 8 AWG. Use 8 AWG copper with a 35 A overcurrent device.",
+     "Result: 8 AWG copper, 35 A overcurrent device, minimum ampacity 33 A. The conductor is protected because 35 A does not exceed the 50 A ampacity."
+    ],
+    "warning": "Do not stop at the first conductor whose Table 310.16 ampacity exceeds the load. For 14, 12 and 10 AWG copper, 240.4(D) caps the overcurrent device at 15, 20 and 30 A.",
+    "keypoint": "The smallest conductor whose ampacity meets the 125 percent result may still be too small once 240.4(D) limits and the next standard device size are considered.",
+    "refs": [
+     "NEC 210.19(A)",
+     "NEC 210.20(A)",
+     "NEC 240.4",
+     "Table 240.6(A)",
+     "Table 310.16"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Code Book Lookup Exercise: Finding the Calculation Tables",
+    "body": "Calculation problems on an exam and on a job are only as fast as your ability to find the right table. In this exercise you will locate each table and section on your own, read the single value requested, and record the page number in your book. Keep the record, because the page numbers become the start of your personal index.",
+    "step_list": [
+     "Open the table of contents or the Article 220 index. Locate Part III (feeder and service load calculations) and place a tab at its first page. Record the page: ____.",
+     "Find <b>Table 220.12</b>, General Lighting Loads by Occupancy. Read the row for dwelling units. The unit load is <b>3 VA per square foot</b>. Record the page: ____.",
+     "Find <b>Table 220.42</b>, Lighting Load Demand Factors. For dwelling units the first 3,000 VA is at 100 percent, then 35 percent through 120,000 VA. Record the page: ____.",
+     "Find <b>Table 220.44</b>, Demand Factors for Nondwelling Receptacle Loads. Read the factor for the first 10 kVA (100 percent) and for the remainder (50 percent). Record the page: ____.",
+     "Find <b>Table 220.54</b> (clothes dryers) and <b>Table 220.55</b> (household cooking equipment). In Table 220.55, Column C, read the demand for one range rated not over 12 kW: <b>8 kW</b>. Record both pages: ____ and ____.",
+     "Find <b>Table 220.56</b>, kitchen equipment demand factors. Read the factor for six or more units: <b>65 percent</b>. Record the page: ____.",
+     "Find the optional methods, <b>220.82</b>, <b>220.83</b> and <b>220.84</b>, with <b>Table 220.84</b>. Note the minimum service size stated in 220.82(A) (100 amperes). Record the pages: ____, ____, ____.",
+     "Add the supporting tables used in later modules: Table 240.6(A), Table 310.16, Chapter 9 Table 8, Table 250.122 and Table 450.3(B). Record all five pages."
+    ],
+    "info": "Tabs and an index should also record the notes under each table. Several tables, including Table 220.55, have notes that change the answer.",
+    "keypoint": "Fast, accurate calculations depend on knowing exactly where each table and optional method lives in your code book.",
+    "refs": [
+     "Table 220.12",
+     "Table 220.42",
+     "Table 220.44",
+     "Table 220.55",
+     "Table 220.56",
+     "NEC 220.82"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A retail store has 6 linear feet of show window. What is the minimum show-window lighting load at 200 VA per linear foot?",
+    "opts": [
+     "1,500 VA",
+     "1,200 VA",
+     "900 VA",
+     "1,080 VA"
+    ],
+    "correct": 1,
+    "explain": "6 ft × 200 VA = 1,200 VA. [NEC 220.43(A)]"
+   },
+   {
+    "q": "A copper feeder carries a 290 A noncontinuous load. Using the 75°C column (terminations rated 75°C), what is the smallest conductor permitted?",
+    "opts": [
+     "300 kcmil",
+     "400 kcmil",
+     "500 kcmil",
+     "350 kcmil"
+    ],
+    "correct": 3,
+    "explain": "Smallest copper conductor with 75°C ampacity ≥ 290 A is 350 kcmil (310 A). [NEC Table 310.16, 110.14(C)]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 45 A in 44°C ambient and 5 current-carrying conductors in the raceway. What is the smallest size permitted?",
+    "opts": [
+     "3 AWG",
+     "8 AWG",
+     "6 AWG",
+     "4 AWG"
+    ],
+    "correct": 2,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.87 (Table 310.15(B)(1)). Adjustment factor 80% for 5 conductors (310.15(C)(1)). 6 AWG: 75 A × 0.87 × 0.8 = 52.2 A ≥ 45 A, and its 75°C ampacity (65 A) is also ≥ 45 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "A feeder carries 525 A of noncontinuous load in 4 parallel sets of copper conductors. Using the 75°C column, what is the smallest conductor size in each set?",
+    "opts": [
+     "1/0 AWG",
+     "2/0 AWG",
+     "1 AWG",
+     "3/0 AWG"
+    ],
+    "correct": 0,
+    "explain": "Per set: 525 ÷ 4 = 131.2 A. Smallest Cu with 75°C ampacity ≥ 131.2 A is 1/0 AWG (150 A). Parallel conductors must be 1/0 AWG or larger. [NEC 310.10(G), 215.2(A), Table 310.16]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 3,600 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: freezer 500 VA, wine refrigerator 400 VA, whole-house vacuum 1,100 VA, water heater 4,500 VA, trash compactor 1,000 VA; electric dryer 5,500 VA; one 10 kW electric range; central A/C 4,200 VA and electric heat 12,000 VA (not run together). What is the calculated service load in amperes at 240 V?",
+    "opts": [
+     "92.4 A",
+     "184.8 A",
+     "160.1 A",
+     "177.6 A"
+    ],
+    "correct": 2,
+    "explain": "General lighting 3,600 × 3 = 10,800 VA; + 3,000 small appliance + 1,500 laundry = 15,300 VA. Demand (220.42): 3,000 + 35% × (15,300 − 3,000) = 7,305 VA. Fixed appliances 7,500 VA × 75% (four or more) = 5,625 VA. Dryer 5,500 VA (5,000 VA minimum). Range: 8,000 VA (12 kW or less, Col. C). Larger of A/C or heat: 12,000 VA. Total = 38,430 VA ÷ 240 V = 160.1 A. [NEC Article 220, Part III]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 3,100 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: dishwasher 1,200 VA, microwave 1,500 VA, whole-house vacuum 1,100 VA, garbage disposal 800 VA, wine refrigerator 400 VA, trash compactor 1,000 VA; electric dryer 6,000 VA; one 12 kW electric range; central A/C 6,000 VA and electric heat 12,000 VA (not run together). What heating/cooling load is included in the service calculation?",
+    "opts": [
+     "18,000 VA",
+     "12,000 VA",
+     "6,000 VA",
+     "7,800 VA"
+    ],
+    "correct": 1,
+    "explain": "General lighting 3,100 × 3 = 9,300 VA; + 3,000 small appliance + 1,500 laundry = 13,800 VA. Demand (220.42): 3,000 + 35% × (13,800 − 3,000) = 6,780 VA. Fixed appliances 6,000 VA × 75% (four or more) = 4,500 VA. Dryer 6,000 VA (5,000 VA minimum). Range: 8,000 VA (12 kW or less, Col. C). Larger of A/C or heat: 12,000 VA. Total = 37,280 VA ÷ 240 V = 155.3 A. [NEC 220.60]"
+   }
+  ]
+ },
+ {
+  "title": "Dwelling units: standard method",
+  "time": "70 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "General lighting at 3 VA per square foot and what area is counted",
+   "Small-appliance and laundry loads and the 220.14(J) lighting inclusion",
+   "Applying Table 220.42 to the combined lighting load",
+   "The 75 percent rule for four or more fastened-in-place appliances",
+   "Dryers (220.54) and household ranges (220.55, including Note 1)",
+   "Heating, air conditioning and noncoincident loads (220.51, 220.60)",
+   "The neutral load and the 70 percent allowance above 200 A",
+   "A complete standard-method dwelling calculation and common errors"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "General Lighting Load for a Dwelling (220.12)",
+    "body": "The first line of a dwelling calculation is the general lighting load. Section 220.12 and Table 220.12 set the unit load for a dwelling unit at 3 VA per square foot. The floor area is computed from the outside dimensions of the dwelling, and the area is the sum of the floor areas of every level, not just the footprint. Open porches, garages and unused or unfinished spaces that are not adaptable for future use are not counted.",
+    "def_grid": [
+     {
+      "term": "Counted",
+      "body": "Finished living area on each level, including hallways, closets, finished basement space and finished attic space, measured using outside dimensions of the building."
+     },
+     {
+      "term": "Not counted",
+      "body": "Open porches, garages, and unused or unfinished spaces that cannot be adapted for future use, such as an unfinished attic with no stairs and no headroom."
+     },
+     {
+      "term": "Why 3 VA",
+      "body": "The unit load is an allowance for the lighting and general-use receptacle outlets that will be installed, not a count of actual luminaires."
+     },
+     {
+      "term": "Result",
+      "body": "General lighting VA = counted square feet x 3 VA. This figure is later combined with the small-appliance and laundry loads."
+     }
+    ],
+    "step_list": [
+     "A two-story dwelling is 30 ft by 40 ft on the outside, with an attached garage of 20 ft by 24 ft and an open front porch of 6 ft by 20 ft.",
+     "Floor area of each story: 30 x 40 = 1,200 sq ft. Two stories: 2 x 1,200 = 2,400 sq ft.",
+     "The garage (480 sq ft) and the open porch (120 sq ft) are excluded.",
+     "General lighting load: 2,400 sq ft x 3 VA = 7,200 VA. This is the same figure used in the standard method example later in this module."
+    ],
+    "keypoint": "General lighting for a dwelling is 3 VA times the outside-dimension floor area of all finished levels, excluding open porches, garages and unused spaces that are not adaptable for future use.",
+    "refs": [
+     "NEC 220.12",
+     "Table 220.12"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "Receptacles in the Lighting Load, Small-Appliance and Laundry Circuits",
+    "body": "In a dwelling, the 3 VA per square foot figure covers more than lighting. Section 220.14(J) includes the general-use receptacle outlets and lighting outlets in the dwelling in that unit load, so you do not count individual receptacles. Two other dwelling loads are added by fixed amounts. Section 220.52(A) requires 1,500 VA for each of at least two 20 A small-appliance branch circuits, and 220.52(B) adds 1,500 VA for the laundry branch circuit.",
+    "table": {
+     "h": [
+      "Load",
+      "Basis",
+      "VA in the standard method"
+     ],
+     "r": [
+      [
+       "General lighting and general-use receptacles",
+       "3 VA x outside-dimension floor area (220.12, 220.14(J))",
+       "Computed (7,200 VA for 2,400 sq ft)"
+      ],
+      [
+       "Small-appliance branch circuits",
+       "1,500 VA x at least 2 circuits (220.52(A))",
+       "3,000 VA minimum"
+      ],
+      [
+       "Laundry branch circuit",
+       "1,500 VA (220.52(B))",
+       "1,500 VA"
+      ],
+      [
+       "Total before Table 220.42",
+       "Sum of the three lines",
+       "11,700 VA for the example dwelling"
+      ]
+     ]
+    },
+    "bullets": [
+     "Small-appliance circuits serve receptacle outlets in the kitchen, pantry, dining room and similar areas. Their number is set in 210.11(C)(1).",
+     "A separate laundry circuit is required in 210.11(C)(2), and its load is counted even if the owner has not installed the washer yet.",
+     "If the dwelling has more than two small-appliance circuits, each additional circuit is counted at 1,500 VA.",
+     "These three loads are added together before the Table 220.42 demand factor is applied, which is the subject of the next slide."
+    ],
+    "keypoint": "Count 3 VA per square foot for lighting and general-use receptacles, then add 3,000 VA for two small-appliance circuits and 1,500 VA for the laundry circuit.",
+    "refs": [
+     "NEC 220.14(J)",
+     "NEC 220.52",
+     "NEC 210.11(C)"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Applying Table 220.42 to the Combined Lighting Load",
+    "body": "The dwelling lighting, small-appliance and laundry loads are combined into one number and reduced by Table 220.42. The table keeps the first 3,000 VA at 100 percent, takes 35 percent of the amount from 3,001 through 120,000 VA, and takes 25 percent of anything above 120,000 VA. Because most dwellings are far below 120,000 VA, the working formula is usually 3,000 plus 35 percent of the remainder.",
+    "table": {
+     "h": [
+      "Dwelling area (sq ft)",
+      "Lighting at 3 VA (VA)",
+      "Plus 4,500 VA small-appliance and laundry (VA)",
+      "Demand load, 3,000 + 35% of excess (VA)"
+     ],
+     "r": [
+      [
+       "1,500",
+       "4,500",
+       "9,000",
+       "3,000 + 0.35 x 6,000 = 5,100"
+      ],
+      [
+       "2,000",
+       "6,000",
+       "10,500",
+       "3,000 + 0.35 x 7,500 = 5,625"
+      ],
+      [
+       "2,400",
+       "7,200",
+       "11,700",
+       "3,000 + 0.35 x 8,700 = 6,045"
+      ],
+      [
+       "3,000",
+       "9,000",
+       "13,500",
+       "3,000 + 0.35 x 10,500 = 6,675"
+      ]
+     ]
+    },
+    "step_list": [
+     "Add the three loads: 7,200 + 3,000 + 1,500 = 11,700 VA.",
+     "First 3,000 VA at 100 percent: 3,000 VA.",
+     "Remainder: 11,700 - 3,000 = 8,700 VA.",
+     "Remainder at 35 percent: 8,700 x 0.35 = 3,045 VA.",
+     "Demand load: 3,000 + 3,045 = 6,045 VA. This is the first line of the standard method total."
+    ],
+    "warning": "The 35 percent factor applies only to the portion above 3,000 VA. Multiplying all 11,700 VA by 35 percent gives 4,095 VA, which understates the load by 1,950 VA.",
+    "keypoint": "For a typical dwelling the demand lighting load is 3,000 VA plus 35 percent of everything above 3,000 VA.",
+    "refs": [
+     "Table 220.42",
+     "NEC 220.52",
+     "NEC 220.12"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Fastened-in-Place Appliances: the 75 Percent Rule (220.53)",
+    "body": "A dwelling has several fixed appliances such as a dishwasher, disposal, water heater, trash compactor and attic fan. When four or more appliances are fastened in place, permanently connected or located to be on a specific circuit, 220.53 permits the total of those appliances to be taken at 75 percent. The rule excludes the appliances that have their own rules: ranges and other cooking equipment (220.55), clothes dryers (220.54), space heating (220.51) and air conditioning, and the small-appliance and laundry circuits (220.52).",
+    "def_grid": [
+     {
+      "term": "Qualifies",
+      "body": "Water heater, dishwasher, garbage disposal, trash compactor, attic fan, built-in microwave on a specific circuit, and similar appliances fastened in place or on an individual circuit."
+     },
+     {
+      "term": "Excluded",
+      "body": "Ranges, wall ovens, cooktops, clothes dryers, electric space heating, air conditioning and the 220.52 small-appliance and laundry circuits."
+     },
+     {
+      "term": "Count",
+      "body": "Four or more qualifying appliances are required. With three or fewer the full nameplate total (100 percent) is used."
+     },
+     {
+      "term": "Basis",
+      "body": "Use the nameplate rating in VA. If the nameplate is in amperes, multiply by the voltage."
+     }
+    ],
+    "step_list": [
+     "Qualifying appliances: water heater 4,500 VA, dishwasher 1,200 VA, disposal 900 VA, attic fan 600 VA. Total = 4,500 + 1,200 + 900 + 600 = 7,200 VA.",
+     "There are four appliances, so 220.53 applies: 7,200 x 0.75 = 5,400 VA.",
+     "If the attic fan were removed, only three appliances remain and the load is 6,600 VA at 100 percent, which is larger than 5,400 VA even though there is less connected load.",
+     "Use 5,400 VA in the standard method total."
+    ],
+    "keypoint": "Use 75 percent of the fixed appliance total only when there are four or more qualifying appliances, and never include ranges, dryers, heating or air conditioning in that group.",
+    "refs": [
+     "NEC 220.53",
+     "NEC 220.54",
+     "NEC 220.55",
+     "NEC 220.51"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "Clothes Dryers (220.54) and Household Ranges (220.55)",
+    "body": "Dryers and ranges have their own demand rules. For a household electric dryer, 220.54 requires the load to be 5,000 VA or the nameplate rating, whichever is larger, and Table 220.54 reduces the load when there are several dryers (such as in multifamily buildings). For household cooking equipment, 220.55 and Table 220.55 give the demand load, and Column C gives 8 kW for one range rated not over 12 kW.",
+    "table": {
+     "h": [
+      "Number of household ranges (not over 12 kW)",
+      "Column C demand (kW)"
+     ],
+     "r": [
+      [
+       "1",
+       "8"
+      ],
+      [
+       "2",
+       "11"
+      ],
+      [
+       "3",
+       "14"
+      ],
+      [
+       "4",
+       "17"
+      ],
+      [
+       "5",
+       "20"
+      ]
+     ]
+    },
+    "bullets": [
+     "Dryers: 1 to 4 dryers are 100 percent of the load. Table 220.54 reduces the percentage for 5 or more dryers, for example 85 percent for 5 and 75 percent for 6.",
+     "A dryer with a 6,000 VA nameplate is counted at 6,000 VA. A dryer with a 4,400 VA nameplate is counted at 5,000 VA because of the minimum.",
+     "Ranges: Table 220.55 applies to household cooking appliances, including ranges, wall-mounted ovens and counter-mounted cooktops. Column C is the column most often used for dwelling calculations.",
+     "Never apply the 75 percent appliance factor from 220.53 to a dryer or to a range. Each has its own rule.",
+     "The dryer is a 120/240 V load. For the service load, count its VA at 240 V like the other loads."
+    ],
+    "keypoint": "A dryer is counted at the larger of 5,000 VA or its nameplate, and a single range of 12 kW or less is counted at 8 kW from Column C of Table 220.55.",
+    "refs": [
+     "NEC 220.54",
+     "Table 220.54",
+     "NEC 220.55",
+     "Table 220.55"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "Ranges Over 12 kW: Note 1 to Table 220.55",
+    "body": "Column C of Table 220.55 is built for ranges rated up to 12 kW. When a single range is rated above 12 kW (and not over 27 kW), Note 1 to the table increases the Column C value by 5 percent for each kilowatt of rating, or major fraction, above 12 kW. The adjustment protects the service from understating the load of a large range.",
+    "table": {
+     "h": [
+      "Range rating",
+      "kW over 12",
+      "Increase",
+      "Demand (kW)"
+     ],
+     "r": [
+      [
+       "12 kW",
+       "0",
+       "0%",
+       "8.0"
+      ],
+      [
+       "13 kW",
+       "1",
+       "5%",
+       "8 x 1.05 = 8.4"
+      ],
+      [
+       "14 kW",
+       "2",
+       "10%",
+       "8 x 1.10 = 8.8"
+      ],
+      [
+       "16 kW",
+       "4",
+       "20%",
+       "8 x 1.20 = 9.6"
+      ],
+      [
+       "18 kW",
+       "6",
+       "30%",
+       "8 x 1.30 = 10.4"
+      ]
+     ]
+    },
+    "step_list": [
+     "A dwelling has one 16 kW range. Column C for one range is 8 kW.",
+     "The range exceeds 12 kW by 16 - 12 = 4 kW.",
+     "Increase: 4 kW x 5 percent = 20 percent, so the multiplier is 1.20.",
+     "Demand load: 8 kW x 1.20 = 9.6 kW = 9,600 VA.",
+     "Compare to counting the nameplate: the full 16,000 VA overstates the load by 6,400 VA, and counting only 8,000 VA understates it by 1,600 VA.",
+     "Use 9,600 VA for the range in the standard method."
+    ],
+    "info": "The standard-method example in the next slides uses a 12 kW range, so no Note 1 increase is needed there.",
+    "keypoint": "For a range rated above 12 kW, start from 8 kW and increase it by 5 percent for each kilowatt above 12 kW.",
+    "refs": [
+     "Table 220.55",
+     "NEC 220.55"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Heating and Cooling: 220.51 and 220.60",
+    "body": "Electric space heating is counted at 100 percent of the connected load under 220.51, because heaters in the coldest weather run at full output. Air conditioning is counted at the nameplate load. Section 220.60 lets you omit the smaller of two loads that will not operate at the same time, such as heating and cooling, because the same house is not heated and air conditioned simultaneously.",
+    "table": {
+     "h": [
+      "Case",
+      "Heating (VA)",
+      "Air conditioning (VA)",
+      "Load counted (VA)"
+     ],
+     "r": [
+      [
+       "Cold climate dwelling",
+       "10,000",
+       "4,000",
+       "10,000 (omit the 4,000 VA A/C)"
+      ],
+      [
+       "Hot climate dwelling",
+       "4,000",
+       "6,500",
+       "6,500 (omit the 4,000 VA heat)"
+      ],
+      [
+       "Equal loads",
+       "5,000",
+       "5,000",
+       "5,000 (count one)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Only loads that cannot operate together are noncoincident. A dwelling with heat and an A/C that can run at the same time, such as a dehumidifying cycle with reheat, needs a closer look.",
+     "Heat-pump compressors and their supplemental electric heating elements may run together. Count the combined load that can operate at once, not just the compressor.",
+     "Take A/C from the equipment nameplate (or the rating used under Article 440). Take heating from the nameplate kW converted to VA.",
+     "Apply the 100 percent factor under 220.51 before comparing. In the optional method (module 3), different percentages are used for heating."
+    ],
+    "warning": "Adding both heating and air conditioning when they cannot operate together overstates the service. Omitting a smaller load that can run with the larger one understates it.",
+    "keypoint": "Count the larger of heating or air conditioning at 100 percent and leave out the smaller, as 220.60 permits for noncoincident loads.",
+    "refs": [
+     "NEC 220.51",
+     "NEC 220.60"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Neutral Loads (220.61)",
+    "body": "The feeder or service neutral carries only the unbalanced load, which is the greatest difference between any two ungrounded conductors. In a 120/240 V single-phase dwelling that means the 120 V loads only; 240 V loads such as the water heater, heat and A/C do not load the neutral. Section 220.61(B) allows a reduction to 70 percent of the portion of the load over 200 A, with limits in 220.61(C).",
+    "def_grid": [
+     {
+      "term": "Unbalanced load",
+      "body": "For a single-phase 3-wire service, the maximum 120 V load connected between either ungrounded conductor and the neutral."
+     },
+     {
+      "term": "Loads that load the neutral",
+      "body": "Lighting, general receptacles, small-appliance and laundry circuits, 120 V fixed appliances and the 120 V portion of a range or dryer."
+     },
+     {
+      "term": "Loads that do not",
+      "body": "240 V loads with no neutral connection, such as a 240 V water heater, electric heat and a 240 V air conditioner."
+     },
+     {
+      "term": "Minimum size",
+      "body": "The grounded (neutral) service conductor must also be at least the size required for the grounding electrode conductor under 250.24(D), regardless of how small the calculated unbalanced load is."
+     }
+    ],
+    "step_list": [
+     "Example: a large dwelling has a calculated neutral load of 260 A on a 120/240 V service.",
+     "The first 200 A is counted at 100 percent: 200 A.",
+     "The portion above 200 A is 260 - 200 = 60 A, which may be taken at 70 percent: 60 x 0.70 = 42 A.",
+     "Neutral load = 200 + 42 = 242 A.",
+     "For the example 2,400 sq ft dwelling in this module the 120 V loads are far below 200 A, so no reduction applies and the neutral is selected for the actual unbalanced load and the 250.24(D) minimum."
+    ],
+    "warning": "The 70 percent reduction does not apply to the portion of the load that consists of nonlinear loads supplied from a 4-wire wye system, such as electronic ballasts and computers. This is a commercial issue more than a dwelling one.",
+    "keypoint": "The neutral is sized for the unbalanced load, and a 70 percent reduction is allowed only for the part above 200 A and not for nonlinear loads on a 4-wire wye system.",
+    "refs": [
+     "NEC 220.61",
+     "NEC 250.24(D)",
+     "Table 250.102(C)(1)"
+    ]
+   },
+   {
+    "tag": "M2·S9",
+    "title": "Worked Example, Part 1: Data and General Loads",
+    "body": "This dwelling is calculated by the standard method. The service is 120/240 V single-phase. All figures are assumptions for the exercise so that every VA value can be traced. Work from the top of the table to the bottom, writing each figure before it is added, and keep the unrounded VA until the last step.",
+    "table": {
+     "h": [
+      "Item",
+      "Data"
+     ],
+     "r": [
+      [
+       "Dwelling floor area (outside dimensions, finished)",
+       "2,400 sq ft"
+      ],
+      [
+       "Small-appliance circuits",
+       "2"
+      ],
+      [
+       "Laundry circuit",
+       "1"
+      ],
+      [
+       "Fastened-in-place appliances",
+       "Water heater 4,500 VA, dishwasher 1,200 VA, disposal 900 VA, attic fan 600 VA (4 appliances, 7,200 VA)"
+      ],
+      [
+       "Electric range",
+       "12 kW"
+      ],
+      [
+       "Electric dryer",
+       "5,000 VA nameplate"
+      ],
+      [
+       "Electric heat",
+       "10,000 VA central"
+      ],
+      [
+       "Air conditioning",
+       "4,000 VA"
+      ],
+      [
+       "Service",
+       "120/240 V single-phase"
+      ]
+     ]
+    },
+    "step_list": [
+     "General lighting and receptacles, 220.12 and 220.14(J): 2,400 sq ft x 3 VA = 7,200 VA.",
+     "Small-appliance circuits, 220.52(A): 2 x 1,500 VA = 3,000 VA.",
+     "Laundry circuit, 220.52(B): 1 x 1,500 VA = 1,500 VA.",
+     "Sum before demand: 7,200 + 3,000 + 1,500 = 11,700 VA.",
+     "Table 220.42: first 3,000 VA at 100 percent = 3,000 VA.",
+     "Remainder: 11,700 - 3,000 = 8,700 VA x 0.35 = 3,045 VA.",
+     "Demand lighting, small-appliance and laundry load: 3,000 + 3,045 = <b>6,045 VA</b>."
+    ],
+    "keypoint": "Start every standard-method calculation by listing the data and then computing the general loads before any appliances are added.",
+    "refs": [
+     "NEC 220.12",
+     "NEC 220.52",
+     "Table 220.42"
+    ]
+   },
+   {
+    "tag": "M2·S10",
+    "title": "Worked Example, Part 2: Appliances, Range, Dryer and Heat",
+    "body": "With the lighting block finished, add the loads that have their own rules. Each line uses a different section, so write the section next to each figure. The heating and air conditioning decision is last because it depends on comparing the two values.",
+    "step_list": [
+     "Fastened-in-place appliances, 220.53: 4,500 + 1,200 + 900 + 600 = 7,200 VA. Four appliances, so 7,200 x 0.75 = <b>5,400 VA</b>.",
+     "Range, 220.55 and Table 220.55 Column C: one 12 kW range is not over 12 kW, so the demand is 8 kW = <b>8,000 VA</b>. No Note 1 increase applies.",
+     "Dryer, 220.54: nameplate is 5,000 VA. The minimum is 5,000 VA, so the load is <b>5,000 VA</b>. One dryer is at 100 percent.",
+     "Heating, 220.51: 10,000 VA at 100 percent.",
+     "Air conditioning: 4,000 VA.",
+     "Noncoincident loads, 220.60: compare 10,000 VA with 4,000 VA. Count the larger and omit the smaller. Load counted: <b>10,000 VA</b>.",
+     "Do not apply the 75 percent factor to the range, dryer, heat or A/C. They are excluded from 220.53."
+    ],
+    "warning": "A common mistake at this stage is to put the 4,000 VA air conditioning into the total as well. Under 220.60 it is omitted because heating is larger and the two do not run together.",
+    "keypoint": "Each remaining load has its own rule: 75 percent for the four appliances, Column C for the range, the 5,000 VA minimum for the dryer, and the larger of heat or A/C.",
+    "refs": [
+     "NEC 220.53",
+     "NEC 220.54",
+     "NEC 220.55",
+     "NEC 220.60",
+     "NEC 220.51"
+    ]
+   },
+   {
+    "tag": "M2·S11",
+    "title": "Worked Example, Part 3: Total Load and Service Amperes",
+    "body": "The last step adds each demand load and converts the total to amperes at the nominal voltage, then rounds under 220.5(B). This total is the calculated load used in the next module for service selection. Check the sum twice, because a one-line error in this table carries all the way through to the service size.",
+    "table": {
+     "h": [
+      "Line",
+      "Rule",
+      "Load (VA)"
+     ],
+     "r": [
+      [
+       "Lighting, small-appliance, laundry (demand)",
+       "Table 220.42",
+       "6,045"
+      ],
+      [
+       "Fastened-in-place appliances at 75%",
+       "220.53",
+       "5,400"
+      ],
+      [
+       "Range, 12 kW",
+       "Table 220.55, Column C",
+       "8,000"
+      ],
+      [
+       "Dryer",
+       "220.54",
+       "5,000"
+      ],
+      [
+       "Heating (larger than A/C)",
+       "220.51, 220.60",
+       "10,000"
+      ],
+      [
+       "Total",
+       "",
+       "34,445"
+      ]
+     ]
+    },
+    "step_list": [
+     "Add: 6,045 + 5,400 = 11,445 VA.",
+     "11,445 + 8,000 = 19,445 VA.",
+     "19,445 + 5,000 = 24,445 VA.",
+     "24,445 + 10,000 = <b>34,445 VA</b>.",
+     "Convert to amperes: 34,445 / 240 = 143.52 A.",
+     "Round under 220.5(B): 0.52 is 0.5 or larger, so the calculated load is <b>144 A</b>.",
+     "Neutral note: the 120 V loads (lighting and general-use receptacles, 120 V appliances and the 120 V part of the range and dryer) are far below 200 A, so the 220.61(B) reduction is not needed and the neutral is sized for the unbalanced load and the 250.24(D) minimum."
+    ],
+    "keypoint": "The standard-method total for the example dwelling is 34,445 VA, which is 143.52 A and rounds to 144 A at 240 V.",
+    "refs": [
+     "NEC 220.5",
+     "NEC 220.42",
+     "NEC 220.53",
+     "NEC 220.55",
+     "NEC 220.60"
+    ]
+   },
+   {
+    "tag": "M2·S12",
+    "title": "Common Errors in the Standard Method",
+    "body": "Most standard-method mistakes fall into four groups: counting both heating and A/C, using the 75 percent appliance factor on loads that are not eligible, leaving out the laundry circuit, and rounding amperes the wrong way. The table below quantifies each mistake on the example dwelling so that you can see how large it is. Use the checklist at the bottom as your last step on every calculation.",
+    "table": {
+     "h": [
+      "Error",
+      "What goes wrong",
+      "Effect on the 34,445 VA example"
+     ],
+     "r": [
+      [
+       "Adding both heat and A/C",
+       "220.60 allows the smaller noncoincident load to be omitted",
+       "34,445 + 4,000 = 38,445 VA = 160.19 A, which rounds to 160 A and overstates the load by 16 A. A 150 A service would then look too small."
+      ],
+      [
+       "75 percent on range, dryer and heat",
+       "220.53 excludes ranges, dryers, heating and A/C",
+       "(7,200 + 8,000 + 5,000) x 0.75 = 15,150 VA versus the correct 5,400 + 8,000 + 5,000 = 18,400 VA, understating by 3,250 VA"
+      ],
+      [
+       "Omitting the laundry circuit",
+       "220.52(B) adds 1,500 VA",
+       "3,000 + (10,200 - 3,000) x 0.35 = 5,520 VA instead of 6,045 VA, so the total becomes 33,920 VA = 141.33 A, which understates the load by about 3 A"
+      ],
+      [
+       "Rounding down 0.5 or larger",
+       "220.5(B) requires rounding up",
+       "143.52 A reported as 143 A instead of 144 A"
+      ]
+     ]
+    },
+    "step_list": [
+     "Verify the data: area from outside dimensions, number of small-appliance circuits, laundry circuit present.",
+     "Verify Table 220.42 was applied to the sum of lighting, small-appliance and laundry loads, with the first 3,000 VA at 100 percent.",
+     "Verify 220.53 was applied only if four or more qualifying appliances exist, and only to those appliances.",
+     "Verify the range, including any Note 1 increase, and the dryer minimum of 5,000 VA.",
+     "Verify only the larger of heating or air conditioning is in the total.",
+     "Add the lines, divide by 240 V, then round the amperes under 220.5(B)."
+    ],
+    "warning": "A calculation that looks neat can still be wrong. Check each line against the section that governs it before you move to service selection.",
+    "keypoint": "Each of the four common errors changes the answer by a measurable amount, so verify each line against the section that governs it.",
+    "refs": [
+     "NEC 220.52",
+     "NEC 220.53",
+     "NEC 220.60",
+     "NEC 220.5"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "What is the voltage drop on a balanced three-phase circuit of 8 AWG copper (16,510 CM) carrying 40 A over 150 ft one way? Use K = 12.9 and 1.732. Round to the nearest tenth of a volt.",
+    "opts": [
+     "8.1 V",
+     "16.2 V",
+     "4.7 V",
+     "9.4 V"
+    ],
+    "correct": 0,
+    "explain": "Formula: VD = 1.732 x K x I x L / CM = 1.732 x 12.9 x 40 x 150 / 16,510 = 8.12 V. Recognise it: three-phase circuits replace the 2 with 1.732 because the phase currents partially cancel in the return. Why the other choices are wrong: 9.4 V - used 2 (single-phase) instead of 1.732; 4.7 V - used neither 2 nor 1.732; 16.2 V - doubled the length as well as using 1.732. [VD = 1.732KIL/CM]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 40 A in 40°C ambient. What is the smallest size permitted?",
+    "opts": [
+     "4 AWG",
+     "10 AWG",
+     "8 AWG",
+     "6 AWG"
+    ],
+    "correct": 2,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.91 (Table 310.15(B)(1)). 8 AWG: 55 A × 0.91 × 1 = 50.1 A ≥ 40 A, and its 75°C ampacity (50 A) is also ≥ 40 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 225 A in 42°C ambient. What is the smallest size permitted?",
+    "opts": [
+     "300 kcmil",
+     "250 kcmil",
+     "4/0 AWG",
+     "3/0 AWG"
+    ],
+    "correct": 2,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.87 (Table 310.15(B)(1)). 4/0 AWG: 260 A × 0.87 × 1 = 226.2 A ≥ 225 A, and its 75°C ampacity (230 A) is also ≥ 225 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 190 A in 44°C ambient. What is the smallest size permitted?",
+    "opts": [
+     "250 kcmil",
+     "3/0 AWG",
+     "4/0 AWG",
+     "2/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.87 (Table 310.15(B)(1)). 3/0 AWG: 225 A × 0.87 × 1 = 195.8 A ≥ 190 A, and its 75°C ampacity (200 A) is also ≥ 190 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "A single-phase 120 V circuit uses 12 AWG copper (6,530 CM, K = 12.9) to carry 16 A for 100 ft one way. What is the percent voltage drop, to the nearest tenth of a percent?",
+    "opts": [
+     "5.3 percent",
+     "5.6 percent",
+     "2.6 percent",
+     "6.3 percent"
+    ],
+    "correct": 0,
+    "explain": "Step 1: VD = 2 x 12.9 x 16 x 100 / 6,530 = 6.32 V. Step 2: % = VD / E x 100 = 6.32 / 120 x 100 = 5.27 percent. Recognise it: 'percent' means calculate volts of drop first, then divide by the source voltage. Why the other choices are wrong: 2.6 percent - left out the 2 in 2KIL/CM; 6.3 percent - reported volts as a percent; 5.6 percent - divided by the load-end voltage instead of the source. [Percent voltage drop]"
+   },
+   {
+    "q": "What is the allowable ampacity of a 600 kcmil copper conductor in the 75°C column of Table 310.16 (no correction factors)?",
+    "opts": [
+     "350 A",
+     "475 A",
+     "420 A",
+     "460 A"
+    ],
+    "correct": 2,
+    "explain": "Table 310.16, 75°C column, 600 kcmil copper: 420 A. [NEC Table 310.16]"
+   },
+   {
+    "q": "What is the corrected ampacity of a 6 AWG THHN copper conductor (use the 90°C column) in a 48°C ambient with 24 current-carrying conductors in the raceway? (Do not apply the termination limit.)",
+    "opts": [
+     "27.7 A",
+     "61.5 A",
+     "33.8 A",
+     "21.9 A"
+    ],
+    "correct": 0,
+    "explain": "6 AWG at 90°C = 75 A × 0.82 (ambient) × 0.45 (adjustment) = 27.7 A. [NEC 310.15(B)(1), 310.15(C)(1)]"
+   },
+   {
+    "q": "What is the allowable ampacity of a 6 AWG copper conductor in the 60°C column of Table 310.16 (no correction factors)?",
+    "opts": [
+     "70 A",
+     "65 A",
+     "55 A",
+     "75 A"
+    ],
+    "correct": 2,
+    "explain": "Table 310.16, 60°C column, 6 AWG copper: 55 A. [NEC Table 310.16]"
+   },
+   {
+    "q": "What is the current for a 2,250 VA three-phase load at 120 V?",
+    "opts": [
+     "18.8 A",
+     "13.5 A",
+     "10.8 A",
+     "9.4 A"
+    ],
+    "correct": 2,
+    "explain": "I = VA ÷ (√3 × V) = 2,250 ÷ (1.732 × 120) = 10.8 A [Basic electrical formulas]"
+   }
+  ]
+ },
+ {
+  "title": "Dwelling units: optional method, commercial loads",
+  "time": "70 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "Scope and conditions of the 220.82 optional method for dwellings",
+   "General loads at nameplate with 10 kVA at 100 percent and the rest at 40 percent",
+   "Heating and air conditioning choices in 220.82(C)",
+   "A complete optional-method example and comparison with the standard method",
+   "Adding load to an existing dwelling with 220.83",
+   "Multifamily dwellings with 220.84 and Table 220.84",
+   "Commercial lighting, receptacles, show windows, track lighting and kitchen equipment",
+   "A complete commercial load calculation with every VA figure"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "The Optional Method for Dwellings: Scope (220.82)",
+    "body": "Section 220.82 provides an optional calculation for a dwelling unit. It is shorter than the standard method and typically produces a smaller result for a dwelling with lots of connected load. It is used instead of the standard method, never combined with it. The section applies to a dwelling unit with a single 120/240 V or 208Y/120 V, 3-wire single-phase service or feeder of 100 amperes or greater.",
+    "def_grid": [
+     {
+      "term": "Conditions",
+      "body": "One dwelling unit, a single 120/240 V or 208Y/120 V 3-wire service or feeder, and a rating of 100 A or greater."
+     },
+     {
+      "term": "General loads",
+      "body": "Counted under 220.82(B): lighting and receptacles, small-appliance and laundry circuits, and all appliances at nameplate. The first 10 kVA is taken at 100 percent and the remainder at 40 percent."
+     },
+     {
+      "term": "Heating and cooling",
+      "body": "Added under 220.82(C): only the largest of the heating or cooling choices listed there is added."
+     },
+     {
+      "term": "Use",
+      "body": "The result is the calculated service or feeder load. Because it replaces Part III, none of the Part III demand factors are applied on top of it."
+     }
+    ],
+    "bullets": [
+     "The optional method is permitted by the NEC as an equal alternative, not a lower standard. Some jurisdictions and utilities may have their own requirements, so confirm local practice.",
+     "Because all general loads are counted at nameplate and then cut to 40 percent above 10 kVA, the method rewards dwellings with many appliances.",
+     "The method is not available for a service smaller than 100 A or for non-single-phase services.",
+     "Write the method you use at the top of the calculation sheet so the reviewer can follow it."
+    ],
+    "keypoint": "The optional method is an alternative to the standard method for a dwelling with a 3-wire single-phase service of at least 100 A, and the two methods are never mixed.",
+    "refs": [
+     "NEC 220.82"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Optional Method: General Loads (220.82(B))",
+    "body": "The optional method collects every non-heating, non-cooling load into one list at its nameplate value. General lighting and receptacles are computed at 3 VA per square foot, small-appliance circuits at 1,500 VA each and the laundry circuit at 1,500 VA. The nameplate ratings of fastened-in-place appliances, ranges, ovens, cooktops, dryers and water heaters are added to the list. The total is then taken at 100 percent for the first 10 kVA and 40 percent for the remainder.",
+    "table": {
+     "h": [
+      "Included in the general load list",
+      "How it is counted"
+     ],
+     "r": [
+      [
+       "General lighting and general-use receptacles",
+       "3 VA x sq ft"
+      ],
+      [
+       "Small-appliance circuits",
+       "1,500 VA each, minimum two"
+      ],
+      [
+       "Laundry circuit",
+       "1,500 VA"
+      ],
+      [
+       "Ranges, wall ovens, cooktops",
+       "Nameplate rating"
+      ],
+      [
+       "Clothes dryer (not connected to laundry circuit)",
+       "Nameplate rating"
+      ],
+      [
+       "Water heater and other fastened-in-place appliances",
+       "Nameplate rating"
+      ],
+      [
+       "Permanently connected motors not part of the heating or cooling selection",
+       "Nameplate rating"
+      ]
+     ]
+    },
+    "step_list": [
+     "Add all general loads in VA.",
+     "Take the first 10,000 VA at 100 percent.",
+     "Take the portion over 10,000 VA at 40 percent.",
+     "Add the two results to get the general load demand.",
+     "Add the largest heating or cooling load from 220.82(C), which is the next slide."
+    ],
+    "keypoint": "In the optional method every general load is counted at nameplate, then the first 10 kVA is counted at 100 percent and the remainder at 40 percent.",
+    "refs": [
+     "NEC 220.82(B)"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "Optional Method: Heating and Air Conditioning (220.82(C))",
+    "body": "Section 220.82(C) lists several heating and cooling loads and permits only the largest of them to be added to the general load demand. That choice replaces the noncoincident-load rule of 220.60 in the standard method. Note that in this method electric heating is not taken at 100 percent in the way 220.51 does; the percentages are stated in the section.",
+    "table": {
+     "h": [
+      "Heating or cooling load",
+      "Percent of nameplate"
+     ],
+     "r": [
+      [
+       "Air conditioning and cooling, including heat pump compressors",
+       "100%"
+      ],
+      [
+       "Central electric space heating, including integral supplemental heat in heat pumps",
+       "65%"
+      ],
+      [
+       "Fewer than four separately controlled electric space heating units",
+       "65%"
+      ],
+      [
+       "Four or more separately controlled electric space heating units",
+       "40%"
+      ],
+      [
+       "Electric thermal storage and other heating systems expected to run continuously at full nameplate",
+       "100%"
+      ]
+     ]
+    },
+    "step_list": [
+     "Example dwelling: central electric heat 10,000 VA and air conditioning 4,000 VA.",
+     "Air conditioning at 100 percent: 4,000 x 1.00 = 4,000 VA.",
+     "Central electric heat at 65 percent: 10,000 x 0.65 = 6,500 VA.",
+     "Only the largest is added: 6,500 VA (heat), because it is larger than 4,000 VA.",
+     "If the heat were four separate baseboard units totaling 10,000 VA: 10,000 x 0.40 = 4,000 VA, which ties with the A/C in this example."
+    ],
+    "keypoint": "Compute each heating or cooling choice with its own percentage, and add only the largest one to the general load demand.",
+    "refs": [
+     "NEC 220.82(C)"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "Worked Example, Part 1: General Loads by the Optional Method",
+    "body": "The same 2,400 sq ft dwelling from module 2 is used so that the two methods can be compared directly. Every general load is listed at nameplate. Notice that the range is counted at its 12,000 VA nameplate, not the 8,000 VA of Table 220.55, because the optional method does not use that table.",
+    "table": {
+     "h": [
+      "General load",
+      "VA"
+     ],
+     "r": [
+      [
+       "General lighting and receptacles: 2,400 sq ft x 3 VA",
+       "7,200"
+      ],
+      [
+       "Small-appliance circuits: 2 x 1,500 VA",
+       "3,000"
+      ],
+      [
+       "Laundry circuit",
+       "1,500"
+      ],
+      [
+       "Range, 12 kW nameplate",
+       "12,000"
+      ],
+      [
+       "Dryer, nameplate",
+       "5,000"
+      ],
+      [
+       "Water heater",
+       "4,500"
+      ],
+      [
+       "Dishwasher",
+       "1,200"
+      ],
+      [
+       "Disposal",
+       "900"
+      ],
+      [
+       "Attic fan",
+       "600"
+      ],
+      [
+       "Total general load",
+       "35,900"
+      ]
+     ]
+    },
+    "step_list": [
+     "7,200 + 3,000 + 1,500 = 11,700 VA (the same lighting block as before).",
+     "11,700 + 12,000 = 23,700; + 5,000 = 28,700; + 4,500 = 33,200; + 1,200 = 34,400; + 900 = 35,300; + 600 = <b>35,900 VA</b>.",
+     "First 10,000 VA at 100 percent = 10,000 VA.",
+     "Remainder: 35,900 - 10,000 = 25,900 VA x 0.40 = 10,360 VA.",
+     "General load demand: 10,000 + 10,360 = <b>20,360 VA</b>."
+    ],
+    "keypoint": "List all general loads at nameplate, add them to 35,900 VA, and then apply 100 percent to the first 10,000 VA and 40 percent to the rest.",
+    "refs": [
+     "NEC 220.82(B)",
+     "NEC 220.5"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "Worked Example, Part 2: Heating, Total and Comparison",
+    "body": "The heating and cooling choice from 220.82(C) is added to the general load demand to finish the calculation. The result is then converted to amperes and rounded. Comparing the answer with the standard method shows how much the two methods differ for this dwelling.",
+    "table": {
+     "h": [
+      "Method",
+      "Total VA",
+      "Amperes at 240 V (rounded)"
+     ],
+     "r": [
+      [
+       "Standard (Part III)",
+       "34,445",
+       "144"
+      ],
+      [
+       "Optional (220.82)",
+       "26,860",
+       "112"
+      ],
+      [
+       "Difference",
+       "7,585",
+       "32"
+      ]
+     ]
+    },
+    "step_list": [
+     "Heating at 65 percent: 10,000 x 0.65 = 6,500 VA.",
+     "Air conditioning at 100 percent: 4,000 VA.",
+     "The larger value, 6,500 VA, is added.",
+     "Total: 20,360 + 6,500 = <b>26,860 VA</b>.",
+     "Amperes at 240 V: 26,860 / 240 = 111.92 A.",
+     "Round under 220.5(B): <b>112 A</b>.",
+     "Compare with the standard method: 144 A - 112 A = 32 A less, or 34,445 - 26,860 = 7,585 VA less."
+    ],
+    "keypoint": "For the example dwelling the optional method gives 26,860 VA or 112 A, versus 144 A by the standard method.",
+    "refs": [
+     "NEC 220.82",
+     "NEC 220.5"
+    ],
+    "info": "The optional method is not always smaller. With heavy heating and few other loads the standard method can be lower, so run both when the result decides between two standard service ratings, and state the method used on the plans."
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Existing Dwellings: Adding Load (220.83)",
+    "body": "When a load is added to an existing dwelling, 220.83 provides a simplified calculation. The rules depend on whether air conditioning or electric space heating is being added. If neither is being added, the existing and new loads are totaled with the first 8 kVA at 100 percent and the remainder at 40 percent. If air conditioning or heating is added, that load is calculated using the 220.82(C) percentages and added to the same demand.",
+    "step_list": [
+     "Existing dwelling: 2,000 sq ft, 100 A service. Add a 5,000 VA central air conditioner.",
+     "Existing general loads: lighting 2,000 x 3 = 6,000 VA, small-appliance 3,000 VA, laundry 1,500 VA, range 12,000 VA, dryer 5,000 VA, water heater 4,500 VA. Total = 32,000 VA.",
+     "First 8,000 VA at 100 percent = 8,000 VA.",
+     "Remainder: 32,000 - 8,000 = 24,000 VA x 0.40 = 9,600 VA. Subtotal 17,600 VA.",
+     "Add the new A/C at 100 percent: 17,600 + 5,000 = 22,600 VA.",
+     "Amperes at 240 V: 22,600 / 240 = 94.17 A, which rounds to <b>94 A</b>.",
+     "The existing 100 A service has sufficient capacity for this calculated load, subject to the condition and rating of the existing equipment."
+    ],
+    "info": "Where actual maximum demand data for the dwelling are available, 220.87 offers another way to size an addition. That section is a separate method and should be read directly.",
+    "keypoint": "For an existing dwelling, take the first 8 kVA at 100 percent and the remainder at 40 percent, and add any new A/C or heating at the 220.82(C) percentages.",
+    "refs": [
+     "NEC 220.83",
+     "NEC 220.87",
+     "NEC 220.82(C)"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Multifamily Dwellings: 220.84 and Table 220.84",
+    "body": "For a building with three or more multifamily dwelling units, 220.84 allows an optional method that applies a demand factor from Table 220.84 to the combined load of all units. The method requires that each unit be supplied by only one feeder, that each unit have electric cooking equipment, and that each unit have either electric space heating, air conditioning or both. Common-area (house) loads are calculated separately and added at 100 percent.",
+    "table": {
+     "h": [
+      "Number of dwelling units",
+      "Demand factor (examples; read the full table in the book)"
+     ],
+     "r": [
+      [
+       "3 to 5",
+       "45%"
+      ],
+      [
+       "6 to 7",
+       "44%"
+      ],
+      [
+       "8 to 10",
+       "43%"
+      ],
+      [
+       "Larger counts",
+       "Continue downward in the table"
+      ]
+     ]
+    },
+    "step_list": [
+     "Four identical units, each 1,000 sq ft, 208Y/120 V three-phase service. House loads: 6,000 VA.",
+     "Per unit connected load: lighting 1,000 x 3 = 3,000 VA; small-appliance 3,000 VA; laundry 1,500 VA; range 12,000 VA; water heater 4,500 VA; heat (larger than A/C) 6,000 VA. Total per unit = 30,000 VA.",
+     "Four units: 4 x 30,000 = 120,000 VA.",
+     "Table 220.84, 4 units: 45 percent. 120,000 x 0.45 = 54,000 VA.",
+     "Add house loads at 100 percent: 54,000 + 6,000 = 60,000 VA.",
+     "Amperes at 208 V three-phase: 60,000 / (1.732 x 208) = 166.55 A, which rounds to <b>167 A</b>."
+    ],
+    "keypoint": "220.84 applies a Table 220.84 percentage, based on the number of units, to the total connected load of three or more qualifying multifamily units, then adds house loads at 100 percent.",
+    "refs": [
+     "NEC 220.84",
+     "Table 220.84",
+     "NEC 220.61"
+    ]
+   },
+   {
+    "tag": "M3·S8",
+    "title": "Commercial Lighting: Table 220.12 and the Continuous Factor",
+    "body": "For a nondwelling building, general lighting is calculated by multiplying the floor area by the unit load for the occupancy in Table 220.12. The result is a minimum. If actual connected lighting is larger than the table load, the larger amount is the one to use. Lighting that operates for three hours or more is continuous, so the load is multiplied by 125 percent before it is added to the other loads.",
+    "def_grid": [
+     {
+      "term": "Floor area",
+      "body": "Use the building area from the outside dimensions, including all floors."
+     },
+     {
+      "term": "Unit load",
+      "body": "Read from Table 220.12 for the occupancy. The occupancy determines the VA per square foot."
+     },
+     {
+      "term": "Continuous",
+      "body": "Multiply by 125 percent if the lighting is expected to run for three hours or more (stores, offices, parking areas)."
+     },
+     {
+      "term": "Table 220.42",
+      "body": "For hospitals, hotels and motels, and warehouses, the demand factors in Table 220.42 may be applied to the lighting load. For other occupancies the factor is 100 percent."
+     }
+    ],
+    "step_list": [
+     "Retail store of 5,000 sq ft. For this exercise assume the Table 220.12 unit load is 2.0 VA per sq ft (a figure assumed for the exercise; read the actual value for the occupancy in your book).",
+     "Connected load by table: 5,000 x 2.0 = 10,000 VA.",
+     "The lighting is on during all business hours, so it is continuous: 10,000 x 1.25 = <b>12,500 VA</b>.",
+     "Table 220.42 for a store: all others at 100 percent, so no reduction applies.",
+     "If the actual connected lighting were 11,200 VA, the larger figure would be used: 11,200 x 1.25 = 14,000 VA."
+    ],
+    "warning": "The 2.0 VA per sq ft figure in this slide is an assumed teaching value. Never take a unit load from a worked example when doing an actual job; read it from Table 220.12 for the occupancy.",
+    "keypoint": "Commercial lighting is floor area times the Table 220.12 unit load for the occupancy, multiplied by 125 percent when it is continuous.",
+    "refs": [
+     "NEC 220.12",
+     "Table 220.12",
+     "NEC 220.18",
+     "Table 220.42"
+    ]
+   },
+   {
+    "tag": "M3·S9",
+    "title": "Commercial Receptacles, Show Windows and Track Lighting",
+    "body": "Several nondwelling loads have fixed unit values. Section 220.14(I) counts each single or multiple receptacle on one yoke or strap at 180 VA. Section 220.43(A) requires 200 VA per linear foot of show window, measured horizontally along its base, and 220.43(B) requires 150 VA for each 2 ft of lighting track. These loads are added to the general lighting load, with the receptacle load reduced by Table 220.44.",
+    "table": {
+     "h": [
+      "Load",
+      "Rule",
+      "Example"
+     ],
+     "r": [
+      [
+       "Receptacles (nondwelling)",
+       "180 VA per yoke, 220.14(I)",
+       "100 x 180 = 18,000 VA"
+      ],
+      [
+       "Show window lighting",
+       "200 VA per linear foot, 220.43(A)",
+       "40 ft x 200 = 8,000 VA"
+      ],
+      [
+       "Track lighting",
+       "150 VA per 2 ft, 220.43(B)",
+       "60 ft / 2 x 150 = 4,500 VA"
+      ],
+      [
+       "Multioutlet assembly",
+       "See 220.14(H)",
+       "Read the rule in the book for the spacing and use assumptions"
+      ]
+     ]
+    },
+    "bullets": [
+     "Count a duplex receptacle as one 180 VA yoke, not two. A device with three receptacles on one strap is still counted at 180 VA.",
+     "Receptacles in banks, cash register counters and similar locations may also be subject to continuous use. Treat the loads according to their use.",
+     "Show window lighting is a minimum. If the actual connected load is larger, use the larger value.",
+     "Track lighting supplied through a device that limits the current takes the rating of the device. Read 220.43(B) for the exact wording."
+    ],
+    "keypoint": "Use 180 VA per receptacle yoke, 200 VA per linear foot of show window and 150 VA per 2 ft of track, then reduce the receptacle total with Table 220.44.",
+    "refs": [
+     "NEC 220.14(I)",
+     "NEC 220.43",
+     "Table 220.44"
+    ]
+   },
+   {
+    "tag": "M3·S10",
+    "title": "Table 220.44 and Commercial Kitchen Equipment (Table 220.56)",
+    "body": "Nondwelling receptacle loads are reduced by Table 220.44: the first 10 kVA is at 100 percent and everything above 10 kVA is at 50 percent. Commercial electric cooking equipment, dishwasher booster heaters, water heaters and other kitchen equipment are reduced by Table 220.56, which reduces the demand as the number of units increases. The demand cannot be less than the sum of the two largest units.",
+    "table": {
+     "h": [
+      "Number of units",
+      "Table 220.56 demand factor"
+     ],
+     "r": [
+      [
+       "1",
+       "100%"
+      ],
+      [
+       "2",
+       "100%"
+      ],
+      [
+       "3",
+       "90%"
+      ],
+      [
+       "4",
+       "80%"
+      ],
+      [
+       "5",
+       "70%"
+      ],
+      [
+       "6 or more",
+       "65%"
+      ]
+     ]
+    },
+    "step_list": [
+     "Receptacle example: 395 receptacles x 180 VA = 71,100 VA. Table 220.44: 10,000 + 0.50 x (71,100 - 10,000) = 10,000 + 30,550 = 40,550 VA.",
+     "Kitchen example: seven units rated 12, 9, 7.5, 4.5, 3, 2 and 2 kW. Total = 40 kW.",
+     "Seven units is six or more, so the factor is 65 percent: 40 x 0.65 = 26 kW.",
+     "Minimum check: the two largest units are 12 + 9 = 21 kW. 26 kW is not less than 21 kW, so 26 kW stands.",
+     "Table 220.56 does not apply to the equipment of a dwelling unit; Table 220.55 does."
+    ],
+    "keypoint": "Receptacles are 100 percent for the first 10 kVA and 50 percent above that. Commercial kitchen demand drops to 65 percent for six or more units but never below the two largest units.",
+    "refs": [
+     "Table 220.44",
+     "NEC 220.56",
+     "Table 220.56"
+    ]
+   },
+   {
+    "tag": "M3·S11",
+    "title": "Commercial Worked Example, Part 1: The Loads",
+    "body": "A single-tenant retail store is served at 208Y/120 V, three-phase, 4-wire. The numbers are assumed so each VA figure can be traced. The unit load for general lighting is an assumed value for the exercise. Work each load in its own line and keep the notes about which section governs it.",
+    "table": {
+     "h": [
+      "Given",
+      "Value"
+     ],
+     "r": [
+      [
+       "Floor area",
+       "5,000 sq ft"
+      ],
+      [
+       "Unit load for general lighting (assumed for the exercise)",
+       "2.0 VA per sq ft, continuous"
+      ],
+      [
+       "Receptacles",
+       "100 single-yoke receptacles"
+      ],
+      [
+       "Show window",
+       "40 linear feet, assumed not continuous"
+      ],
+      [
+       "Track lighting",
+       "60 linear feet"
+      ],
+      [
+       "Other noncontinuous load (stock room equipment)",
+       "10,000 VA"
+      ],
+      [
+       "Service",
+       "208Y/120 V three-phase, 4-wire"
+      ]
+     ]
+    },
+    "step_list": [
+     "General lighting: 5,000 sq ft x 2.0 VA = 10,000 VA. Continuous: 10,000 x 1.25 = <b>12,500 VA</b>.",
+     "Receptacles, 220.14(I): 100 x 180 VA = 18,000 VA.",
+     "Table 220.44: first 10,000 VA at 100 percent = 10,000 VA. Remainder: 18,000 - 10,000 = 8,000 VA x 0.50 = 4,000 VA. Demand receptacle load: 10,000 + 4,000 = <b>14,000 VA</b>.",
+     "Show window, 220.43(A): 40 ft x 200 VA = <b>8,000 VA</b>.",
+     "Track lighting, 220.43(B): 60 ft / 2 ft x 150 VA = 30 x 150 = <b>4,500 VA</b>.",
+     "Other noncontinuous load: <b>10,000 VA</b>."
+    ],
+    "keypoint": "A commercial calculation is a list of loads, each with its own rule: continuous lighting at 125 percent, receptacles through Table 220.44, show window and track at fixed unit values, and other loads at nameplate.",
+    "refs": [
+     "NEC 220.12",
+     "NEC 220.14(I)",
+     "NEC 220.18",
+     "NEC 220.43",
+     "Table 220.44"
+    ]
+   },
+   {
+    "tag": "M3·S12",
+    "title": "Commercial Worked Example, Part 2: Total, Amperes and Service",
+    "body": "With each load computed, add the lines and convert to amperes at the service voltage. A three-phase system uses 1.732 times the line-to-line voltage. The 125 percent continuous factor is already in the lighting figure, so the total can be used directly as the minimum conductor ampacity and the minimum overcurrent device rating before the standard size is chosen.",
+    "table": {
+     "h": [
+      "Load",
+      "Basis",
+      "VA"
+     ],
+     "r": [
+      [
+       "General lighting (continuous)",
+       "5,000 x 2.0 x 1.25",
+       "12,500"
+      ],
+      [
+       "Receptacles",
+       "Table 220.44",
+       "14,000"
+      ],
+      [
+       "Show window",
+       "40 ft x 200 VA",
+       "8,000"
+      ],
+      [
+       "Track lighting",
+       "60 ft / 2 x 150 VA",
+       "4,500"
+      ],
+      [
+       "Other noncontinuous",
+       "Nameplate",
+       "10,000"
+      ],
+      [
+       "Total",
+       "",
+       "49,000"
+      ]
+     ]
+    },
+    "step_list": [
+     "Add: 12,500 + 14,000 = 26,500; + 8,000 = 34,500; + 4,500 = 39,000; + 10,000 = <b>49,000 VA</b>.",
+     "Amperes at 208 V three-phase: 49,000 / (1.732 x 208) = 49,000 / 360.26 = 136.01 A.",
+     "Round under 220.5(B): <b>136 A</b>.",
+     "Overcurrent device: 136 A is not standard. The next standard rating in Table 240.6(A) is <b>150 A</b>.",
+     "Conductor, 75°C copper column: 1 AWG is 130 A (too small), 1/0 AWG is 150 A. Use <b>1/0 AWG copper</b>.",
+     "What if the show window is continuous? Its load becomes 8,000 x 1.25 = 10,000 VA, the total becomes 51,000 VA, and the current becomes 51,000 / 360.26 = 141.56 A, which rounds to 142 A. The 150 A device is still adequate."
+    ],
+    "info": "The unit load and the other values in this example are assumptions. In a real calculation the occupancy determines the unit load and the loads are taken from the plans.",
+    "keypoint": "The store example totals 49,000 VA, or 136 A at 208 V three-phase, which leads to a 150 A overcurrent device and 1/0 AWG copper at the 75°C column.",
+    "refs": [
+     "NEC 220.5",
+     "NEC 230.42",
+     "Table 240.6(A)",
+     "Table 310.16"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 185 A in 42°C ambient. What is the smallest size permitted?",
+    "opts": [
+     "4/0 AWG",
+     "2/0 AWG",
+     "3/0 AWG",
+     "250 kcmil"
+    ],
+    "correct": 2,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.87 (Table 310.15(B)(1)). 3/0 AWG: 225 A × 0.87 × 1 = 195.8 A ≥ 185 A, and its 75°C ampacity (200 A) is also ≥ 185 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "A 120 V source feeds a load through conductors with a 3.6 V drop. What voltage is available at the load?",
+    "opts": [
+     "116.4 V",
+     "123.6 V",
+     "3.6 V",
+     "115.7 V"
+    ],
+    "correct": 0,
+    "explain": "Load voltage = source - drop = 120 - 3.6 = 116.4 V. Recognise it: conductor resistance always costs voltage; subtract the drop from the source. Why the other choices are wrong: 123.6 V - added the drop; 115.7 V - treated the drop as a percent; 3.6 V - gave the drop itself. [Voltage drop]"
+   },
+   {
+    "q": "What is the current for a 6,750 VA single-phase load at 480 V?",
+    "opts": [
+     "17.6 A",
+     "14.1 A",
+     "8.1 A",
+     "7 A"
+    ],
+    "correct": 1,
+    "explain": "I = VA ÷ V = 6,750 ÷ 480 = 14.1 A [Basic electrical formulas]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 4,050 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: dishwasher 1,200 VA, microwave 1,500 VA, water heater 4,500 VA, electric range 12,000 VA, garbage disposal 800 VA; central A/C 4,800 VA; one electric heating unit 7,500 VA (not run together). What is the calculated service load in amperes?",
+    "opts": [
+     "106.4 A",
+     "122.8 A",
+     "152.7 A",
+     "117.3 A"
+    ],
+    "correct": 0,
+    "explain": "General: 4,050 × 3 = 12,150 + 3,000 + 1,500 + nameplate 20,000 = 36,650 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 26,650 = 20,660 VA. HVAC: larger of A/C 100% = 4,800 VA or heat 65% = 4,875 VA → 4,875 VA. Total 25,535 VA ÷ 240 = 106.4 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 3,100 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: wine refrigerator 400 VA, electric range 12,000 VA, whole-house vacuum 1,100 VA, dishwasher 1,200 VA, microwave 1,500 VA; central A/C 3,600 VA; one electric heating unit 7,500 VA (not run together). What is the general load after the 10,000 VA / 40% demand?",
+    "opts": [
+     "12,000 VA",
+     "18,000 VA",
+     "17,000 VA",
+     "10,500 VA"
+    ],
+    "correct": 1,
+    "explain": "General: 3,100 × 3 = 9,300 + 3,000 + 1,500 + nameplate 16,200 = 30,000 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 20,000 = 18,000 VA. HVAC: larger of A/C 100% = 3,600 VA or heat 65% = 4,875 VA → 4,875 VA. Total 22,875 VA ÷ 240 = 95.3 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 2,950 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: whole-house vacuum 1,100 VA, trash compactor 1,000 VA, electric range 12,000 VA, garbage disposal 800 VA, dishwasher 1,200 VA; central A/C 3,600 VA; one electric heating unit 7,500 VA (not run together). What is the calculated service load in amperes?",
+    "opts": [
+     "94.4 A",
+     "105.3 A",
+     "108.9 A",
+     "122.7 A"
+    ],
+    "correct": 0,
+    "explain": "General: 2,950 × 3 = 8,850 + 3,000 + 1,500 + nameplate 16,100 = 29,450 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 19,450 = 17,780 VA. HVAC: larger of A/C 100% = 3,600 VA or heat 65% = 4,875 VA → 4,875 VA. Total 22,655 VA ÷ 240 = 94.4 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 4,350 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: dishwasher 1,200 VA, wine refrigerator 400 VA, freezer 500 VA, microwave 1,500 VA, electric dryer 5,500 VA; central A/C 6,000 VA; one electric heating unit 10,000 VA (not run together). What is the calculated service load in amperes?",
+    "opts": [
+     "96.5 A",
+     "111.3 A",
+     "111 A",
+     "111.1 A"
+    ],
+    "correct": 0,
+    "explain": "General: 4,350 × 3 = 13,050 + 3,000 + 1,500 + nameplate 9,100 = 26,650 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 16,650 = 16,660 VA. HVAC: larger of A/C 100% = 6,000 VA or heat 65% = 6,500 VA → 6,500 VA. Total 23,160 VA ÷ 240 = 96.5 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 3,900 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: microwave 1,500 VA, electric dryer 5,500 VA, freezer 500 VA, trash compactor 1,000 VA; central A/C 6,000 VA; one electric heating unit 10,000 VA (not run together). What is the minimum standard service rating (100 A minimum)?",
+    "opts": [
+     "110 A",
+     "90 A",
+     "125 A",
+     "100 A"
+    ],
+    "correct": 3,
+    "explain": "General: 3,900 × 3 = 11,700 + 3,000 + 1,500 + nameplate 8,500 = 24,700 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 14,700 = 15,880 VA. HVAC: larger of A/C 100% = 6,000 VA or heat 65% = 6,500 VA → 6,500 VA. Total 22,380 VA ÷ 240 = 93.2 A. Next standard size is 100 A. [NEC 220.82(B), 220.82(C), 230.79(C), 240.6(A)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 3,400 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: water heater 4,500 VA, whole-house vacuum 1,100 VA, electric dryer 5,500 VA, electric range 12,000 VA; central A/C 4,800 VA; one electric heating unit 10,000 VA (not run together). What is the total calculated load?",
+    "opts": [
+     "27,620 VA",
+     "31,120 VA",
+     "35,920 VA",
+     "44,300 VA"
+    ],
+    "correct": 0,
+    "explain": "General: 3,400 × 3 = 10,200 + 3,000 + 1,500 + nameplate 23,100 = 37,800 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 27,800 = 21,120 VA. HVAC: larger of A/C 100% = 4,800 VA or heat 65% = 6,500 VA → 6,500 VA. Total 27,620 VA ÷ 240 = 115.1 A. [NEC 220.82(B), 220.82(C)]"
+   }
+  ]
+ },
+ {
+  "title": "Service selection and review",
+  "time": "50 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "Service conductors, disconnect ratings and the 100 A dwelling minimum",
+   "Standard overcurrent ratings, the next-size-up rule and the 83 percent dwelling rule",
+   "Selecting a dwelling service from standard and optional method results",
+   "Transformer rated currents, Table 450.3(B) protection and secondary conductors",
+   "Voltage drop recommendations and calculations",
+   "Parallel conductors and their equipment grounding conductors",
+   "Course review of the standard and optional methods"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "Service Conductors and Disconnect Ratings (230.42, 230.79)",
+    "body": "Once the load is known, the service must be able to carry it. Section 230.42 requires the service-entrance conductors to have an ampacity not less than the calculated load, including the 125 percent factor for continuous loads. Section 230.79 sets the minimum rating of the service disconnecting means, and for a one-family dwelling the minimum is 100 amperes. A small calculated load therefore does not produce a service smaller than 100 A in a one-family dwelling.",
+    "table": {
+     "h": [
+      "Installation",
+      "Minimum service disconnect rating (230.79)"
+     ],
+     "r": [
+      [
+       "One-circuit installation",
+       "15 A"
+      ],
+      [
+       "Two-circuit installation",
+       "30 A"
+      ],
+      [
+       "One-family dwelling",
+       "100 A"
+      ],
+      [
+       "All other installations",
+       "60 A"
+      ]
+     ]
+    },
+    "bullets": [
+     "The calculated load is a minimum for both the conductors and the overcurrent device. The device rating is then rounded up to the next standard size.",
+     "Service conductors are typically sized using the 75°C column for terminations. See 110.14(C).",
+     "For a dwelling, the standard method result, the optional method result and the 100 A minimum are all compared, and the largest governing value is the one used.",
+     "Remember future loads. Electric vehicle supply equipment is added under 220.57 at the larger of 7,200 W or the nameplate rating, and heat pumps or an electric range replaced later change the load."
+    ],
+    "keypoint": "The service conductors must carry the calculated load including the continuous factor, and the service disconnect of a one-family dwelling cannot be rated below 100 A.",
+    "refs": [
+     "NEC 230.42",
+     "NEC 230.79"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "Standard Ratings, Next Size Up and the 83 Percent Dwelling Rule",
+    "body": "Overcurrent devices come in standard ratings listed in Table 240.6(A). When the calculated load or conductor ampacity falls between two standard sizes, 240.4(B) permits the next higher standard rating if conditions are met. For single-phase 120/240 V dwelling services and feeders, 310.12 permits the conductors to be sized at 83 percent of the service rating, reflecting the diversity of residential loads.",
+    "table": {
+     "h": [
+      "Service rating (A)",
+      "83 percent (A)",
+      "Smallest copper conductor at 75°C with at least that ampacity"
+     ],
+     "r": [
+      [
+       "100",
+       "83.0",
+       "4 AWG (85 A)"
+      ],
+      [
+       "125",
+       "103.75",
+       "2 AWG (115 A)"
+      ],
+      [
+       "150",
+       "124.5",
+       "1 AWG (130 A)"
+      ],
+      [
+       "175",
+       "145.25",
+       "1/0 AWG (150 A)"
+      ],
+      [
+       "200",
+       "166.0",
+       "2/0 AWG (175 A)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Standard ratings near the dwelling range: 100, 110, 125, 150, 175, 200, 225, 250, 300, 350 and 400 A.",
+     "Compare the values in the table above with Table 310.12 in your book. The table in the Code governs.",
+     "The 83 percent result is the minimum ampacity of the service conductors, not a limit on the overcurrent device, which stays at the service rating.",
+     "The conductors must still satisfy 230.42 for the calculated load, and the application of both rules should be confirmed in the 2023 text."
+    ],
+    "keypoint": "Round the overcurrent device up to the next standard rating as permitted, and for a dwelling service the conductors may be sized at 83 percent of the service rating under 310.12, but the result must also satisfy 230.42.",
+    "refs": [
+     "Table 240.6(A)",
+     "NEC 240.4(B)",
+     "NEC 310.12",
+     "NEC 230.42"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Worked Example: Selecting the Dwelling Service",
+    "body": "This example selects the service for the dwelling calculated in modules 2 and 3. The standard method gave 144 A and the optional method gave 112 A. The service cannot be smaller than the calculated load, so the larger or smaller result governs depending on which method the designer is permitted to use. The example shows both and then adds a future electric vehicle charger to illustrate why a 200 A service is common.",
+    "step_list": [
+     "Standard method result: 144 A. The next standard rating in Table 240.6(A) is <b>150 A</b>.",
+     "Conductor from Table 310.16, 75°C column, for the calculated load: 1 AWG copper is 130 A (too small); 1/0 AWG copper is 150 A and carries 144 A. Select <b>1/0 AWG copper</b> for a direct 230.42 check.",
+     "The 83 percent rule under 310.12 for a 150 A service permits 1 AWG copper (130 A is at least 124.5 A). Because 144 A is higher than 130 A, confirm in the 2023 text whether the 310.12 size satisfies 230.42 before using the smaller conductor.",
+     "Optional method result: 112 A. The next standard rating is <b>125 A</b>. Table 310.16 75°C copper: 1 AWG (130 A) is at least 112 A.",
+     "230.79(C): a one-family dwelling disconnect must be at least 100 A. Both 125 A and 150 A meet this.",
+     "Future load check: add a dwelling EVSE at 7,200 VA. Standard method: 34,445 + 7,200 = 41,645 VA / 240 = 173.52 A, which rounds to 174 A. That needs a 175 A device at least, so a 200 A service gives margin.",
+     "Document the decision: the method used, the calculated amperes, the standard rating selected, the conductor and the reason for any rating above the minimum."
+    ],
+    "keypoint": "A 144 A calculated load needs at least a 150 A service, a 112 A calculated load needs at least 125 A, and a future 7,200 VA charger moves the standard-method result to 175 A.",
+    "refs": [
+     "NEC 230.42",
+     "NEC 230.79",
+     "NEC 310.12",
+     "Table 240.6(A)",
+     "Table 310.16",
+     "NEC 220.57"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Worked Example: Transformer Currents and Protection",
+    "body": "A 75 kVA three-phase transformer with a 480 V primary and a 208Y/120 V secondary supplies a panel. Rated currents come from the kVA and the voltage. Table 450.3(B) then gives the maximum overcurrent protection as a percentage of those rated currents, and the secondary conductors are chosen from Table 310.16 using the secondary current.",
+    "step_list": [
+     "Primary current: 75,000 / (1.732 x 480) = 75,000 / 831.36 = 90.2 A.",
+     "Secondary current: 75,000 / (1.732 x 208) = 75,000 / 360.26 = 208.2 A.",
+     "Primary-only protection, 125 percent: 90.2 x 1.25 = 112.75 A. Not standard. Next higher standard size in Table 240.6(A): <b>125 A</b>.",
+     "With secondary protection too: secondary 125 percent = 208.2 x 1.25 = 260.25 A, so the next higher standard size is <b>300 A</b> maximum. The primary may then be up to 250 percent: 90.2 x 2.50 = 225.5 A, next standard size <b>250 A</b> maximum.",
+     "Secondary conductors, noncontinuous load: 208.2 A, 225 A device. 75°C copper: 3/0 AWG is 200 A (too small), 4/0 AWG is 230 A. Use <b>4/0 AWG copper</b>.",
+     "Secondary conductors, continuous load: 208.2 x 1.25 = 260.25 A. 75°C copper: 250 kcmil is 255 A (too small), 300 kcmil is 285 A. Use <b>300 kcmil copper</b> with a 300 A device.",
+     "Read the percentages for your exact case from Table 450.3(B) and its notes; the table distinguishes primary-only and primary-plus-secondary protection."
+    ],
+    "keypoint": "Compute rated primary and secondary currents from kVA and voltage, apply the Table 450.3(B) percentages for the maximum protection, and size the secondary conductors from the secondary current.",
+    "refs": [
+     "NEC 450.3(B)",
+     "Table 450.3(B)",
+     "NEC 240.21(C)",
+     "Table 310.16",
+     "Table 240.6(A)"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "Voltage Drop: Recommendations and Calculation",
+    "body": "Voltage drop is not a safety limit in the NEC, but informational notes to 210.19(A) and 215.2(A) recommend limiting drop to 3 percent on a branch circuit or feeder and 5 percent for the total of feeder and branch circuit. Excess drop reduces motor torque, dims lighting and makes equipment run poorly. For single-phase circuits, drop in volts equals 2 x K x I x L divided by the circular mils of the conductor, where K is about 12.9 for copper. Circular mils for each size are in Chapter 9, Table 8.",
+    "table": {
+     "h": [
+      "Conductor",
+      "Circular mils (Chapter 9, Table 8)"
+     ],
+     "r": [
+      [
+       "14 AWG",
+       "4,110"
+      ],
+      [
+       "12 AWG",
+       "6,530"
+      ],
+      [
+       "10 AWG",
+       "10,380"
+      ],
+      [
+       "8 AWG",
+       "16,510"
+      ],
+      [
+       "3 AWG",
+       "52,620"
+      ],
+      [
+       "2 AWG",
+       "66,360"
+      ]
+     ]
+    },
+    "step_list": [
+     "Single-phase example: 120 V, 20 A load, 100 ft one way. Three percent of 120 V is 3.6 V.",
+     "12 AWG copper: 2 x 12.9 x 20 x 100 / 6,530 = 51,600 / 6,530 = 7.90 V, which is 6.6 percent. Too high.",
+     "10 AWG copper: 51,600 / 10,380 = 4.97 V, which is 4.1 percent. Still above 3 percent.",
+     "8 AWG copper: 51,600 / 16,510 = 3.13 V, which is 2.6 percent. Meets the recommendation.",
+     "Minimum circular mils for 3 percent: 51,600 / 3.6 = 14,333 CM, so the smallest size at or above that is 8 AWG (16,510 CM).",
+     "Three-phase example: 208 V, 100 A, 150 ft, 3 AWG copper: 1.732 x 12.9 x 100 x 150 / 52,620 = 6.37 V = 3.06 percent, slightly over 3 percent.",
+     "Go up to 2 AWG: 1.732 x 12.9 x 100 x 150 / 66,360 = 5.05 V = 2.43 percent."
+    ],
+    "warning": "A larger conductor chosen for voltage drop also needs a correspondingly larger equipment grounding conductor under 250.122(B) where that size increase applies. Check the grounding rules when you upsize.",
+    "keypoint": "Voltage drop is 2 x K x I x L / CM for single-phase and 1.732 x K x I x L / CM for three-phase, and informational notes recommend 3 percent for a circuit and 5 percent overall.",
+    "refs": [
+     "NEC 210.19(A)",
+     "NEC 215.2(A)",
+     "Chapter 9 Table 8"
+    ]
+   },
+   {
+    "tag": "M4·S6",
+    "title": "Parallel Conductors (310.10) and Their Equipment Grounding Conductors",
+    "body": "When a single conductor is not large enough, conductors can be paralleled. The rule in 310.10 exists so that current divides equally among the conductors: the sets must be the same length, the same conductor material, the same circular mil area, the same insulation type and terminated the same way. If one set is shorter or a different size it has lower impedance, carries more than its share, and overheats while the others run cool.",
+    "table": {
+     "h": [
+      "Requirement",
+      "Why it matters"
+     ],
+     "r": [
+      [
+       "Same length",
+       "Impedance increases with length. A longer set carries less current and the shorter set carries more."
+      ],
+      [
+       "Same material",
+       "Copper and aluminum have different resistance for the same size."
+      ],
+      [
+       "Same size (circular mil area)",
+       "Smaller conductor has higher resistance and lower share of the current."
+      ],
+      [
+       "Same insulation type",
+       "Different insulation ratings change the allowable ampacity and operating temperature."
+      ],
+      [
+       "Same termination method",
+       "Different lugs or terminals alter the contact resistance and share."
+      ]
+     ]
+    },
+    "step_list": [
+     "A 600 A feeder will be run in two parallel sets of 75°C copper. Each set must carry half of 600 A = 300 A at minimum.",
+     "Table 310.16, 75°C copper: 300 kcmil is 285 A (too small), 350 kcmil is 310 A. Use two sets of <b>350 kcmil copper</b> per phase.",
+     "Check: 2 x 310 A = 620 A, which is at least 600 A.",
+     "Equipment grounding conductor under 250.122(F): each EGC in parallel is sized from Table 250.122 based on the 600 A overcurrent device, not divided by the number of sets. For 600 A, the table gives 1 AWG copper, so each raceway gets a 1 AWG copper EGC.",
+     "If more than three current-carrying conductors are in one raceway, apply the adjustment factor from 310.15(C)(1). Four to six conductors are at 80 percent."
+    ],
+    "keypoint": "Parallel sets must match in length, material, size, insulation and termination, and each parallel equipment grounding conductor is sized from the overcurrent device rating under 250.122(F).",
+    "refs": [
+     "NEC 310.10",
+     "NEC 250.122(F)",
+     "Table 250.122",
+     "NEC 310.15(C)"
+    ]
+   },
+   {
+    "tag": "M4·S7",
+    "title": "Course Review: Standard vs Optional Method",
+    "body": "This review brings the two dwelling methods together on a new dwelling. Work the standard method and the optional method yourself before reading the answer, and then compare. Both use the same data. A final check is to ask whether the larger or smaller answer is needed for the decision at hand.",
+    "table": {
+     "h": [
+      "Given for the review dwelling",
+      "Value"
+     ],
+     "r": [
+      [
+       "Floor area",
+       "1,800 sq ft"
+      ],
+      [
+       "Small-appliance circuits and laundry",
+       "2 and 1"
+      ],
+      [
+       "Fastened-in-place appliances",
+       "Water heater 4,500 VA, dishwasher 1,200 VA, disposal 900 VA, microwave 1,500 VA (4 appliances, 8,100 VA)"
+      ],
+      [
+       "Range",
+       "12 kW"
+      ],
+      [
+       "Dryer",
+       "5,500 VA nameplate"
+      ],
+      [
+       "Heat and air conditioning",
+       "8,000 VA central electric heat; 3,600 VA air conditioning"
+      ],
+      [
+       "Service",
+       "120/240 V single-phase"
+      ]
+     ]
+    },
+    "step_list": [
+     "<b>Standard method.</b> General: 1,800 x 3 = 5,400 + 3,000 + 1,500 = 9,900 VA. Table 220.42: 3,000 + 6,900 x 0.35 = 3,000 + 2,415 = 5,415 VA.",
+     "Appliances: 8,100 x 0.75 = 6,075 VA. Range: 8,000 VA. Dryer: 5,500 VA (above the 5,000 VA minimum). Heat: 8,000 VA (larger than 3,600 VA A/C).",
+     "Total: 5,415 + 6,075 + 8,000 + 5,500 + 8,000 = 32,990 VA. 32,990 / 240 = 137.46 A, so <b>137 A</b>.",
+     "<b>Optional method.</b> General load at nameplate: 9,900 + 12,000 + 5,500 + 8,100 = 35,500 VA.",
+     "First 10,000 VA at 100 percent, remainder 25,500 x 0.40 = 10,200 VA. Demand 20,200 VA.",
+     "Heating at 65 percent: 8,000 x 0.65 = 5,200 VA (larger than 3,600 VA A/C). Total: 20,200 + 5,200 = 25,400 VA. 25,400 / 240 = 105.83 A, so <b>106 A</b>.",
+     "Compare with the service ratings: 137 A needs a 150 A device; 106 A needs a 110 A device in Table 240.6(A), but the minimum disconnect for a one-family dwelling is 100 A under 230.79, and many installers choose 125 A or 200 A for margin."
+    ],
+    "keypoint": "Work the standard and optional methods on the same dwelling and compare the answers: the optional method is lower here (106 A versus 137 A).",
+    "refs": [
+     "NEC 220.82",
+     "NEC 230.42",
+     "Table 240.6(A)",
+     "NEC 220.5"
+    ],
+    "info": "Standard method: lighting block, appliances at 75 percent, dryer, range, larger of heat or A/C, amperes, round. Optional method: all general loads at nameplate, 10 kVA at 100 percent and the rest at 40 percent, largest 220.82(C) load, amperes, round. Commercial: lighting at 125 percent when continuous, receptacles through Table 220.44, fixed unit loads, other loads at nameplate, amperes at the service voltage."
+   },
+   {
+    "tag": "M4·S8",
+    "title": "Course Wrap-Up",
+    "body": "In this course you worked from the organization of Article 220 to complete service calculations. You rounded amperes with 220.5, applied the 125 percent factor to continuous loads, used the demand factor tables, and carried a dwelling through both the standard and optional methods. You also handled commercial loads with Table 220.44 and chose services, transformer protection, conductors, voltage drop sizes and parallel sets.",
+    "bullets": [
+     "Always state the method (standard or optional), the edition, the service voltage and the assumptions on the calculation sheet.",
+     "Memorize the shape of Tables 220.42 and 220.44, the 75 percent appliance rule and the 220.5 rounding rule. Look up everything else in the book and mark the page.",
+     "Check the work three ways: the data, the section that governs each line, and the arithmetic.",
+     "After the calculation, select the overcurrent device from Table 240.6(A), the conductor from Table 310.16 and verify the termination temperature, small-conductor limits and voltage drop.",
+     "Review the notes under each table, because they change answers more often than the tables themselves.",
+     "Verify the adopted edition and local amendments before using a number from this course on a job."
+    ],
+    "info": "Numbers in worked examples are assumptions for teaching. On a real job, take every value from the plans, the equipment nameplates and the adopted edition of the NEC.",
+    "keypoint": "A correct load calculation is a list of loads with the right rule next to each, a correct total in amperes, and a service that is selected from the standard ratings and tables in the NEC.",
+    "refs": [
+     "NEC Article 220",
+     "NEC 230.42",
+     "Table 240.6(A)",
+     "Table 310.16"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "A 225 kVA three-phase transformer has a 600 V primary and a 208 V secondary, with overcurrent protection on both the primary and secondary. What is the maximum standard secondary overcurrent device rating (secondary current 9 A or more)?",
+    "opts": [
+     "700 A",
+     "1000 A",
+     "1600 A",
+     "800 A"
+    ],
+    "correct": 3,
+    "explain": "Secondary current 624.5 A × 125% = 780.7 A. Where 125% is not a standard size, the next higher standard rating is permitted: 800 A. [NEC 450.3(B), Table 450.3(B) Note 1]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 230 A in 52°C ambient. What is the smallest size permitted?",
+    "opts": [
+     "250 kcmil",
+     "300 kcmil",
+     "4/0 AWG",
+     "350 kcmil"
+    ],
+    "correct": 1,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.76 (Table 310.15(B)(1)). 300 kcmil: 320 A × 0.76 × 1 = 243.2 A ≥ 230 A, and its 75°C ampacity (285 A) is also ≥ 230 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "A 25 kVA single-phase transformer has a 600 V primary and a 240 V secondary. The primary overcurrent device is the only protection (no secondary device). What is the maximum primary overcurrent device rating as a percent of primary current (primary 9 A or more)?",
+    "opts": [
+     "250%",
+     "300%",
+     "125%",
+     "167%"
+    ],
+    "correct": 2,
+    "explain": "Table 450.3(B): primary-only protection is limited to 125% of the rated primary current (next higher standard size permitted). A 250% primary limit applies only when a secondary device is also installed. [NEC 450.3(B), Table 450.3(B)]"
+   },
+   {
+    "q": "A 15 kVA three-phase transformer has a 480 V primary and a 208 V secondary. What is the rated primary current?",
+    "opts": [
+     "41.6 A",
+     "31.3 A",
+     "18 A",
+     "22.6 A"
+    ],
+    "correct": 2,
+    "explain": "I = VA ÷ V ÷ 1.732 = 15,000 ÷ (1.732 × 480) = 18 A. [Transformer current formula]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 1,750 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: microwave 1,500 VA, garbage disposal 800 VA; electric dryer 5,800 VA; one 15 kW electric range; central A/C 4,200 VA and electric heat 10,000 VA (not run together). What is the minimum standard service rating (one-family dwelling, 100 A minimum)?",
+    "opts": [
+     "125 A",
+     "175 A",
+     "200 A",
+     "150 A"
+    ],
+    "correct": 3,
+    "explain": "General lighting 1,750 × 3 = 5,250 VA; + 3,000 small appliance + 1,500 laundry = 9,750 VA. Demand (220.42): 3,000 + 35% × (9,750 − 3,000) = 5,362 VA. Fixed appliances 2,300 VA at 100% (fewer than four). Dryer 5,800 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 3) = 9,200 VA. Larger of A/C or heat: 10,000 VA. Total = 32,662 VA ÷ 240 V = 136.1 A. Next standard size ≥ 136.1 A is 150 A. [NEC 230.79(C), 240.6(A)]"
+   },
+   {
+    "q": "A 30 kVA three-phase transformer has a 600 V primary and a 208 V secondary. A secondary overcurrent device is installed. What is the maximum standard secondary overcurrent device rating (secondary current 9 A or more)?",
+    "opts": [
+     "100 A",
+     "110 A",
+     "90 A",
+     "225 A"
+    ],
+    "correct": 1,
+    "explain": "Secondary current 83.3 A → 125% = 104.1 A; next higher standard size is 110 A. [NEC 450.3(B), Table 450.3(B) Note 1]"
+   },
+   {
+    "q": "A 75 kVA three-phase transformer has a 480 V primary and a 240 V secondary. The secondary load is continuous at full rating. What is the smallest copper secondary conductor (75°C column)?",
+    "opts": [
+     "250 kcmil",
+     "4/0 AWG",
+     "300 kcmil",
+     "3/0 AWG"
+    ],
+    "correct": 1,
+    "explain": "Secondary 180.4 A × 125% = 225.5 A; smallest Cu with 75°C ampacity ≥ 225.5 A is 4/0 AWG (230 A). [NEC 215.2(A)(1), 240.21(C), Table 310.16]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 2,300 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: water heater 4,500 VA, trash compactor 1,000 VA, garbage disposal 800 VA, microwave 1,500 VA; electric dryer 6,000 VA; one 14 kW electric range; central A/C 6,000 VA and electric heat 12,000 VA (not run together). What is the calculated service load in amperes at 240 V?",
+    "opts": [
+     "185.5 A",
+     "160.8 A",
+     "185.8 A",
+     "92.8 A"
+    ],
+    "correct": 1,
+    "explain": "General lighting 2,300 × 3 = 6,900 VA; + 3,000 small appliance + 1,500 laundry = 11,400 VA. Demand (220.42): 3,000 + 35% × (11,400 − 3,000) = 5,940 VA. Fixed appliances 7,800 VA × 75% (four or more) = 5,850 VA. Dryer 6,000 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 2) = 8,800 VA. Larger of A/C or heat: 12,000 VA. Total = 38,590 VA ÷ 240 V = 160.8 A. [NEC Article 220, Part III]"
+   },
+   {
+    "q": "A circuit supplies 10 A of continuous load and 16 A of noncontinuous load. What is the minimum ampacity the circuit conductors must have (before any correction factors)?",
+    "opts": [
+     "28.5 A",
+     "26 A",
+     "30 A",
+     "32.5 A"
+    ],
+    "correct": 0,
+    "explain": "125% × 10 + 16 = 12.5 + 16 = 28.5 A. [NEC 210.19(A)(1)(a), 215.2(A)(1)(a)]"
+   },
+   {
+    "q": "A branch circuit supplies a 15 A continuous load. What is the minimum standard overcurrent device rating? (Device not listed for 100% continuous operation.)",
+    "opts": [
+     "30 A",
+     "20 A",
+     "15 A",
+     "25 A"
+    ],
+    "correct": 1,
+    "explain": "15 A × 125% = 18.8 A; next standard size is 20 A. [NEC 210.20(A), 240.6(A)]"
+   },
+   {
+    "q": "What maximum voltage drop on feeders is recommended (informational note) to provide reasonable efficiency?",
+    "opts": [
+     "3 percent",
+     "2 percent",
+     "5 percent",
+     "1 percent"
+    ],
+    "correct": 0,
+    "explain": "A voltage drop of not more than 3 percent at the farthest outlet for feeders is recommended. [NEC 215.2 Informational Note]"
+   },
+   {
+    "q": "A 5 kVA single-phase transformer has a 480 V primary and a 240 V secondary. The secondary load is continuous at full rating. What is the smallest copper secondary conductor (75°C column)?",
+    "opts": [
+     "12 AWG",
+     "10 AWG",
+     "8 AWG",
+     "6 AWG"
+    ],
+    "correct": 1,
+    "explain": "Secondary 20.8 A × 125% = 26 A; smallest Cu with 75°C ampacity ≥ 26 A is 10 AWG (35 A). [NEC 215.2(A)(1), 240.21(C), Table 310.16]"
+   },
+   {
+    "q": "A copper feeder carries a 145 A noncontinuous load. Using the 75°C column (terminations rated 75°C), what is the smallest conductor permitted?",
+    "opts": [
+     "3/0 AWG",
+     "2/0 AWG",
+     "1/0 AWG",
+     "1 AWG"
+    ],
+    "correct": 2,
+    "explain": "Smallest copper conductor with 75°C ampacity ≥ 145 A is 1/0 AWG (150 A). [NEC Table 310.16, 110.14(C)]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 4,250 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: wine refrigerator 400 VA, garbage disposal 800 VA, microwave 1,500 VA; electric dryer 4,500 VA; one 12 kW electric range; central A/C 4,800 VA and electric heat 12,000 VA (not run together). What is the general lighting, small-appliance and laundry load after applying the Table 220.42 demand factors?",
+    "opts": [
+     "17,250 VA",
+     "7,462 VA",
+     "8,700 VA",
+     "7,988 VA"
+    ],
+    "correct": 3,
+    "explain": "General lighting 4,250 × 3 = 12,750 VA; + 3,000 small appliance + 1,500 laundry = 17,250 VA. Demand (220.42): 3,000 + 35% × (17,250 − 3,000) = 7,988 VA. Fixed appliances 2,700 VA at 100% (fewer than four). Dryer 5,000 VA (5,000 VA minimum). Range: 8,000 VA (12 kW or less, Col. C). Larger of A/C or heat: 12,000 VA. Total = 35,688 VA ÷ 240 V = 148.7 A. [NEC 220.12, 220.52, 220.42]"
+   },
+   {
+    "q": "A 45 kVA three-phase transformer has a 480 V primary and a 208 V secondary. What is the rated primary current?",
+    "opts": [
+     "124.9 A",
+     "54.1 A",
+     "93.8 A",
+     "67.7 A"
+    ],
+    "correct": 1,
+    "explain": "I = VA ÷ V ÷ 1.732 = 45,000 ÷ (1.732 × 480) = 54.1 A. [Transformer current formula]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 1,950 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: whole-house vacuum 1,100 VA, water heater 4,500 VA, freezer 500 VA, dishwasher 1,200 VA; electric dryer 5,500 VA; one 16 kW electric range; central A/C 3,600 VA and electric heat 7,500 VA (not run together). What demand load is used for the range?",
+    "opts": [
+     "9,600 VA",
+     "12,000 VA",
+     "16,000 VA",
+     "8,000 VA"
+    ],
+    "correct": 0,
+    "explain": "General lighting 1,950 × 3 = 5,850 VA; + 3,000 small appliance + 1,500 laundry = 10,350 VA. Demand (220.42): 3,000 + 35% × (10,350 − 3,000) = 5,572 VA. Fixed appliances 7,300 VA × 75% (four or more) = 5,475 VA. Dryer 5,500 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 4) = 9,600 VA. Larger of A/C or heat: 7,500 VA. Total = 33,648 VA ÷ 240 V = 140.2 A. [NEC Table 220.55, Note 1]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 90 A in 9 current-carrying conductors in the raceway. What is the smallest size permitted?",
+    "opts": [
+     "1/0 AWG",
+     "2 AWG",
+     "1 AWG",
+     "3 AWG"
+    ],
+    "correct": 1,
+    "explain": "Start from the 90°C column for derating. Adjustment factor 70% for 9 conductors (310.15(C)(1)). 2 AWG: 130 A × 1 × 0.7 = 91 A ≥ 90 A, and its 75°C ampacity (115 A) is also ≥ 90 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 3,000 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: trash compactor 1,000 VA, freezer 500 VA, garbage disposal 800 VA, electric dryer 5,500 VA; central A/C 4,800 VA; one electric heating unit 12,000 VA (not run together). What is the total calculated load?",
+    "opts": [
+     "22,320 VA",
+     "29,100 VA",
+     "26,520 VA",
+     "31,320 VA"
+    ],
+    "correct": 0,
+    "explain": "General: 3,000 × 3 = 9,000 + 3,000 + 1,500 + nameplate 7,800 = 21,300 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 11,300 = 14,520 VA. HVAC: larger of A/C 100% = 4,800 VA or heat 65% = 7,800 VA → 7,800 VA. Total 22,320 VA ÷ 240 = 93.0 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "Service conductors installed under not less than what depth of earth beneath a building are considered outside the building?",
+    "opts": [
+     "18 in.",
+     "12 in.",
+     "6 in.",
+     "24 in."
+    ],
+    "correct": 0,
+    "explain": "Conductors installed under not less than 18 in. of earth beneath a building, or in a raceway encased in at least 2 in. of concrete or brick, are considered outside. [NEC 230.6]"
+   },
+   {
+    "q": "A circuit supplies 32 A of continuous load and 30 A of noncontinuous load. What is the minimum ampacity the circuit conductors must have (before any correction factors)?",
+    "opts": [
+     "70 A",
+     "69.5 A",
+     "62 A",
+     "77.5 A"
+    ],
+    "correct": 0,
+    "explain": "125% × 32 + 30 = 40 + 30 = 70 A. [NEC 210.19(A)(1)(a), 215.2(A)(1)(a)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 1,500 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: trash compactor 1,000 VA, microwave 1,500 VA, water heater 4,500 VA, freezer 500 VA, dishwasher 1,200 VA; central A/C 3,600 VA; one electric heating unit 7,500 VA (not run together). What is the general load subtotal before applying demand factors?",
+    "opts": [
+     "16,200 VA",
+     "17,700 VA",
+     "13,080 VA",
+     "13,200 VA"
+    ],
+    "correct": 1,
+    "explain": "General: 1,500 × 3 = 4,500 + 3,000 + 1,500 + nameplate 8,700 = 17,700 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 7,700 = 13,080 VA. HVAC: larger of A/C 100% = 3,600 VA or heat 65% = 4,875 VA → 4,875 VA. Total 17,955 VA ÷ 240 = 74.8 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "A branch circuit supplies a 83 A continuous load. What is the minimum standard overcurrent device rating? (Device not listed for 100% continuous operation.)",
+    "opts": [
+     "110 A",
+     "90 A",
+     "100 A",
+     "125 A"
+    ],
+    "correct": 0,
+    "explain": "83 A × 125% = 103.8 A; next standard size is 110 A. [NEC 210.20(A), 240.6(A)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 1,950 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: garbage disposal 800 VA, electric range 12,000 VA, microwave 1,500 VA; central A/C 4,800 VA; one electric heating unit 12,000 VA (not run together). What is the total calculated load?",
+    "opts": [
+     "27,860 VA",
+     "23,660 VA",
+     "32,450 VA",
+     "32,660 VA"
+    ],
+    "correct": 1,
+    "explain": "General: 1,950 × 3 = 5,850 + 3,000 + 1,500 + nameplate 14,300 = 24,650 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 14,650 = 15,860 VA. HVAC: larger of A/C 100% = 4,800 VA or heat 65% = 7,800 VA → 7,800 VA. Total 23,660 VA ÷ 240 = 98.6 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "What is the current for a 9,250 VA single-phase load at 240 V?",
+    "opts": [
+     "19.3 A",
+     "48.2 A",
+     "22.3 A",
+     "38.5 A"
+    ],
+    "correct": 3,
+    "explain": "I = VA ÷ V = 9,250 ÷ 240 = 38.5 A [Basic electrical formulas]"
+   },
+   {
+    "q": "What is the allowable ampacity of a 750 kcmil copper conductor in the 90°C column of Table 310.16 (no correction factors)?",
+    "opts": [
+     "535 A",
+     "555 A",
+     "400 A",
+     "475 A"
+    ],
+    "correct": 0,
+    "explain": "Table 310.16, 90°C column, 750 kcmil copper: 535 A. [NEC Table 310.16]"
+   },
+   {
+    "q": "Each ungrounded service conductor must have:",
+    "opts": [
+     "GFCI protection",
+     "Overload protection",
+     "Only a fuse",
+     "No protection"
+    ],
+    "correct": 1,
+    "explain": "Each ungrounded service conductor must have overload protection. [NEC 230.90(A)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 4,200 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: whole-house vacuum 1,100 VA, water heater 4,500 VA, dishwasher 1,200 VA, trash compactor 1,000 VA; central A/C 3,600 VA; one electric heating unit 5,000 VA (not run together). What heating/cooling load is added under 220.82(C)?",
+    "opts": [
+     "5,000 VA",
+     "6,850 VA",
+     "3,600 VA",
+     "3,250 VA"
+    ],
+    "correct": 2,
+    "explain": "General: 4,200 × 3 = 12,600 + 3,000 + 1,500 + nameplate 7,800 = 24,900 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 14,900 = 15,960 VA. HVAC: larger of A/C 100% = 3,600 VA or heat 65% = 3,250 VA → 3,600 VA. Total 19,560 VA ÷ 240 = 81.5 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "A 37.5 kVA single-phase transformer has a 600 V primary and a 240 V secondary. The secondary load is continuous at full rating. What is the smallest copper secondary conductor (75°C column)?",
+    "opts": [
+     "4/0 AWG",
+     "2/0 AWG",
+     "3/0 AWG",
+     "250 kcmil"
+    ],
+    "correct": 2,
+    "explain": "Secondary 156.3 A × 125% = 195.3 A; smallest Cu with 75°C ampacity ≥ 195.3 A is 3/0 AWG (200 A). [NEC 215.2(A)(1), 240.21(C), Table 310.16]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 4,500 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: water heater 4,500 VA, microwave 1,500 VA, freezer 500 VA, wine refrigerator 400 VA, garbage disposal 800 VA; electric dryer 5,000 VA; one 14 kW electric range; central A/C 3,600 VA and electric heat 7,500 VA (not run together). What demand load is used for the range?",
+    "opts": [
+     "8,000 VA",
+     "8,800 VA",
+     "12,000 VA",
+     "14,000 VA"
+    ],
+    "correct": 1,
+    "explain": "General lighting 4,500 × 3 = 13,500 VA; + 3,000 small appliance + 1,500 laundry = 18,000 VA. Demand (220.42): 3,000 + 35% × (18,000 − 3,000) = 8,250 VA. Fixed appliances 7,700 VA × 75% (four or more) = 5,775 VA. Dryer 5,000 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 2) = 8,800 VA. Larger of A/C or heat: 7,500 VA. Total = 35,325 VA ÷ 240 V = 147.2 A. [NEC Table 220.55, Note 1]"
+   },
+   {
+    "q": "A 3-phase, 4-wire feeder (with linear loads only) has a maximum unbalanced neutral load of 300 A. What neutral load is used?",
+    "opts": [
+     "300 A",
+     "240 A",
+     "210 A",
+     "270 A"
+    ],
+    "correct": 3,
+    "explain": "The first 200 A is at 100 percent; 70 percent of the portion over 200 A: 200 + 0.7(100) = 270 A. [NEC 220.61(C)(1)]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 1,750 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: dishwasher 1,200 VA, trash compactor 1,000 VA, water heater 4,500 VA, freezer 500 VA, garbage disposal 800 VA; electric dryer 4,500 VA; one 16 kW electric range; central A/C 4,800 VA and electric heat 4,000 VA (not run together). What heating/cooling load is included in the service calculation?",
+    "opts": [
+     "2,600 VA",
+     "4,000 VA",
+     "4,800 VA",
+     "8,800 VA"
+    ],
+    "correct": 2,
+    "explain": "General lighting 1,750 × 3 = 5,250 VA; + 3,000 small appliance + 1,500 laundry = 9,750 VA. Demand (220.42): 3,000 + 35% × (9,750 − 3,000) = 5,362 VA. Fixed appliances 8,000 VA × 75% (four or more) = 6,000 VA. Dryer 5,000 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 4) = 9,600 VA. Larger of A/C or heat: 4,800 VA. Total = 30,762 VA ÷ 240 V = 128.2 A. [NEC 220.60]"
+   },
+   {
+    "q": "What is the corrected ampacity of a 4 AWG THHN copper conductor (use the 90°C column) in a 56°C ambient with 24 current-carrying conductors in the raceway? (Do not apply the termination limit.)",
+    "opts": [
+     "42.8 A",
+     "22.2 A",
+     "30.4 A",
+     "67.5 A"
+    ],
+    "correct": 2,
+    "explain": "4 AWG at 90°C = 95 A × 0.71 (ambient) × 0.45 (adjustment) = 30.4 A. [NEC 310.15(B)(1), 310.15(C)(1)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 3,200 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: microwave 1,500 VA, garbage disposal 800 VA, electric range 12,000 VA; central A/C 3,600 VA; one electric heating unit 12,000 VA (not run together). What is the calculated service load in amperes?",
+    "opts": [
+     "121 A",
+     "118.3 A",
+     "104.8 A",
+     "122.3 A"
+    ],
+    "correct": 2,
+    "explain": "General: 3,200 × 3 = 9,600 + 3,000 + 1,500 + nameplate 14,300 = 28,400 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 18,400 = 17,360 VA. HVAC: larger of A/C 100% = 3,600 VA or heat 65% = 7,800 VA → 7,800 VA. Total 25,160 VA ÷ 240 = 104.8 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 2,400 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: trash compactor 1,000 VA, electric dryer 5,500 VA, dishwasher 1,200 VA, garbage disposal 800 VA, electric range 12,000 VA; central A/C 6,000 VA; one electric heating unit 10,000 VA (not run together). What is the general load after the 10,000 VA / 40% demand?",
+    "opts": [
+     "18,880 VA",
+     "11,270 VA",
+     "12,880 VA",
+     "17,770 VA"
+    ],
+    "correct": 0,
+    "explain": "General: 2,400 × 3 = 7,200 + 3,000 + 1,500 + nameplate 20,500 = 32,200 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 22,200 = 18,880 VA. HVAC: larger of A/C 100% = 6,000 VA or heat 65% = 6,500 VA → 6,500 VA. Total 25,380 VA ÷ 240 = 105.8 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "On a 120/240 V, 3-phase, 4-wire delta service, how must the conductor with the higher voltage to ground (208 V) be identified?",
+    "opts": [
+     "Blue",
+     "Red tape only at the meter",
+     "White",
+     "Orange outer finish or other effective means at each termination or junction"
+    ],
+    "correct": 3,
+    "explain": "The service conductor having the higher phase voltage to ground must be durably marked by an orange outer finish or other effective means at each termination or junction point. [NEC 230.56]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 2,650 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: garbage disposal 800 VA, microwave 1,500 VA, freezer 500 VA, electric dryer 5,500 VA; central A/C 3,600 VA; one electric heating unit 10,000 VA (not run together). What is the general load subtotal before applying demand factors?",
+    "opts": [
+     "16,250 VA",
+     "14,300 VA",
+     "19,250 VA",
+     "20,750 VA"
+    ],
+    "correct": 3,
+    "explain": "General: 2,650 × 3 = 7,950 + 3,000 + 1,500 + nameplate 8,300 = 20,750 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 10,750 = 14,300 VA. HVAC: larger of A/C 100% = 3,600 VA or heat 65% = 6,500 VA → 6,500 VA. Total 20,800 VA ÷ 240 = 86.7 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "A 15 kVA single-phase transformer has a 240 V primary and a 120 V secondary, with overcurrent protection on both the primary and secondary. What is the maximum standard secondary overcurrent device rating (secondary current 9 A or more)?",
+    "opts": [
+     "175 A",
+     "150 A",
+     "350 A",
+     "125 A"
+    ],
+    "correct": 0,
+    "explain": "Secondary current 125 A × 125% = 156.3 A. Where 125% is not a standard size, the next higher standard rating is permitted: 175 A. [NEC 450.3(B), Table 450.3(B) Note 1]"
+   },
+   {
+    "q": "A 2,000 sq ft dwelling has general lighting at 3 VA per sq ft, two 1,500 VA small-appliance circuits and one 1,500 VA laundry circuit. Applying the standard demand factors (first 3,000 VA at 100 percent, the rest at 35 percent), what is the demand load, to the nearest VA?",
+    "opts": [
+     "3,675 VA",
+     "5,625 VA",
+     "4,050 VA",
+     "10,500 VA"
+    ],
+    "correct": 1,
+    "explain": "Connected load = 2,000 x 3 = 6,000 + 3,000 + 1,500 = 10,500 VA. Demand = 3,000 + 0.35 x (10,500 - 3,000) = 3,000 + 2,625.0 = 5,625.0 VA. Recognise it: a dwelling lighting-and-receptacle demand problem; add the three loads, then take 100 percent of the first 3,000 VA and 35 percent of the remainder. Why the other choices are wrong: 10,500 VA - skipped the demand factors; 3,675 VA - applied 35 percent to the whole load; 4,050 VA - left out the small-appliance and laundry circuits. [Dwelling demand factors]"
+   },
+   {
+    "q": "A branch circuit supplies a 46 A continuous load. What is the minimum standard overcurrent device rating? (Device not listed for 100% continuous operation.)",
+    "opts": [
+     "70 A",
+     "80 A",
+     "50 A",
+     "60 A"
+    ],
+    "correct": 3,
+    "explain": "46 A × 125% = 57.5 A; next standard size is 60 A. [NEC 210.20(A), 240.6(A)]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 30 A in 9 current-carrying conductors in the raceway. What is the smallest size permitted?",
+    "opts": [
+     "4 AWG",
+     "6 AWG",
+     "10 AWG",
+     "8 AWG"
+    ],
+    "correct": 3,
+    "explain": "Start from the 90°C column for derating. Adjustment factor 70% for 9 conductors (310.15(C)(1)). 8 AWG: 55 A × 1 × 0.7 = 38.5 A ≥ 30 A, and its 75°C ampacity (50 A) is also ≥ 30 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 130 A in 54°C ambient. What is the smallest size permitted?",
+    "opts": [
+     "1/0 AWG",
+     "2/0 AWG",
+     "3/0 AWG",
+     "1 AWG"
+    ],
+    "correct": 1,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.76 (Table 310.15(B)(1)). 2/0 AWG: 195 A × 0.76 × 1 = 148.2 A ≥ 130 A, and its 75°C ampacity (175 A) is also ≥ 130 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "A dwelling has 2,950 sq ft of living area. Using the general lighting load of 3 VA per sq ft at 120 V, how many 15 A lighting branch circuits are required?",
+    "opts": [
+     "5",
+     "6",
+     "7",
+     "4"
+    ],
+    "correct": 0,
+    "explain": "2,950 × 3 = 8,850 VA ÷ 120 V = 73.8 A ÷ 15 A = 4.92, round up to 5 circuits. [NEC 220.12, 220.14(J), 210.11(A)]"
+   },
+   {
+    "q": "A building has 38,500 sq ft with a general lighting unit load of 3.5 VA per sq ft (continuous use). What is the lighting load for feeder calculations?",
+    "opts": [
+     "202,125 VA",
+     "134,750 VA",
+     "168,438 VA",
+     "107,800 VA"
+    ],
+    "correct": 2,
+    "explain": "38,500 × 3.5 = 134,750 VA × 125% (continuous) = 168,438 VA. [NEC 220.12, 220.18(B)]"
+   },
+   {
+    "q": "A commercial building has 160 general-use receptacle outlets (single yoke) counted at 180 VA each. What is the demand load after applying Table 220.44?",
+    "opts": [
+     "28,800 VA",
+     "16,580 VA",
+     "14,400 VA",
+     "19,400 VA"
+    ],
+    "correct": 3,
+    "explain": "160 × 180 = 28,800 VA. First 10 kVA at 100% + remainder at 50%: 10,000 + 0.5 × 18,800 = 19,400 VA. [NEC 220.14(I), 220.44]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 4,200 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: freezer 500 VA, garbage disposal 800 VA, water heater 4,500 VA, microwave 1,500 VA, whole-house vacuum 1,100 VA, wine refrigerator 400 VA; electric dryer 6,000 VA; one 14 kW electric range; central A/C 4,200 VA and electric heat 7,500 VA (not run together). What is the calculated service load in amperes at 240 V?",
+    "opts": [
+     "88.6 A",
+     "153.5 A",
+     "177.1 A",
+     "171 A"
+    ],
+    "correct": 1,
+    "explain": "General lighting 4,200 × 3 = 12,600 VA; + 3,000 small appliance + 1,500 laundry = 17,100 VA. Demand (220.42): 3,000 + 35% × (17,100 − 3,000) = 7,935 VA. Fixed appliances 8,800 VA × 75% (four or more) = 6,600 VA. Dryer 6,000 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 2) = 8,800 VA. Larger of A/C or heat: 7,500 VA. Total = 36,835 VA ÷ 240 V = 153.5 A. [NEC Article 220, Part III]"
+   },
+   {
+    "q": "THHN copper conductors (90°C insulation, terminations rated 75°C) must carry 60 A in 36°C ambient and 24 current-carrying conductors in the raceway. What is the smallest size permitted?",
+    "opts": [
+     "1 AWG",
+     "6 AWG",
+     "2/0 AWG",
+     "1/0 AWG"
+    ],
+    "correct": 3,
+    "explain": "Start from the 90°C column for derating. Ambient factor 0.91 (Table 310.15(B)(1)). Adjustment factor 45% for 24 conductors (310.15(C)(1)). 1/0 AWG: 170 A × 0.91 × 0.45 = 69.6 A ≥ 60 A, and its 75°C ampacity (150 A) is also ≥ 60 A, so the 75°C termination limit is met. [NEC 310.15(B)(1), 310.15(C)(1), 110.14(C)]"
+   },
+   {
+    "q": "A 75 kVA three-phase transformer has a 600 V primary and a 208 V secondary. There is no secondary overcurrent protection. What is the maximum standard primary overcurrent device rating?",
+    "opts": [
+     "100 A",
+     "200 A",
+     "90 A",
+     "80 A"
+    ],
+    "correct": 0,
+    "explain": "Primary current 72.2 A (9 A or more) → 125% = 90.2 A. Where 125% is not a standard size, the next higher standard size is permitted: 100 A. [NEC 450.3(B), Table 450.3(B) Note 1, 240.6(A)]"
+   },
+   {
+    "q": "A retail store has 14 linear feet of show window. What is the minimum show-window lighting load at 200 VA per linear foot?",
+    "opts": [
+     "2,800 VA",
+     "2,100 VA",
+     "2,520 VA",
+     "3,500 VA"
+    ],
+    "correct": 0,
+    "explain": "14 ft × 200 VA = 2,800 VA. [NEC 220.43(A)]"
+   },
+   {
+    "q": "A 5 kVA single-phase transformer has a 480 V primary and a 240 V secondary, with overcurrent protection on both the primary and secondary. What is the maximum standard secondary overcurrent device rating (secondary current 9 A or more)?",
+    "opts": [
+     "30 A",
+     "60 A",
+     "25 A",
+     "35 A"
+    ],
+    "correct": 0,
+    "explain": "Secondary current 20.8 A × 125% = 26 A. Where 125% is not a standard size, the next higher standard rating is permitted: 30 A. [NEC 450.3(B), Table 450.3(B) Note 1]"
+   },
+   {
+    "q": "A 150 kVA three-phase transformer has a 480 V primary and a 240 V secondary. The secondary load is continuous at full rating. What is the smallest copper secondary conductor (75°C column)?",
+    "opts": [
+     "700 kcmil",
+     "500 kcmil",
+     "600 kcmil",
+     "750 kcmil"
+    ],
+    "correct": 0,
+    "explain": "Secondary 360.8 A × 125% = 451.1 A; smallest Cu with 75°C ampacity ≥ 451.1 A is 700 kcmil (460 A). [NEC 215.2(A)(1), 240.21(C), Table 310.16]"
+   },
+   {
+    "q": "Using the optional method (220.82), calculate the load for a 4,550 sq ft single-family dwelling, 120/240 V single-phase, with two small-appliance circuits and a laundry circuit; nameplate loads: microwave 1,500 VA, trash compactor 1,000 VA, freezer 500 VA, water heater 4,500 VA; central A/C 4,800 VA; one electric heating unit 10,000 VA (not run together). What is the general load subtotal before applying demand factors?",
+    "opts": [
+     "24,150 VA",
+     "16,260 VA",
+     "25,650 VA",
+     "21,150 VA"
+    ],
+    "correct": 2,
+    "explain": "General: 4,550 × 3 = 13,650 + 3,000 + 1,500 + nameplate 7,500 = 25,650 VA. First 10,000 VA at 100% + remainder at 40%: 10,000 + 0.40 × 15,650 = 16,260 VA. HVAC: larger of A/C 100% = 4,800 VA or heat 65% = 6,500 VA → 6,500 VA. Total 22,760 VA ÷ 240 = 94.8 A. [NEC 220.82(B), 220.82(C)]"
+   },
+   {
+    "q": "A circuit supplies 46 A of continuous load and 22 A of noncontinuous load. What is the minimum ampacity the circuit conductors must have (before any correction factors)?",
+    "opts": [
+     "85 A",
+     "68 A",
+     "79.5 A",
+     "73.5 A"
+    ],
+    "correct": 2,
+    "explain": "125% × 46 + 22 = 57.5 + 22 = 79.5 A. [NEC 210.19(A)(1)(a), 215.2(A)(1)(a)]"
+   },
+   {
+    "q": "A 25 kVA single-phase transformer has a 480 V primary and a 120 V secondary, with overcurrent protection on both the primary and secondary. What are the maximum standard ratings for the primary and secondary overcurrent devices?",
+    "opts": [
+     "Primary 70 A, secondary 250 A",
+     "Primary 125 A, secondary 600 A",
+     "Primary 125 A, secondary 300 A",
+     "Primary 70 A, secondary 300 A"
+    ],
+    "correct": 2,
+    "explain": "Primary 52.1 A: with secondary protection up to 250% = 130.2 A → 125 A (next lower). Secondary 208.3 A × 125% = 260.4 A → 300 A (next higher permitted). [NEC 450.3(B), Table 450.3(B)]"
+   },
+   {
+    "q": "Using the standard method (Article 220, Part III), calculate the load for a 2,800 sq ft single-family dwelling, 120/240 V single-phase; two 20 A small-appliance circuits and one laundry circuit; fastened appliances: freezer 500 VA, trash compactor 1,000 VA, water heater 4,500 VA, garbage disposal 800 VA, wine refrigerator 400 VA; electric dryer 5,800 VA; one 14 kW electric range; central A/C 4,200 VA and electric heat 5,000 VA (not run together). What is the general lighting, small-appliance and laundry load after applying the Table 220.42 demand factors?",
+    "opts": [
+     "12,900 VA",
+     "6,960 VA",
+     "5,940 VA",
+     "6,465 VA"
+    ],
+    "correct": 3,
+    "explain": "General lighting 2,800 × 3 = 8,400 VA; + 3,000 small appliance + 1,500 laundry = 12,900 VA. Demand (220.42): 3,000 + 35% × (12,900 − 3,000) = 6,465 VA. Fixed appliances 7,200 VA × 75% (four or more) = 5,400 VA. Dryer 5,800 VA (5,000 VA minimum). Range: 8,000 × (1 + 5% × 2) = 8,800 VA. Larger of A/C or heat: 5,000 VA. Total = 31,465 VA ÷ 240 V = 131.1 A. [NEC 220.12, 220.52, 220.42]"
+   }
+  ],
+  "isFinal": true
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">Service and Load Calculations per NEC 2023</div>
+      <div class="cert-detail">4.0 CE hours · Journeyman & Master Electrician<br>2023 NEC (NFPA 70-2023)<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>

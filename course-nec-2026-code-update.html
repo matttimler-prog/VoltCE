@@ -1,0 +1,3604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEC 2026 Code Update | VoltCE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a202c;font-size:15px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:#7B1B1B;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px}.logo span{opacity:0.55;font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:16px}
+.hdr-timer{font-size:13px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.2);padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.hdr-prog{display:flex;align-items:center;gap:8px}
+.prog-bg{width:120px;height:5px;background:rgba(255,255,255,0.2);border-radius:3px}
+.prog-fill{height:5px;background:#F4A261;border-radius:3px;transition:width 0.5s}
+.prog-pct{font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+
+/* COURSE INFO BAR */
+.cinfo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cinfo-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.red{background:#FEE2E2;color:#991B1B}
+.cinfo-time{text-align:right;min-width:110px}
+.cinfo-time-big{font-size:22px;font-weight:700;color:#7B1B1B;line-height:1}
+.cinfo-time-lbl{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* MODULE NAV */
+.mod-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.mbtn.active{background:#7B1B1B;color:#fff;border-color:#7B1B1B}
+.mbtn.done{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.mbtn.locked{opacity:0.4;cursor:not-allowed}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 26px;margin-bottom:14px}
+
+/* VIDEO PLACEHOLDER */
+.vid-wrap{background:#1a1a2e;border-radius:12px;padding:0;margin:16px 0;overflow:hidden;position:relative}
+.vid-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:12px;padding:32px}
+.vid-icon{width:64px;height:64px;border-radius:50%;background:rgba(244,162,97,0.2);border:2px solid rgba(244,162,97,0.4);display:flex;align-items:center;justify-content:center}
+.vid-icon svg{width:28px;height:28px;fill:#F4A261}
+.vid-title{font-size:15px;font-weight:600;color:#fff;text-align:center}
+.vid-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center}
+.vid-dur{display:inline-block;background:rgba(244,162,97,0.15);color:#F4A261;font-size:11px;padding:3px 10px;border-radius:999px;margin-top:4px}
+.vid-url-row{display:flex;gap:8px;width:100%;max-width:420px;margin-top:8px}
+.vid-url-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;outline:none}
+.vid-url-input::placeholder{color:rgba(255,255,255,0.3)}
+.vid-url-btn{padding:8px 14px;border-radius:8px;border:none;background:#F4A261;color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vid-frame{width:100%;aspect-ratio:16/9;border:none;display:none}
+
+/* SLIDE CONTENT */
+.slide-tag{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.s-num{font-size:11px;color:#94a3b8;background:#f8fafc;padding:3px 10px;border-radius:999px}
+.s-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#FEE2E2;color:#991B1B}
+.slide-title{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.4px;line-height:1.3}
+.slide-body{font-size:14px;color:#475569;line-height:1.8;margin-bottom:4px}
+
+/* CONTENT BLOCKS */
+.keypoint{background:#FFF7ED;border-left:3px solid #C2410C;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#431407;line-height:1.7}
+.warning{background:#FEF2F2;border-left:3px solid #991B1B;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#450A0A;line-height:1.7}
+.info-box{background:#F0F9FF;border-left:3px solid #0369A1;border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#0C4A6E;line-height:1.7}
+.code-ref{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600;margin:2px}
+
+.bullets{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.bi{font-size:13.5px;color:#374151;padding-left:20px;position:relative;line-height:1.7}
+.bi::before{content:'';position:absolute;left:5px;top:9px;width:6px;height:6px;border-radius:50%;background:#C2410C}
+
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden}
+.dtable th{background:#7B1B1B;color:#fff;padding:10px 14px;text-align:left;font-weight:500}
+.dtable td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#475569}
+.dtable tr:nth-child(even) td{background:#fafafa}
+.dtable tr:last-child td{border-bottom:none}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.def-card{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.def-term{font-size:13px;font-weight:600;color:#7B1B1B;margin-bottom:5px}
+.def-body{font-size:12.5px;color:#64748b;line-height:1.65}
+
+.step-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step-row{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:#7B1B1B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-text{font-size:13.5px;color:#374151;line-height:1.7;padding-top:4px}
+
+.ppe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.ppe-cat{border-radius:10px;padding:14px;border:2px solid}
+.ppe-num{font-size:13px;font-weight:700;margin-bottom:3px}
+.ppe-cal{font-size:12px;font-weight:600;margin-bottom:6px}
+.ppe-items{font-size:11.5px;line-height:1.65;opacity:0.85}
+
+.hierarchy{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.hier-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px}
+.hier-num{font-size:13px;font-weight:700;min-width:22px}
+.hier-title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.hier-sub{font-size:12px;opacity:0.75}
+
+/* TIMER OVERLAY on slide */
+.slide-timer{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin-top:16px;font-size:13px;color:#92400E}
+.slide-timer .t-icon{font-size:16px}
+.slide-timer .t-remaining{font-weight:600;font-variant-numeric:tabular-nums;min-width:40px}
+.slide-timer .t-bar-bg{flex:1;height:4px;background:#FED7AA;border-radius:2px}
+.slide-timer .t-bar-fill{height:4px;background:#C2410C;border-radius:2px;transition:width 1s linear}
+
+/* MODULE TIMER */
+.mod-timer-bar{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#78350F}
+.mod-timer-bar .mt-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;min-width:48px}
+.mod-timer-bar .mt-bar-bg{flex:1;height:5px;background:#FDE68A;border-radius:3px}
+.mod-timer-bar .mt-bar-fill{height:5px;background:#D97706;border-radius:3px;transition:width 1s linear}
+.mod-timer-bar .mt-label{font-size:11px;color:#92400E;white-space:nowrap}
+
+/* NAV ROW */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:8px}
+.btn-prev{padding:10px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;color:#374151;cursor:pointer;transition:all 0.15s}
+.btn-prev:hover{border-color:#7B1B1B;color:#7B1B1B}
+.btn-next{padding:10px 24px;border-radius:10px;border:none;background:#7B1B1B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-next:hover:not(:disabled){background:#5c1414}
+.btn-next:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-locked-msg{font-size:12px;color:#92400E;background:#FFF7ED;border:1px solid #FED7AA;padding:6px 12px;border-radius:8px}
+
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-prog{font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 12px;border-radius:999px}
+.quiz-score-live{font-size:12px;color:#92400E;background:#FFF7ED;padding:4px 12px;border-radius:999px}
+.quiz-q{font-size:15.5px;font-weight:600;margin-bottom:18px;line-height:1.55;color:#1a202c}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.qopt{padding:13px 17px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;color:#1a202c;cursor:pointer;text-align:left;transition:all 0.15s;line-height:1.5}
+.qopt:hover{border-color:#C2410C;background:#FEF2F2}
+.qopt.correct{background:#F0FDF4;border-color:#16A34A;color:#14532D}
+.qopt.wrong{background:#FEF2F2;border-color:#DC2626;color:#450A0A}
+.fb{padding:13px 17px;border-radius:10px;font-size:13.5px;margin-bottom:14px;line-height:1.7}
+.fb.correct{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.fb.wrong{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+
+/* RESULTS */
+.results-wrap{text-align:center;padding:32px 16px}
+.score-big{font-size:64px;font-weight:800;color:#7B1B1B;line-height:1;letter-spacing:-2px}
+.score-sub{font-size:14px;color:#64748b;margin:6px 0 18px}
+.score-badge{display:inline-block;font-size:14px;font-weight:600;padding:10px 28px;border-radius:10px;margin-bottom:18px}
+.score-badge.pass{background:#F0FDF4;color:#14532D;border:1px solid #BBF7D0}
+.score-badge.fail{background:#FEF2F2;color:#450A0A;border:1px solid #FECACA}
+.cert-box{background:linear-gradient(135deg,#7B1B1B 0%,#C2410C 100%);border-radius:14px;padding:28px;text-align:center;margin-top:18px}
+.cert-label{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:4px}
+.cert-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.cert-detail{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.cert-seal{font-size:48px;margin-bottom:8px}
+
+/* MODULE INTRO */
+.mod-intro{text-align:center;padding:28px 16px 14px}
+.mod-label{font-size:12px;color:#94a3b8;margin-bottom:8px;letter-spacing:0.3px}
+.mod-big-title{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+.mod-time-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#7B1B1B;background:#FEE2E2;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.mod-overview{text-align:left;background:#f8fafc;border-radius:10px;padding:16px;margin:12px 0}
+.mod-overview-title{font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;letter-spacing:0.3px}
+.mod-overview-item{font-size:13px;color:#374151;padding:4px 0;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+.mod-overview-item:last-child{border-bottom:none}
+.mod-overview-dot{color:#C2410C;font-weight:700}
+
+/* LOCKED MODULE */
+.locked-msg{text-align:center;padding:48px 24px}
+.lock-icon{font-size:52px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.lock-body{font-size:14px;color:#64748b;line-height:1.7}
+
+@media(max-width:640px){
+  .def-grid{grid-template-columns:1fr}
+  .ppe-grid{grid-template-columns:1fr 1fr}
+  .hdr-timer{display:none}
+  .cinfo{flex-direction:column}
+  .cinfo-time{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Volt<span>CE</span></div>
+  <div class="hdr-right">
+    <div class="hdr-timer" id="total-timer">Total: 0:00:00</div>
+    <div class="hdr-prog">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="cinfo">
+    <div>
+      <div class="cinfo-title">NEC 2026 Code Update</div>
+      <div class="pills">
+        <span class="pill red">4.0 CE hours</span>
+        <span class="pill">Journeyman & Master Electrician</span>
+        <span class="pill">2023 to 2026 NEC changes</span>
+        <span class="pill">⏱ Time-locked — minimum times enforced</span>
+      </div>
+    </div>
+    <div class="cinfo-time">
+      <div class="cinfo-time-big" id="course-time-display">0:00</div>
+      <div class="cinfo-time-lbl">of 4:00 hrs</div>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="mod-nav"></div>
+  <div id="mod-timer-bar" style="display:none" class="mod-timer-bar">
+    <span>⏱</span>
+    <span class="mt-time" id="mt-time">0:00</span>
+    <div class="mt-bar-bg"><div class="mt-bar-fill" id="mt-bar" style="width:0%"></div></div>
+    <span class="mt-label" id="mt-label">Module time</span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ─── TIMING CONFIG ────────────────────────────────────────────────────────────
+// Slide minimum times in seconds (students CANNOT advance before these expire)
+const SLIDE_MIN = 150; // 2.5 minutes per content slide
+// Module minimum times in seconds (total 4 hours)
+const MOD_MINS = [50*60, 70*60, 60*60, 60*60];
+
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+ {
+  "title": "Definitions, terminology and general requirements",
+  "time": "50 min",
+  "modMin": MOD_MINS[0],
+  "overview": [
+   "Why the adopted edition controls what is enforceable, and how to confirm it",
+   "How the 2026 book is organized: renamed chapters, new article numbers and parallel numbering",
+   "New and revised Article 100 definitions: countertop, readily accessible, GFCI classes, EV and ESV, PCS",
+   "A code book lookup method for comparing a 2023 term with its 2026 version",
+   "Article 110 changes: instructions that must lead to NEC compliance, arc-flash labels, working space and doors",
+   "Where equipment over 1000 volts moved in the 2026 edition",
+   "Global wording changes such as OCPD, and a checklist for verifying a rule in the right edition"
+  ],
+  "slides": [
+   {
+    "tag": "M1·S1",
+    "title": "Edition Basics: What 'NEC 2026' Means and Who Decides",
+    "body": "NFPA 70-2026 is the 2026 National Electrical Code. This course compares it with the 2023 NEC, so every change is described as a 2023 rule followed by a 2026 rule. The Code itself says the authority having jurisdiction (AHJ) is responsible for enforcement and interpretation, which means the edition your state or municipality has adopted is the one that is enforceable on your job, not the newest edition on the shelf.",
+    "bullets": [
+     "90.1 states the Code's purpose as the practical safeguarding of persons and property from electrical hazards. It is a minimum safety standard, not a design manual.",
+     "90.4 gives the AHJ responsibility for enforcement and for interpreting the rules. The AHJ can also approve equivalent methods and, where the Code allows it, grant special permission.",
+     "Adoption is a legal act by the state or local government. A new NEC edition is published on a three year cycle, but states adopt it on their own schedule, often a year or more after publication, and some adopt it with amendments.",
+     "Because adoption timing varies, a contractor working across jurisdictions may be bound by 2020, 2023 and 2026 rules in the same month.",
+     "Wisconsin licensees should confirm the adopted edition and any state amendments with the Department of Safety and Professional Services (DSPS) and the local inspector before applying 2026 requirements to a permit."
+    ],
+    "step_list": [
+     "Look up the edition your jurisdiction currently enforces (state rule or local ordinance).",
+     "Check whether the AHJ has published amendments or a transition date for plan review.",
+     "Write the edition on the permit application, plans and load calculation sheet.",
+     "Only then use this course to see how the 2026 text would differ."
+    ],
+    "keypoint": "The adopted edition controls. Learn the 2026 changes, but cite and install to the edition your AHJ enforces today.",
+    "info": "This course relies on published change summaries from state agencies, trade magazines and training providers, plus a checked question bank. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 90.1",
+     "NEC 90.4"
+    ]
+   },
+   {
+    "tag": "M1·S2",
+    "title": "How the 2026 Book Is Organized and How Changes Are Marked",
+    "body": "The 2026 NEC is a transition edition. It makes structural moves now so that the 2029 edition can be reformatted, and Annex L previews that future layout. Knowing the structural moves up front saves a lot of time, because many 'missing' 2023 rules are simply in a new article.",
+    "table": {
+     "h": [
+      "Item",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Chapter 5 title",
+       "Special Occupancies",
+       "Specific Occupancies and Locations"
+      ],
+      [
+       "Chapter 6 title",
+       "Special Equipment",
+       "Specific Equipment"
+      ],
+      [
+       "Chapter 7 title",
+       "Special Conditions",
+       "Specific Conditions and Systems"
+      ],
+      [
+       "Chapter 8",
+       "Communication Systems, independent of Chapters 1 to 7 unless referenced",
+       "Communication Systems, Outside and Entering Buildings; its independence is removed, so Chapters 1 to 4 apply unless modified"
+      ],
+      [
+       "Listing and reconditioned equipment",
+       "Listing language scattered by article",
+       "Listing generally in subsection .2 and reconditioned equipment in subsection .3 across articles (for example 334.2)"
+      ],
+      [
+       "Annex L",
+       "No preview of a future layout",
+       "Previews the reformatted organization planned for the 2029 NEC"
+      ]
+     ]
+    },
+    "bullets": [
+     "Limited-energy installation rules are consolidated in Chapter 7 (Articles 720 to 760), and communications content moves there as well.",
+     "The front matter of the 2026 book explains how new and revised text is marked. Find that legend now so you can spot changes quickly in the body.",
+     "Do not assume a change bar means a technical change. Some marked text is only a move or a rewording."
+    ],
+    "keypoint": "Start every 2026 lookup with the table of contents. If a 2023 section seems to be missing, it probably moved, not vanished.",
+    "info": "Chapter renames come from the Minnesota DLI summary and the checked question bank. Chapter 8 and .2/.3 numbering are supported by several articles. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 90.3 (2026)",
+     "NEC Annex L (2026)",
+     "NEC 334.2 (2026)"
+    ]
+   },
+   {
+    "tag": "M1·S3",
+    "title": "Article 100: Countertop, Work Surface, Readily Accessible and GFCI Classes",
+    "body": "Article 100 holds terms used in more than one article, so a small wording change here can change the answer in Articles 210, 404, 406 and others without any change to those articles. The 2023 list is the baseline. The terms below are the ones reported as changed in the 2026 edition.",
+    "table": {
+     "h": [
+      "Term",
+      "2023 NEC",
+      "2026 NEC (as reported)",
+      "Why it matters"
+     ],
+     "r": [
+      [
+       "Countertop",
+       "Definition did not name beverage preparation or serving as reported",
+       "Includes surfaces used for beverage preparation or serving",
+       "Affects where receptacles are required or prohibited at counters and bars"
+      ],
+      [
+       "Work surface",
+       "Not distinguished in this way in the sources",
+       "Dry use surfaces for tasks other than food or beverage preparation or serving",
+       "Separates work benches from counters"
+      ],
+      [
+       "Accessible, readily",
+       "Less detailed",
+       "Reachable quickly without tools (other than a key), climbing, removing obstacles or using portable ladders",
+       "Disconnect and equipment locations"
+      ],
+      [
+       "Ground-fault circuit interrupter",
+       "GFCI, with special-purpose GFCI as a separate idea",
+       "'Class A' added as an alternate term for the traditional GFCI (about 4 to 6 mA trip). Class C, D and E special-purpose GFCIs (SPGFCI) are defined (UL 943C)",
+       "Class C is the type cited for listed HVAC equipment in 210.8(F)"
+      ]
+     ]
+    },
+    "keypoint": "When a rule seems to have changed but the article text looks the same, check Article 100 first.",
+    "info": "Definitions are reported by the Minnesota DLI summary, EC&M and IAEI. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 100 (2026)",
+     "NEC 210.8(F) (2026)"
+    ]
+   },
+   {
+    "tag": "M1·S4",
+    "title": "Article 100: Vehicles, Power Control, Limited-Energy and OCPD",
+    "body": "A second group of definition changes supports the new and relocated articles you will see later in the course. They define which article governs a vehicle charger, how load-managing equipment is described, and how all low-energy cables are grouped.",
+    "def_grid": [
+     {
+      "term": "Electric vehicle (EV) and ESV",
+      "body": "The EV definition covers on-road automotive-type vehicles, including plug-in hybrids, and goes to Article 625. Other self-propelled electric vehicles such as forklifts, golf carts, electric boats and farm equipment are 'ESV' and go to new Article 624."
+     },
+     {
+      "term": "Energy management system (EMS) and power control system (PCS)",
+      "body": "Sources agree that EMS and PCS are both defined and that Article 130 and 120.7 were built around them. A PCS monitors and controls power and can prevent overloads, and is listed (UL 3141 is cited). One source describes 120.7 as renaming EMS to PCS, so read the actual definitions."
+     },
+     {
+      "term": "Cable, limited-energy",
+      "body": "A new umbrella term covering Class 2, 3 and 4 (including fault-managed power), communications, CATV, optical fiber and fire alarm cables. 'Limited-energy system' was also revised."
+     },
+     {
+      "term": "OCPD",
+      "body": "The acronym for overcurrent protective device is used throughout the book (over 700 times, per one summary). 'AC' is added in rules that apply only to alternating current."
+     }
+    ],
+    "bullets": [
+     "The 2023 definition of EMS described a system that monitors and/or controls. The 2026 EMS must do both.",
+     "The umbrella cable term exists largely because 'low voltage' and 'power limited' no longer describe Class 4 fault-managed power."
+    ],
+    "keypoint": "Definitions now decide article selection: EV goes to 625, ESV goes to 624, and load-managing equipment is tested against EMS and PCS.",
+    "info": "The EMS and PCS descriptions differ between sources. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 100 (2026)",
+     "NEC 120.7 (2026)",
+     "NEC 130.2 (2026)",
+     "NEC Article 624 (2026)"
+    ]
+   },
+   {
+    "tag": "M1·S5",
+    "title": "Lookup Exercise: Comparing Three Terms Between Editions",
+    "body": "In this exercise you use the index of the 2026 book, then Article 100, to compare a term with its 2023 version. The method matters more than the answer: find the term, find the section, read the definition, then decide whether the change alters how a rule is applied. Work with your 2023 book open next to the 2026 book.",
+    "step_list": [
+     "Pick the term and look it up in the index of each book. Write down the page, the section and whether it is in Article 100 or an article-specific definition section (many articles have a .2 or definitions section).",
+     "Read both definitions slowly. Mark added words, deleted words and moved words.",
+     "Write one sentence describing what changed in plain language.",
+     "Name one rule that uses the term and say whether its application changes.",
+     "Check cross references: does the 2026 definition point to a different article?"
+    ],
+    "table": {
+     "h": [
+      "Term to look up",
+      "Where to look in 2026",
+      "What the sources report",
+      "Scope effect to discuss"
+     ],
+     "r": [
+      [
+       "Countertop",
+       "Article 100",
+       "Beverage preparation or serving added",
+       "A bar or beverage counter now counts for receptacle placement and for the 210.52(C)(4) prohibited locations"
+      ],
+      [
+       "Readily accessible",
+       "Article 100",
+       "Hierarchy: no tools other than a key, no climbing, no obstacles, no portable ladders",
+       "A disconnect behind a locked gate is fine with a key but not one reached with a ladder"
+      ],
+      [
+       "Electric vehicle",
+       "Article 100, then 625 and 624",
+       "EV limited to on-road vehicles; ESV goes to Article 624",
+       "A forklift charger is not an Article 625 installation"
+      ]
+     ]
+    },
+    "keypoint": "A definition change alters the scope of every rule that uses the term. Always read the rule and the term together.",
+    "info": "Students use their own copies to confirm the wording. Record anything that differs from this table. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 100 (2026)",
+     "NEC 90.3 (2026)"
+    ]
+   },
+   {
+    "tag": "M1·S6",
+    "title": "Article 110: Instructions, Arc-Flash Labels and Servicing",
+    "body": "Article 110 holds the general rules for equipment, so 2026 changes here touch almost every job. The 2023 baseline is 110.3 (listed and labeled equipment), 110.14 (terminations) and 110.26 (working space). The first group of 2026 changes is about instructions and labels.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "110.3(B)",
+       "Unclear whether listing or labeling instructions or the NEC controlled",
+       "Instructions must result in an installation and use that complies with the NEC. They may add requirements but cannot reduce them (for example they cannot waive a GFCI requirement). Instructions may be printed, a QR code or a link"
+      ],
+      [
+       "110.16",
+       "General arc-flash warning requirement, scoped to service and feeder-supplied equipment rated 1200 A or more (per one source)",
+       "Generic warning removed; label shows nominal system voltage, arc-flash boundary, incident energy or minimum PPE level, and date of the assessment. Wider list of equipment is reported (switchboards, switchgear, enclosed panelboards, industrial control panels, meter socket enclosures, motor control centers)"
+      ],
+      [
+       "110.17",
+       "Title included 'and maintenance'",
+       "Title drops 'and maintenance', limiting scope to installation-related servicing"
+      ]
+     ]
+    },
+    "bullets": [
+     "110.14 on terminations and 110.3 on listed equipment remain the starting point for any equipment question.",
+     "The arc-flash label content lines up with NFPA 70E, so the label date shows when the assessment was done.",
+     "The label requirement is for equipment other than dwelling units."
+    ],
+    "keypoint": "Manufacturer instructions can never lower an NEC requirement. If instructions conflict with the Code, the stricter rule controls.",
+    "info": "110.16 details come from several summaries that describe the equipment list differently. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 110.3(B) (2026)",
+     "NEC 110.14 (2026)",
+     "NEC 110.16 (2026)",
+     "NEC 110.17 (2026)"
+    ]
+   },
+   {
+    "tag": "M1·S7",
+    "title": "Article 110: Working Space, Doors and Equipment Over 1000 Volts",
+    "body": "Working space is a frequent inspection failure, and 2026 clarifies how equipment doors are treated. The baseline is 110.26 with Table 110.26(A)(1). The second major question for this lecture is whether requirements for equipment over 1000 volts stayed in Article 110 and Chapter 4.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Equipment doors and egress (110.26)",
+       "Wording about doors was less specific",
+       "Egress is evaluated with doors open to 90 degrees even if they can open further or be removed (one summary); another describes it as assessing obstruction regardless of position, removability or swing. Required egress is at least 24 in. wide and 6.5 ft high. Language added for enclosed live parts"
+      ],
+      [
+       "Large equipment (110.26(C)(2))",
+       "Applied to service disconnects, 1200 A or more and over 6 ft wide",
+       "Extended to service and feeder disconnecting means, with a reference to 225.33(A) for feeder disconnects in a single location"
+      ],
+      [
+       "Over 1000 V equipment",
+       "Medium-voltage text was spread across several articles, including Article 235",
+       "New articles gather the text: 245 (overcurrent), 265 to 268 (circuits, feeders, services), 270 (grounding and bonding), 305 (wiring methods), 315 (conductors) and 495 (equipment). Article 235 is deleted"
+      ]
+     ]
+    },
+    "bullets": [
+     "Listing for Article 495 equipment is phased in: January 1, 2029 for equipment up to 15,000 V and January 1, 2032 for over 15,000 V up to 52,000 V.",
+     "Practical check: open the door fully on paper, then measure the clear path and working space with the door in the position the Code uses.",
+     "Reference to 110.29 supports the 'within sight' idea used later in service and feeder disconnect rules."
+    ],
+    "keypoint": "Doors and equipment layout are evaluated against the Code position, not the position that happens to be convenient on site.",
+    "info": "Door position wording differs between sources. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 110.26 (2026)",
+     "NEC 110.26(C)(2) (2026)",
+     "NEC Article 495 (2026)",
+     "NEC Article 268 (2026)",
+     "NEC Article 270 (2026)"
+    ]
+   },
+   {
+    "tag": "M1·S8",
+    "title": "Global Terminology: Common Errors and a Verification Checklist",
+    "body": "A single wording change repeated across the book can change how an inspector reads a rule, and the most common comparison error is using a 2023 interpretation or section number without checking the 2026 text. The table lists 2023 locations that no longer match.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 location",
+      "2026 location (as reported)"
+     ],
+     "r": [
+      [
+       "Load calculations",
+       "Article 220",
+       "Article 120 (for example 220.82 became 120.82 and 220.41 became 120.41)"
+      ],
+      [
+       "Energy management systems",
+       "Article 750",
+       "Article 130 (Article 750 number reused for limited-energy grounding and bonding)"
+      ],
+      [
+       "Non-power-limited remote-control and signaling circuits",
+       "300.26",
+       "New Article 206"
+      ],
+      [
+       "Dwelling emergency disconnect",
+       "230.85",
+       "Merged into 230.70"
+      ],
+      [
+       "Snap switches, dimmers and electronic control switches",
+       "Article 404",
+       "Part III of expanded Article 406"
+      ],
+      [
+       "Fire resistive cable systems",
+       "Article 728",
+       "Article 772"
+      ],
+      [
+       "Optical fiber and communications circuits",
+       "Articles 770 and 805",
+       "Deleted; content moves to limited-energy articles (720 to 723)"
+      ],
+      [
+       "Hazardous location bonding",
+       "501.30, 502.30, 503.30",
+       "New 500.30"
+      ]
+     ]
+    },
+    "step_list": [
+     "Write the section number from your source (plan note, training slide, older permit).",
+     "Find the topic in the 2026 table of contents or index rather than guessing the new number.",
+     "Read the 2026 text and compare it with the 2023 text word by word.",
+     "Check Article 100 for any changed term used in the rule.",
+     "Record the edition and section on your documents.",
+     "If the sources conflict, ask the AHJ which text they enforce."
+    ],
+    "keypoint": "Never carry a section number between editions. Re-find the rule every time, and record the edition beside every citation.",
+    "info": "Relocations are reported by EC&M, IAEI, the Minnesota DLI summary and Texas municipal summaries. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 90.4",
+     "NEC Article 100 (2026)",
+     "NEC Article 120 (2026)",
+     "NEC Article 130 (2026)"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "The 2026 NEC 514.11(A) emergency disconnect text now includes:",
+    "opts": [
+     "Only the dispensers themselves",
+     "Electric vehicle chargers in dwellings",
+     "Overhead lighting only",
+     "Receptacles over or adjacent to motor fuel dispensers in classified locations"
+    ],
+    "correct": 3,
+    "explain": "2026: 514.11(A) now includes receptacles over or adjacent to motor fuel dispensers located in classified locations. The summaries do not state the 2023 text. [NEC 514.11(A) (2026)]"
+   },
+   {
+    "q": "Under the revised 2026 definition of 'readily accessible,' reaching the item must NOT require:",
+    "opts": [
+     "Using a key to unlock the enclosure",
+     "Climbing or using a portable ladder, or removing obstacles",
+     "Walking to the equipment location",
+     "Reading a nearby identification label"
+    ],
+    "correct": 1,
+    "explain": "2026: the definition is a hierarchy; the item must be reachable quickly without tools (other than a key), climbing, removing obstacles, or portable ladders. A key is therefore still allowed. The 2023 definition was less detailed. [NEC Art. 100 'Accessible, Readily' (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC, a traditional 4-6 mA personnel-protection GFCI is also called a:",
+    "opts": [
+     "Class C SPGFCI",
+     "Class E SPGFCI",
+     "Class D SPGFCI",
+     "Class A GFCI"
+    ],
+    "correct": 3,
+    "explain": "Per Minnesota DLI's change summary, EC&M ('Key Revisions to Chapter 2'), IAEI Magazine and Interstates, the 2026 Article 100 adds Class A as an alternate term and defines Class C, D and E SPGFCIs. Class C is the one cited for HVAC under 210.8(F). [NEC Art. 100 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, how does Chapter 8 relate to Chapters 1 through 4?",
+    "opts": [
+     "Chapter 8 was deleted entirely",
+     "Chapter 8 is still independent of Chapters 1-7 unless specifically referenced",
+     "Chapter 8 is no longer independent; the general rules in Chapters 1-4 apply to it",
+     "Chapter 8 now overrides Chapters 1-4"
+    ],
+    "correct": 2,
+    "explain": "Per Minnesota DLI's 2026 change summary, IAEI Magazine, Belden and Electrical Contractor magazine, the independence of Chapter 8 was removed (described as among the biggest structural changes in 50+ years). Limited-energy content is consolidated in Chapter 7 (Arts. 720-760). [NEC 90.3 (2026); 90.3 (2023)]"
+   },
+   {
+    "q": "Which occupancy is newly added to the 2026 surge-protection requirements for sleeping quarters?",
+    "opts": [
+     "Parking garages",
+     "Sleeping quarters in fire, police, ambulance, rescue and ranger stations",
+     "Warehouses",
+     "Retail stores"
+    ],
+    "correct": 1,
+    "explain": "Per EC&M 'Key Revisions to Chapter 2' (230.67(A) item 5 new), RectorSeal's 2026 SPD article, the Texas summary (emergency responder sleeping areas) and Minnesota DLI's FAQ (10 kA In, Type 1 or 2). [NEC 215.18, 230.67(A) (2026)]"
+   },
+   {
+    "q": "A battery-electric golf cart or forklift is treated under the 2026 NEC as:",
+    "opts": [
+     "An electric self-propelled vehicle covered by Article 624",
+     "An electric vehicle covered by Article 625",
+     "Covered by Article 480 only",
+     "Outside the scope of the NEC"
+    ],
+    "correct": 0,
+    "explain": "IAEI Magazine's EV infrastructure article (EV vs ESV definitions) and Minnesota DLI's change summary (Article 624 is for vehicles not meeting the Article 100 EV definition) both support this. EC&M adds that Article 624 includes forklifts, golf carts and electric boats. [NEC Art. 100, 624, 625 (2026)]"
+   }
+  ]
+ },
+ {
+  "title": "Branch circuits, services and load calculations",
+  "time": "70 min",
+  "modMin": MOD_MINS[1],
+  "overview": [
+   "Article 210 at a glance: the 2023 baseline for GFCI, AFCI and continuous load sizing, and what changed",
+   "Outdoor and HVAC GFCI rules in 210.8(F): the 60 ampere threshold and Class C SPGFCI",
+   "Garages, accessory buildings, dormitories and servicing receptacles",
+   "Dwelling receptacle layout: fixed cabinets, 24 inch rules and prohibited locations",
+   "A four-scenario GFCI comparison between the 2023 and 2026 books",
+   "Services: the service disconnect moves outdoors and 230.85 is folded into 230.70",
+   "Markings, plaques, remote control devices, feeder disconnects and surge protection",
+   "The dwelling load calculation step by step, and how it reads in Article 120"
+  ],
+  "slides": [
+   {
+    "tag": "M2·S1",
+    "title": "Article 210 Overview: Baseline and What Changed",
+    "body": "Article 210 is where most electricians feel a Code cycle first. The 2023 baseline you carry into the comparison is 210.8 (GFCI protection), 210.12 (AFCI protection) and 210.19 and 210.20 (conductor and overcurrent device sizing, including continuous loads). Compare each paragraph against the 2026 text, using the list below as a map of what the sources report.",
+    "table": {
+     "h": [
+      "Section",
+      "Topic",
+      "Reported 2026 change"
+     ],
+     "r": [
+      [
+       "210.8 notes and 210.8(F)",
+       "GFCI and special-purpose GFCI",
+       "Informational note on HF and HF+ marked Class A GFCIs; outdoor outlet threshold up to 60 A; Class C SPGFCI exception for listed HVAC equipment"
+      ],
+      [
+       "210.8(A)(2), (A)(3)",
+       "Garages and accessory buildings",
+       "Separated into two items; the grade-level floor qualifier is removed for accessory buildings"
+      ],
+      [
+       "210.12(E)",
+       "AFCI for existing circuits",
+       "A listed outlet branch-circuit AFCI may be placed at the first receptacle or switch of the existing circuit"
+      ],
+      [
+       "210.17",
+       "Guest rooms with cooking",
+       "Dormitories added to the list that follows dwelling unit branch-circuit rules"
+      ],
+      [
+       "210.52, 210.70",
+       "Receptacles and lighting outlets",
+       "Fixed cabinet, 24 in. rules, prohibited locations list and a closet laundry lighting exception"
+      ],
+      [
+       "210.63, 422.12",
+       "HVAC servicing receptacle",
+       "Load-side connection restriction removed; new 422.12 Exception No. 2"
+      ]
+     ]
+    },
+    "bullets": [
+     "Continuous loads are still sized at 125 percent for branch-circuit conductors and overcurrent devices under 210.19 and 210.20. The sources reviewed did not report a change to that rule, so use it as your baseline check for every circuit below.",
+     "Keep in mind that Article 625 now contains its own GFCI rule for permanently wired EV equipment, covered in Module 4."
+    ],
+    "keypoint": "Build a one-page map of every 2026 Article 210 change before you start. Then read each paragraph itself.",
+    "info": "Items rest on the Minnesota DLI summary, EC&M and IAEI. The continuous-load statement is a baseline, not a reported change. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 210.8 (2026)",
+     "NEC 210.12 (2026)",
+     "NEC 210.19 (2026)",
+     "NEC 210.20 (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S2",
+    "title": "210.8(F): Outdoor Outlets, 60 Amperes and Class C SPGFCI",
+    "body": "The outdoor dwelling unit outlet rule in 210.8(F) changed in two ways. The ampere threshold increased, and the way listed HVAC equipment is handled moved from a temporary exception to a defined option using a Class C special-purpose GFCI. This is a good place to see how Article 100 definitions and Article 210 work together.",
+    "table": {
+     "h": [
+      "Item",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Outdoor outlet threshold",
+       "Outdoor dwelling unit outlets rated 50 A or less",
+       "60 A or less, for single-phase branch circuits at 150 V or less to ground"
+      ],
+      [
+       "Listed HVAC equipment",
+       "A temporary exception; sources differ on when it ends (one cites September 1, 2026)",
+       "Exception No. 3 permits a listed Class C SPGFCI to protect listed HVAC equipment"
+      ],
+      [
+       "Marking at the disconnect",
+       "None for this exception",
+       "The HVAC disconnect is marked to say Class C SPGFCI protection is provided for the HVAC unit (exact wording per the Minnesota DLI summary)"
+      ],
+      [
+       "High-frequency tolerance",
+       "No mention",
+       "Informational note: Class A GFCIs marked HF or HF+ are recognized for inverter-driven equipment"
+      ]
+     ]
+    },
+    "bullets": [
+     "Non-readily-accessible outlets and outdoor lighting outlets are not covered by 210.8(F).",
+     "Four HVAC outlet options appear in one source: Class A, Class A marked HF or HF+, Class C, and Class C marked HF or HF+.",
+     "IAEI also reports that GFCI protection for certain appliances such as refrigerators and HVAC must be identified as HF starting January 1, 2029 (422.5(C)). Treat this as a future date to confirm."
+    ],
+    "step_list": [
+     "Is the outlet outdoors at a dwelling unit?",
+     "Is the circuit single-phase at 150 V or less to ground, and rated 60 A or less?",
+     "If it serves listed HVAC equipment, is a Class C SPGFCI used, and is the disconnect marked?",
+     "Record the edition used and the paragraph (210.8(F) or 210.8(F) Exception No. 3)."
+    ],
+    "keypoint": "Raise the outdoor threshold to 60 A in 2026, and use Class C SPGFCI only for listed HVAC equipment with the required marking.",
+    "warning": "Timing of the older HVAC exception differs between sources. Read the exception text in your adopted edition before using it.",
+    "info": "The 60 A threshold appears in the Minnesota DLI summary and the checked bank. The Class C wording and dates are reported inconsistently. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 210.8(F) (2026)",
+     "NEC 210.8 (2026)",
+     "NEC 422.5(C) (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S3",
+    "title": "Garages, Accessory Buildings, Dormitories and Servicing Receptacles",
+    "body": "Several smaller 210 changes close gaps that inspectors and installers argued about under the 2023 text. They share a theme: remove a qualifier that no longer matched the hazard, or add an occupancy that was missing.",
+    "def_grid": [
+     {
+      "term": "210.8(A)(2) and (A)(3)",
+      "body": "2023: one item covered garages and accessory buildings with a floor at or below grade. 2026: garages are item (2); accessory buildings not intended as habitable rooms and limited to storage, work and similar uses are item (3), and the grade-level qualifier is removed. Elevation does not remove the shock hazard. Habitable areas in or above a garage are treated like habitable accessory building areas."
+     },
+     {
+      "term": "210.17",
+      "body": "2023: guest rooms and suites with permanent cooking provisions in hotels, motels, assisted living and similar occupancies had to meet dwelling unit branch-circuit rules. 2026: dormitories are added. Read the full list in 210.17."
+     },
+     {
+      "term": "210.63",
+      "body": "2023: the servicing receptacle for HVAC and refrigeration equipment could not be on the load side of the equipment disconnect. 2026: that restriction is removed, which resolves conflicts when the disconnect is in a separate structure."
+     },
+     {
+      "term": "422.12 Exception No. 2",
+      "body": "New. Servicing receptacles (210.63(A)) and servicing lighting outlets (210.70(C)) may be supplied from the equipment branch circuit."
+     },
+     {
+      "term": "210.12(E)",
+      "body": "A listed outlet branch-circuit AFCI used to protect an existing circuit may be at the first receptacle or switch of that circuit."
+     }
+    ],
+    "bullets": [
+     "Worked check: a detached 20 by 24 ft workshop with a raised wood floor used for storage and tools. Under the 2023 text as described, the grade-level qualifier could take it outside item (2). Under 2026 it falls in 210.8(A)(3).",
+     "A servicing receptacle on the load side of an HVAC disconnect is now not excluded by 210.63."
+    ],
+    "keypoint": "Remove the floor-elevation excuse: in 2026 the use of the accessory building, not its floor height, decides GFCI protection.",
+    "info": "The accessory building and dormitory items rest on one or two sources each. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 210.8(A) (2026)",
+     "NEC 210.17 (2026)",
+     "NEC 210.63 (2026)",
+     "NEC 422.12 (2026)",
+     "NEC 210.12(E) (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S4",
+    "title": "Dwelling Receptacle Layout and Lighting Outlet Changes",
+    "body": "Kitchen and counter receptacle rules were reworded in 2026 to remove common conflicts. Read these changes next to the revised Article 100 definition of countertop, since the definition now includes beverage preparation and serving.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "210.52(A)(2) wall space",
+       "Only fixed cabinets without countertops or work surfaces were excluded from the measurement",
+       "Any fixed cabinet is excluded"
+      ],
+      [
+       "210.52(A)(5)",
+       "No reported allowance on cabinet walls",
+       "Receptacles on the walls of cabinets supporting a countertop are allowed only if not less than 24 in. beneath the countertop"
+      ],
+      [
+       "210.52(C)(4)",
+       "No consolidated list in the sources",
+       "New list of prohibited receptacle locations, including within 24 in. of the countertop surface (measured from the nearest surface edge), such as walls that extend from base cabinets"
+      ],
+      [
+       "Island or peninsula",
+       "No reported rule",
+       "Receptacle outlets are prohibited within 24 in. vertically below the countertop surface, with an exception for receptacles in drawers under countertops"
+      ],
+      [
+       "210.70(A)(1) Exception No. 3",
+       "Switch-controlled lighting outlet in laundry areas",
+       "A lighting outlet outside the laundry area may serve a laundry located in a closet"
+      ]
+     ]
+    },
+    "step_list": [
+     "Draw the kitchen with the countertop and the island or peninsula.",
+     "Mark the 24 in. zone below the countertop surface and along adjacent walls.",
+     "Place required receptacles outside the zone, or in a drawer where the exception applies.",
+     "Confirm countertop receptacle spacing is still met without the prohibited locations."
+    ],
+    "keypoint": "Draw the 24 in. zone before you rough in. The prohibited locations list can move a receptacle that used to be acceptable.",
+    "info": "The island exception rests on two Texas municipal summaries. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 210.52(A) (2026)",
+     "NEC 210.52(C)(4) (2026)",
+     "NEC 210.70(A)(1) (2026)",
+     "NEC Article 100 (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S5",
+    "title": "Lookup Exercise: Four GFCI Scenarios, Part 1",
+    "body": "Resolve each scenario under the 2023 book first, using 210.8(A) for dwelling unit locations and 210.8(F) for outdoor outlets. Then repeat with the 2026 book and record the paragraph in each edition. This slide covers scenarios 1 and 2; the next slide completes them.",
+    "table": {
+     "h": [
+      "Scenario",
+      "2023 answer (as described)",
+      "2026 answer (as reported)",
+      "Changed?"
+     ],
+     "r": [
+      [
+       "1. Outdoor 120/240 V, 60 A receptacle on the side of a house, for a welder",
+       "Outdoor outlet rule applies to 50 A or less, so this 60 A outlet is not covered by 210.8(F)",
+       "Covered: 60 A or less at 150 V or less to ground, so GFCI protection is required under 210.8(F)",
+       "Yes"
+      ],
+      [
+       "2. Detached storage shed with a raised wood floor, two 15 A receptacles inside",
+       "The accessory building item referred to floors at or below grade, so a raised floor was outside that item",
+       "210.8(A)(3) covers accessory buildings limited to storage, work and similar uses without the floor qualifier, so GFCI is required",
+       "Yes"
+      ]
+     ]
+    },
+    "step_list": [
+     "Scenario 1: confirm the voltage to ground (120 V on a 120/240 V system) and the ampere rating (60 A).",
+     "Locate 210.8(F) in each book and read the number. Record 50 A in 2023 and 60 A in 2026.",
+     "Scenario 2: find the accessory building item in 210.8(A) of each book.",
+     "Record which book has the floor qualifier, and write the paragraph number for each answer."
+    ],
+    "keypoint": "A rating or a qualifier is the whole answer. Read the number in the paragraph rather than relying on memory.",
+    "info": "Scenario answers rest on the Minnesota DLI summary and FAQ. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 210.8(A) (2026)",
+     "NEC 210.8(F) (2026)",
+     "NEC 210.8(F) (2023)"
+    ]
+   },
+   {
+    "tag": "M2·S6",
+    "title": "Lookup Exercise: Four GFCI Scenarios, Part 2 and Review",
+    "body": "Scenarios 3 and 4 show a case where the available protection method changes and a case where the answer stays the same. After resolving them, the group reviews every scenario whose answer differs between editions.",
+    "table": {
+     "h": [
+      "Scenario",
+      "2023 answer (as described)",
+      "2026 answer (as reported)",
+      "Changed?"
+     ],
+     "r": [
+      [
+       "3. Outdoor outlet for a listed air conditioner condenser at a dwelling",
+       "A temporary exception applied to listed HVAC equipment; timing differs between sources",
+       "Exception No. 3 permits a listed Class C SPGFCI, with marking at the HVAC disconnect. A Class A GFCI is also an option",
+       "Method changes"
+      ],
+      [
+       "4. Bathroom receptacle in a dwelling unit",
+       "GFCI protection required under 210.8(A)",
+       "No change reported; GFCI protection still required",
+       "No"
+      ]
+     ]
+    },
+    "step_list": [
+     "Scenario 3: find 210.8(F) and its exceptions in each book and read the exception text, noting whether a date appears.",
+     "Check Article 100 for Class C SPGFCI and read the HVAC disconnect marking requirement.",
+     "Scenario 4: confirm the bathroom item is still in 210.8(A) and record the item number in both editions.",
+     "Complete the review: list scenarios 1, 2 and 3 as changed, scenario 4 as unchanged, and write why each changed (threshold, qualifier, new option)."
+    ],
+    "bullets": [
+     "Discussion: a scenario whose answer is the same in both editions is still worth recording, because it proves you read the 2026 text.",
+     "Discussion: would a Class A GFCI marked HF or HF+ be a better choice for inverter-driven condensers?"
+    ],
+    "keypoint": "Record both answers and both paragraph numbers for every scenario. The difference between them is the change.",
+    "info": "Scenario 3 rests on sources that disagree on dates. Scenario 4 is a no-change check. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 210.8(A) (2026)",
+     "NEC 210.8(F) (2026)",
+     "NEC Article 100 (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S7",
+    "title": "Article 230: Service Disconnect Moves Outdoors and 230.85 Is Folded In",
+    "body": "The baseline from 2023 is 230.85 (emergency disconnect at one- and two-family dwellings), 230.67 (surge protection) and 230.79 (rating of service disconnecting means), with 230.42 for service conductor sizing. The 2026 NEC rewrites the service disconnect location rule for dwellings and deletes 230.85 by moving its content into 230.70.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Service disconnect at one- and two-family dwellings",
+       "Could be inside nearest the point of entry; an outdoor emergency disconnect was separately required under 230.85",
+       "230.70(A)(1): readily accessible outdoor location on or within sight of the dwelling (110.29). Exception allows a remote disconnect if an emergency disconnect is installed under 225.41"
+      ],
+      [
+       "230.85",
+       "Required outdoor emergency disconnect for one- and two-family dwellings",
+       "Deleted; content moves into 230.70 (location, markings, plaque)"
+      ],
+      [
+       "Utility disconnect",
+       "Sometimes used as the emergency disconnect",
+       "A utility disconnect no longer counts as the emergency disconnect unless it complies (Minnesota DLI)"
+      ]
+     ]
+    },
+    "bullets": [
+     "'Within sight' is the Article 100 idea of visible and not more than 50 ft away.",
+     "230.42 service conductor sizing is still the first check when load or equipment changes, and its load input now comes from Article 120.",
+     "Check whether the Article 230 parts changed order: the sources report 230.46 (SVC marking note), 230.68 (fire pump meter sockets) and 230.82 (list reorganized)."
+    ],
+    "keypoint": "In 2026 the dwelling service disconnect goes outdoors and does the emergency job, so the separate 230.85 emergency disconnect is gone.",
+    "warning": "Do not cite 230.85 on a 2026 permit. The section was deleted, and its content now sits in 230.70.",
+    "info": "The service disconnect change is supported by EC&M, IAEI, Minnesota DLI and Electrical Contractor magazine. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 230.42 (2026)",
+     "NEC 230.70 (2026)",
+     "NEC 230.79 (2026)",
+     "NEC 230.85 (2023)",
+     "NEC 225.41 (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S8",
+    "title": "Markings, Plaques, Remote Controls, Feeder Disconnects and Surge Protection",
+    "body": "Once the service disconnect is outdoors, the Code needs rules for how it is marked, how other sources are identified and how a separate building feeder is handled. This slide also covers the expanded surge protection requirements in 215.18 and 230.67.",
+    "def_grid": [
+     {
+      "term": "230.70(B) marking",
+      "body": "The disconnect enclosure is marked on the front with 'EMERGENCY DISCONNECT' in white letters on a red background, at least 1/2 in. high, durable and not hand-written. Service disconnects not at dwellings are marked 'SERVICE DISCONNECT'."
+     },
+     {
+      "term": "230.70(D) plaque or directory",
+      "body": "2023: only emergency disconnects needed identification. 2026: any isolation disconnect for another energy source (PV, storage, generator) not located at the service disconnect must be identified by a plaque or directory at the service disconnect."
+     },
+     {
+      "term": "230.70(F) remote control",
+      "body": "A shunt-trip pushbutton or similar remote device may actuate the disconnect but is not itself the service disconnecting means."
+     },
+     {
+      "term": "225.31 and 225.41 feeders",
+      "body": "2026: an outdoor feeder disconnect must be readily accessible and on or within sight of the building; indoors it is at the nearest point of entrance. A single disconnect may satisfy both 225.31 and 225.41."
+     },
+     {
+      "term": "230.67 and 215.18 surge",
+      "body": "2023: SPD for dwelling units, dormitories, guest rooms and suites, and nursing home patient sleeping rooms. 2026: adds sleeping quarters in fire, police, ambulance, rescue and ranger stations, and extends to load-side feeder panelboards (215.18). Type 1 or Type 2 SPD with In of at least 10 kA."
+     }
+    ],
+    "step_list": [
+     "At the meter and service equipment, find where the disconnect for each source is.",
+     "If an isolation disconnect is not at the service disconnect, install a plaque or directory there.",
+     "Mark the enclosure per 230.70(B) using durable material.",
+     "Treat a shunt-trip pushbutton as an actuator only."
+    ],
+    "keypoint": "One outdoor service disconnect, one clear marking, and a directory for every other source.",
+    "info": "Markings and plaques rest on EC&M and Minnesota DLI. The SPD changes rest on EC&M, RectorSeal and Minnesota DLI. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 230.70 (2026)",
+     "NEC 225.31 (2026)",
+     "NEC 225.41 (2026)",
+     "NEC 230.67 (2026)",
+     "NEC 215.18 (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S9",
+    "title": "Worked Example: Dwelling Load Calculation Under the 2023 Baseline",
+    "body": "The 2023 baseline for a dwelling standard calculation uses Table 220.12 for lighting, 220.52 for small appliances and laundry, and Table 220.42 for lighting demand. Follow every number in this worked example so that you can later see exactly which step 2026 touches.",
+    "step_list": [
+     "General lighting load: 2,000 sq ft x 3 VA per sq ft = 6,000 VA (Table 220.12).",
+     "Small-appliance branch circuits: two circuits x 1,500 VA = 3,000 VA (220.52(A)).",
+     "Laundry branch circuit: 1,500 VA (220.52(B)).",
+     "Subtotal before demand: 6,000 + 3,000 + 1,500 = 10,500 VA.",
+     "Apply Table 220.42: first 3,000 VA at 100 percent = 3,000 VA.",
+     "Remaining 10,500 - 3,000 = 7,500 VA at 35 percent = 2,625 VA.",
+     "Demand for these loads: 3,000 + 2,625 = 5,625 VA."
+    ],
+    "table": {
+     "h": [
+      "Step",
+      "Load",
+      "VA",
+      "Demand factor",
+      "Result VA"
+     ],
+     "r": [
+      [
+       "1",
+       "General lighting (3 VA x 2,000 sq ft)",
+       "6,000",
+       "",
+       "6,000"
+      ],
+      [
+       "2",
+       "Small appliance (2 x 1,500)",
+       "3,000",
+       "",
+       "3,000"
+      ],
+      [
+       "3",
+       "Laundry",
+       "1,500",
+       "",
+       "1,500"
+      ],
+      [
+       "4",
+       "Subtotal",
+       "10,500",
+       "",
+       "10,500"
+      ],
+      [
+       "5",
+       "First 3,000 VA",
+       "3,000",
+       "100 percent",
+       "3,000"
+      ],
+      [
+       "6",
+       "Remaining 7,500 VA",
+       "7,500",
+       "35 percent",
+       "2,625"
+      ],
+      [
+       "7",
+       "Demand total",
+       "",
+       "",
+       "5,625"
+      ]
+     ]
+    },
+    "bullets": [
+     "Remaining dwelling loads (range, dryer, HVAC, water heater and others) are added after this step. They are not part of this example.",
+     "Divide by 240 V for current: 5,625 VA / 240 V = about 23.4 A for this portion of the service."
+    ],
+    "keypoint": "Every number in a dwelling calculation comes from a table or a section. Know which one before you compare editions.",
+    "info": "This worked example uses 2023 table values. The 2026 Article 120 step is covered on the next slide. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 220.12 (2023)",
+     "NEC 220.52 (2023)",
+     "NEC 220.42 (2023)",
+     "Table 220.12 (2023)",
+     "Table 220.42 (2023)"
+    ]
+   },
+   {
+    "tag": "M2·S10",
+    "title": "Article 120: Where the Same Steps Appear in 2026",
+    "body": "In the 2026 NEC, branch-circuit, feeder and service load calculations moved from Article 220 to a new Article 120 with the same title. The sources describe the move and some specific changes, but you must open the 2026 book to see the full layout. Use the example from the previous slide and compare each step.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Location of load calculations",
+       "Article 220 (for example 220.82 optional dwelling calculation, 220.41)",
+       "Article 120; examples reported: 220.82 became 120.82 and 220.41 became 120.41"
+      ],
+      [
+       "Dwelling lighting VA",
+       "3 VA per sq ft drove both load calculations and the number of lighting and receptacle circuits",
+       "120.13 keeps 3 VA per sq ft only to determine the minimum number of general lighting and receptacle branch circuits. The service and feeder calculation uses 2 VA per sq ft"
+      ],
+      [
+       "EVSE load",
+       "220.57",
+       "120.57; in the optional dwelling calculation 120.82(D) takes EVSE at 100 percent of nameplate, while 120.83 (EVSE added to an existing dwelling) uses 80 percent"
+      ],
+      [
+       "Park calculations",
+       "Elsewhere",
+       "120.130 and 120.140 for RV parks and mobile and manufactured home parks (Parts VIII and IX)"
+      ],
+      [
+       "PCS",
+       "No PCS",
+       "120.7 addresses power control systems"
+      ]
+     ]
+    },
+    "step_list": [
+     "Find the Article 120 table of contents and mark each part.",
+     "Locate the general lighting step and find the VA value for service and feeder calculations.",
+     "Locate the circuit-count rule in 120.13 and note it uses 3 VA.",
+     "Locate the small-appliance and laundry steps and confirm the VA values.",
+     "Find the demand factor table and compare breakpoints with 2023.",
+     "Check Annex D for the matching dwelling example."
+    ],
+    "keypoint": "2026 splits the old 3 VA value: 3 VA for how many circuits to install, 2 VA for how big the service and feeder are.",
+    "warning": "Do not use the 3 VA per sq ft value for a 2026 service or feeder calculation, and do not drop it from the circuit count.",
+    "info": "Article 120 relocation and the VA split rest on EC&M, Kopperfield, Electrical Contractor magazine, Texas summaries and the Mike Holt guide. This course describes Article 120 only as far as those sources support. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 120 (2026)",
+     "NEC 120.13 (2026)",
+     "NEC 120.82 (2026)",
+     "NEC 120.57 (2026)",
+     "NEC Annex D (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S11",
+    "title": "Common Errors: Mixing Editions in Calculations",
+    "body": "The most expensive load calculation errors are not arithmetic errors. They come from citing the wrong edition, mixing a 2026 value with a 2023 step, or leaving out a load. Work through the table below and match each error to its fix.",
+    "table": {
+     "h": [
+      "Error",
+      "How it happens",
+      "Fix"
+     ],
+     "r": [
+      [
+       "Citing 220.x on a 2026 jurisdiction permit",
+       "Section numbers memorized from 2023",
+       "Look up the rule in Article 120 and cite the 2026 section"
+      ],
+      [
+       "Citing 120.x in a 2023 jurisdiction",
+       "Using a 2026 training slide on a 2023 permit",
+       "Use Article 220 numbers; add the edition to the calculation sheet"
+      ],
+      [
+       "Using 3 VA for the service load in 2026",
+       "Old habit",
+       "Use 2 VA for the service and feeder calculation; use 3 VA only to count circuits"
+      ],
+      [
+       "Using 2 VA for the circuit count in 2026",
+       "Over-correcting",
+       "Use 3 VA in 120.13 for the minimum number of circuits"
+      ],
+      [
+       "Omitting EV charging load",
+       "Charger added later, or considered optional",
+       "Include EVSE at the required rate (220.57 in 2023; 120.57 and 120.82(D) in 2026)"
+      ],
+      [
+       "Applying a service disconnect rule by the old section",
+       "Referring to 230.85",
+       "Use 230.70 in 2026"
+      ]
+     ]
+    },
+    "bullets": [
+     "A load calculation that omits EV charging load under 220.57 is a common error in every edition, not just 2026.",
+     "If a customer will add a charger later, the service sizing decision should have been documented."
+    ],
+    "step_list": [
+     "Decide which edition governs.",
+     "Pick the correct article (220 or 120).",
+     "Check each step's section against that edition.",
+     "Include every planned load.",
+     "Record assumptions and the date."
+    ],
+    "keypoint": "Cite one edition per calculation, and never combine values from two editions in the same sheet.",
+    "refs": [
+     "NEC 220.57 (2023)",
+     "NEC 220.18 (2023)",
+     "NEC Article 120 (2026)",
+     "NEC 120.57 (2026)"
+    ]
+   },
+   {
+    "tag": "M2·S12",
+    "title": "Documenting the Edition on Every Calculation Sheet",
+    "body": "A calculation sheet is a permit document, and an inspector or plan reviewer should be able to tell at a glance which edition and which sections you used. The group agrees on a standard header and a short set of rules for how to cite sections when jurisdictions or editions change.",
+    "def_grid": [
+     {
+      "term": "Header block",
+      "body": "Project, address, date, preparer and license number, the adopted NEC edition (2023 or 2026), and the AHJ."
+     },
+     {
+      "term": "Citation rule",
+      "body": "Write the edition in parentheses after each section: for example 'NEC 220.12 (2023)' or 'NEC 120.13 (2026)'. Use the same format for tables."
+     },
+     {
+      "term": "Source of values",
+      "body": "State where each value comes from: table, section or manufacturer nameplate. For EVSE use the nameplate rating."
+     },
+     {
+      "term": "Change log",
+      "body": "If the jurisdiction adopts a new edition mid-project, record which version was used for the permit and the date of adoption."
+     }
+    ],
+    "bullets": [
+     "Keep a one-page cross reference between 2023 and 2026 sections for your most used calculations, built from the Article 120 table of contents.",
+     "When the AHJ answers an edition question by email, keep the email with the project file.",
+     "If two sources give different values for a 2026 rule, use the NFPA 70-2026 text and note the paragraph."
+    ],
+    "step_list": [
+     "Confirm the adopted edition.",
+     "Fill in the header block.",
+     "Write each step with edition and section.",
+     "Reconcile with the panel schedule.",
+     "Initial and date the sheet."
+    ],
+    "keypoint": "A calculation without an edition is incomplete. Always show which Code you used.",
+    "refs": [
+     "NEC Article 120 (2026)",
+     "NEC 90.4"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "In the 2026 NEC, a plaque or directory at the service disconnect is required to identify:",
+    "opts": [
+     "The utility meter number",
+     "The ground resistance of the electrode",
+     "The location of disconnects for other energy sources not at the service disconnect",
+     "The date of the load calculation"
+    ],
+    "correct": 2,
+    "explain": "Per Minnesota DLI's change summary, EC&M 'Key Revisions to Chapter 2' (applied only to dwelling emergency disconnects in 2023), EC&M's top-25 article, the Texas summary and Interstates. [NEC 230.70(D) (2026); 230.85 (2023)]"
+   },
+   {
+    "q": "In the 2026 NEC, a GFCI marked 'HF' is intended to address:",
+    "opts": [
+     "Weather resistance",
+     "Arc faults",
+     "High-frequency ground-fault current from inverter-driven equipment",
+     "Higher voltage ratings"
+    ],
+    "correct": 2,
+    "explain": "Per Minnesota DLI's change summary, IAEI Magazine, EC&M 'Key Revisions to Chapter 2' and EC&M's Chapter 2 coverage (two new informational notes about GFCI device changes). [NEC 210.8 Info. Note (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC, 3 VA per square foot is retained in 120.13 for:",
+    "opts": [
+     "Determining the minimum number of general lighting and receptacle branch circuits in a dwelling",
+     "Sizing the service conductors",
+     "The optional method feeder calculation",
+     "Sizing the grounding electrode conductor"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M (dwelling unit calculations article), Kopperfield, Electrical Contractor magazine (NECA article) and the Mike Holt study guide, 120.13 prevents the circuit count from falling when the service load value dropped to 2 VA. Example: 5000 sq ft x 3 VA = 15,000 VA, 125 A at 120 V, so 9 15-A or 7 20-A circuits. [NEC 120.13 (2026); 220.14/220.41 (2023)]"
+   },
+   {
+    "q": "In the 2026 NEC, the emergency disconnect requirements for one- and two-family dwellings are found in:",
+    "opts": [
+     "225.42",
+     "230.95",
+     "230.85 unchanged",
+     "230.70 (230.85 was deleted)"
+    ],
+    "correct": 3,
+    "explain": "EC&M's top-25 article, EC&M 'Key Revisions to Chapter 2', Minnesota DLI and Electrical Contractor magazine note 230.85 was removed and merged into 230.70. A utility disconnect no longer counts as the emergency disconnect unless it complies (Minnesota DLI). [NEC 230.70 (2026); 230.85 (2023)]"
+   },
+   {
+    "q": "The 2026 EVSE emergency shutoff for non-dwelling installations must be located:",
+    "opts": [
+     "Within sight and at least 20 ft but not more than 100 ft from the equipment",
+     "Within 5 ft of the charger",
+     "Not more than 10 ft",
+     "Inside the building only"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M's top-25 article, LightNow and IAEI Magazine. [NEC 625.43(D) (2026)]"
+   },
+   {
+    "q": "For the dwelling wall-space measurement in 210.52(A)(2), the 2026 NEC excludes which cabinets?",
+    "opts": [
+     "Any fixed cabinet",
+     "Only cabinets with a countertop",
+     "Only upper wall cabinets",
+     "Only cabinets taller than 6 ft"
+    ],
+    "correct": 0,
+    "explain": "2023: only fixed cabinets without countertops or work surfaces were excluded. 2026: any fixed cabinet is excluded from the wall-space measurement. [NEC 210.52(A)(2) (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC, permitted wiring methods for Class I locations are presented in:",
+    "opts": [
+     "Chapter 9 Table 1",
+     "Annex C",
+     "Narrative text only",
+     "Tables, such as Table 501.10(A)(1)"
+    ],
+    "correct": 3,
+    "explain": "Per Minnesota DLI's change summary and IAEI Magazine's proposal coverage (new tables in 501, 502, 503, 505, 506). [NEC Tables 501.10(A)(1), (B)(1) (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC 690.7(A), what happened to the 100 kW inverter threshold?",
+    "opts": [
+     "It was raised to 250 kW",
+     "It was removed, allowing engineering calculation for any PV system size",
+     "It was lowered to 50 kW",
+     "It applies only to residential systems"
+    ],
+    "correct": 1,
+    "explain": "2023: a 100 kW threshold applied. 2026: 690.7(A) is limited to dc voltages and the threshold is removed. [NEC 690.7(A) (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 225.31(A), a single disconnect for an outside feeder to a dwelling can satisfy:",
+    "opts": [
+     "Both 225.31 and the emergency disconnect rule of 225.41",
+     "Only the 225.31 requirement",
+     "Only the service disconnect requirement",
+     "The grounding electrode requirements of Article 250"
+    ],
+    "correct": 0,
+    "explain": "2026: one disconnect can meet both 225.31 and 225.41. The summaries do not state the 2023 text. [NEC 225.31(A) (2026)]"
+   }
+  ]
+ },
+ {
+  "title": "Wiring methods, grounding and equipment",
+  "time": "60 min",
+  "modMin": MOD_MINS[2],
+  "overview": [
+   "Article 250 changes: rod depth, electrode conductor splices, armor and bonding jumpers",
+   "How to check intersystem bonding, separately derived systems and the new Article 270",
+   "General wiring method changes: replacing damaged conductors, roof decking, ribbons, drainage, cable ties and bends",
+   "Conductor, cable and raceway updates: 16 AWG on 10 A circuits, cable supports, thermal barrier exception and fittings",
+   "Boxes and cabinets: fan boxes and service conductors through enclosures",
+   "Sizing a grounding electrode conductor and equipment grounding conductor with the 2026 tables",
+   "Motors and HVAC: BE and CE designs, MCC markings, locked doors and split-system disconnect marking",
+   "Switchboards and panelboards: available fault current marking, labels and the move of snap switches"
+  ],
+  "slides": [
+   {
+    "tag": "M3·S1",
+    "title": "Article 250: Grounding Electrodes, Conductors and Bonding Jumpers",
+    "body": "Table 250.66, Table 250.122 and 250.52 are the 2023 baseline for grounding electrode and equipment grounding conductor questions. The 2026 changes reported for Article 250 are edits to individual paragraphs rather than a rewrite of those tables. Record each changed paragraph and the plain-language effect on an installation.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)",
+      "Effect on an installation"
+     ],
+     "r": [
+      [
+       "250.53(A)(4)",
+       "Rod or pipe electrode driven; depth not stated in the sources",
+       "Rod or pipe initially driven vertically to a depth of 8 ft",
+       "Plan for an 8 ft vertical drive before any permitted alternatives"
+      ],
+      [
+       "250.64(C)",
+       "GEC one continuous length, except irreversible compression-type connectors, exothermic welding or busbars",
+       "Splices also permitted using listed grounding and bonding equipment at accessible locations",
+       "Listed splice devices can repair or extend a GEC where accessible"
+      ],
+      [
+       "250.64(E)(1)",
+       "No cable armor reference in the sources",
+       "Cable armor added; ferrous armor bonded at both ends",
+       "Armored GEC cable must be bonded at both ends"
+      ],
+      [
+       "250.64(G)",
+       "Not reported",
+       "Mounting and drainage openings are not intended for GEC installation",
+       "Do not route a GEC through an enclosure opening meant for mounting or drainage"
+      ],
+      [
+       "250.102(A)",
+       "Types of bonding jumper listed",
+       "Non-flexible metal raceway and fittings added as a bonding jumper type, coordinated with 250.30(A)(2)",
+       "A rigid raceway can serve as a bonding jumper where 250.30(A)(2) allows"
+      ]
+     ]
+    },
+    "bullets": [
+     "Exothermic welding and irreversible compression connectors stay permitted for GEC splices.",
+     "Sizing of the GEC still comes from Table 250.66 and the equipment grounding conductor from Table 250.122."
+    ],
+    "keypoint": "Eight feet vertical for a rod, listed splices at accessible locations, and ferrous armor bonded at both ends are the 2026 headlines in Article 250.",
+    "info": "Items rest on the Minnesota DLI summary and the checked bank. Table values and notes are covered in the table exercise. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 250.53(A)(4) (2026)",
+     "NEC 250.64(C) (2026)",
+     "NEC 250.64(E)(1) (2026)",
+     "NEC 250.102(A) (2026)",
+     "Table 250.66",
+     "Table 250.122"
+    ]
+   },
+   {
+    "tag": "M3·S2",
+    "title": "Intersystem Bonding, Separately Derived Systems and the New Over-1000 V Article",
+    "body": "250.94 (intersystem bonding) and 250.30 (separately derived systems) are checked for 2026 changes in the same way as the rest of Article 250. The summaries reviewed identify the connection to 250.102(A) and a restructuring that matters for communications and medium-voltage work.",
+    "def_grid": [
+     {
+      "term": "250.30 and 250.102(A)",
+      "body": "The raceway bonding jumper change is coordinated with 250.30(A)(2), so read the two paragraphs together when you bond a separately derived system."
+     },
+     {
+      "term": "250.94 intersystem bonding",
+      "body": "The sources reviewed do not report a change to the 250.94 bonding termination requirements. Chapter 8 independence has been removed, so communications grounding now sits under the general rules in Chapters 1 to 4 unless modified. Check 250.94 and the communications grounding rules in your book."
+     },
+     {
+      "term": "Article 270 (new)",
+      "body": "Grounding and bonding of systems over 1000 V ac or 1500 V dc moved here from Part X of Article 250, with text drawn from Article 250."
+     },
+     {
+      "term": "Article 750 number",
+      "body": "The old energy management article number 750 is reused for grounding and bonding of limited-energy systems."
+     }
+    ],
+    "step_list": [
+     "Open Article 250 in both books and compare the table of contents.",
+     "Find 250.30(A)(2) and 250.102(A) and read them together.",
+     "Find 250.94 and check the number of intersystem bonding termination types and any note changes.",
+     "If the job is over 1000 V, go to Article 270 instead of Part X of Article 250.",
+     "For limited-energy systems, check Article 750 in the 2026 book."
+    ],
+    "bullets": [
+     "Record each changed paragraph in a table with columns for section, plain-language change and installation effect.",
+     "If you find no change, write 'no change found' and the page you read."
+    ],
+    "keypoint": "Check 250.94 and 250.30 directly in the 2026 book. Where the sources report no change, say so and confirm it from the text.",
+    "info": "The reviewed sources report no specific 250.94 or 250.30 text change other than the 250.102(A) coordination. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 250.30 (2026)",
+     "NEC 250.94 (2026)",
+     "NEC Article 270 (2026)",
+     "NEC Article 750 (2026)"
+    ]
+   },
+   {
+    "tag": "M3·S3",
+    "title": "General Wiring Methods: Damaged Conductors, Decking, Ribbons, Drainage and Ties",
+    "body": "Article 300 gets a group of practical changes, most of them tied to field problems. The 2023 baseline is Article 300 itself, with Table 300.5 for cover depths read from the current book.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "300.4(C)",
+       "Reconditioning rules in 110.20 did not clearly address wiring methods and conductors",
+       "Conductors and wiring methods made unsuitable by overheating, fire, water or corrosion must be replaced. Informational notes cite NEMA GD 1-2019 (water damage) and GD 2-2021 (fire and heat)"
+      ],
+      [
+       "300.6(C)",
+       "Spacing rule referred to metal-corrugated sheet roof decking",
+       "'Metal-corrugated' removed so the rule applies to all roof decking and wiring methods; new exception for concealed locations with at least 2 in. of concrete encasement"
+      ],
+      [
+       "300.7(D)(3)",
+       "Warning ribbon over direct-buried service conductors",
+       "Ribbon also required over underground service raceways"
+      ],
+      [
+       "300.11(B)",
+       "No requirement reported",
+       "Raceways in indoor wet locations must include provisions for drainage"
+      ],
+      [
+       "300.13(E)",
+       "Cable tie listing addressed in individual articles",
+       "Cable ties used to secure cable, flexible conduit or flexible tubing must be listed and identified for the purpose (same for fixing devices)"
+      ],
+      [
+       "300.24",
+       "360 degree bend limit between pull points",
+       "Limit applies even when the raceway type changes between pull points"
+      ]
+     ]
+    },
+    "bullets": [
+     "Table 300.5 cover depths and Table 314.16(B) volume allowances should always be read from the current book rather than a memorized table.",
+     "The idea behind 300.4(C) is simple: wet or burned wiring is not reused just because it still tests well."
+    ],
+    "keypoint": "If wiring was soaked, burned or corroded, assume replacement, not reconditioning, and cite 300.4(C).",
+    "info": "Items rest on EC&M, the Minnesota DLI summary and the Texas summary. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 300 (2026)",
+     "NEC 300.4(C) (2026)",
+     "NEC 300.6(C) (2026)",
+     "NEC 300.7(D)(3) (2026)",
+     "NEC 300.13(E) (2026)",
+     "Table 300.5"
+    ]
+   },
+   {
+    "tag": "M3·S4",
+    "title": "Conductors, Cables and Raceways: What Changed",
+    "body": "Articles 310, 320 to 344 and 392 collect several rule changes. Pick one cable article and compare it between the two books, as the course exercise asks, and record at least one difference.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "310.5",
+       "No conductor smaller than 14 AWG copper or 12 AWG copper-clad aluminum",
+       "16 AWG copper or 14 AWG copper-clad aluminum permitted on 10 A circuits covered in Article 210 Part II"
+      ],
+      [
+       "310.15(E)",
+       "Not reported",
+       "List format shows when a neutral is or is not a current-carrying conductor"
+      ],
+      [
+       "320, 330, 334 securing",
+       "NM cable ties had to be listed and identified; hangers, staples and straps had no listing requirement",
+       "Hangers, staples, straps and cable ties for NM (334.2, 334.30), AC (320.2) and MC (330.2) must be listed; no 'other approved' option remains in 334.30"
+      ],
+      [
+       "330.30",
+       "Not reported",
+       "Cable cleats added as a securing or support method for Type MC"
+      ],
+      [
+       "334.10",
+       "NM in permitted buildings protected by a 15-minute finish rating thermal barrier where required",
+       "Exception permits NM without the thermal barrier in non-habitable grade-level storage garages and storage buildings under 1500 sq ft total area"
+      ],
+      [
+       "342 (IMC)",
+       "Not reported",
+       "Locknuts required on both inside and outside of the enclosure"
+      ],
+      [
+       "344.42 (RMC)",
+       "Tightening language applied only to threadless fittings",
+       "All fittings must be made up tight, including three-piece fittings and unions"
+      ],
+      [
+       "392.18(F)",
+       "Not reported",
+       "Minimum 12 in. access space above cable tray, with four new exceptions"
+      ]
+     ]
+    },
+    "bullets": [
+     "Example: a 10 A lighting circuit that previously needed 14 AWG copper may use 16 AWG copper under 2026 if it falls in the scope described, with all other conductor rules still applying.",
+     "Remember that listing language is placed in subsection .2 in the restructured articles."
+    ],
+    "keypoint": "Buy listed supports for NM, AC and MC, and check conductor minimum size in 310.5 before reaching for 16 AWG.",
+    "warning": "The 16 AWG allowance applies to 10 A circuits as described. Do not extend it to 15 A or 20 A branch circuits.",
+    "info": "Several items rest on a single source. The 16 AWG item comes from EC&M and the checked bank. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 310.5 (2026)",
+     "NEC 310.15(E) (2026)",
+     "NEC 334.30 (2026)",
+     "NEC 330.30 (2026)",
+     "NEC 342 (2026)",
+     "NEC 344.42 (2026)",
+     "NEC 392.18(F) (2026)"
+    ]
+   },
+   {
+    "tag": "M3·S5",
+    "title": "Boxes, Cabinets and Service Conductors",
+    "body": "The 2023 baseline for boxes is Article 314, with volume allowances in Table 314.16(B). Two 2026 changes affect everyday work: fan support boxes and the routing of service conductors through enclosures.",
+    "def_grid": [
+     {
+      "term": "314.27(B) fan support boxes",
+      "body": "2023: nearly every ceiling outlet box in habitable dwelling space had to be listed for fan support. 2026: the requirement applies to ceiling outlet boxes in sleeping rooms, living rooms and designated or typical fan locations. A box must be listed for fan support or allow access to framing so a fan can be supported without removing the box."
+     },
+     {
+      "term": "312.11 service conductors in enclosures",
+      "body": "2023: 230.7 kept service conductors out of raceways with non-service conductors, but no enclosure-level rule existed. 2026: service conductors may not pass through enclosures containing switches or OCPDs that are not service equipment. Splices and pass-through are still allowed inside service equipment. CT and meter socket enclosures are not covered."
+     },
+     {
+      "term": "Fixed cabinet cross reference",
+      "body": "The 210.52(A)(2) fixed cabinet change uses the same idea of cabinets as defined in Article 100 and is separate from Article 312."
+     }
+    ],
+    "step_list": [
+     "For each ceiling box, decide whether the room is a sleeping room, living room or a typical fan location.",
+     "If a fan could be installed, use a fan-rated box or a method that gives access to framing.",
+     "For feeders or service conductors, trace the path through every enclosure.",
+     "If an enclosure holds a switch or OCPD that is not service equipment, route the service conductors around it."
+    ],
+    "keypoint": "Fan boxes are now tied to room type, and service conductors must not travel through non-service switch enclosures.",
+    "info": "Both items rest on EC&M and one other source each. Verify the section location of the fan box rule in the 2026 book. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 314.27(B) (2026)",
+     "NEC 312.11 (2026)",
+     "NEC 230.7 (2023)",
+     "Table 314.16(B)"
+    ]
+   },
+   {
+    "tag": "M3·S6",
+    "title": "Table Verification Exercise: Worked Sizing from Table 250.66 and Table 250.122",
+    "body": "In this exercise you size a grounding electrode conductor and an equipment grounding conductor using the 2026 book, then compare the printed tables with 2023. The numbers below use the 2023 printed values, which are the baseline. Your task is to read the same rows in the 2026 tables and to compare the notes.",
+    "step_list": [
+     "Problem A: A dwelling service uses 3/0 AWG copper ungrounded service conductors. Find Table 250.66 and read the row for 2/0 or 3/0 copper. The 2023 table gives 4 AWG copper for the grounding electrode conductor.",
+     "Check the notes under Table 250.66 and 250.66(A) and (B) for limits that apply when the electrode is a rod, pipe, plate or concrete-encased electrode. Record which limit applies to your electrode.",
+     "Problem B: The service disconnect is protected by a 200 A overcurrent device. Find Table 250.122 and read the 200 A row. The 2023 table gives 6 AWG copper for the equipment grounding conductor.",
+     "Problem C: A 400 A feeder overcurrent device. Table 250.122 in 2023 gives 3 AWG copper.",
+     "Repeat each lookup in the 2026 book. Record the value and the section you used for each result.",
+     "Note any difference in a row value, a column heading or a footnote between the printed tables."
+    ],
+    "table": {
+     "h": [
+      "Problem",
+      "Input",
+      "2023 printed value",
+      "2026 value (record in class)",
+      "Section used"
+     ],
+     "r": [
+      [
+       "A",
+       "3/0 Cu service conductors",
+       "4 AWG Cu GEC",
+       "",
+       "Table 250.66"
+      ],
+      [
+       "B",
+       "200 A OCPD",
+       "6 AWG Cu EGC",
+       "",
+       "Table 250.122"
+      ],
+      [
+       "C",
+       "400 A OCPD",
+       "3 AWG Cu EGC",
+       "",
+       "Table 250.122"
+      ]
+     ]
+    },
+    "bullets": [
+     "Where a feeder is run in parallel or in multiple raceways, 250.122 and 250.122(F) also affect the size; read those paragraphs too.",
+     "If the conductor size changes for voltage drop or ampacity adjustment, the EGC may need to be increased proportionally under 250.122(B)."
+    ],
+    "keypoint": "Never size from memory. Read the row, the column and the notes in the book edition you are using.",
+    "info": "The 2023 values shown are the baseline. The reviewed sources did not report changes to the table values, so the 2026 column is for the class to record. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "Table 250.66",
+     "Table 250.122",
+     "NEC 250.66 (2026)",
+     "NEC 250.122 (2026)"
+    ]
+   },
+   {
+    "tag": "M3·S7",
+    "title": "Table Verification Review: Recording Results and Differences",
+    "body": "After the individual lookups, the group compares results and discusses any differences. The point is to build a habit: every installation detail traces to a section and an edition, and any difference between editions is documented rather than assumed.",
+    "table": {
+     "h": [
+      "Check",
+      "What to record",
+      "Why it matters"
+     ],
+     "r": [
+      [
+       "Row and column read correctly",
+       "Exact conductor or OCPD size row and material column",
+       "Copper and aluminum columns are easy to swap"
+      ],
+      [
+       "Notes and footnotes",
+       "Any note that modifies the table for the case",
+       "Notes change the result in special cases"
+      ],
+      [
+       "Edition comparison",
+       "2023 value, 2026 value, change or no change",
+       "Proves you read both books"
+      ],
+      [
+       "Section reference",
+       "250.66, 250.122 or the paragraph that sent you to the table",
+       "An inspector can find your source"
+      ]
+     ]
+    },
+    "bullets": [
+     "If a table value changed between the editions, flag it as a change and look for a reason in a first revision or summary.",
+     "If values did not change, write 'no change' and move on; most of the 2026 Article 250 changes are text changes, not table changes.",
+     "Discussion: a conductor installed with the 2023 table value and inspected under 2026 should be flagged on the permit documents."
+    ],
+    "step_list": [
+     "Exchange results with a partner.",
+     "Mark any result that differs from the 2023 printed value.",
+     "Re-read the differing row and notes together.",
+     "Report the section and edition to the group."
+    ],
+    "keypoint": "Same installation, same rows. If the two printed tables agree, record 'no change', and if they do not agree, record exactly where.",
+    "refs": [
+     "Table 250.66",
+     "Table 250.122"
+    ]
+   },
+   {
+    "tag": "M3·S8",
+    "title": "Motors and HVAC: Articles 430, 440 and 422",
+    "body": "The 2023 baseline for motor circuits is 430.52 (branch-circuit short-circuit protection) with Tables 430.248 and 430.250 for full-load currents. The reported 2026 changes are modest, and the key is knowing which paragraphs to re-read.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Article 430 motor designs",
+       "Energy-efficient motor design letters not shown throughout",
+       "BE and CE motor designs included throughout Article 430, which typically means lower locked-rotor currents"
+      ],
+      [
+       "430.98(A)",
+       "No such marking in the sources",
+       "An MCC supplied by a feeder must be marked with the name and location of the means to disconnect all power to it"
+      ],
+      [
+       "440.11",
+       "Not reported",
+       "Doors or covers that expose energized parts of HVAC equipment must be locked or require a tool to open"
+      ],
+      [
+       "440.15 (new)",
+       "No such section",
+       "For non-dwelling installations, an exterior split-system disconnect must be marked to identify the indoor units it supplies"
+      ],
+      [
+       "422.12 Exception No. 2",
+       "Not allowed",
+       "HVAC servicing receptacles and servicing lighting outlets may be supplied from the equipment branch circuit"
+      ]
+     ]
+    },
+    "bullets": [
+     "With BE and CE motors, check locked-rotor current and any table or note that depends on motor design letter before applying 430.52 values.",
+     "The location marking for an MCC saves time in an emergency, and should be on the equipment, not only in a drawing.",
+     "Students record each change and the effect on a typical installation, such as an RTU with a rooftop disconnect."
+    ],
+    "keypoint": "Mark the means of disconnect for MCCs and split systems, and lock or secure covers over energized HVAC parts.",
+    "info": "The motor and HVAC items rest mainly on the Minnesota DLI summary. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 430.52 (2026)",
+     "NEC Article 430 (2026)",
+     "NEC 430.98 (2026)",
+     "NEC Article 440 (2026)",
+     "NEC 440.11 (2026)",
+     "NEC 440.15 (2026)"
+    ]
+   },
+   {
+    "tag": "M3·S9",
+    "title": "Switchboards and Panelboards: Fault Current Marking and Labels",
+    "body": "Article 408 changes tie the available fault current to a visible marking. The baseline from 2023 is that switchboards, switchgear and panelboards must have a short-circuit current rating not less than the available fault current. 2026 adds documentation and marking steps, so a modification now triggers new paperwork.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "408.6 SCCR",
+       "SCCR not less than the available fault current",
+       "Also, for other than dwellings, the available fault current and the calculation date are field marked at the point of supply, documented, recalculated and re-marked after modifications"
+      ],
+      [
+       "Replacement OCPDs",
+       "Not specified in the sources",
+       "Replacement OCPDs must have interrupting ratings at least equal to the marked value"
+      ],
+      [
+       "408.10(F)",
+       "Not reported",
+       "Caution signs and labels must be in a readily accessible location on the front of the enclosure"
+      ],
+      [
+       "408.4 circuit directory",
+       "Circuits identified with a legible directory",
+       "Sources reviewed report no change; check the 2026 text"
+      ]
+     ]
+    },
+    "bullets": [
+     "Wire-bending space rules in Article 408 are also checked in the 2026 book; the sources reviewed do not report a change.",
+     "Dwelling units are excluded from the new field marking at the point of supply.",
+     "A replacement breaker with a lower interrupting rating than the marked fault current is a violation, even if it fits the bus."
+    ],
+    "step_list": [
+     "Obtain or calculate the available fault current at the equipment.",
+     "Mark the value and the date at the point of supply.",
+     "Record the calculation in the job file.",
+     "After a modification, recalculate and update the marking.",
+     "Select replacement OCPDs rated at least the marked value."
+    ],
+    "keypoint": "Mark the fault current and the date, and keep the calculation. Every OCPD swap must meet the marked value.",
+    "info": "The 408.6 details come from a single detailed source (EC&M) and a course outline. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 408.4 (2026)",
+     "NEC 408.6 (2026)",
+     "NEC 408.10(F) (2026)",
+     "NEC 110.10 (2026)"
+    ]
+   },
+   {
+    "tag": "M3·S10",
+    "title": "Switch Relocation and Equipment Listing Notes",
+    "body": "A final equipment topic belongs in this module: snap switches and similar devices have moved. Locating them requires the table of contents and a look at the revised Article 406.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "General-use snap switches, dimmers and electronic control switches",
+       "Article 404",
+       "Part III of an expanded Article 406"
+      ],
+      [
+       "Article 404",
+       "Switches generally",
+       "Covers other switches such as motor-circuit switches and molded-case switches"
+      ],
+      [
+       "Over 1000 V equipment listing",
+       "Not stated in the sources",
+       "Article 495 listing required January 1, 2029 for equipment up to 15,000 V, and January 1, 2032 for over 15,000 V up to 52,000 V"
+      ]
+     ]
+    },
+    "bullets": [
+     "A citation to Article 404 for a device switch on an older plan must be re-found in Article 406 Part III.",
+     "One source cites a switch item using both 406.4(G) and 406.14(G) numbering, so confirm the numbering in the book.",
+     "Listing dates are phase-in dates. Equipment installed before them is not retroactively affected as described, so read the article text."
+    ],
+    "step_list": [
+     "Look up 'snap switch' in the 2026 index.",
+     "Note the Part III section numbers.",
+     "Compare with the 2023 Article 404 section numbers.",
+     "Update any specification or checklist that cites Article 404 for device switches."
+    ],
+    "keypoint": "Switch rules for ordinary devices now live in Article 406 Part III. Update checklists that cite Article 404.",
+    "info": "The relocation rests on the Minnesota DLI summary and the checked bank. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 404 (2026)",
+     "NEC Article 406 (2026)",
+     "NEC 495.2 (2026)"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Under the 2026 NEC, supports such as staples and straps used for NM cable must be:",
+    "opts": [
+     "Approved by the manufacturer only",
+     "Any metal strap",
+     "Listed",
+     "Unlisted if painted"
+    ],
+    "correct": 2,
+    "explain": "Per EC&M 'Key Revisions to Chapter 3' (334.2), NFPA's first-revision record (320.30 listed ties, staples, straps, hangers) and a 2026 training quiz (320.2, 332.3, 334.2 listed supports; MI staples removed). [NEC 334.2, 334.30, 320.2, 330.2 (2026)]"
+   },
+   {
+    "q": "Which securing or support method was added for Type MC cable in 2026 NEC 330.30?",
+    "opts": [
+     "Adhesive tape",
+     "Zip ties of any type",
+     "Wire twist ties",
+     "Cable cleats"
+    ],
+    "correct": 3,
+    "explain": "2026: 330.30 adds cable cleats as an approved support or securing method for Type MC. The summaries do not state the 2023 text. [NEC 330.30 (2026)]"
+   },
+   {
+    "q": "Under the 2026 334.10 exception, NM cable need not have the 15-minute thermal barrier in:",
+    "opts": [
+     "Non-habitable, grade-level storage buildings under 1500 sq ft",
+     "Any dwelling over 1500 sq ft",
+     "Multifamily buildings",
+     "Habitable accessory dwelling units"
+    ],
+    "correct": 0,
+    "explain": "Per Minnesota DLI's change summary and FAQ (area counts the whole building, not individual storage units). [NEC 334.10 Ex. to (3) (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 495.2, listing is required for equipment over 15,000 V up to 52,000 V effective:",
+    "opts": [
+     "January 1, 2029",
+     "January 1, 2030",
+     "January 1, 2032",
+     "January 1, 2035"
+    ],
+    "correct": 2,
+    "explain": "2026: listing for equipment over 15,000 V up to 52,000 V is required from Jan. 1, 2032, three years after the lower voltage class (Jan. 1, 2029). [NEC 495.2 (2026)]"
+   },
+   {
+    "q": "Which motor design letters were added throughout Article 430 in the 2026 NEC?",
+    "opts": [
+     "NA and NB",
+     "AB and CD",
+     "BE and CE",
+     "TE and XE"
+    ],
+    "correct": 2,
+    "explain": "2026: BE and CE designs, which are energy-efficient motor designs, were added throughout Article 430. The summaries do not state the 2023 text. [NEC Art. 430 (2026)]"
+   },
+   {
+    "q": "Under 2026 430.98(A), an MCC supplied by a feeder must be marked with:",
+    "opts": [
+     "The location of the means to disconnect all power to the MCC",
+     "The motor horsepower of the largest load",
+     "The date of manufacture",
+     "The arc-flash PPE category only"
+    ],
+    "correct": 0,
+    "explain": "Per Minnesota DLI's change summary and Interstates' 430.98 coverage. [NEC 430.98(A) (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, energy management systems are covered in which article?",
+    "opts": [
+     "Article 130",
+     "Article 750",
+     "Article 706",
+     "Article 120"
+    ],
+    "correct": 0,
+    "explain": "Article 750 (2023) was relocated to Article 130 in 2026, per the Texas 2026 NEC significant-changes summary, IAEI Magazine, EC&M and Minnesota DLI's change summary. Article 750 still exists in 2026 but now deals with grounding and bonding of limited-energy systems (IAEI). Find it in the 2026 Chapter 1 table of contents. [NEC Art. 130 (2026); Art. 750 (2023)]"
+   },
+   {
+    "q": "Under the 2026 300.13(E), cable ties used to secure cables must be:",
+    "opts": [
+     "Only metal ties",
+     "Listed and identified for the purpose",
+     "Any plastic tie rated for the temperature",
+     "Approved by the AHJ only"
+    ],
+    "correct": 1,
+    "explain": "Per EC&M's top-25 article, Minnesota DLI's change summary (listed and identified for securement and support) and EC&M 'Key Revisions to Chapter 3'. [NEC 300.13(E) (2026)]"
+   }
+  ]
+ },
+ {
+  "title": "Special occupancies, EV and energy systems; review",
+  "time": "60 min",
+  "modMin": MOD_MINS[3],
+  "overview": [
+   "Article 624 versus Article 625: which EV or ESV equipment goes where",
+   "Article 625 changes: qualified installers, markings, load management, emergency shutoff, listed receptacles and GFCI",
+   "Solar and storage: PV rounding and voltage rules, service taps and bidirectional coordination",
+   "Standby, emergency and fire pump changes, microgrids and stationary batteries",
+   "Hazardous locations: consolidated bonding and wiring method tables",
+   "Marinas and agricultural buildings: equipotential planes, engineered design and GFPE testing",
+   "An EV case study with two chargers on a 200 ampere service and an energy management system",
+   "Course review: verified changes, how to find them and confirming the adopted edition"
+  ],
+  "slides": [
+   {
+    "tag": "M4·S1",
+    "title": "Article 624 and Article 625: Which Vehicle Equipment Goes Where",
+    "body": "The 2023 baseline for EV charging is Article 625, including 625.41 on overcurrent protection and rating and 625.42 on load management. In 2026 a new Article 624 splits off equipment for self-propelled electric vehicles that are not on-road vehicles, and the definitions in Article 100 decide which article applies.",
+    "table": {
+     "h": [
+      "Equipment or vehicle",
+      "Governing article",
+      "Reason"
+     ],
+     "r": [
+      [
+       "Passenger car or on-road plug-in hybrid",
+       "Article 625",
+       "Meets the Article 100 EV definition"
+      ],
+      [
+       "Forklift, golf cart, electric boat, farm equipment, aircraft ground support",
+       "Article 624",
+       "Electric self-propelled vehicle (ESV), not an EV"
+      ],
+      [
+       "Electrified truck parking space",
+       "Article 626",
+       "Separate article (per EC&M)"
+      ],
+      [
+       "Bidirectional on-road EV",
+       "Article 625, with Article 705 coordination",
+       "Power export to premises wiring requires interconnection rules"
+      ]
+     ]
+    },
+    "bullets": [
+     "Article 624 requires overcurrent protection under 210.20 and 240.4, a readily accessible disconnecting means, and grounding and bonding with attention to high-risk areas.",
+     "Marina applications may also need to meet Articles 555 and 682.",
+     "Bidirectional ESV systems need coordination with Article 705, labeling for dual energy sources, and GFCIs that handle reverse power flow.",
+     "Scope of 90.2 in 2020 added vehicle power export; the 2026 article structure continues that treatment."
+    ],
+    "keypoint": "Decide first whether the equipment is an EV or an ESV. That choice sends you to Article 625 or Article 624.",
+    "info": "Article 624 is supported by EC&M, IAEI, the Minnesota DLI summary and the Mike Holt guide. IAEI notes some details were still under review. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC Article 624 (2026)",
+     "NEC Article 625 (2026)",
+     "NEC 625.41",
+     "NEC 625.42"
+    ]
+   },
+   {
+    "tag": "M4·S2",
+    "title": "Article 625 Changes: Qualification, Markings, Shutoff, Receptacles and GFCI",
+    "body": "Several new or revised sections in Article 625 affect how residential and commercial chargers are installed. Record the changed paragraphs and note how each affects a house charger compared with a commercial site.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)",
+      "Applies to"
+     ],
+     "r": [
+      [
+       "625.4",
+       "No qualification statement",
+       "Permanently installed EV power transfer equipment (Level 2 or higher) is installed by qualified persons; NECA 413 is cited as guidance",
+       "All"
+      ],
+      [
+       "625.5",
+       "Not reported",
+       "Permanent visible markings on the EVSE enclosure for each incoming supply circuit (voltage, phases, frequency, full-load current) plus short-circuit current rating",
+       "All"
+      ],
+      [
+       "625.42",
+       "Rating and load management rules",
+       "Service, feeder and branch circuit supplying EVSE must have a rating sufficient for the load served; applies to (A) PCS and (B) EVSE with adjustable controls",
+       "All"
+      ],
+      [
+       "625.43(D)",
+       "Not reported",
+       "Other than one- and two-family dwellings: readily accessible manual-reset emergency shutoff within sight, 20 to 100 ft from the equipment, marked EVSE EMERGENCY DISCONNECT with a warning that EVs remain energized",
+       "Commercial"
+      ],
+      [
+       "625.44",
+       "Not reported",
+       "30 A, 50 A and 60 A receptacles used for EVSE must be listed for EVSE use ('EV' attachment plugs)",
+       "All"
+      ],
+      [
+       "625.54",
+       "GFCI only for receptacles for EV charging",
+       "GFCI and SPGFCI requirements added for permanently wired equipment",
+       "All"
+      ]
+     ]
+    },
+    "bullets": [
+     "625.54 details are subject to NFPA TIA action. IAEI notes that outlets at or below 150 V to ground need Class A GFCI protection and outlets above 150 V need SPGFCIs, effective January 1, 2029, with DC charging and bidirectional systems excepted.",
+     "The listed-receptacle rule addresses high-temperature failures from continuous loads."
+    ],
+    "keypoint": "Qualified installer, marked enclosure, listed receptacle, emergency shutoff at commercial sites, and GFCI for hardwired equipment.",
+    "warning": "Summaries of 625.54 differ and the text may have changed through the TIA process. Read the current text before you apply it.",
+    "info": "Most items rest on EC&M, LightNow, IAEI and the Minnesota DLI summary. 625.54 is the least settled. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 625.4 (2026)",
+     "NEC 625.5 (2026)",
+     "NEC 625.42 (2026)",
+     "NEC 625.43(D) (2026)",
+     "NEC 625.44 (2026)",
+     "NEC 625.54 (2026)"
+    ]
+   },
+   {
+    "tag": "M4·S3",
+    "title": "Solar PV and Interconnection: Articles 690 and 705",
+    "body": "The 2023 baselines are 690.12 (rapid shutdown), 705.12 (interconnection) and 706.15 (energy storage disconnect). The 2026 changes in Articles 690 and 705 are narrower than many expect, and the sources reviewed say little about 690.12 or 706.15.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "690.4(G)",
+       "No PV-specific rounding",
+       "Fractions of an ampere or volt below 0.5 may be dropped after correction and adjustment factors are applied, then rounded"
+      ],
+      [
+       "690.7(A)",
+       "100 kW inverter threshold in the maximum voltage rule",
+       "Limited to dc voltages; the 100 kW threshold is removed, allowing engineering calculation for any PV system size"
+      ],
+      [
+       "690.47(B)",
+       "Article 250 language on additional grounding electrodes included",
+       "That language is removed from subdivision (B)"
+      ],
+      [
+       "705.11(C)",
+       "Supply-side connections",
+       "Service tap conductor length limited to 16.5 ft, or 66 ft with cable limiters; connection is to existing service equipment"
+      ]
+     ]
+    },
+    "bullets": [
+     "Rapid shutdown (690.12), interconnection (705.12) and energy storage disconnects (706.15) were checked in the sources; no specific 2026 change was found for them. Read those sections in the 2026 book.",
+     "Bidirectional EV charging ties to Article 705 interconnection rules.",
+     "Worked check for 690.4(G): a corrected current of 12.4 A may be dropped to 12 A under the rounding allowance, then used for sizing."
+    ],
+    "keypoint": "PV changes are about voltage calculation, grounding text cleanup and service tap length. Verify rapid shutdown and storage disconnects in the book.",
+    "info": "Items rest on the Minnesota DLI summary and Solar Builder and Greenlancer articles. The 705.11(C) distances rest on one source. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 690.4(G) (2026)",
+     "NEC 690.7(A) (2026)",
+     "NEC 690.12",
+     "NEC 705.12",
+     "NEC 705.11(C) (2026)",
+     "NEC 706.15"
+    ]
+   },
+   {
+    "tag": "M4·S4",
+    "title": "Standby, Emergency, Fire Pump, Microgrids and Batteries",
+    "body": "This slide covers the other energy system changes reported for 2026. The baseline from 2023 for emergency systems is 700.32 (selective coordination) and for optional standby it is Article 702. Compare both against the 2026 text.",
+    "table": {
+     "h": [
+      "Section",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "702.4",
+       "Capacity options: full load or managed load",
+       "A third option for one- and two-family dwellings: listed multimode inverter-based systems using a power control system (UL 3141)"
+      ],
+      [
+       "702.4(A)(2)(b)",
+       "EMS only",
+       "Recognizes that traditional EMS may shed load during standby while a PCS manages loads and sources by control settings"
+      ],
+      [
+       "700.28",
+       "Not reported",
+       "Class 4 fault-managed power allowed for emergency lighting if listed for emergency use and integrated"
+      ],
+      [
+       "700.6(C)",
+       "Exception list",
+       "Exception list removed; applies to assembly, educational and high-rise occupancies where emergency loads are on a single feeder"
+      ],
+      [
+       "700.10(D) and 695.7(A)(2)",
+       "2 in. concrete encasement",
+       "2 in. with a PE-documented 2-hour fire rating, plus a new 5 in. option measured from the raceway or cable surface"
+      ],
+      [
+       "517.4",
+       "No such section",
+       "Microgrid may act as a source on either side of the transfer switch"
+      ],
+      [
+       "620.62(B), (C)",
+       "Not reported",
+       "Selective coordination re-evaluated when OCPDs are replaced or the elevator system is modified"
+      ],
+      [
+       "480.1, 480.14",
+       "Standby stationary batteries",
+       "'Standby' removed; overcharge prevention required for stationary battery systems"
+      ]
+     ]
+    },
+    "bullets": [
+     "700.32 selective coordination is checked for 2026 changes; the reviewed sources did not report one, so compare the text.",
+     "Sources cite the concrete encasement change under both 695.7(A)(2) and 700.10(D); confirm which article applies to your circuit."
+    ],
+    "keypoint": "PCS appears again in standby systems, and emergency systems gain Class 4 FMP lighting, a new encasement option and tighter coordination duties.",
+    "info": "Many items rest on the Minnesota DLI summary alone. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 700.32",
+     "NEC 702.4 (2026)",
+     "NEC 700.28 (2026)",
+     "NEC 695.7 (2026)",
+     "NEC 517.4 (2026)",
+     "NEC 480.14 (2026)"
+    ]
+   },
+   {
+    "tag": "M4·S5",
+    "title": "Hazardous Locations: Lookup Exercise for Class I",
+    "body": "For the Class I portion of the lookup, find the 2026 sections for wiring methods and seals and compare them with 501.10 and 501.15 from 2023. Record whether each answer changed.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Class I wiring methods",
+       "501.10 listed methods in text",
+       "Methods consolidated into Tables 501.10(A)(1) and 501.10(B)(1); six methods added: MC-HL, ITC-HL, TC-ER-HL, Type P cable, RMC and PVC conduit. Similar tables appear in 502, 503, 505 and 506"
+      ],
+      [
+       "Bonding in Class I, II, III",
+       "Bonding in 501.30, 502.30, 503.30",
+       "Consolidated into new 500.30"
+      ],
+      [
+       "Seals",
+       "501.15",
+       "Sources reviewed report no change; compare the text"
+      ],
+      [
+       "Luminaire retrofits",
+       "Not explicit",
+       "501.130(C) adds requirements for luminaire retrofit kits"
+      ],
+      [
+       "Optical equipment",
+       "500.8",
+       "500.8(G) now applies to optical equipment outside a classified location when its radiation extends into it"
+      ],
+      [
+       "Other related items",
+       "Various",
+       "512.6 adds cannabis extraction prohibited locations; 513.8 no longer requires underground installations at aircraft hangars to be Class I Division 1; 514.11(A) includes receptacles over or adjacent to fuel dispensers in classified locations"
+      ]
+     ]
+    },
+    "step_list": [
+     "Find 501.10 in the 2026 book and note the table form.",
+     "Find 501.15 and compare the seal requirements with 2023 line by line.",
+     "Find 500.30 and read the bonding rule for the three classes.",
+     "Record changed or unchanged for each topic."
+    ],
+    "keypoint": "In a hazardous location, start with the wiring method table in the 2026 book, not the 2023 list.",
+    "info": "Items rest on the Minnesota DLI summary, IAEI and the checked bank. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 501.10 (2026)",
+     "NEC 501.15 (2026)",
+     "NEC 500.30 (2026)",
+     "NEC 501.130(C) (2026)",
+     "NEC 500.8(G) (2026)"
+    ]
+   },
+   {
+    "tag": "M4·S6",
+    "title": "Marinas and Agricultural Buildings: Lookup Exercise",
+    "body": "Students find the marina ground-fault protection rule and the agricultural equipotential plane rule in the 2026 book, compare each with 2023, and record whether the answer changed. The course input points to 555.35 for marinas in 2023; the agricultural 2023 reference should be confirmed in the book.",
+    "table": {
+     "h": [
+      "Topic",
+      "2023 NEC",
+      "2026 NEC (as reported)"
+     ],
+     "r": [
+      [
+       "Marina GFPE",
+       "555.35 requirements",
+       "555.35(F): ground-fault protection of equipment must be coordinated and performance tested by qualified persons; written records are available to the AHJ. 555.35(B): GFPE monitoring for fire pump circuits"
+      ],
+      [
+       "Marina engineered design",
+       "Not reported",
+       "555.9: the AHJ may require documentation of an engineered design for a pier distribution system; exception for one- and two-family dwellings with 240 V single-phase or less"
+      ],
+      [
+       "Marina equipotential plane",
+       "Informational reference only",
+       "555.14: construction and bonding details where system voltage exceeds 250 V to ground and equipment is within 10 ft of water"
+      ],
+      [
+       "Marina equipment age",
+       "Not reported",
+       "555.15: equipment may be serviced to the edition under which it was installed; replacement equipment must comply with the current Code"
+      ],
+      [
+       "Natural bodies of water",
+       "682.33(A)",
+       "Equipotential plane extends at least 36 in. in all directions from outdoor service equipment"
+      ],
+      [
+       "Agricultural buildings",
+       "Informational note referencing an ASABE standard",
+       "547.44(C) adds construction requirements for the equipotential plane (structural reinforcing steel, unencapsulated welded wire or a copper grid)"
+      ]
+     ]
+    },
+    "bullets": [
+     "Compare three things for each rule: the section, the voltage and distance conditions, and who must document or test.",
+     "The 2023 agricultural reference is listed as 547.27 in the course input; confirm the section number in the 2023 book."
+    ],
+    "keypoint": "For marinas the 2026 changes add testing and documentation duties. For farms and marinas the equipotential plane is now spelled out.",
+    "info": "Items rest on EC&M and the Minnesota DLI summary. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 555.35 (2026)",
+     "NEC 555.14 (2026)",
+     "NEC 547.44(C) (2026)",
+     "NEC 555.9 (2026)",
+     "NEC 682.33(A) (2026)"
+    ]
+   },
+   {
+    "tag": "M4·S7",
+    "title": "Case Study: Two EVSE Units on a 200 Ampere Service, 2023 Pass",
+    "body": "A residential garage has two EVSE units supplied from a 200 ampere service. An energy management system limits their combined draw. Work the 2023 book first and write down each paragraph before looking at 2026.",
+    "step_list": [
+     "Branch-circuit sizing: each EVSE is rated 48 A continuous. 48 A x 125 percent = 60 A branch circuit, per 625.41 and 210.19 and 210.20 baselines.",
+     "EVSE load for the service calculation: 48 A x 240 V = 11,520 VA each, or 23,040 VA for two, which is about 96 A at 240 V.",
+     "Disconnect: check 625.43 for the disconnecting means for EVSE rated over 60 A or 150 V to ground.",
+     "GFCI: check 625.54 and 210.8 for receptacle outlets in a garage.",
+     "Load management: check 625.42 for the use of an energy management system to limit load.",
+     "Service: check the load calculation including EVSE (220.57 in 2023) and see whether the 200 A service has capacity."
+    ],
+    "table": {
+     "h": [
+      "Question",
+      "2023 section to read",
+      "Answer to record"
+     ],
+     "r": [
+      [
+       "Branch-circuit rating",
+       "625.41, 210.19, 210.20",
+       "60 A each (48 A x 125 percent)"
+      ],
+      [
+       "EVSE load in calculation",
+       "220.57",
+       "Nameplate, 11,520 VA each"
+      ],
+      [
+       "Load management",
+       "625.42",
+       "Allowed with a listed system as the paragraph describes"
+      ],
+      [
+       "GFCI",
+       "210.8(A), 625.54",
+       "Record what the 2023 book requires for a garage outlet"
+      ],
+      [
+       "Disconnect",
+       "625.43",
+       "Record the threshold"
+      ]
+     ]
+    },
+    "keypoint": "Write down the paragraph and the answer for every row before opening the 2026 book.",
+    "info": "The calculation values are illustrative. The section references follow the course outline, so confirm the 2023 paragraph titles in your book. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 625.41",
+     "NEC 625.42",
+     "NEC 625.43",
+     "NEC 625.54",
+     "NEC 220.57 (2023)"
+    ]
+   },
+   {
+    "tag": "M4·S8",
+    "title": "Case Study: The 2026 Pass and the Non-Listed Load Manager",
+    "body": "Now check the same paragraphs in the 2026 book. Several answers change in form or in the amount of documentation, and the discussion question asks what happens if the load management system is not listed.",
+    "table": {
+     "h": [
+      "Question",
+      "2023 baseline",
+      "2026 check (as reported)",
+      "Edition difference to record"
+     ],
+     "r": [
+      [
+       "Qualification",
+       "No statement",
+       "625.4: qualified persons for permanently installed Level 2 or higher equipment",
+       "New"
+      ],
+      [
+       "Markings",
+       "Not reported",
+       "625.5: supply circuit and short-circuit current rating markings",
+       "New"
+      ],
+      [
+       "Load management and rating",
+       "625.42",
+       "625.42(A) PCS and (B) adjustable EVSE: circuit rating sufficient for the load served",
+       "Reworded; PCS terms"
+      ],
+      [
+       "Load calculation",
+       "220.57",
+       "120.57 and 120.82(D): EVSE at 100 percent of nameplate with no demand factor",
+       "Moved and clarified"
+      ],
+      [
+       "GFCI",
+       "Receptacles",
+       "625.54: GFCI or SPGFCI for permanently wired equipment",
+       "New for hardwired EVSE"
+      ],
+      [
+       "Emergency shutoff",
+       "None",
+       "625.43(D) applies to other than one- and two-family dwellings",
+       "Not applicable to a house"
+      ]
+     ]
+    },
+    "bullets": [
+     "Discussion: if the load management system is not listed for the purpose, it cannot be relied on as a PCS under 130.2 and 625.42. The service must then be sized for the full EVSE load, and the system should be treated as ordinary control equipment.",
+     "For two 48 A units at 100 percent, the load is about 96 A at 240 V, which leaves less service capacity for the rest of the dwelling. A listed PCS limiting the combined draw changes the answer only as 625.42 and Article 120 allow."
+    ],
+    "keypoint": "A listed PCS is what lets load management reduce the sizing basis. Without it, size for the full nameplate load.",
+    "info": "The consequence of an unlisted load manager follows from the 130.2 listing requirement and the 625.42 wording reported by EC&M and the Minnesota DLI summary. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 625.4 (2026)",
+     "NEC 625.42 (2026)",
+     "NEC 625.43 (2026)",
+     "NEC 625.54 (2026)",
+     "NEC 120.57 (2026)",
+     "NEC 130.2 (2026)"
+    ]
+   },
+   {
+    "tag": "M4·S9",
+    "title": "Course Review: What Was Verified and Where to Find It",
+    "body": "The review pulls together the verified changes from the whole course and the section numbers where they appear. Use it as a lookup map for the 2026 book.",
+    "table": {
+     "h": [
+      "Area",
+      "Key 2026 change",
+      "Where to find it"
+     ],
+     "r": [
+      [
+       "Structure",
+       "Chapters renamed, Chapter 8 independence removed, .2 and .3 numbering",
+       "90.3, Annex L"
+      ],
+      [
+       "Definitions",
+       "Countertop, readily accessible, GFCI classes, EV and ESV, PCS, limited-energy cable",
+       "Article 100"
+      ],
+      [
+       "General",
+       "Instructions must comply with the NEC; arc-flash label content; doors and large equipment",
+       "110.3(B), 110.16, 110.26"
+      ],
+      [
+       "Load calculations",
+       "Moved to Article 120; 2 VA service value and 3 VA circuit count",
+       "120.13, 120.82"
+      ],
+      [
+       "Branch circuits",
+       "60 A outdoor GFCI; Class C SPGFCI; garages and accessory buildings; prohibited receptacle locations",
+       "210.8, 210.52"
+      ],
+      [
+       "Services",
+       "Outdoor service disconnect; 230.85 merged; markings and plaque",
+       "230.70, 225.41"
+      ],
+      [
+       "Grounding",
+       "8 ft rod; listed GEC splices; armor bonding",
+       "250.53, 250.64"
+      ],
+      [
+       "Wiring methods",
+       "Replace damaged wiring; listed supports; 16 AWG on 10 A",
+       "300.4(C), 310.5, 334.30"
+      ],
+      [
+       "EV",
+       "Article 624; 625.4, 625.5, 625.43(D), 625.44, 625.54",
+       "Articles 624 and 625"
+      ],
+      [
+       "Energy systems",
+       "PV voltage calc; standby third option; Class 4 FMP lighting",
+       "690.7, 702.4, 700.28"
+      ],
+      [
+       "Special locations",
+       "500.30; tables 501.10; marina testing; farm and marina equipotential planes",
+       "500.30, 555.35, 547.44"
+      ]
+     ]
+    },
+    "bullets": [
+     "Where sources were thin, this course described the topic area only. Those items are the ones to read first in the 2026 text.",
+     "Keep a personal list of the changes that affect your typical jobs and the sections where you verified them."
+    ],
+    "keypoint": "Verified means you read the 2026 paragraph yourself. Everything else in a summary, including this course, is a pointer.",
+    "info": "This summary pulls from all earlier slides and carries the same source limits. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 90.3 (2026)",
+     "NEC Article 100 (2026)",
+     "NEC Article 120 (2026)",
+     "NEC Article 625 (2026)"
+    ]
+   },
+   {
+    "tag": "M4·S10",
+    "title": "Course Review: Ten Questions and Confirming the Adopted Edition",
+    "body": "Complete the ten review questions on changed rules and how to locate them, then finish with the most important habit: confirm the adopted edition with the authority having jurisdiction before you apply anything from 2026.",
+    "step_list": [
+     "Which article now holds branch-circuit, feeder and service load calculations?",
+     "What does 120.13 use 3 VA per sq ft for, and what does the service and feeder calculation use?",
+     "What is the outdoor dwelling unit outlet GFCI ampere threshold in 210.8(F) in 2026?",
+     "Where is the dwelling emergency disconnect requirement found in 2026, and what happened to 230.85?",
+     "What depth is a rod electrode initially driven under 250.53(A)(4)?",
+     "Which article covers a forklift charger, and which covers a passenger car charger?",
+     "Who may install permanently installed Level 2 or higher EV equipment under 625.4?",
+     "What must be listed for an energy management or power control function in Article 130?",
+     "Where did bonding for Class I, II and III locations consolidate?",
+     "Which authority decides which NEC edition you must follow, and which section gives it that role?"
+    ],
+    "bullets": [
+     "Answers: Article 120; 3 VA counts circuits and 2 VA is used for service and feeder; 60 A; 230.70 and 230.85 was deleted; 8 ft; Article 624 and Article 625; qualified persons; the equipment (listed); 500.30; the AHJ under 90.4.",
+     "In Wisconsin, confirm the adopted edition and amendments with DSPS and the local inspector before design or installation."
+    ],
+    "keypoint": "Learn the 2026 changes now, apply them when your jurisdiction adopts them, and always confirm the edition with the AHJ.",
+    "info": "Review answers reflect the sources used in this course. Confirm this against the NFPA 70-2026 text and your adopted edition before using it on a job.",
+    "refs": [
+     "NEC 90.4",
+     "NEC Article 100 (2026)",
+     "NEC Article 625 (2026)"
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "The 2026 NEC 700.28 allows which system for emergency lighting if listed for emergency use and integrated?",
+    "opts": [
+     "Class 2 power-limited",
+     "Unlisted dc lighting",
+     "Wireless lighting only",
+     "Class 4 fault-managed power"
+    ],
+    "correct": 3,
+    "explain": "2026: 700.28 allows Class 4 fault-managed power for emergency lighting if listed for emergency use and integrated into the emergency lighting system. The summaries do not state the 2023 text. [NEC 700.28 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, which new article covers services over 1000 V ac or 1500 V dc?",
+    "opts": [
+     "Article 230",
+     "Article 268",
+     "Article 245",
+     "Article 495"
+    ],
+    "correct": 1,
+    "explain": "2026: new Article 268 covers services over 1000 V ac or 1500 V dc nominal, taking text from Article 230. The summaries do not state exactly where the 2023 NEC placed these rules. [NEC Art. 268 (2026)]"
+   },
+   {
+    "q": "Under the new 2026 625.4, permanently installed EV power transfer equipment must be installed by:",
+    "opts": [
+     "Qualified persons",
+     "Only utility employees",
+     "The vehicle manufacturer only",
+     "Anyone with a homeowner permit"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M's top-25 article, LightNow, IAEI Magazine's EV article and Minnesota DLI. [NEC 625.4 (2026)]"
+   },
+   {
+    "q": "The 2026 NEC 695.7(A)(2) adds a concrete encasement option measured from the raceway or cable surface of:",
+    "opts": [
+     "1 inch",
+     "3 inches",
+     "5 inches",
+     "8 inches"
+    ],
+    "correct": 2,
+    "explain": "2023: 2 in. concrete encasement. 2026: 2 in. with a professional-engineer-documented 2-hour fire rating, plus a new 5 in. option measured from the raceway or cable surface. [NEC 695.7(A)(2) (2026)]"
+   },
+   {
+    "q": "Under 2026 555.35(F), GFPE for docking facility feeders must be:",
+    "opts": [
+     "Set to trip at 30 mA",
+     "Coordinated and performance tested, with written records available to the AHJ",
+     "Installed without testing",
+     "Tested only by the manufacturer"
+    ],
+    "correct": 1,
+    "explain": "Per EC&M's top-25 article and Minnesota DLI's change summary (555.35(F)). [NEC 555.35(F) (2026)]"
+   },
+   {
+    "q": "Grounding and bonding of systems over 1000 V ac or 1500 V dc is covered in the 2026 NEC by:",
+    "opts": [
+     "Article 250 Part X",
+     "Article 285",
+     "Article 270",
+     "Article 490"
+    ],
+    "correct": 2,
+    "explain": "2026: new Article 270 draws text from Article 250 for systems over 1000 V ac or 1500 V dc. [NEC Art. 270 (2026)]"
+   },
+   {
+    "q": "What was added to Article 501 in 2026 regarding retrofit of luminaires?",
+    "opts": [
+     "Requirements for luminaire retrofit kits in hazardous locations",
+     "A ban on all LED retrofits",
+     "Mandatory replacement of every luminaire",
+     "Rules for retrofit kits in dwelling units only"
+    ],
+    "correct": 0,
+    "explain": "2026: 501.130(C) adds requirements for luminaire retrofit kits in hazardous locations. The 2023 text was not explicit on this. [NEC 501.130(C) (2026)]"
+   },
+   {
+    "q": "New 2026 NEC 517.42(F) requires what for Type 2 essential electrical systems?",
+    "opts": [
+     "Dual transfer switches",
+     "Battery backup at each outlet",
+     "Coordination of overcurrent protective devices",
+     "Arc-flash relays on each feeder"
+    ],
+    "correct": 2,
+    "explain": "2023: no such requirement. 2026: 517.42(F) requires OCPD coordination for Type 2 essential electrical systems. [NEC 517.42(F) (2026)]"
+   },
+   {
+    "q": "Under 2026 300.4(C), conductors and wiring methods damaged by fire or water exposure must be:",
+    "opts": [
+     "Painted",
+     "Replaced",
+     "Cleaned and reused",
+     "Re-tested with a megohmmeter and reused"
+    ],
+    "correct": 1,
+    "explain": "Per EC&M's top-25 article, EC&M 'Key Revisions to Chapter 3', Minnesota DLI and the Texas summary. NEMA GD 1-2019 is for water damage and GD 2-2021 for fire/heat. [NEC 300.4(C) (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC 130.2, equipment that performs overload-control functions must be:",
+    "opts": [
+     "Field evaluated only",
+     "Listed and labeled as a power control system (PCS)",
+     "Marked with its OCPD ampere rating only",
+     "Supervised by a licensed engineer"
+    ],
+    "correct": 1,
+    "explain": "2026: all EMS equipment must be listed, and equipment performing overload-control functions must be listed and labeled as a PCS (informational notes cite UL 916 and UL 3141). The summaries do not state the 2023 Article 750 wording. [NEC 130.2 (2026)]"
+   },
+   {
+    "q": "For an outside feeder disconnect serving a dwelling in the 2026 NEC, the disconnect must be readily accessible and:",
+    "opts": [
+     "On or within sight of the building served",
+     "At the utility pole only",
+     "Inside the first floor only",
+     "Anywhere on the property"
+    ],
+    "correct": 0,
+    "explain": "Per Minnesota DLI's FAQ and change summary, Electrical Contractor magazine (Chapter 2 coverage; 225.31 'within sight' approach) and an ecmag dwelling emergency disconnect article (225.41, 110.29). Within sight is the Article 100 definition (50 ft). [NEC 225.31(A), (B), 225.41 (2026)]"
+   },
+   {
+    "q": "The new 2026 NEC 517.4 permits a microgrid to:",
+    "opts": [
+     "Act as a source on either side of the transfer switch",
+     "Replace all essential system feeders",
+     "Serve only the normal branch",
+     "Operate only without any generator"
+    ],
+    "correct": 0,
+    "explain": "2023: there was no such section. 2026: 517.4 allows microgrids as a source on either side of the transfer switch, with capacity based on actual connected demand. [NEC 517.4 (2026)]"
+   },
+   {
+    "q": "Which new part was added to Article 426 in the 2026 NEC?",
+    "opts": [
+     "Part VI, infrared lamp systems",
+     "Part VI, conductive pavement heating systems",
+     "Part V, snow-melt cable markings",
+     "Part VII, de-icing for roofs only"
+    ],
+    "correct": 1,
+    "explain": "2023: Article 426 had no requirements for conductive pavement heating systems. 2026: a new Part VI covers them. [NEC 426 Part VI (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, locknuts for intermediate metal conduit connections to enclosures are required:",
+    "opts": [
+     "On both the inside and outside of the enclosure",
+     "On the inside only",
+     "On the outside only",
+     "Only when the enclosure is nonmetallic"
+    ],
+    "correct": 0,
+    "explain": "2026: Article 342 requires locknuts on both inside and outside of the enclosure. The summaries do not state the 2023 text. [NEC Art. 342 (2026)]"
+   },
+   {
+    "q": "Under 2026 555.9, the AHJ may request:",
+    "opts": [
+     "Documentation of an engineered design for the pier distribution system",
+     "A GFCI test report only",
+     "A manufacturer warranty",
+     "A soil resistivity report"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M's top-25 article and Minnesota DLI's change summary. [NEC 555.9 (2026)]"
+   },
+   {
+    "q": "The 2026 NEC 500.8(G) now applies to optical equipment located:",
+    "opts": [
+     "Only inside Class I, Division 1 locations",
+     "Only in Zone 20",
+     "Only in cannabis extraction rooms",
+     "Outside a classified location when optical radiation extends into it"
+    ],
+    "correct": 3,
+    "explain": "2026: 500.8(G) applies to optical equipment outside a classified location when its radiation extends into the location. The summaries do not state the 2023 text. [NEC 500.8(G) (2026)]"
+   },
+   {
+    "q": "The 2026 NEC 680.26 allows which conductor in place of an 8 AWG copper bonding conductor or copper grid?",
+    "opts": [
+     "Aluminum 6 AWG",
+     "Stainless steel strap",
+     "Galvanized steel wire",
+     "40 percent copper-clad steel conductor"
+    ],
+    "correct": 3,
+    "explain": "2026: 40 percent copper-clad steel conductors are a permitted option where an 8 AWG copper conductor or copper bonding grid is required. Reported by two Texas summaries. [NEC 680.26 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC (90.3), what is the title of Chapter 5?",
+    "opts": [
+     "Specific Occupancies and Locations",
+     "Special Occupancies",
+     "Special Conditions and Systems",
+     "Specific Equipment and Locations"
+    ],
+    "correct": 0,
+    "explain": "2023: Chapter 5 was titled Special Occupancies. 2026: Chapters were renamed, with Chapter 5 now Specific Occupancies and Locations, Chapter 6 Specific Equipment, and Chapter 7 Specific Conditions and Systems. [NEC 90.3 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, equipment doors are checked for obstructing the working space egress path with the doors open:",
+    "opts": [
+     "120 degrees",
+     "45 degrees",
+     "90 degrees",
+     "180 degrees"
+    ],
+    "correct": 2,
+    "explain": "Per EC&M's 'Key Revisions to Chapter 1', Electrical Contractor magazine (NECA article), Interstates and the Texas summary, doors are measured at 90 degrees. Minnesota DLI describes it as assessing door obstruction regardless of position, removability or swing angle. Egress dimensions 24 in. wide and 6.5 ft high come from the NECA article. [NEC 110.26 (2026); 110.26 (2023)]"
+   },
+   {
+    "q": "Under 2026 NEC 300.7(D)(3), a warning ribbon is required over:",
+    "opts": [
+     "Direct-buried service conductors only",
+     "Underground service raceways as well as direct-buried service conductors",
+     "Feeders inside buildings",
+     "Branch circuits in slab floors"
+    ],
+    "correct": 1,
+    "explain": "2023: the ribbon requirement applied to direct-buried service conductors. 2026: it also applies to underground service raceways. [NEC 300.7(D)(3) (2026)]"
+   },
+   {
+    "q": "What change did the 2026 NEC make to 210.63 for heating, air-conditioning and refrigeration equipment servicing receptacles?",
+    "opts": [
+     "It requires a 30 A receptacle at every unit",
+     "It requires the receptacle on its own circuit only",
+     "It eliminated the receptacle requirement entirely",
+     "It removed the rule that the receptacle not be on the load side of the equipment disconnect"
+    ],
+    "correct": 3,
+    "explain": "2023: the receptacle could not be connected to the load side of the equipment disconnecting means. 2026: that requirement was removed. [NEC 210.63 (2026)]"
+   },
+   {
+    "q": "The new third option in 2026 702.4 applies to:",
+    "opts": [
+     "Marinas",
+     "One- and two-family dwellings using a listed power control system",
+     "All commercial buildings",
+     "Hospitals only"
+    ],
+    "correct": 1,
+    "explain": "Per Solar Builder, Greenlancer, Minnesota DLI and Portlandia Electric Supply. [NEC 702.4 (2026)]"
+   },
+   {
+    "q": "For 10 A branch circuits covered in Article 210 Part II, the 2026 NEC (310.5) allows a minimum copper conductor size of:",
+    "opts": [
+     "18 AWG",
+     "16 AWG",
+     "14 AWG",
+     "12 AWG"
+    ],
+    "correct": 1,
+    "explain": "2023: no conductors smaller than 14 AWG copper or 12 AWG copper-clad aluminum. 2026: 16 AWG copper or 14 AWG copper-clad aluminum are allowed on 10 A circuits. [NEC 310.5 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC 620.62(B) and (C), selective coordination must be re-evaluated when:",
+    "opts": [
+     "The building is sold",
+     "The elevator is inspected annually",
+     "The feeder voltage drops 5 percent",
+     "Overcurrent protection is replaced or the elevator system is modified"
+    ],
+    "correct": 3,
+    "explain": "2026: selective coordination is re-evaluated when OCPDs are replaced or the elevator system is modified. The summaries do not state the 2023 text. [NEC 620.62(B), (C) (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 680.26(B)(2), the perimeter surface height is measured at what distance below the maximum water level?",
+    "opts": [
+     "1 foot",
+     "2 feet",
+     "3 feet",
+     "4 feet"
+    ],
+    "correct": 2,
+    "explain": "2023: the distance was 2 ft. 2026: it is increased to 3 ft, and GFCI protection is expanded. [NEC 680.26(B)(2) (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC restructuring, listing requirements within an article are generally placed in which subsection number?",
+    "opts": [
+     "Subsection .1",
+     "Subsection .5",
+     "Subsection .2 (for example 334.2)",
+     "Subsection .10"
+    ],
+    "correct": 2,
+    "explain": "2023: listing language was scattered in different sections per article. 2026: the restructuring places listing requirements in subsection .2 and reconditioned-equipment requirements in subsection .3 across articles, in preparation for the 2029 reformat. [NEC Art. 90 / global format (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 210.12(E), a listed outlet branch-circuit AFCI used to protect an existing branch circuit may be located at:",
+    "opts": [
+     "The service equipment only",
+     "Any junction box on the circuit",
+     "The last receptacle on the circuit",
+     "The first receptacle or switch of the existing branch circuit"
+    ],
+    "correct": 3,
+    "explain": "2026: 210.12(E) allows a listed OBCAFCI to be located at the first receptacle or switch of the existing branch circuit. The source summaries do not give the exact 2023 wording. [NEC 210.12(E) (2026)]"
+   },
+   {
+    "q": "When reconnecting an existing service equipment for a replacement home, the 2026 NEC 550.51(F) requires:",
+    "opts": [
+     "A new meter socket",
+     "A surge protective device per 230.67",
+     "A 200 A minimum service",
+     "AFCI protection on every circuit"
+    ],
+    "correct": 1,
+    "explain": "2026: 550.51(F) requires an SPD per 230.67 for replacement homes. The summaries do not state the 2023 text. [NEC 550.51(F) (2026)]"
+   },
+   {
+    "q": "Under 2026 314.27(B), fan-rated ceiling outlet boxes are required in dwelling:",
+    "opts": [
+     "Living and sleeping areas at typical or designated fan locations",
+     "Garages only",
+     "Every room including kitchen pendant locations",
+     "Bathrooms only"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M 'Key Revisions to Chapter 3' and Minnesota DLI's FAQ. (EC&M describes the 2023 rule as covering nearly all habitable spaces.) Verify the section location in the 2026 book. [NEC 314.27(B) (2026); 314.27 (2023)]"
+   },
+   {
+    "q": "The new Article 100 term 'Cable, Limited-Energy' in the 2026 NEC is intended to:",
+    "opts": [
+     "Replace the definition of power-limited circuit cable only",
+     "Define medium-voltage cable",
+     "Cover all limited-energy cable types in one defined term, including Class 4 fault-managed power",
+     "Define only communications cable"
+    ],
+    "correct": 2,
+    "explain": "Per Minnesota DLI's change summary, Belden's coverage and Electrical Contractor magazine (NECA article), the term was created largely because 'low-voltage' and 'power-limited' no longer describe Class 4 fault-managed power systems. [NEC Art. 100 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, Article 480 applies to:",
+    "opts": [
+     "All stationary battery installations (not only standby), with overcharge prevention required",
+     "Only lead-acid batteries",
+     "Only batteries over 1000 V",
+     "Only standby batteries"
+    ],
+    "correct": 0,
+    "explain": "Per Minnesota DLI's change summary (480.1 note, 480.14 overcharge) and a 2026 training quiz (word 'standby' removed; stationary batteries need overcharge control). [NEC 480.1, 480.14 (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 495.2, listing is required for equipment rated up to 15,000 V effective:",
+    "opts": [
+     "January 1, 2026",
+     "January 1, 2029",
+     "January 1, 2027",
+     "January 1, 2032"
+    ],
+    "correct": 1,
+    "explain": "2026: listing of Article 495 equipment is required starting Jan. 1, 2029 for equipment up to 15,000 V. The summaries do not state a 2023 date. [NEC 495.2 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, which system is defined to monitor and control power so as to prevent overload conditions (for example limiting loads to protect a backup source)?",
+    "opts": [
+     "Interactive inverter",
+     "Transfer equipment",
+     "Power control system (PCS)",
+     "Energy management system (EMS) in the 2023 sense"
+    ],
+    "correct": 2,
+    "explain": "Per EC&M's 'Key Revisions to Chapter 1' and Electrical Contractor magazine (NECA article), PCS is a new definition (EMS wording also changed), and 120.7 and Article 130 Part II were built around it. Solar/ESS articles note PCS listing to UL 3141. [NEC Art. 100, 120.7, 130.2 (2026)]"
+   },
+   {
+    "q": "Under the 2026 NEC, service conductors may NOT pass through:",
+    "opts": [
+     "A CT cabinet",
+     "Service equipment enclosures",
+     "A listed meter socket enclosure",
+     "An enclosure containing switches or overcurrent devices that is not service equipment"
+    ],
+    "correct": 3,
+    "explain": "Per EC&M 'Key Revisions to Chapter 3' (312.11) and the Mike Holt 2026 course topic list (312.8, 312.11). [NEC 312.11 (2026)]"
+   },
+   {
+    "q": "New 210.52(C)(4) in the 2026 NEC addresses:",
+    "opts": [
+     "Spacing of island receptacles",
+     "Where to add a GFCI",
+     "AFCI exceptions",
+     "Locations where countertop receptacle outlets are prohibited, including within 24 in. of the countertop"
+    ],
+    "correct": 3,
+    "explain": "Per EC&M's top-25 article (item 11), Minnesota DLI's change summary (new subdivision) and its FAQ (adjacent walls extending from base cabinets, measured from the nearest surface edge). [NEC 210.52(C)(4) (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 300.11(B), raceways installed in indoor wet locations must include:",
+    "opts": [
+     "A listed grounding bushing",
+     "A red warning marking",
+     "Provisions for drainage",
+     "Expansion fittings at each box"
+    ],
+    "correct": 2,
+    "explain": "2026: 300.11(B) requires raceways in indoor wet locations to include drainage. The summaries do not state the 2023 text. [NEC 300.11(B) (2026)]"
+   },
+   {
+    "q": "New 2026 NEC 422.12 Exception No. 2 permits which items to be supplied from the equipment branch circuit?",
+    "opts": [
+     "HVAC servicing receptacles and servicing lighting outlets",
+     "Any 15 A general-use receptacle in the room",
+     "Dwelling smoke alarms only",
+     "Garage door openers"
+    ],
+    "correct": 0,
+    "explain": "2026: Exception 2 to 422.12 allows servicing receptacles (210.63(A)) and lighting outlets (210.70(C)) to be supplied from the equipment circuit. The summaries do not state the 2023 text. [NEC 422.12 (2026)]"
+   },
+   {
+    "q": "Which is a recognized equipotential plane construction method in the 2026 547.44(C)?",
+    "opts": [
+     "Aluminum foil",
+     "A single 6 AWG loop buried 6 in. deep",
+     "Isolated ground rods",
+     "Structural reinforcing steel, unencapsulated welded wire or a copper grid"
+    ],
+    "correct": 3,
+    "explain": "Per Minnesota DLI's FAQ and change summary and the Mike Holt course list (547.44, 555.14). [NEC 547.44(C) (2026)]"
+   },
+   {
+    "q": "For systems over 250 V to ground within 10 ft of water, the 2026 NEC 682.33(A) equipotential plane extends at least how far from outdoor service equipment?",
+    "opts": [
+     "36 inches in all directions",
+     "12 inches",
+     "24 inches",
+     "6 feet"
+    ],
+    "correct": 0,
+    "explain": "2026: 682.33(A) requires the equipotential plane to extend at least 36 in. in all directions. The summaries do not state the 2023 text. [NEC 682.33(A) (2026)]"
+   },
+   {
+    "q": "In the 2026 optional method for dwellings, EVSE load is counted at:",
+    "opts": [
+     "50 percent of nameplate",
+     "100 percent of EVSE nameplate rating, no demand factor",
+     "125 percent of nameplate",
+     "80 percent of the branch-circuit rating"
+    ],
+    "correct": 1,
+    "explain": "Per EC&M's top-25 article, LightNow's article and the Mike Holt study guide (EVSE at 100 percent of nameplate). Do not confuse with the 80 percent figure used for EVSE added to existing-dwelling calculations in 120.83. [NEC 120.82(D) (2026)]"
+   },
+   {
+    "q": "The 2026 NEC revised definition of 'countertop' now includes surfaces used for which activity?",
+    "opts": [
+     "Laundry folding only",
+     "Tool storage in garages",
+     "Computer work at a desk",
+     "Beverage preparation or serving"
+    ],
+    "correct": 3,
+    "explain": "2023: the definition did not mention beverage preparation or serving as described in the summary. 2026: 'Countertop' includes beverage preparation or serving, which affects where receptacles are required or prohibited. [NEC Art. 100 'Countertop' (2026)]"
+   },
+   {
+    "q": "The 2026 NEC 512.6 adds prohibited locations for which process, drawn from NFPA 1?",
+    "opts": [
+     "Grain milling",
+     "Cannabis extraction",
+     "Paint spraying",
+     "Battery charging"
+    ],
+    "correct": 1,
+    "explain": "2026: 512.6 adds prohibited locations for cannabis extraction, taken from NFPA 1, 8.6.1.1.3. The summaries do not state the 2023 text. [NEC 512.6 (2026)]"
+   },
+   {
+    "q": "Under the revised 2026 Article 100 definition, a 'work surface' is limited to:",
+    "opts": [
+     "Dry-use surfaces for tasks other than food or beverage preparation or serving",
+     "Any surface 36 in. or higher above the floor",
+     "Surfaces used only for food preparation",
+     "Surfaces inside a garage or workshop only"
+    ],
+    "correct": 0,
+    "explain": "2026: 'Work Surface' is clarified as dry use for tasks other than food or beverage preparation or serving. The sources do not give the 2023 wording, which did not make that distinction in this way. [NEC Art. 100 'Work Surface' (2026)]"
+   },
+   {
+    "q": "The new list format in 2026 NEC 310.15(E) is used to show:",
+    "opts": [
+     "The ampacity of each conductor insulation type",
+     "The maximum number of splices in a raceway",
+     "When a neutral conductor is or is not a current-carrying conductor",
+     "The color code for each phase"
+    ],
+    "correct": 2,
+    "explain": "2026: 310.15(E) uses a list format identifying when a neutral is or is not a current-carrying conductor. The summaries do not state the 2023 format. [NEC 310.15(E) (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC, bonding requirements for hazardous (classified) locations are consolidated in:",
+    "opts": [
+     "505.25",
+     "250.100",
+     "500.30",
+     "501.30 only"
+    ],
+    "correct": 2,
+    "explain": "Per Interstates, IAEI Magazine's proposed-changes article (new 500.30 for Arts. 501-503) and a 2026 training quiz (500.30). [NEC 500.30 (2026); 501.30, 502.30, 503.30 (2023)]"
+   },
+   {
+    "q": "Which article covering optical fiber cables was deleted in the 2026 NEC?",
+    "opts": [
+     "Article 770",
+     "Article 760",
+     "Article 790",
+     "Article 725"
+    ],
+    "correct": 0,
+    "explain": "2026: Articles 770 (Optical Fiber Cables) and 805 (Communications Circuits) are deleted, with content moving to limited-energy articles (a draft summary names Article 722). [NEC Art. 770 (2026)]"
+   },
+   {
+    "q": "The 2026 NEC 525.31 exception permits which equipment without a grounded-conductor connection to the frame?",
+    "opts": [
+     "Any portable engine generator",
+     "Trailer-mounted transformers",
+     "Battery chargers",
+     "Portable inverter generators"
+    ],
+    "correct": 3,
+    "explain": "2026: an exception to 525.31 permits portable inverter generators with no grounded-conductor connection to the frame. Article 525 was also restructured. [NEC 525.31 (2026)]"
+   },
+   {
+    "q": "In the 2026 NEC, fire resistive cable systems (formerly Article 728) are in:",
+    "opts": [
+     "Article 760",
+     "Article 725",
+     "Article 800",
+     "Article 772"
+    ],
+    "correct": 3,
+    "explain": "2023: Article 728. 2026: relocated to Article 772. [NEC Art. 772 (2026)]"
+   },
+   {
+    "q": "Under 2026 408.6, after a modification that changes available fault current, a non-dwelling installation must:",
+    "opts": [
+     "Replace the panelboard",
+     "Do nothing",
+     "Recalculate the available fault current and update the field marking",
+     "Mark only the voltage"
+    ],
+    "correct": 2,
+    "explain": "Per EC&M's top-25 article (408.6 details), a 2026 NEC course outline and the Mike Holt course list (408.6, 110.10). Details are from one detailed source; confirm exact wording at 408.6. [NEC 408.6 (2026); 408.6 (2023)]"
+   },
+   {
+    "q": "Under new 690.4(G), PV calculated currents and voltages may be rounded by:",
+    "opts": [
+     "Truncating to the nearest 10",
+     "Rounding up always",
+     "Dropping fractions below 0.5 after applying correction factors",
+     "No rounding allowed"
+    ],
+    "correct": 2,
+    "explain": "Per Solar Builder (Mayfield), Greenlancer and Portlandia Electric Supply. [NEC 690.4(G) (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 250.53(A)(4), a rod or pipe grounding electrode is initially driven vertically to a depth of:",
+    "opts": [
+     "4 feet",
+     "8 feet",
+     "6 feet",
+     "10 feet"
+    ],
+    "correct": 1,
+    "explain": "2026: 250.53(A)(4) says the rod or pipe electrode is initially driven vertically to a depth of 8 ft. The summaries do not give the 2023 text. [NEC 250.53(A)(4) (2026)]"
+   },
+   {
+    "q": "Under 2026 NEC 555.14, an equipotential plane is required where system voltage exceeds 250 V to ground and equipment is within:",
+    "opts": [
+     "3 feet of the water",
+     "20 feet of the water",
+     "10 feet of the water",
+     "50 feet of the water"
+    ],
+    "correct": 2,
+    "explain": "2026: 555.14 details construction and bonding of equipotential planes for systems over 250 V to ground with equipment within 10 ft of water. The summaries do not state the 2023 text. [NEC 555.14 (2026)]"
+   },
+   {
+    "q": "What does Informative Annex L contain in the 2026 NEC?",
+    "opts": [
+     "A list of products evaluated for use in hazardous locations",
+     "The proposed organization (reformatted layout) of the 2029 NEC",
+     "Example load calculations for dwelling units",
+     "Conversion tables from 2023 to 2026 section numbers"
+    ],
+    "correct": 1,
+    "explain": "2023: there was no Annex L preview of a future layout. 2026: Annex L previews the substantial reformatting planned for the 2029 edition. [NEC Annex L (2026)]"
+   },
+   {
+    "q": "Under 2026 210.70(A)(1) Exception No. 3, the lighting for a closet-type laundry area may be provided by:",
+    "opts": [
+     "A lighting outlet located outside the laundry area",
+     "A receptacle-controlled lamp only",
+     "No lighting at all",
+     "A battery lantern"
+    ],
+    "correct": 0,
+    "explain": "Per Minnesota DLI's change summary and a 2026 training quiz (closet laundry light/control changes) and the 2026 NEC course outlines listing 210.70(A)(1). [NEC 210.70(A)(1) Ex. 3 (2026)]"
+   },
+   {
+    "q": "Under 2026 625.5, EVSE enclosures must show for each supply circuit:",
+    "opts": [
+     "Voltage, phases, frequency, full-load current, and short-circuit current rating",
+     "The charger brand",
+     "Only the voltage",
+     "The installer's license number"
+    ],
+    "correct": 0,
+    "explain": "Per EC&M's top-25 article, LightNow and IAEI Magazine. [NEC 625.5 (2026)]"
+   },
+   {
+    "q": "For underground installations at aircraft hangars, the 2026 NEC 513.8:",
+    "opts": [
+     "Requires Class II, Division 1",
+     "Requires Class I, Division 1 only within 5 ft",
+     "No longer requires them to be Class I, Division 1",
+     "Now prohibits underground wiring"
+    ],
+    "correct": 2,
+    "explain": "2023: Class I, Division 1 was required. 2026: that is no longer required, aligning with 514.8. [NEC 513.8 (2026)]"
+   }
+  ],
+  "isFinal": true
+ }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curMod = 0, curSlide = 0, inQuiz = false, quizIdx = 0, answered = false, selOpt = null;
+let modState = MODULES.map(() => ({started:false, slideDone:false, quizDone:false, score:0, timeSpent:0}));
+
+// Timers
+let totalSeconds = 0;
+let slideSecondsLeft = 0, slideSecondsTotal = 0;
+let modSecondsSpent = 0;
+let slideTimerInt = null, modTimerInt = null, totalTimerInt = null;
+
+// Video URLs stored per slide
+let videoURLs = {};
+
+// ─── TOTAL TIMER ──────────────────────────────────────────────────────────────
+function startTotalTimer(){
+  if(totalTimerInt) return;
+  totalTimerInt = setInterval(()=>{
+    totalSeconds++;
+    document.getElementById('total-timer').textContent = 'Total: ' + fmtHMS(totalSeconds);
+    document.getElementById('course-time-display').textContent = fmtHM(totalSeconds);
+    updateProgress();
+  },1000);
+}
+
+function fmtHMS(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return (h>0?h+':':'')+(h>0?String(m).padStart(2,'0'):m)+':'+String(ss).padStart(2,'0');
+}
+function fmtHM(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  return h+':'+ String(m).padStart(2,'0');
+}
+function fmtMS(s){
+  const m=Math.floor(s/60);
+  return m+':'+String(s%60).padStart(2,'0');
+}
+
+// ─── SLIDE TIMER ──────────────────────────────────────────────────────────────
+function startSlideTimer(minSeconds){
+  clearInterval(slideTimerInt);
+  slideSecondsLeft = minSeconds;
+  slideSecondsTotal = minSeconds;
+  updateSlideTimerUI();
+  document.getElementById('btn-next').disabled = true;
+  slideTimerInt = setInterval(()=>{
+    slideSecondsLeft--;
+    if(slideSecondsLeft <= 0){
+      clearInterval(slideTimerInt);
+      slideSecondsLeft = 0;
+      document.getElementById('btn-next').disabled = false;
+      const el = document.getElementById('slide-timer-wrap');
+      if(el) el.innerHTML = '<span style="color:#16A34A;font-weight:600">✓ Minimum reading time met — you may continue</span>';
+    } else {
+      updateSlideTimerUI();
+    }
+  },1000);
+}
+
+function updateSlideTimerUI(){
+  const el = document.getElementById('slide-timer-wrap');
+  if(!el) return;
+  const pct = Math.round((1-(slideSecondsLeft/slideSecondsTotal))*100);
+  el.innerHTML = `<div class="slide-timer">
+    <span class="t-icon">⏱</span>
+    <span>Please review this slide — <strong class="t-remaining">${fmtMS(slideSecondsLeft)}</strong> remaining before continuing</span>
+    <div class="t-bar-bg"><div class="t-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ─── MODULE TIMER ─────────────────────────────────────────────────────────────
+function startModTimer(){
+  clearInterval(modTimerInt);
+  modSecondsSpent = modState[curMod].timeSpent || 0;
+  const bar = document.getElementById('mod-timer-bar');
+  bar.style.display = 'flex';
+  updateModTimerUI();
+  modTimerInt = setInterval(()=>{
+    modSecondsSpent++;
+    modState[curMod].timeSpent = modSecondsSpent;
+    updateModTimerUI();
+  },1000);
+}
+
+function stopModTimer(){
+  clearInterval(modTimerInt);
+  if(curMod >= 0) modState[curMod].timeSpent = modSecondsSpent;
+}
+
+function updateModTimerUI(){
+  const mod = MODULES[curMod];
+  const target = mod.modMin;
+  const pct = Math.min(100, Math.round(modSecondsSpent/target*100));
+  const el = document.getElementById('mt-time');
+  const bar = document.getElementById('mt-bar');
+  const lbl = document.getElementById('mt-label');
+  if(el) el.textContent = fmtHM(modSecondsSpent);
+  if(bar) bar.style.width = pct+'%';
+  const remaining = Math.max(0, target - modSecondsSpent);
+  if(lbl) lbl.textContent = remaining > 0 ? fmtMS(remaining)+' remaining in module' : '✓ Module time complete';
+}
+
+function isModTimeComplete(){
+  const mod = MODULES[curMod];
+  return (modState[curMod].timeSpent || modSecondsSpent) >= mod.modMin;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress(){
+  const done = modState.filter(m=>m.quizDone).length;
+  const timePct = Math.min(100, Math.round(totalSeconds / (4*3600) * 100));
+  const contentPct = Math.round(done/MODULES.length*100);
+  const pct = Math.max(timePct, contentPct);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function renderNav(){
+  const nav = document.getElementById('mod-nav');
+  nav.innerHTML = '';
+  MODULES.forEach((m,i)=>{
+    const unlocked = i===0 || modState[i-1].quizDone;
+    const btn = document.createElement('button');
+    btn.className = 'mbtn' + (i===curMod?' active':'') + (modState[i].quizDone?' done':'') + (!unlocked?' locked':'');
+    btn.textContent = 'M'+(i+1)+': '+m.title.split(' ').slice(0,3).join(' ')+'…';
+    btn.title = m.title;
+    if(!unlocked){ btn.onclick = ()=>{}; return nav.appendChild(btn); }
+    btn.onclick = ()=>{
+      if(i===curMod) return;
+      stopModTimer();
+      curMod=i; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null;
+      startModTimer();
+      render();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ─── VIDEO HELPER ─────────────────────────────────────────────────────────────
+function getEmbedURL(url){
+  if(!url) return null;
+  const ytM = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(ytM) return 'https://www.youtube.com/embed/'+ytM[1]+'?rel=0';
+  const viM = url.match(/vimeo\.com\/(\d+)/);
+  if(viM) return 'https://player.vimeo.com/video/'+viM[1];
+  return null;
+}
+
+function renderVideo(vid, slideKey){
+  const stored = videoURLs[slideKey] || '';
+  const embed = getEmbedURL(stored);
+  return `<div class="vid-wrap"><div class="vid-inner" id="vid-inner-${slideKey}">
+    ${embed
+      ? `<iframe class="vid-frame" id="vid-frame-${slideKey}" style="display:block" src="${embed}" allowfullscreen></iframe>`
+      : `<div class="vid-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         <div class="vid-title">${vid.title}</div>
+         <div class="vid-sub">Instructor video</div>
+         <div class="vid-dur">⏱ ${vid.dur}</div>
+         <div class="vid-url-row">
+           <input class="vid-url-input" id="vid-url-${slideKey}" placeholder="Paste YouTube or Vimeo URL here…" value="${stored}">
+           <button class="vid-url-btn" onclick="setVideoURL('${slideKey}')">Add video</button>
+         </div>`
+    }
+  </div></div>`;
+}
+
+function setVideoURL(slideKey){
+  const inp = document.getElementById('vid-url-'+slideKey);
+  if(!inp) return;
+  videoURLs[slideKey] = inp.value.trim();
+  render();
+}
+
+// ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
+function renderSlideContent(s, slideKey){
+  let h = '';
+  if(s.video) h += renderVideo(s.video, slideKey);
+  h += `<div class="slide-body">${s.body}</div>`;
+  if(s.keypoint) h += `<div class="keypoint">💡 ${s.keypoint}</div>`;
+  if(s.warning) h += `<div class="warning">⚠️ ${s.warning}</div>`;
+  if(s.info) h += `<div class="info-box">ℹ️ ${s.info}</div>`;
+  if(s.refs) h += `<div style="margin-top:12px">${s.refs.map(r=>`<span class="code-ref">${r}</span>`).join('')}</div>`;
+  if(s.bullets){ h+=`<div class="bullets">`;s.bullets.forEach(b=>{h+=`<div class="bi">${b}</div>`});h+=`</div>`}
+  if(s.def_grid){ h+=`<div class="def-grid">`;s.def_grid.forEach(d=>{h+=`<div class="def-card"><div class="def-term">${d.term}</div><div class="def-body">${d.body}</div></div>`});h+=`</div>`}
+  if(s.table){ h+=`<div style="overflow-x:auto"><table class="dtable"><thead><tr>${s.table.h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;s.table.r.forEach(r=>{h+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`});h+=`</tbody></table></div>`}
+  if(s.hierarchy){ h+=`<div class="hierarchy">`;s.hierarchy.forEach(r=>{h+=`<div class="hier-row" style="background:${r.bg};border:1.5px solid ${r.bc}"><div class="hier-num" style="color:${r.tc}">${r.n}</div><div><div class="hier-title" style="color:${r.tc}">${r.title}</div><div class="hier-sub" style="color:${r.tc}">${r.sub}</div></div></div>`});h+=`</div>`}
+  if(s.ppe_cats){ h+=`<div class="ppe-grid">`;s.ppe_cats.forEach(p=>{h+=`<div class="ppe-cat" style="background:${p.bg};border-color:${p.bc}"><div class="ppe-num" style="color:${p.tc}">${p.num}</div><div class="ppe-cal" style="color:${p.tc}">${p.cal}</div><div class="ppe-items">${p.items}</div></div>`});h+=`</div>`}
+  if(s.step_list){ h+=`<div class="step-list">`;s.step_list.forEach((t,i)=>{h+=`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${t}</div></div>`});h+=`</div>`}
+  return h;
+}
+
+// ─── RENDER SLIDE ─────────────────────────────────────────────────────────────
+function renderSlide(s){
+  clearInterval(slideTimerInt);
+  const slideKey = `m${curMod}_s${curSlide}`;
+  const total = MODULES[curMod].slides.length;
+  const isLast = curSlide === total-1;
+  let h = `<div class="card">
+    <div class="slide-tag"><span class="s-num">${s.tag} of ${total}</span><span class="s-pill">Lesson</span></div>
+    <div class="slide-title">${s.title}</div>
+    ${renderSlideContent(s, slideKey)}
+    <div id="slide-timer-wrap"></div>
+    <div class="nav-row">
+      ${curSlide>0?'<button class="btn-prev" onclick="prevSlide()">← Back</button>':'<div></div>'}
+      ${!isLast
+        ? `<button id="btn-next" class="btn-next" onclick="nextSlide()">Next →</button>`
+        : `<button id="btn-next" class="btn-next" onclick="goToQuiz()">Take knowledge check →</button>`
+      }
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+  startSlideTimer(SLIDE_MIN);
+}
+
+// ─── QUIZ RENDER ──────────────────────────────────────────────────────────────
+function renderQuizQ(){
+  clearInterval(slideTimerInt);
+  const mod = MODULES[curMod];
+  const q = mod.quiz[quizIdx];
+  const total = mod.quiz.length;
+  const isFinal = mod.isFinal;
+  const correct = modState[curMod].score;
+
+  let h = `<div class="card">
+    <div class="quiz-header">
+      <span class="s-pill">${isFinal?'🏆 Final Exam':'📝 Knowledge Check'}</span>
+      <span class="quiz-prog">Question ${quizIdx+1} of ${total}</span>
+      <span class="quiz-score-live">${correct} correct so far</span>
+    </div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">`;
+  q.opts.forEach((o,i)=>{
+    let cls='qopt';
+    if(answered){ if(i===q.correct) cls+=' correct'; else if(i===selOpt) cls+=' wrong'; }
+    h+=`<button class="${cls}"${answered?' disabled':''} onclick="selectOpt(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  });
+  h+=`</div>`;
+  if(answered){
+    const pass = selOpt===q.correct;
+    h+=`<div class="fb ${pass?'correct':'wrong'}">${pass?'✓ Correct — ':'✗ Incorrect — '}${q.explain}</div>
+    <div class="nav-row"><div></div>
+    <button class="btn-next" onclick="nextQ()">${quizIdx<total-1?'Next question →':'See results →'}</button></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderResults(){
+  const mod = MODULES[curMod];
+  const total = mod.quiz.length;
+  const score = modState[curMod].score;
+  const pct = Math.round(score/total*100);
+  const pass = pct >= 70;
+  const isFinal = mod.isFinal;
+  const modTimeOK = isModTimeComplete();
+
+  if(pass && modTimeOK){ modState[curMod].quizDone = true; updateProgress(); renderNav(); }
+
+  let h = `<div class="card"><div class="results-wrap">
+    <div class="score-big">${pct}%</div>
+    <div class="score-sub">${score} of ${total} questions correct</div>
+    <div class="score-badge ${pass?'pass':'fail'}">${pass?(isFinal?'🎉 Course passed!':'✓ Module passed'):('✗ Below 70% — must retake')}</div>`;
+
+  if(!modTimeOK && pass){
+    h+=`<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px;margin:12px 0;font-size:13.5px;color:#92400E">
+      ⏱ You passed the quiz but have not yet completed the minimum module time (${fmtHM(mod.modMin)} required). Continue reviewing the material and your progress will be saved.
+    </div><button class="btn-prev" style="margin-top:8px" onclick="backToSlides()">← Back to module content</button>`;
+  } else if(!pass){
+    h+=`<button class="btn-next" onclick="retakeQuiz()" style="margin-top:8px">Retake knowledge check</button>`;
+  } else if(isFinal && pass && modTimeOK){
+    h+=`</div><div class="cert-box">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">NEC 2026 Code Update</div>
+      <div class="cert-detail">4.0 CE hours · Journeyman & Master Electrician<br>2026 NEC (NFPA 70-2026), compared with the 2023 edition<br>Completed: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}<br>Time on course: ${fmtHMS(totalSeconds)}</div>
+    </div>`;
+  } else if(pass && modTimeOK && curMod < MODULES.length-1){
+    h+=`<div style="margin-top:12px"><button class="btn-next" onclick="nextMod()">Start Module ${curMod+2} →</button></div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function selectOpt(i){
+  if(answered) return;
+  selOpt=i; answered=true;
+  if(i===MODULES[curMod].quiz[quizIdx].correct) modState[curMod].score++;
+  renderQuizQ();
+}
+function nextQ(){ quizIdx++; answered=false; selOpt=null; if(quizIdx>=MODULES[curMod].quiz.length) renderResults(); else renderQuizQ(); }
+function retakeQuiz(){ quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function goToQuiz(){ modState[curMod].slideDone=true; inQuiz=true; quizIdx=0; answered=false; selOpt=null; modState[curMod].score=0; renderQuizQ(); }
+function nextSlide(){ curSlide++; render(); }
+function prevSlide(){ curSlide--; render(); }
+function nextMod(){ stopModTimer(); curMod++; curSlide=0; inQuiz=false; quizIdx=0; answered=false; selOpt=null; modState[curMod].timeSpent=0; startModTimer(); render(); }
+function backToSlides(){ inQuiz=false; curSlide=0; render(); }
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const mod = MODULES[curMod];
+
+  if(inQuiz){
+    if(modState[curMod].quizDone) renderResults();
+    else renderQuizQ();
+    return;
+  }
+
+  // Module intro
+  if(!modState[curMod].started){
+    modState[curMod].started = true;
+    clearInterval(slideTimerInt);
+    let h=`<div class="card"><div class="mod-intro">
+      <div class="mod-label">Module ${curMod+1} of ${MODULES.length}</div>
+      <div class="mod-big-title">${mod.title}</div>
+      <div class="mod-time-badge">⏱ ${mod.time} minimum · ${mod.slides.length} lessons · ${mod.quiz.length} questions</div>
+    </div>
+    <div class="mod-overview">
+      <div class="mod-overview-title">What you'll cover in this module</div>
+      ${mod.overview.map(o=>`<div class="mod-overview-item"><span class="mod-overview-dot">▸</span>${o}</div>`).join('')}
+    </div>
+    <div class="nav-row"><div></div><button class="btn-next" onclick="beginMod()">Begin Module ${curMod+1} →</button></div>
+    </div>`;
+    document.getElementById('content').innerHTML = h;
+    return;
+  }
+
+  renderSlide(mod.slides[curSlide]);
+}
+
+function beginMod(){ render(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Video map: slide key (m<module>_s<slide>, zero-based) -> YouTube video ID
+const VID = {
+  "m0_s0": "yMF7CLtAPkw",   // Module 1, lesson 1
+  "m1_s5": "Np14M0du758",   // Module 2, lesson 6
+  "m2_s0": "w0fvnY1JJWA",   // Module 3, lesson 1
+  "m3_s4": "3xH-yLkMcYU"    // Module 4, lesson 5
+};
+Object.keys(VID).forEach(k => { videoURLs[k] = "https://www.youtube.com/watch?v=" + VID[k]; });
+
+startTotalTimer();
+startModTimer();
+render();
+</script>
+</body>
+</html>
