@@ -208,6 +208,7 @@
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
+    <button class="nav-link" onclick="showPage('feedback')">Suggest</button>
     <button class="nav-link" onclick="showPage('support')">Support us</button>
     <span id="nav-user-name" style="font-size:13px;color:rgba(255,255,255,0.75);display:none"></span>
     <button class="nav-link" id="nav-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Dashboard</button>
@@ -435,6 +436,23 @@
   </div>
 </div>
 
+<!-- ── FEEDBACK ──────────────────────────────────────────── -->
+<div id="page-feedback" class="page">
+  <div class="container" style="max-width:640px">
+    <div class="page-title">Suggestion box</div>
+    <div class="page-sub">Tell us what to build next, or report a wrong answer. Corrections help most: include the question and what you think is right, with the code section if you have it.</div>
+    <div class="card">
+      <div class="form-group"><label class="form-label">What is this about?</label>
+        <select class="form-select" id="fb-kind"><option value="feature">A feature or topic I want</option><option value="correction">A correction (wrong answer or rule)</option><option value="bug">Something is broken</option><option value="other">Something else</option></select></div>
+      <div class="form-group"><label class="form-label">Your message</label><textarea class="form-input" id="fb-msg" rows="6" maxlength="2000" placeholder="Be as specific as you can"></textarea></div>
+      <div class="form-group"><label class="form-label">Email, if you want a reply (optional)</label><input class="form-input" id="fb-contact" maxlength="200" placeholder="you@example.com"></div>
+      <div id="fb-note" class="alert" style="display:none"></div>
+      <button class="btn-primary" onclick="sendFeedback()">Send</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">We do not publish what you send. We use anonymous usage counts (pages and study tools used, no names) to make the site easier to use.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ── SUPPORT / DONATE ──────────────────────────────────── -->
 <div id="page-support" class="page">
   <div class="container" style="max-width:640px">
@@ -581,7 +599,11 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'admin-students')">Students</button>
       <button class="tab" onclick="switchTab(this,'admin-completions')">Completions & DSPS</button>
+      <button class="tab" onclick="switchTab(this,'admin-insights');loadInsights()">Site usage</button>
+      <button class="tab" onclick="switchTab(this,'admin-feedback');loadFeedbackAdmin()">Suggestions</button>
     </div>
+    <div id="admin-insights" class="tab-pane"><div class="card"><div class="row-btns" style="margin-top:0"><b>Anonymous site usage</b><select class="form-select" id="ins-days" style="width:auto;padding:6px 10px;font-size:13px" onchange="loadInsights()"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></div><div id="ins-body" class="empty">Open this tab to load.</div></div></div>
+    <div id="admin-feedback" class="tab-pane"><div class="card"><div class="section-title">Suggestions and corrections</div><div id="fb-body" class="empty">Open this tab to load.</div></div></div>
     <div id="admin-students" class="tab-pane active">
       <div class="card">
         <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
@@ -1093,6 +1115,7 @@ function makeTrainer(o) {
     const idx = list().map((_, k) => k)
     S.order = S.rand ? shuffle(idx) : idx
     S.active = true
+    trk('start', o.id, { t: o.id, c: S.cat, tm: S.tmode })
     T.render()
   }
   T.startQ = function () {
@@ -1110,14 +1133,15 @@ function makeTrainer(o) {
   }
   T.timeout = function () {
     clearInterval(S.tid); if (S.answered) return
-    S.timeouts++; S.done++; S.times.push(S.limit)
+    S.timeouts++; S.done++; S.times.push(S.limit); trk('timeout', o.id, { t: o.id })
     if (S.onTimeout === 'skip') { S.i++; S.answered = false; S.sel = -1; T.render() }
     else { S.answered = true; S.sel = -2; S.timedOut = true; T.render() }
   }
   T.pick = function (k) {
     const q = list()[S.order[S.i]]; clearInterval(S.tid)
     S.times.push((Date.now() - S.qStart) / 1000)
-    S.sel = k; S.answered = true; S.done++; if (k === q.a) S.score++; T.render()
+    S.sel = k; S.answered = true; S.done++; if (k === q.a) S.score++
+    trk('ans', o.id, { t: o.id, c: String(q[o.catField] || '').slice(0, 40), ok: k === q.a ? 1 : 0, s: Math.round(S.times[S.times.length - 1] || 0) }); T.render()
   }
   T.next = function () { S.i++; S.answered = false; S.sel = -1; S.timedOut = false; T.render() }
   T.skip = function () { clearInterval(S.tid); S.i++; S.answered = false; S.sel = -1; T.render() }
@@ -1254,6 +1278,7 @@ function fcStart() {
   let d = tierItems.filter(x => FC.cat === 'All' || x.c === FC.cat)
   const sh = document.getElementById('fc-shuf'); if (sh && sh.checked) d = shuffle(d.map((_, i) => i)).map(i => d[i])
   FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
+  trk('start', 'fc', { t: 'fc', c: FC.cat === 'All' ? 'tier' + FC.tier : FC.cat })
   fcRender()
 }
 function fcRender() {
@@ -1271,7 +1296,7 @@ function fcRender() {
     <div class="row-btns">${FC.flipped ? '<button class="btn-sm" onclick="fcMark(false)">Review again</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="fcMark(true)">Got it</button>' : '<button class="btn-sm" onclick="fcFlip()">Show answer</button>'}</div>`
 }
 function fcFlip() { FC.flipped = !FC.flipped; fcRender() }
-function fcMark(ok) { if (ok) FC.known++; else FC.again.push(FC.deck[FC.i]); FC.i++; FC.flipped = false; fcRender() }
+function fcMark(ok) { trk('card', 'fc', { t: 'fc', c: (FC.deck[FC.i].c || '').slice(0, 40), ok: ok ? 1 : 0 }); if (ok) FC.known++; else FC.again.push(FC.deck[FC.i]); FC.i++; FC.flipped = false; fcRender() }
 function fcReview() { FC.deck = shuffle(FC.again.map((_, i) => i)).map(i => FC.again[i]); FC.i = 0; FC.known = 0; FC.again = []; FC.flipped = false; fcRender() }
 
 // index lookup drill
@@ -1299,7 +1324,7 @@ function idxRender() {
     ${fin ? `<div class="expl"><b>${IDX.kSel === q.ka && IDX.sSel === q.sa ? 'Both right.' : (IDX.kSel === q.ka ? 'Right keyword, wrong section.' : (IDX.sSel === q.sa ? 'Right section, but the best index word was different.' : 'Both need another look.'))}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div><div class="row-btns"><button class="btn-sm" onclick="idxNext()">Next drill →</button></div>` : ''}</div>`
 }
 function idxPickK(k) { IDX.kSel = k; IDX.step = 2; idxRender() }
-function idxPickS(k) { const q = idxList()[IDX.order[IDX.i]]; IDX.sSel = k; IDX.step = 3; IDX.done++; if (k === q.sa && IDX.kSel === q.ka) IDX.score++; idxRender() }
+function idxPickS(k) { const q = idxList()[IDX.order[IDX.i]]; trk('ans', 'idx', { t: 'idx', c: String(q.c).slice(0, 40), ok: (k === q.sa && IDX.kSel === q.ka) ? 1 : 0 }); IDX.sSel = k; IDX.step = 3; IDX.done++; if (k === q.sa && IDX.kSel === q.ka) IDX.score++; idxRender() }
 function idxNext() { IDX.i++; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; idxRender() }
 
 
@@ -1354,6 +1379,69 @@ function chgRenderCard() {
     <div class="flash" onclick="CHGU.flipped=!CHGU.flipped;chgRenderCard()">${CHGU.flipped ? `<div class="side">What changed</div><div class="big" style="font-weight:500;font-size:16px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Topic</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to see what changed</div>`}</div>
     <div class="row-btns"><button class="btn-sm" onclick="if(CHGU.i>0){CHGU.i--;CHGU.flipped=false;chgRenderCard()}">← Back</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="CHGU.i++;CHGU.flipped=false;chgRenderCard()">Next →</button></div>`
 }
+
+// ── anonymous usage tracking + feedback ─────
+const TRK = { q: [], sid: null }
+try { TRK.sid = localStorage.getItem('vc_sid'); if (!TRK.sid) { TRK.sid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); localStorage.setItem('vc_sid', TRK.sid) } } catch (e) { TRK.sid = null }
+const TRK_OFF = (navigator.doNotTrack === '1' || window.doNotTrack === '1')
+function trk(ev, page, meta) {
+  if (TRK_OFF) return
+  if (!TRK.sid) TRK.sid = ('s' + Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 40)
+  if (TRK.q.length > 200) return
+  TRK.q.push({ sid: TRK.sid, ev: String(ev).slice(0, 40), page: page ? String(page).slice(0, 40) : null, meta: meta || null })
+}
+async function trkFlush() {
+  if (!TRK.q.length) return
+  const batch = TRK.q.splice(0, 50)
+  try { const { error } = await supabaseClient.from('site_events').insert(batch); if (error) throw error } catch (e) { /* analytics must never break the site */ }
+}
+setInterval(trkFlush, 8000)
+window.addEventListener('pagehide', trkFlush)
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') trkFlush() })
+
+async function sendFeedback() {
+  const msg = document.getElementById('fb-msg').value.trim(), note = document.getElementById('fb-note')
+  const show = (cls, t) => { note.className = 'alert ' + cls; note.textContent = t; note.style.display = 'block' }
+  if (msg.length < 5) return show('alert-error', 'Please write a little more.')
+  const row = { kind: document.getElementById('fb-kind').value, message: msg.slice(0, 2000), contact: document.getElementById('fb-contact').value.trim().slice(0, 200) || null, page: (window._prevPage || '').slice(0, 40), sid: TRK.sid }
+  try { const { error } = await supabaseClient.from('feedback').insert(row); if (error) throw error
+    show('alert-success', 'Thank you. This goes straight to the founder.'); document.getElementById('fb-msg').value = ''; trk('feedback', 'feedback', { kind: row.kind }) }
+  catch (e) { show('alert-error', 'Could not send right now. Please try again in a minute.') }
+}
+
+async function loadInsights() {
+  const days = +document.getElementById('ins-days').value, since = new Date(Date.now() - days * 864e5).toISOString()
+  const el = document.getElementById('ins-body'); el.textContent = 'Loading…'
+  let rows = [], from = 0
+  for (;;) { const { data, error } = await supabaseClient.from('site_events').select('created_at,sid,ev,page,meta').gte('created_at', since).order('created_at', { ascending: false }).range(from, from + 999)
+    if (error) { el.textContent = 'Could not load: ' + error.message; return }
+    rows = rows.concat(data || []); if (!data || data.length < 1000 || rows.length >= 20000) break; from += 1000 }
+  const sessions = new Set(rows.map(r => r.sid)), pv = rows.filter(r => r.ev === 'page')
+  const cnt = (arr, f) => { const m = {}; arr.forEach(r => { const k = f(r); m[k] = (m[k] || 0) + 1 }); return Object.entries(m).sort((a, b) => b[1] - a[1]) }
+  const tbl = (title, list, hdr) => `<div class="section-title" style="margin-top:18px">${title}</div><div class="table-wrap"><table><thead><tr><th>${hdr}</th><th>Count</th></tr></thead><tbody>${list.slice(0, 15).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('') || '<tr><td colspan=2>No data yet</td></tr>'}</tbody></table></div>`
+  const ans = rows.filter(r => r.ev === 'ans'), ok = ans.filter(r => r.meta && r.meta.ok).length, to = rows.filter(r => r.ev === 'timeout').length
+  const perSess = {}; pv.forEach(r => { perSess[r.sid] = (perSess[r.sid] || 0) + 1 })
+  const bounce = Object.values(perSess).filter(n => n === 1).length
+  const byTool = {}; ans.forEach(r => { const t = r.meta?.t || '?'; (byTool[t] = byTool[t] || { n: 0, ok: 0 }); byTool[t].n++; if (r.meta?.ok) byTool[t].ok++ })
+  el.innerHTML = `<div class="metrics"><div class="metric"><div class="metric-val">${sessions.size}</div><div class="metric-label">Visitors (anonymous)</div></div><div class="metric"><div class="metric-val">${pv.length}</div><div class="metric-label">Page views</div></div><div class="metric"><div class="metric-val">${ans.length}</div><div class="metric-label">Questions answered</div></div><div class="metric"><div class="metric-val">${ans.length ? Math.round(ok / ans.length * 100) : 0}%</div><div class="metric-label">Answered correctly</div></div></div>
+    <p style="font-size:13px;color:var(--muted)">${Object.keys(perSess).length ? Math.round(bounce / Object.keys(perSess).length * 100) : 0}% of visitors viewed only one page. ${to} questions timed out.</p>
+    ${tbl('Pages viewed', cnt(pv, r => r.page || '?'), 'Page')}
+    ${tbl('Study sessions started', cnt(rows.filter(r => r.ev === 'start'), r => r.meta?.t || '?'), 'Tool')}
+    ${tbl('Accuracy by tool', Object.entries(byTool).map(([t, v]) => [t + ' (' + Math.round(v.ok / v.n * 100) + '% correct)', v.n]), 'Tool')}
+    ${tbl('Most-studied categories', cnt(ans, r => (r.meta?.t || '?') + ' / ' + (r.meta?.c || '?')), 'Category')}
+    ${tbl('Hardest categories (most misses)', cnt(ans.filter(r => r.meta && !r.meta.ok), r => (r.meta?.t || '?') + ' / ' + (r.meta?.c || '?')), 'Category')}
+    ${tbl('Where visitors leave (last page of a visit)', (() => { const last = {}; pv.forEach(r => { if (!last[r.sid]) last[r.sid] = r.page }); return cnt(Object.values(last).map(p => ({ p })), r => r.p) })(), 'Last page')}`
+}
+
+async function loadFeedbackAdmin() {
+  const el = document.getElementById('fb-body'); el.textContent = 'Loading…'
+  const { data, error } = await supabaseClient.from('feedback').select('*').order('created_at', { ascending: false }).limit(200)
+  if (error) { el.textContent = 'Could not load: ' + error.message; return }
+  if (!data.length) { el.textContent = 'Nothing yet.'; return }
+  el.className = ''
+  el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>When</th><th>Type</th><th>Message</th><th>Contact</th><th>Page</th><th>Status</th></tr></thead><tbody>${data.map(f => `<tr><td>${new Date(f.created_at).toLocaleDateString()}</td><td><span class="badge badge-blue">${esc(f.kind)}</span></td><td style="white-space:pre-wrap;max-width:420px">${esc(f.message)}</td><td>${esc(f.contact || '')}</td><td>${esc(f.page || '')}</td><td><select class="form-select" style="font-size:12px;padding:4px 6px" onchange="setFbStatus(${f.id},this.value)">${['new', 'reviewing', 'done', 'dismissed'].map(x => `<option ${f.status === x ? 'selected' : ''}>${x}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`
+}
+async function setFbStatus(id, st) { await supabaseClient.from('feedback').update({ status: st }).eq('id', id) }
 // ── RECOMMENDATIONS ───────────────────────────────────────
 const RECS = {
   Apprentice: [
@@ -1395,9 +1483,11 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 function showPage(id) {
+  window._prevPage = (document.querySelector('.page.active')?.id || '').replace('page-', '')
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById('page-' + id).classList.add('active')
   window.scrollTo(0, 0)
+  try { trk('page', id) } catch (e) {}
 }
 
 function switchTab(btn, paneId) {
