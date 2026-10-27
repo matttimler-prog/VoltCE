@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoltCE — Electrical Continuing Education</title>
+<title>VoltCE — Free Electrician Exam Prep &amp; Continuing Education</title>
+<meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
@@ -159,6 +160,34 @@
   .course-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
   .course-row:last-child { border-bottom: none; }
 
+
+  /* ── PREP / SUPPORT ── */
+  .banner { background:#FFF7E6; color:#7a4a00; border-bottom:1px solid #f1d9a8; text-align:center; font-size:13px; padding:8px 16px; }
+  .banner a { color:#7a4a00; text-decoration:underline; cursor:pointer; }
+  .hero-btn-donate { background:#F6C343; color:#3a2a00; }
+  .hero-btn-donate:hover { background:#f2b92a; }
+  .flash { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); min-height:230px; padding:28px; display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; line-height:1.55; }
+  .flash .side { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:10px; }
+  .flash .big { font-size:18px; font-weight:500; }
+  .flash .ans { font-size:17px; font-weight:600; color:var(--green); margin-bottom:10px; }
+  .row-btns { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; align-items:center; }
+  .tmr { font-variant-numeric:tabular-nums; font-weight:600; font-size:15px; padding:3px 10px; border-radius:20px; background:var(--blue-light,#e8f0fe); color:var(--blue); }
+  .tmr.warn { background:var(--red-light); color:var(--red); }
+  .opt { display:block; width:100%; text-align:left; padding:11px 14px; margin:7px 0; border:1px solid var(--border); background:var(--white); border-radius:var(--radius); font-family:inherit; font-size:14px; cursor:pointer; color:var(--text); }
+  .opt:hover:not(:disabled) { border-color:var(--blue); }
+  .opt.right { background:var(--green-light); border-color:var(--green); }
+  .opt.wrong { background:var(--red-light); border-color:var(--red); }
+  .expl { background:var(--blue-light); color:var(--blue-dark); border-radius:var(--radius); padding:12px 14px; font-size:14px; margin-top:10px; line-height:1.55; }
+  .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
+  .rec { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
+  .rec h4 { font-size:15px; margin-bottom:6px; }
+  .rec p { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
+  .rec a, .rec button.lnk { font-size:13px; color:var(--blue); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline; font-family:inherit; }
+  .locked { opacity:.85; cursor:default !important; }
+  .locked:hover { border-color:var(--border) !important; transform:none !important; }
+  .cat-chip.active { background:var(--blue-light); color:var(--blue-dark); border-color:var(--blue); }
+  .donate-amts { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+
   @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 28px; }
@@ -170,12 +199,17 @@
 <body>
 
 <!-- ── NAV ─────────────────────────────────────────────── -->
+<div class="banner">Paid CE courses open after state approval. <a onclick="showPage('prep')">Free exam prep is open now →</a></div>
 <nav class="nav">
   <div class="nav-logo">Volt<span>CE</span></div>
   <div class="nav-links">
+    <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
+    <button class="nav-link" onclick="showPage('study')">Study tools</button>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
+    <button class="nav-link" onclick="showPage('feedback')">Suggest</button>
+    <button class="nav-link" onclick="showPage('support')">Support us</button>
     <span id="nav-user-name" style="font-size:13px;color:rgba(255,255,255,0.75);display:none"></span>
     <button class="nav-link" id="nav-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-link" id="nav-admin-btn" style="display:none" onclick="showPage('admin')">Admin</button>
@@ -187,21 +221,32 @@
 <!-- ── HOME ─────────────────────────────────────────────── -->
 <div id="page-home" class="page active">
   <div class="hero">
-    <h1>Keep your electrical license current</h1>
-    <p>Wisconsin DSPS-approved CEU courses for journeymen, masters, and contractors — online, self-paced, reported automatically.</p>
+    <h1>Free electrician exam prep. CE courses coming soon.</h1>
+    <p>Practice questions and flashcards on the 2023 NEC, grounding and bonding, and electrical safety — free, no sign-up. Continuing-education courses for journeymen, masters and contractors open as each state approves them.</p>
     <div class="hero-btns">
-      <button class="hero-btn hero-btn-primary" onclick="showPage('courses')">Browse courses</button>
-      <button class="hero-btn hero-btn-outline" onclick="showPage('states')">Find your state</button>
+      <button class="hero-btn hero-btn-primary" onclick="showPage('prep')">Start free exam prep</button>
+      <button class="hero-btn hero-btn-outline" onclick="calcOpen()">Load calc practice</button>
+      <button class="hero-btn hero-btn-outline" onclick="codeOpen()">Code article study</button>
+      <button class="hero-btn hero-btn-outline" onclick="showPage('study')">All study tools</button>
+      <button class="hero-btn hero-btn-donate" onclick="showPage('support')">Support VoltCE</button>
     </div>
   </div>
   <div class="container">
     <div class="metrics">
-      <div class="metric"><div class="metric-val">40+</div><div class="metric-label">States covered</div></div>
-      <div class="metric"><div class="metric-val">120+</div><div class="metric-label">CEU courses</div></div>
-      <div class="metric"><div class="metric-val">4</div><div class="metric-label">License types</div></div>
-      <div class="metric"><div class="metric-val">100%</div><div class="metric-label">Online & self-paced</div></div>
+      <div class="metric"><div class="metric-val" id="home-q">300+</div><div class="metric-label">Flashcards &amp; code questions</div></div>
+      <div class="metric"><div class="metric-val">2,800+</div><div class="metric-label">Load calc problems</div></div>
+      <div class="metric"><div class="metric-val">2023</div><div class="metric-label">NEC edition</div></div>
+      <div class="metric"><div class="metric-val">$0</div><div class="metric-label">No sign-up needed</div></div>
     </div>
-    <div class="section-title">Featured courses</div>
+    <div class="section-title">Recommended for you</div>
+    <div class="row-btns" style="margin-top:0">
+      <span style="font-size:13px;color:var(--muted)">I am a:</span>
+      <button class="btn-sm" onclick="renderRecs('Apprentice',this)">Apprentice</button>
+      <button class="btn-sm active" onclick="renderRecs('Journeyman',this)">Journeyman candidate</button>
+      <button class="btn-sm" onclick="renderRecs('Licensed',this)">Licensed electrician</button>
+    </div>
+    <div id="home-recs" class="rec-grid" style="margin-bottom:28px"></div>
+    <div class="section-title">Courses</div>
     <div id="home-courses" class="courses-grid"></div>
   </div>
 </div>
@@ -210,7 +255,7 @@
 <div id="page-courses" class="page">
   <div class="container">
     <div class="page-title">All courses</div>
-    <div class="page-sub">Wisconsin DSPS-approved continuing education</div>
+    <div class="page-sub">Continuing education for licensed electricians. Paid courses open once the state approves them. The OSHA course is free to study now.</div>
     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
       <button class="btn-sm active" id="filter-all" onclick="filterCourses('all',this)">All</button>
       <button class="btn-sm" id="filter-Journeyman" onclick="filterCourses('Journeyman',this)">Journeyman</button>
@@ -226,7 +271,7 @@
 <div id="page-states" class="page">
   <div class="container">
     <div class="page-title">State licensing resources</div>
-    <div class="page-sub">CEU requirements, renewal deadlines, and application links by state</div>
+    <div class="page-sub">Where to check continuing-education rules. Our courses are not yet approved in any state; these links go to each state board.</div>
     <div id="states-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"></div>
   </div>
 </div>
@@ -235,46 +280,193 @@
 <div id="page-pricing" class="page">
   <div class="container">
     <div class="page-title">Plans & pricing</div>
-    <div class="page-sub">All plans include DSPS-approved courses and automatic state reporting</div>
+    <div class="page-sub">Paid plans open after state approval. Join the free account now and we will tell you the day it happens.</div>
     <div class="plans">
       <div class="plan-card">
         <div class="plan-name">Free</div>
         <div class="plan-price">$0</div>
         <div class="plan-desc">Get started with foundational content</div>
         <ul class="plan-features">
-          <li>Apprentice-level courses</li>
+          <li>Free exam-prep flashcards and practice questions</li>
+          <li>Free electrical safety &amp; OSHA course</li>
           <li>State resource library</li>
-          <li>License lookup tool</li>
         </ul>
-        <button class="plan-btn" onclick="showPage('auth')">Get started</button>
+        <button class="plan-btn" onclick="showPage('prep')">Start studying</button>
       </div>
       <div class="plan-card featured">
         <div class="popular">Most popular</div>
         <div class="plan-name">Annual</div>
         <div class="plan-price"><sup>$</sup>149<sub>/yr</sub></div>
-        <div class="plan-desc">Unlimited access for active licensees</div>
+        <div class="plan-desc">Planned price. Opens after state approval.</div>
         <ul class="plan-features">
           <li>All courses, all license types</li>
-          <li>Automatic state reporting</li>
+          <li>State reporting where required</li>
           <li>Completion certificates</li>
           <li>Priority support</li>
           <li>New courses as added</li>
         </ul>
-        <button class="plan-btn primary" onclick="startCheckout('subscription',14900)">Subscribe — $149/yr</button>
+        <button class="plan-btn primary" onclick="showPage('auth')">Join the waitlist</button>
       </div>
       <div class="plan-card">
         <div class="plan-name">Per course</div>
         <div class="plan-price">$29<sub>–$59</sub></div>
-        <div class="plan-desc">Pay only for what you need</div>
+        <div class="plan-desc">Planned prices. Open after state approval.</div>
         <ul class="plan-features">
           <li>Any single course</li>
           <li>Lifetime access</li>
           <li>Completion certificate</li>
-          <li>State reporting included</li>
+          <li>State reporting where required</li>
         </ul>
-        <button class="plan-btn" onclick="showPage('courses')">Browse courses</button>
+        <button class="plan-btn" onclick="showPage('courses')">See courses</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ── FREE EXAM PREP ────────────────────────────────────── -->
+<div id="page-prep" class="page">
+  <div class="container">
+    <div class="page-title">Free electrician exam prep</div>
+    <div class="page-sub">Flashcards and practice questions on the 2023 NEC, grounding and bonding, Wisconsin code changes and electrical safety. Free, no account needed.</div>
+    <div class="alert alert-info" style="font-size:13px">Study practice written by VoltCE. These are not official exam questions and do not earn continuing-education credit. Always check the code book and your state licensing board for what applies to you.</div>
+    <div class="tabs" id="prep-tabs">
+      <button class="tab active" onclick="prepMode('flash',this)">Flashcards</button>
+      <button class="tab" onclick="prepMode('quiz',this)">Practice quiz</button>
+      <button class="tab" onclick="prepMode('recs',this)">Recommended</button>
+    </div>
+    <div class="row-btns" id="prep-cats"></div>
+    <div id="prep-body"></div>
+  </div>
+</div>
+
+<!-- ── CALC PRACTICE ─────────────────────────────────────── -->
+<div id="page-calc" class="page">
+  <div class="container">
+    <div class="page-title">Load calc &amp; sizing practice</div>
+    <div class="page-sub">Thousands of free practice problems: conductor sizing, branch circuits, dwelling and commercial loads, motors, transformers with secondary protection, parallel conductors, conduit fill (several conduit types and insulations), voltage drop, grounding and box fill. Every answer comes with the worked solution.</div>
+    <div class="alert alert-info" style="font-size:13px">Based on the 2023 NEC. Unless a problem says otherwise, assume 75°C-rated terminations, copper conductors and standard overcurrent device sizes from 240.6(A). Study practice written by VoltCE, not official exam questions, and no CE credit. Have your code book handy.</div>
+    <div id="calc-set"></div>
+    <div class="row-btns" id="calc-cats"></div>
+    <div class="row-btns" id="calc-diff"></div>
+    <div id="calc-body"></div>
+  </div>
+</div>
+
+<!-- ── CODE ARTICLE STUDY ────────────────────────────────── -->
+<div id="page-code" class="page">
+  <div class="container">
+    <div class="page-title">Code article study</div>
+    <div class="page-sub">Study one NEC article at a time, or mix them all. Classified locations, health care, EV charging, solar, pools, special occupancies and more. <span id="code-total"></span>. Study practice written by VoltCE for the 2023 NEC; check every answer against your code book.</div>
+    <div id="code-list">
+      <div id="code-ed"></div>
+      <div class="row-btns"><input class="form-input" id="code-search" placeholder="Find an article (e.g. 680, pool, hazardous)" style="max-width:320px" oninput="codeList()"><button class="btn-primary" style="width:auto;padding:10px 18px" onclick="codeStartAll()">Random mix of everything</button></div>
+      <div id="code-groups"></div>
+    </div>
+    <div id="code-session" style="display:none">
+      <div class="row-btns"><button class="btn-sm" onclick="codeBack()">← All articles</button><b id="code-title" style="font-size:15px"></b></div>
+      <div id="code-set"></div>
+      <div class="row-btns" id="code-diff"></div>
+      <div id="code-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STUDY HUB ─────────────────────────────────────────── -->
+<div id="page-study" class="page">
+  <div class="container">
+    <div class="page-title">Free study tools</div>
+    <div class="page-sub">Everything here is free. Practice written by VoltCE for the 2023 NEC, with an explanation, a reference and the math behind every answer. Not official exam questions, no CE credit.</div>
+    <div class="rec-grid">
+      <div class="rec" style="cursor:pointer" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
+      <div class="rec" style="cursor:pointer" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="calcOpen()"><h4>Load calc and sizing</h4><p>Thousands of problems: services, motors, conductors, conduit fill, transformers.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="theoryOpen()"><h4>Electrical theory and formulas</h4><p>Ohm's law, power, AC, three-phase, transformers, motors, with full worked math.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="chgOpen()"><h4>Edition changes (2017, 2020, 2023, 2026)</h4><p>Review what changed between NEC editions, article by article. Cards and quiz.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="showPage('prep')"><h4>Safety, grounding and NEC 2023 changes</h4><p>Flashcards and quizzes on OSHA, grounding and bonding, and the 2023 updates.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FLASHCARDS ────────────────────────────────────────── -->
+<div id="page-fc" class="page">
+  <div class="container">
+    <div class="page-title">Code flashcards</div>
+    <div class="page-sub">Memorization cards. Tier 1: major code articles. Tier 2: every other article. Tier 3: formulas and rules of thumb. Tap a card to flip it.</div>
+    <div class="tabs" id="fc-tiers"></div>
+    <div class="row-btns" id="fc-cats"></div>
+    <label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fc-shuf" checked onchange="fcStart()"> Shuffle</label>
+    <div id="fc-body"></div>
+  </div>
+</div>
+
+<!-- ── INDEX LOOKUP DRILL ────────────────────────────────── -->
+<div id="page-idx" class="page">
+  <div class="container">
+    <div class="page-title">Code book index lookup drill</div>
+    <div class="page-sub">Open the index at the back of your NEC, find the entry word, then turn to the right section. Step 1: pick the keyword you would look up. Step 2: pick the section you would turn to. You will be told if you are right and how to find it next time.</div>
+    <div class="row-btns" id="idx-cats"></div>
+    <div id="idx-body"></div>
+  </div>
+</div>
+
+<!-- ── THEORY ─────────────────────────────────────────────── -->
+<div id="page-theory" class="page">
+  <div class="container">
+    <div class="page-title">Electrical theory and formula practice</div>
+    <div class="page-sub">Ohm's law, power, AC theory, three-phase, transformers, motors and more. Wrong answers show the formula, the math step by step and how to solve it yourself next time.</div>
+    <div id="theory-set"></div>
+    <div class="row-btns" id="theory-cats"></div>
+    <div class="row-btns" id="theory-diff"></div>
+    <div id="theory-body"></div>
+  </div>
+</div>
+
+<!-- ── EDITION CHANGES ───────────────────────────────────── -->
+<div id="page-chg" class="page">
+  <div class="container">
+    <div class="page-title">Edition changes: what moved between NEC editions</div>
+    <div class="page-sub">States adopt different editions. Pick the edition you know and the edition you are studying, then review what changed, article by article, as flashcards or a quiz. Steps are chained: 2017 to 2023 shows the 2017-to-2020 and the 2020-to-2023 changes.</div>
+    <div class="card-sm" style="margin-bottom:12px"><div class="row-btns" style="margin:0"><b style="font-size:13px">From</b><select class="form-select" id="chg-from" style="width:auto;padding:6px 10px;font-size:13px" onchange="chgSet()"></select><b style="font-size:13px">to</b><select class="form-select" id="chg-to" style="width:auto;padding:6px 10px;font-size:13px" onchange="chgSet()"></select><select class="form-select" id="chg-art" style="width:auto;max-width:260px;padding:6px 10px;font-size:13px" onchange="chgSet()"></select></div></div>
+    <div class="tabs"><button class="tab active" id="chg-t1" onclick="chgMode('cards')">Review cards</button><button class="tab" id="chg-t2" onclick="chgMode('quiz')">Quiz</button></div>
+    <div id="chg-set"></div>
+    <div id="chg-cardbox"><div id="chg-body"></div></div>
+    <div id="chg-quizbox" style="display:none"><div id="chgq-set"></div><div id="chgq-body"></div></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px">Summaries written by VoltCE from public change summaries. Always confirm in the actual code book for your edition and check your state's adopted edition and amendments.</p>
+  </div>
+</div>
+
+<!-- ── FEEDBACK ──────────────────────────────────────────── -->
+<div id="page-feedback" class="page">
+  <div class="container" style="max-width:640px">
+    <div class="page-title">Suggestion box</div>
+    <div class="page-sub">Tell us what to build next, or report a wrong answer. Corrections help most: include the question and what you think is right, with the code section if you have it.</div>
+    <div class="card">
+      <div class="form-group"><label class="form-label">What is this about?</label>
+        <select class="form-select" id="fb-kind"><option value="feature">A feature or topic I want</option><option value="correction">A correction (wrong answer or rule)</option><option value="bug">Something is broken</option><option value="other">Something else</option></select></div>
+      <div class="form-group"><label class="form-label">Your message</label><textarea class="form-input" id="fb-msg" rows="6" maxlength="2000" placeholder="Be as specific as you can"></textarea></div>
+      <div class="form-group"><label class="form-label">Email, if you want a reply (optional)</label><input class="form-input" id="fb-contact" maxlength="200" placeholder="you@example.com"></div>
+      <div id="fb-note" class="alert" style="display:none"></div>
+      <button class="btn-primary" onclick="sendFeedback()">Send</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">We do not publish what you send. We use anonymous usage counts (pages and study tools used, no names) to make the site easier to use.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUPPORT / DONATE ──────────────────────────────────── -->
+<div id="page-support" class="page">
+  <div class="container" style="max-width:640px">
+    <div class="page-title">Help keep the free study tools free</div>
+    <div class="page-sub">VoltCE is built by a Wisconsin master electrician. Free exam prep costs real money to build and host. If it helped you, a small contribution keeps it going and pays for new free material.</div>
+    <div class="card">
+      <div class="section-title">Support VoltCE</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">Pick any amount on the secure payment page. Contributions support VoltCE and are not tax-deductible. Nothing is required: the free tools stay free either way.</p>
+      <div class="donate-amts"><button class="btn-primary" style="max-width:260px" onclick="donate()">Support VoltCE</button></div>
+      <div id="donate-note" class="alert alert-info" style="display:none;font-size:13px"></div>
+      <p style="font-size:12px;color:var(--muted)">Payments are handled by Stripe. VoltCE never sees your card details.</p>
+    </div>
+    <div class="card"><div class="section-title">Other ways to help</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">Share the free prep with someone studying for their exam, and tell us which topics you want next.</p></div>
   </div>
 </div>
 
@@ -407,7 +599,11 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'admin-students')">Students</button>
       <button class="tab" onclick="switchTab(this,'admin-completions')">Completions & DSPS</button>
+      <button class="tab" onclick="switchTab(this,'admin-insights');loadInsights()">Site usage</button>
+      <button class="tab" onclick="switchTab(this,'admin-feedback');loadFeedbackAdmin()">Suggestions</button>
     </div>
+    <div id="admin-insights" class="tab-pane"><div class="card"><div class="row-btns" style="margin-top:0"><b>Anonymous site usage</b><select class="form-select" id="ins-days" style="width:auto;padding:6px 10px;font-size:13px" onchange="loadInsights()"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></div><div id="ins-body" class="empty">Open this tab to load.</div></div></div>
+    <div id="admin-feedback" class="tab-pane"><div class="card"><div class="section-title">Suggestions and corrections</div><div id="fb-body" class="empty">Open this tab to load.</div></div></div>
     <div id="admin-students" class="tab-pane active">
       <div class="card">
         <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
@@ -431,6 +627,7 @@
   </div>
 </div>
 
+<script src="exam-prep-data.js"></script>
 <script>
 // ============================================================
 // CONFIGURATION — REPLACE THESE WITH YOUR REAL VALUES
@@ -441,26 +638,28 @@ const SUPABASE_ANON_KEY = 'sb_publishable_53JBBNhFeqg2Qmy2TkdWrw_t3fi0XOB'
 const STRIPE_PAYMENT_LINK_SUBSCRIPTION = 'https://buy.stripe.com/5kQ8wO9clbeN9PQ82214400'
 const STRIPE_PAYMENT_LINK_COURSE = 'https://buy.stripe.com/fZu8wOgENeqZ6DE6XY14401'
 const ADMIN_EMAIL = 'matttimler@gmail.com'
+// Paste a Stripe Payment Link (customer chooses price) here to switch the Support button on:
+const STRIPE_DONATE_LINK = ''
 // ============================================================
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 const COURSES = [
-  { id:'gb', slug:'grounding-bonding-nec2017', title:'Grounding & Bonding per NEC 2017', hours:4.0, price:49, tag:'Journeyman', icon:'G&B', bg:'#E6F1FB', ic:'#0C447C' },
-  { id:'af', slug:'arc-flash-nfpa70e', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806' },
-  { id:'nec', slug:'nec-2017-code-update', title:'NEC 2017 Code Update', hours:8.0, price:59, tag:'All types', icon:'NEC', bg:'#EAF3DE', ic:'#27500A' },
-  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true },
+  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true, url:'course-osha.html' },
+  { id:'wi23', slug:'wisconsin-2023-nec-transition', title:'Wisconsin 2023 NEC Transition', hours:4.0, price:49, tag:'All types', icon:'WI', bg:'#FAEEDA', ic:'#633806', soon:true },
+  { id:'nec', slug:'nec-2023-code-update', title:'NEC 2023 Code Update', hours:8.0, price:59, tag:'All types', icon:'NEC', bg:'#EAF3DE', ic:'#27500A', soon:true },
+  { id:'gb', slug:'grounding-bonding-nec2023', title:'Grounding & Bonding per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'G&B', bg:'#E6F1FB', ic:'#0C447C', soon:true },
+  { id:'af', slug:'arc-flash-nfpa70e-2021', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806', soon:true },
 ]
 
 const STATES = [
-  { name:'Wisconsin', hours:'24 hrs / 4 yrs', url:'https://dsps.wi.gov/Pages/Professions/TradesContinuingEducation.aspx', status:'active' },
-  { name:'Texas', hours:'12 hrs / cycle', url:'https://www.tdlr.texas.gov/electricians/', status:'active' },
-  { name:'Florida', hours:'14 hrs / cycle', url:'https://www.myfloridalicense.com', status:'active' },
-  { name:'Illinois', hours:'8 hrs / cycle', url:'https://idfpr.illinois.gov', status:'active' },
-  { name:'Ohio', hours:'6 hrs / cycle', url:'https://www.com.ohio.gov', status:'active' },
-  { name:'Michigan', hours:'6 hrs / cycle', url:'https://www.michigan.gov/lara', status:'active' },
-  { name:'California', hours:'32 hrs / cycle', url:'https://www.cslb.ca.gov', status:'pending' },
-  { name:'Georgia', hours:'10 hrs / cycle', url:'https://sos.ga.gov/index.php/licensing', status:'pending' },
+  { name:'Wisconsin', hours:'Master 24 hrs. Check DSPS for other licenses', url:'https://dsps.wi.gov/Pages/Professions/TradesContinuingEducation.aspx', status:'pending' },
+  { name:'Colorado', hours:'See state board', url:'https://dpo.colorado.gov/Electrical/CE', status:'pending' },
+  { name:'Texas', hours:'See state board', url:'https://www.tdlr.texas.gov/electricians/', status:'pending' },
+  { name:'Florida', hours:'See state board', url:'https://www.myfloridalicense.com', status:'pending' },
+  { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
+  { name:'Michigan', hours:'See state board', url:'https://www.michigan.gov/lara', status:'pending' },
+  { name:'Georgia', hours:'See state board', url:'https://sos.ga.gov/index.php/licensing', status:'pending' },
 ]
 
 let currentUser = null
@@ -473,6 +672,9 @@ let authMode = 'login'
 // ── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   renderHomeCourses()
+  renderRecs('Journeyman', null)
+  resetPrep()
+  const hq = document.getElementById('home-q'); if (hq && window.PREP_BANK) hq.textContent = window.PREP_BANK.length
   renderAllCourses()
   renderStates()
   await checkSession()
@@ -633,8 +835,8 @@ function renderDashboard(profile, enrollments, completions) {
           <div style="font-size:12px;color:var(--muted)">${c.hours} CEU hours · ${c.free ? 'Free' : '$' + c.price}</div>
         </div>
         <div>${c.free
-          ? `<button class="btn-sm" onclick="enrollFree('${c.slug}')">Enroll free</button>`
-          : `<button class="btn-sm" onclick="startCheckout('course',${c.price * 100},'${c.slug}','${c.title}')">$${c.price}</button>`
+          ? `<button class="btn-sm" onclick="openFree('${c.slug}','${c.url}')">Open free course</button>`
+          : `<span class="badge badge-amber">Pending approval</span>`
         }</div>
       </div>`).join('')
 
@@ -672,6 +874,8 @@ async function enrollFree(slug) {
 
 // ── CHECKOUT ──────────────────────────────────────────────
 function startCheckout(type, amountCents, slug, title) {
+  // Paid checkout stays closed until state approval and verified payments
+  alert('Paid courses open after state approval. Create a free account and we will email you.'); return
   if (!currentUser) { showPage('auth'); return }
   checkoutItem = { type, amountCents, slug, title }
   const dollars = (amountCents / 100).toFixed(2)
@@ -771,12 +975,20 @@ function renderAllCourses(filter = 'all') {
 }
 
 function courseCard(c) {
-  return `<div class="course-card" onclick="${c.free ? `enrollFree('${c.slug}')` : `startCheckout('course',${c.price*100},'${c.slug}','${c.title}')`}">
+  const action = c.soon ? '' : (c.free ? `onclick="openFree('${c.slug}','${c.url}')"` : '')
+  const price = c.free ? 'Free' : (c.soon ? `<span class="badge badge-amber">Pending state approval</span> <span style="font-size:13px;color:var(--muted);font-weight:400">· planned $${c.price}</span>` : '$' + c.price)
+  const note = c.free ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Study for free now. No CE credit until approved.</div>' : (c.soon ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Create a free account and we will email you when it opens.</div>' : '')
+  return `<div class="course-card${c.soon?' locked':''}" ${action}>
     <div class="course-icon" style="background:${c.bg};color:${c.ic}">${c.icon}</div>
     <div class="course-title">${c.title}</div>
-    <div class="course-meta">${c.hours} CEU hours · ${c.tag}</div>
-    <div class="course-price">${c.free ? 'Free' : '$' + c.price}</div>
+    <div class="course-meta">${c.hours} hours · ${c.tag}</div>
+    <div class="course-price">${price}</div>${note}
   </div>`
+}
+
+function openFree(slug, url) {
+  if (currentUser) { try { enrollFree(slug) } catch (e) {} }
+  window.open(url, '_blank')
 }
 
 function filterCourses(filter, btn) {
@@ -791,18 +1003,491 @@ function renderStates() {
     <div class="card-sm" style="cursor:pointer" onclick="window.open('${s.url}','_blank')">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <div style="font-size:15px;font-weight:600">${s.name}</div>
-        <span class="badge ${s.status==='active'?'badge-green':'badge-amber'}">${s.status==='active'?'Active':'Pending'}</span>
+        <span class="badge ${s.status==='active'?'badge-green':'badge-amber'}">${s.status==='active'?'Approved':'Approval pending'}</span>
       </div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${s.hours}</div>
       <div style="font-size:12px;color:var(--blue)">View requirements →</div>
     </div>`).join('')
 }
 
+// ── FREE EXAM PREP ────────────────────────────────────────
+const PREP = { mode:'flash', cat:'All', i:0, flipped:false, order:[], qi:0, answered:false, score:0, done:0 }
+function prepBank() { return (window.PREP_BANK || []).filter(x => PREP.cat === 'All' || x.c === PREP.cat) }
+function esc(t) { return String(t).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
+function prepMode(m, btn) {
+  PREP.mode = m
+  if (btn) { btn.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active')); btn.classList.add('active') }
+  resetPrep()
+}
+function resetPrep() {
+  PREP.i = 0; PREP.flipped = false; PREP.qi = 0; PREP.answered = false; PREP.score = 0; PREP.done = 0
+  PREP.order = shuffle(prepBank().map((_, k) => k))
+  renderPrep()
+}
+function setCat(c) { PREP.cat = c; resetPrep() }
+function renderPrep() {
+  const bank = window.PREP_BANK || []
+  const cats = ['All', ...new Set(bank.map(x => x.c))]
+  const catsEl = document.getElementById('prep-cats')
+  catsEl.style.display = PREP.mode === 'recs' ? 'none' : 'flex'
+  catsEl.innerHTML = cats.map(c => `<button class="btn-sm cat-chip ${PREP.cat === c ? 'active' : ''}" onclick="setCat('${c.replace(/'/g, "\\'")}')">${esc(c)}</button>`).join('')
+  const body = document.getElementById('prep-body')
+  if (!bank.length) { body.innerHTML = '<div class="empty">Loading questions…</div>'; return }
+  if (PREP.mode === 'recs') { body.innerHTML = '<div id="prep-recs" class="rec-grid"></div>' + prepCta(); renderRecs('Journeyman', null, 'prep-recs'); return }
+  const list = prepBank()
+  if (!list.length) { body.innerHTML = '<div class="empty">No questions in this topic.</div>'; return }
+  if (PREP.mode === 'flash') {
+    const q = list[PREP.order[PREP.i % PREP.order.length]]
+    body.innerHTML = `<div class="flash" onclick="flipCard()">
+        <div class="side">${PREP.flipped ? 'Answer' : 'Question'} · ${esc(q.c)}</div>
+        ${PREP.flipped ? `<div class="ans">${esc(q.o[q.a])}</div><div>${esc(q.e)}</div>` : `<div class="big">${esc(q.q)}</div>`}
+      </div>
+      <div class="row-btns">
+        <button class="btn-sm" onclick="stepCard(-1)">← Back</button>
+        <button class="btn-sm" onclick="flipCard()">${PREP.flipped ? 'Show question' : 'Show answer'}</button>
+        <button class="btn-sm" onclick="stepCard(1)">Next →</button>
+        <span style="font-size:13px;color:var(--muted)">Card ${(PREP.i % PREP.order.length) + 1} of ${PREP.order.length}</span>
+        <button class="btn-sm" onclick="resetPrep()">Shuffle</button>
+      </div>` + prepCta()
+  } else {
+    if (PREP.qi >= PREP.order.length) { body.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${PREP.score} of ${PREP.done} correct</div><p class="page-sub">${Math.round(PREP.score / Math.max(1, PREP.done) * 100)}%. Keep going or switch topics.</p><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="resetPrep()">Start over</button></div>` + prepCta(); return }
+    const q = list[PREP.order[PREP.qi]]
+    body.innerHTML = `<div class="card">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Question ${PREP.qi + 1} of ${PREP.order.length} · ${PREP.score} correct · ${esc(q.c)}</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:10px;line-height:1.5">${esc(q.q)}</div>
+      ${q.o.map((o, k) => `<button class="opt ${PREP.answered ? (k === q.a ? 'right' : (k === PREP.sel ? 'wrong' : '')) : ''}" ${PREP.answered ? 'disabled' : ''} onclick="pickAnswer(${k})">${String.fromCharCode(65 + k)}. ${esc(o)}</button>`).join('')}
+      ${PREP.answered ? `<div class="expl">${esc(q.e)}</div><div class="row-btns"><button class="btn-sm" onclick="nextQuestion()">Next question →</button></div>` : ''}
+    </div>` + prepCta()
+  }
+}
+function prepCta() {
+  return `<div class="card-sm" style="margin-top:16px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    <div style="font-size:14px"><b>Want the paid CE courses when they open?</b><div style="font-size:13px;color:var(--muted)">Create a free account and we will tell you the day each course is approved.</div></div>
+    <div><button class="btn-sm" onclick="showPage('auth')">Create free account</button> <button class="btn-sm" onclick="showPage('support')">Support VoltCE</button></div></div>`
+}
+function flipCard() { PREP.flipped = !PREP.flipped; renderPrep() }
+function stepCard(d) { const n = PREP.order.length; PREP.i = (PREP.i + d + n) % n; PREP.flipped = false; renderPrep() }
+function pickAnswer(k) { const q = prepBank()[PREP.order[PREP.qi]]; PREP.sel = k; PREP.answered = true; PREP.done++; if (k === q.a) PREP.score++; renderPrep() }
+function nextQuestion() { PREP.qi++; PREP.answered = false; renderPrep() }
+
+// ── PRACTICE ENGINE (calc + code articles, with timer) ─────
+function fmtT(sec) { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0') }
+function loadPref(k, d) { try { const v = localStorage.getItem('vc_' + k); return v === null ? d : JSON.parse(v) } catch (e) { return d } }
+function savePref(k, v) { try { localStorage.setItem('vc_' + k, JSON.stringify(v)) } catch (e) {} }
+
+function makeTrainer(o) {
+  const S = { cat: 'All', diff: 0, order: [], i: 0, answered: false, sel: -1, timedOut: false, score: 0, done: 0, timeouts: 0, times: [], sessStart: 0, qStart: 0, tid: null,
+    tmode: loadPref('tmode', 'off'), limit: loadPref('tlimit', 60), onTimeout: loadPref('tout', 'skip'), rand: loadPref('rand', true), active: false }
+  const $ = id => document.getElementById(o.id + '-' + id)
+  const bank = () => window[o.bank] || []
+  const list = () => bank().filter(x => (!T._only || T._only.has(x.ar)) && (!o.extra || o.extra(x)) && (S.cat === 'All' || (o.group ? o.group(x) === S.cat : x[o.catField] === S.cat)) && (!S.diff || x.d === S.diff))
+  const T = {}
+  T.S = S
+  T.open = function () {
+    showPage(o.page)
+    if (window[o.bank]) { o.onReady && o.onReady(T); return }
+    $('body').innerHTML = '<div class="empty">Loading problems…</div>'
+    const sc = document.createElement('script'); sc.src = o.file
+    sc.onload = () => o.onReady && o.onReady(T)
+    sc.onerror = () => { $('body').innerHTML = '<div class="empty">Could not load the problems. Refresh and try again.</div>' }
+    document.head.appendChild(sc)
+  }
+  T.settingsHtml = function () {
+    const lims = [15, 20, 30, 45, 60, 90, 120, 180, 300]
+    return `<div class="card-sm" style="margin-bottom:12px"><div class="row-btns" style="margin:0">
+      <b style="font-size:13px">Timer</b>
+      <select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="${o.v}.setTimer(this.value)"><option value="off" ${S.tmode==='off'?'selected':''}>Off</option><option value="up" ${S.tmode==='up'?'selected':''}>Count up</option><option value="down" ${S.tmode==='down'?'selected':''}>Countdown per question</option></select>
+      <span style="${S.tmode==='down'?'':'display:none'}"><select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="${o.v}.setLimit(this.value)">${lims.map(l => `<option value="${l}" ${S.limit===l?'selected':''}>${l >= 60 ? (l / 60) + ' min' + (l % 60 ? ' ' + (l % 60) + ' s' : '') : l + ' s'}</option>`).join('')}</select></span>
+      <span style="${S.tmode==='down'?'':'display:none'}"><select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="${o.v}.setOnTimeout(this.value)"><option value="skip" ${S.onTimeout==='skip'?'selected':''}>When time is up: skip to next</option><option value="lock" ${S.onTimeout==='lock'?'selected':''}>When time is up: lock and show answer</option></select></span>
+      <label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-left:auto"><input type="checkbox" ${S.rand?'checked':''} onchange="${o.v}.setRand(this.checked)"> Randomize order</label>
+    </div></div>`
+  }
+  T.setTimer = v => { S.tmode = v; savePref('tmode', v); T.restart() }
+  T.setLimit = v => { S.limit = +v; savePref('tlimit', S.limit); T.restart() }
+  T.setOnTimeout = v => { S.onTimeout = v; savePref('tout', v) }
+  T.setRand = v => { S.rand = !!v; savePref('rand', S.rand); T.restart() }
+  T.setCat = c => { S.cat = c; T.restart() }
+  T.setDiff = d => { S.diff = d; T.restart() }
+  T.restart = function () {
+    clearInterval(S.tid)
+    S.i = 0; S.answered = false; S.sel = -1; S.timedOut = false; S.score = 0; S.done = 0; S.timeouts = 0; S.times = []; S.sessStart = Date.now()
+    const idx = list().map((_, k) => k)
+    S.order = S.rand ? shuffle(idx) : idx
+    S.active = true
+    trk('start', o.id, { t: o.id, c: S.cat, tm: S.tmode })
+    T.render()
+  }
+  T.startQ = function () {
+    clearInterval(S.tid); S.qStart = Date.now()
+    if (S.tmode === 'off' || S.answered) return
+    T.tick(); S.tid = setInterval(T.tick, 250)
+  }
+  T.tick = function () {
+    const el = $('tmr'); if (!el || el.offsetParent === null) { clearInterval(S.tid); return }
+    const e = (Date.now() - S.qStart) / 1000
+    if (S.tmode === 'up') { el.textContent = fmtT(e); return }
+    const r = S.limit - e
+    el.textContent = fmtT(Math.ceil(r)); el.classList.toggle('warn', r <= 10)
+    if (r <= 0) T.timeout()
+  }
+  T.timeout = function () {
+    clearInterval(S.tid); if (S.answered) return
+    S.timeouts++; S.done++; S.times.push(S.limit); trk('timeout', o.id, { t: o.id })
+    if (S.onTimeout === 'skip') { S.i++; S.answered = false; S.sel = -1; T.render() }
+    else { S.answered = true; S.sel = -2; S.timedOut = true; T.render() }
+  }
+  T.pick = function (k) {
+    const q = list()[S.order[S.i]]; clearInterval(S.tid)
+    S.times.push((Date.now() - S.qStart) / 1000)
+    S.sel = k; S.answered = true; S.done++; if (k === q.a) S.score++
+    trk('ans', o.id, { t: o.id, c: String(q[o.catField] || '').slice(0, 40), ok: k === q.a ? 1 : 0, s: Math.round(S.times[S.times.length - 1] || 0) }); T.render()
+  }
+  T.next = function () { S.i++; S.answered = false; S.sel = -1; S.timedOut = false; T.render() }
+  T.skip = function () { clearInterval(S.tid); S.i++; S.answered = false; S.sel = -1; T.render() }
+  T.cats = function () {
+    const set = []; const seen = {}
+    bank().forEach(x => { const c = o.group ? o.group(x) : x[o.catField]; if (!seen[c]) { seen[c] = 1; set.push(c) } })
+    return set
+  }
+  T.render = function () {
+    const body = $('body'); if (!body) return
+    if (o.chips) { o.chips(T) }
+    const l = list()
+    if (!l.length) { body.innerHTML = '<div class="empty">No problems match that filter.</div>'; return }
+    if (S.i >= S.order.length) {
+      const tot = (Date.now() - S.sessStart) / 1000, avg = S.times.length ? S.times.reduce((a, b) => a + b, 0) / S.times.length : 0
+      body.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${S.score} of ${S.done} correct</div>
+        <p class="page-sub">${Math.round(S.score / Math.max(1, S.done) * 100)}% · ${S.timeouts} timed out · average ${fmtT(avg)} per question · ${fmtT(tot)} total</p>
+        <button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="${o.v}.restart()">Start over</button></div>`
+      return
+    }
+    const q = l[S.order[S.i]]
+    const tm = S.tmode === 'off' ? '' : `<span class="tmr" id="${o.id}-tmr">${S.tmode === 'down' ? fmtT(S.limit) : '0:00'}</span>`
+    body.innerHTML = `<div class="card">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Question ${S.i + 1} of ${S.order.length} · ${S.score} correct · ${esc(q[o.catField])} · ${['', 'Basic', 'Intermediate', 'Advanced'][q.d]}</span>${tm}</div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
+      ${q.o.map((x, k) => `<button class="opt ${S.answered ? (k === q.a ? 'right' : (k === S.sel ? 'wrong' : '')) : ''}" ${S.answered ? 'disabled' : ''} onclick="${o.v}.pick(${k})">${String.fromCharCode(65 + k)}. ${esc(x)}</button>`).join('')}
+      ${S.timedOut ? '<div class="alert alert-error" style="margin-top:10px;margin-bottom:0">Time is up. The question is locked.</div>' : ''}
+      ${S.answered ? `<div class="expl"><b>${o.kind === 'calc' ? 'Worked solution.' : 'Why.'}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>` : ''}
+      <div class="row-btns">${S.answered ? `<button class="btn-sm" onclick="${o.v}.next()">Next question →</button>` : `<button class="btn-sm" onclick="${o.v}.skip()">Skip</button>`}</div>
+    </div>`
+    T.startQ()
+  }
+  return T
+}
+
+// calc page
+const CALCT = makeTrainer({ id: 'calc', v: 'CALCT', page: 'calc', bank: 'CALC_BANK', file: 'calc-bank.js', catField: 'c', kind: 'calc',
+  onReady: T => { T.restart() },
+  chips: T => {
+    const cats = ['All', ...T.cats()], S = T.S
+    document.getElementById('calc-set').innerHTML = T.settingsHtml()
+    document.getElementById('calc-cats').innerHTML = cats.map((c, k) => `<button class="btn-sm cat-chip ${S.cat === c ? 'active' : ''}" onclick="CALCT.setCat(CALCT.cats()[${k - 1}] || 'All')">${esc(c)}${c === 'All' ? ' (' + window.CALC_BANK.length + ')' : ''}</button>`).join('')
+    document.getElementById('calc-diff').innerHTML = ['All levels', 'Basic', 'Intermediate', 'Advanced'].map((l, k) => `<button class="btn-sm cat-chip ${S.diff === k ? 'active' : ''}" onclick="CALCT.setDiff(${k})">${l}</button>`).join('')
+  } })
+function calcOpen() { CALCT.open() }
+function calcGo(c, d) { CALCT.S.cat = c; CALCT.S.diff = d; CALCT.open() }
+
+// code articles page
+function artNum(label) { const m = /Art\. (\d+)/.exec(label); return m ? +m[1] : 0 }
+function artGroup(n) {
+  if (n <= 285) return 'General requirements (Articles 100–285)'
+  if (n <= 392) return 'Wiring methods and conductors (Articles 300–392)'
+  if (n <= 495) return 'Equipment for general use (Articles 400–495)'
+  if (n <= 590) return 'Special occupancies (Articles 500–590)'
+  if (n <= 695) return 'Special equipment (Articles 600–695)'
+  if (n <= 760) return 'Special conditions (Articles 700–760)'
+  return 'Communications systems (Articles 770–820)'
+}
+const EDS = [2017, 2020, 2023, 2026]
+const ED = { cur: loadPref('ed', 2023) }
+function setEd(v) { ED.cur = +v; savePref('ed', ED.cur); if (CODET.S.active) CODET.restart(); else codeList() }
+function edSelect() { return `<div class="card-sm" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">Code edition your state uses</b><select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="setEd(this.value)">${EDS.map(e => `<option value="${e}" ${ED.cur === e ? 'selected' : ''}>${e} NEC</option>`).join('')}</select><span style="font-size:12px;color:var(--muted)">Only questions that are correct under that edition are shown. Use Edition changes to see what moved between editions.${ED.cur === 2026 ? ' <b>2026 coverage is partial: only rules we could confirm are shown.</b>' : ''}</span></div>` }
+const CODET = makeTrainer({ id: 'code', v: 'CODET', page: 'code', bank: 'CODE_BANK', file: 'code-bank.js', catField: 'ar', kind: 'code',
+  group: x => x.ar,
+  extra: x => (x.eds || [2023]).includes(ED.cur),
+  onReady: T => { T.S.active = false; T.S.cat = 'All'; codeList() },
+  chips: T => { document.getElementById('code-set').innerHTML = edSelect() + T.settingsHtml(); const S = T.S
+    document.getElementById('code-diff').innerHTML = ['All levels', 'Basic', 'Intermediate', 'Advanced'].map((l, k) => `<button class="btn-sm cat-chip ${S.diff === k ? 'active' : ''}" onclick="CODET.setDiff(${k})">${l}</button>`).join('') } })
+const CODE_UI = { arts: [], groups: [] }
+function codeOpen() { CODET.open() }
+function codeList() {
+  const bank = (window.CODE_BANK || []).filter(x => (x.eds || [2023]).includes(ED.cur)), counts = {}
+  bank.forEach(x => counts[x.ar] = (counts[x.ar] || 0) + 1)
+  CODE_UI.arts = Object.keys(counts).sort((a, b) => artNum(a) - artNum(b))
+  document.getElementById('code-session').style.display = 'none'
+  document.getElementById('code-ed').innerHTML = edSelect()
+  const lst = document.getElementById('code-list'); lst.style.display = 'block'
+  const q = (document.getElementById('code-search').value || '').toLowerCase()
+  const groups = {}
+  CODE_UI.arts.forEach((a, i) => { if (q && !a.toLowerCase().includes(q)) return; (groups[artGroup(artNum(a))] = groups[artGroup(artNum(a))] || []).push([a, i]) })
+  CODE_UI.groups = Object.keys(groups)
+  document.getElementById('code-total').textContent = bank.length.toLocaleString() + ' questions across ' + CODE_UI.arts.length + ' article groups'
+  document.getElementById('code-groups').innerHTML = Object.entries(groups).map(([g, items], gi) => `<div class="section-title" style="margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span>${esc(g)}</span><button class="btn-sm" onclick="codeStartGroup(${gi})">Random mix of this group</button></div>
+    <div class="rec-grid">${items.map(([a, i]) => `<div class="rec" style="cursor:pointer" onclick="codeStartArt(${i})"><h4>${esc(a)}</h4><p style="margin:0">${counts[a]} questions</p></div>`).join('')}</div>`).join('')
+}
+function codeShowSession(title) {
+  document.getElementById('code-list').style.display = 'none'
+  document.getElementById('code-session').style.display = 'block'
+  document.getElementById('code-title').textContent = title
+}
+function codeStartArt(i) { const a = CODE_UI.arts[i]; CODET.S.cat = a; codeShowSession(a); CODET.restart() }
+function codeStartAll() { CODET.S.cat = 'All'; codeShowSession('Random mix of all articles'); CODET.restart() }
+function codeStartGroup(gi) {
+  const g = CODE_UI.groups[gi]; const set = new Set(CODE_UI.arts.filter(a => artGroup(artNum(a)) === g))
+  CODET.S.cat = '__group'; const orig = CODET.S
+  window.CODE_BANK_VIEW = null
+  // temporary group filter: reuse 'All' with a view limited to this group
+  CODET.S.cat = 'All'; CODET._only = set
+  codeShowSession('Random mix: ' + g); CODET.restart()
+}
+function codeBack() { clearInterval(CODET.S.tid); CODET._only = null; codeList() }
+
+
+// ── lazy data loader ─────
+function loadData(file, glob, cb, errEl) {
+  if (window[glob]) return cb()
+  const sc = document.createElement('script'); sc.src = file; sc.onload = cb
+  sc.onerror = () => { if (errEl) document.getElementById(errEl).innerHTML = '<div class="empty">Could not load. Refresh and try again.</div>' }
+  document.head.appendChild(sc)
+}
+
+// theory page
+const THEORYT = makeTrainer({ id: 'theory', v: 'THEORYT', page: 'theory', bank: 'THEORY_BANK', file: 'theory-bank.js', catField: 'c', kind: 'calc',
+  onReady: T => T.restart(),
+  chips: T => { const S = T.S, cats = ['All', ...T.cats()]
+    document.getElementById('theory-set').innerHTML = T.settingsHtml()
+    document.getElementById('theory-cats').innerHTML = cats.map((c, k) => `<button class="btn-sm cat-chip ${S.cat === c ? 'active' : ''}" onclick="THEORYT.setCat(THEORYT.cats()[${k - 1}] || 'All')">${esc(c)}</button>`).join('')
+    document.getElementById('theory-diff').innerHTML = ['All levels', 'Basic', 'Intermediate', 'Advanced'].map((l, k) => `<button class="btn-sm cat-chip ${S.diff === k ? 'active' : ''}" onclick="THEORYT.setDiff(${k})">${l}</button>`).join('') } })
+function theoryOpen() { THEORYT.open() }
+
+// flashcards
+const FC = { tier: 1, cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [] }
+const FC_TIERS = { 1: 'Tier 1: major articles', 2: 'Tier 2: all other articles', 3: 'Tier 3: formulas' }
+function fcOpen() { showPage('fc'); document.getElementById('fc-body').innerHTML = '<div class="empty">Loading cards…</div>'; loadData('fc-bank.js', 'FC_BANK', fcStart, 'fc-body') }
+function fcSetTier(t) { FC.tier = t; FC.cat = 'All'; fcStart() }
+function fcSetCat(k) { FC.cat = k < 0 ? 'All' : FC.cats[k]; fcStart() }
+function fcStart() {
+  const bank = window.FC_BANK || []
+  const tierItems = bank.filter(x => x.t === FC.tier)
+  const seen = {}; FC.cats = []; tierItems.forEach(x => { if (!seen[x.c]) { seen[x.c] = 1; FC.cats.push(x.c) } })
+  FC.cats.sort((a, b) => { const na = artNum(a), nb = artNum(b); return na && nb ? na - nb : a.localeCompare(b) })
+  document.getElementById('fc-tiers').innerHTML = [1, 2, 3].map(t => `<button class="tab ${FC.tier === t ? 'active' : ''}" onclick="fcSetTier(${t})">${FC_TIERS[t]} (${bank.filter(x => x.t === t).length})</button>`).join('')
+  document.getElementById('fc-cats').innerHTML = ['All'].concat(FC.cats).map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k - 1})">${esc(c)}</button>`).join('')
+  let d = tierItems.filter(x => FC.cat === 'All' || x.c === FC.cat)
+  const sh = document.getElementById('fc-shuf'); if (sh && sh.checked) d = shuffle(d.map((_, i) => i)).map(i => d[i])
+  FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
+  trk('start', 'fc', { t: 'fc', c: FC.cat === 'All' ? 'tier' + FC.tier : FC.cat })
+  fcRender()
+}
+function fcRender() {
+  const b = document.getElementById('fc-body')
+  if (!FC.deck.length) { b.innerHTML = '<div class="empty">No cards in this set yet.</div>'; return }
+  if (FC.i >= FC.deck.length) {
+    b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${FC.known} of ${FC.deck.length} marked "got it"</div>
+      <p class="page-sub">${FC.again.length} cards marked for review.</p>
+      <div class="row-btns" style="justify-content:center">${FC.again.length ? '<button class="btn-primary" style="max-width:220px" onclick="fcReview()">Review those cards</button>' : ''}<button class="btn-sm" onclick="fcStart()">Start over</button></div></div>`
+    return
+  }
+  const c = FC.deck[FC.i]
+  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${FC.i + 1} of ${FC.deck.length} · ${esc(c.c)}</div>
+    <div class="flash" onclick="fcFlip()">${FC.flipped ? `<div class="side">Answer</div><div class="big" style="font-weight:500;font-size:17px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Question</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to flip</div>`}</div>
+    <div class="row-btns">${FC.flipped ? '<button class="btn-sm" onclick="fcMark(false)">Review again</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="fcMark(true)">Got it</button>' : '<button class="btn-sm" onclick="fcFlip()">Show answer</button>'}</div>`
+}
+function fcFlip() { FC.flipped = !FC.flipped; fcRender() }
+function fcMark(ok) { trk('card', 'fc', { t: 'fc', c: (FC.deck[FC.i].c || '').slice(0, 40), ok: ok ? 1 : 0 }); if (ok) FC.known++; else FC.again.push(FC.deck[FC.i]); FC.i++; FC.flipped = false; fcRender() }
+function fcReview() { FC.deck = shuffle(FC.again.map((_, i) => i)).map(i => FC.again[i]); FC.i = 0; FC.known = 0; FC.again = []; FC.flipped = false; fcRender() }
+
+// index lookup drill
+const IDX = { cat: 'All', order: [], i: 0, step: 1, kSel: -1, sSel: -1, score: 0, done: 0 }
+function idxOpen() { showPage('idx'); document.getElementById('idx-body').innerHTML = '<div class="empty">Loading drills…</div>'; loadData('index-bank.js', 'IDX_BANK', idxStart, 'idx-body') }
+function idxList() { const b = window.IDX_BANK || []; return b.filter(x => IDX.cat === 'All' || x.c === IDX.cat) }
+function idxSetCat(k) { const cats = [...new Set((window.IDX_BANK || []).map(x => x.c))]; IDX.cat = k < 0 ? 'All' : cats[k]; idxStart() }
+function idxStart() {
+  const cats = [...new Set((window.IDX_BANK || []).map(x => x.c))]
+  document.getElementById('idx-cats').innerHTML = ['All'].concat(cats).map((c, k) => `<button class="btn-sm cat-chip ${IDX.cat === c ? 'active' : ''}" onclick="idxSetCat(${k - 1})">${esc(c)}</button>`).join('')
+  const l = idxList(); IDX.order = shuffle(l.map((_, i) => i)); IDX.i = 0; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; IDX.score = 0; IDX.done = 0
+  idxRender()
+}
+function idxRender() {
+  const b = document.getElementById('idx-body'), l = idxList()
+  if (!l.length) { b.innerHTML = '<div class="empty">No drills in this set.</div>'; return }
+  if (IDX.i >= IDX.order.length) { b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${IDX.score} of ${IDX.done} fully correct</div><p class="page-sub">Both the keyword and the section right.</p><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="idxStart()">Start over</button></div>`; return }
+  const q = l[IDX.order[IDX.i]], fin = IDX.step === 3
+  const opts = (arr, sel, ans, stepDone, fn) => arr.map((x, k) => `<button class="opt ${stepDone ? (k === ans ? 'right' : (k === sel ? 'wrong' : '')) : ''}" ${stepDone ? 'disabled' : ''} onclick="${fn}(${k})">${esc(x)}</button>`).join('')
+  b.innerHTML = `<div class="card"><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Drill ${IDX.i + 1} of ${IDX.order.length} · ${IDX.score} fully correct · ${esc(q.c)}</div>
+    <div style="font-size:15px;font-weight:500;margin-bottom:12px;line-height:1.55">${esc(q.q)}</div>
+    <div class="section-title" style="font-size:13px">Step 1: which word do you look up in the index?</div>
+    ${opts(q.k, IDX.kSel, q.ka, IDX.step > 1, 'idxPickK')}
+    ${IDX.step > 1 ? `<div class="section-title" style="font-size:13px;margin-top:14px">Step 2: which section do you turn to?</div>${opts(q.s, IDX.sSel, q.sa, fin, 'idxPickS')}` : ''}
+    ${fin ? `<div class="expl"><b>${IDX.kSel === q.ka && IDX.sSel === q.sa ? 'Both right.' : (IDX.kSel === q.ka ? 'Right keyword, wrong section.' : (IDX.sSel === q.sa ? 'Right section, but the best index word was different.' : 'Both need another look.'))}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div><div class="row-btns"><button class="btn-sm" onclick="idxNext()">Next drill →</button></div>` : ''}</div>`
+}
+function idxPickK(k) { IDX.kSel = k; IDX.step = 2; idxRender() }
+function idxPickS(k) { const q = idxList()[IDX.order[IDX.i]]; trk('ans', 'idx', { t: 'idx', c: String(q.c).slice(0, 40), ok: (k === q.sa && IDX.kSel === q.ka) ? 1 : 0 }); IDX.sSel = k; IDX.step = 3; IDX.done++; if (k === q.sa && IDX.kSel === q.ka) IDX.score++; idxRender() }
+function idxNext() { IDX.i++; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; idxRender() }
+
+
+// edition changes
+const CHG_STEPS = ['2017->2020', '2020->2023', '2023->2026']
+const CHGU = { mode: 'cards', deck: [], i: 0, flipped: false }
+function chgRange() {
+  const f = +document.getElementById('chg-from').value, t = +document.getElementById('chg-to').value
+  const a = EDS.indexOf(f), b = EDS.indexOf(t); const set = new Set()
+  for (let k = a; k < b; k++) set.add(CHG_STEPS[k])
+  const art = document.getElementById('chg-art').value
+  return x => set.has(x.step) && (art === 'All' || x.ar === art)
+}
+const CHGT = makeTrainer({ id: 'chgq', v: 'CHGT', page: 'chg', bank: 'CHG_BANK', file: 'chg-bank.js', catField: 'ar', kind: 'code', extra: x => chgRange()(x), onReady: () => {} })
+function chgOpen() {
+  showPage('chg'); document.getElementById('chg-body').innerHTML = '<div class="empty">Loading…</div>'
+  loadData('chg-bank.js', 'CHG_BANK', () => {
+    const fs = document.getElementById('chg-from'), ts = document.getElementById('chg-to')
+    if (!fs.options.length) {
+      fs.innerHTML = EDS.slice(0, 3).map(e => `<option value="${e}">${e} NEC</option>`).join('')
+      ts.innerHTML = EDS.slice(1).map(e => `<option value="${e}" ${e === 2023 ? 'selected' : ''}>${e} NEC</option>`).join('')
+      fs.value = String(Math.min(2020, ED.cur === 2017 ? 2017 : 2020)); if (ED.cur < 2023) fs.value = String(ED.cur)
+    }
+    chgSet()
+  }, 'chg-body')
+}
+function chgSet() {
+  const fs = document.getElementById('chg-from'), ts = document.getElementById('chg-to')
+  if (+ts.value <= +fs.value) { ts.value = String(EDS[EDS.indexOf(+fs.value) + 1]) }
+  const sel = document.getElementById('chg-art'), cur = sel.value || 'All'
+  const f = +fs.value, t = +ts.value, steps = new Set(); for (let k = EDS.indexOf(f); k < EDS.indexOf(t); k++) steps.add(CHG_STEPS[k])
+  const arts = [...new Set((window.CHG_BANK || []).filter(x => steps.has(x.step)).map(x => x.ar))].sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b))
+  sel.innerHTML = '<option value="All">All articles</option>' + arts.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('')
+  sel.value = arts.includes(cur) ? cur : 'All'
+  if (CHGU.mode === 'cards') chgCards(); else { CHGT.restart(); document.getElementById('chgq-set').innerHTML = CHGT.settingsHtml() }
+}
+function chgMode(m) {
+  CHGU.mode = m
+  document.getElementById('chg-t1').classList.toggle('active', m === 'cards'); document.getElementById('chg-t2').classList.toggle('active', m === 'quiz')
+  document.getElementById('chg-cardbox').style.display = m === 'cards' ? 'block' : 'none'; document.getElementById('chg-quizbox').style.display = m === 'quiz' ? 'block' : 'none'
+  chgSet()
+}
+function chgCards() {
+  const r = chgRange(); CHGU.deck = (window.CHG_BANK || []).filter(r); CHGU.deck = CHGU.deck.map((_, i) => i).sort((a, b) => artNum(CHGU.deck[a].ar) - artNum(CHGU.deck[b].ar) || a - b).map(i => CHGU.deck[i]); CHGU.i = 0; CHGU.flipped = false; chgRenderCard()
+}
+function chgRenderCard() {
+  const b = document.getElementById('chg-body'), d = CHGU.deck
+  if (!d.length) { b.innerHTML = '<div class="empty">No recorded changes for that selection.</div>'; return }
+  if (CHGU.i >= d.length) { b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">Reviewed ${d.length} changes</div><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="chgCards()">Review again</button></div>`; return }
+  const c = d[CHGU.i], lab = c.step.replace('->', ' → ')
+  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Change ${CHGU.i + 1} of ${d.length} · ${esc(c.ar)} · <span class="badge badge-blue">${lab}</span></div>
+    <div class="flash" onclick="CHGU.flipped=!CHGU.flipped;chgRenderCard()">${CHGU.flipped ? `<div class="side">What changed</div><div class="big" style="font-weight:500;font-size:16px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Topic</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to see what changed</div>`}</div>
+    <div class="row-btns"><button class="btn-sm" onclick="if(CHGU.i>0){CHGU.i--;CHGU.flipped=false;chgRenderCard()}">← Back</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="CHGU.i++;CHGU.flipped=false;chgRenderCard()">Next →</button></div>`
+}
+
+// ── anonymous usage tracking + feedback ─────
+const TRK = { q: [], sid: null }
+try { TRK.sid = localStorage.getItem('vc_sid'); if (!TRK.sid) { TRK.sid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); localStorage.setItem('vc_sid', TRK.sid) } } catch (e) { TRK.sid = null }
+const TRK_OFF = (navigator.doNotTrack === '1' || window.doNotTrack === '1')
+function trk(ev, page, meta) {
+  if (TRK_OFF) return
+  if (!TRK.sid) TRK.sid = ('s' + Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 40)
+  if (TRK.q.length > 200) return
+  TRK.q.push({ sid: TRK.sid, ev: String(ev).slice(0, 40), page: page ? String(page).slice(0, 40) : null, meta: meta || null })
+}
+async function trkFlush() {
+  if (!TRK.q.length) return
+  const batch = TRK.q.splice(0, 50)
+  try { const { error } = await supabaseClient.from('site_events').insert(batch); if (error) throw error } catch (e) { /* analytics must never break the site */ }
+}
+setInterval(trkFlush, 8000)
+window.addEventListener('pagehide', trkFlush)
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') trkFlush() })
+
+async function sendFeedback() {
+  const msg = document.getElementById('fb-msg').value.trim(), note = document.getElementById('fb-note')
+  const show = (cls, t) => { note.className = 'alert ' + cls; note.textContent = t; note.style.display = 'block' }
+  if (msg.length < 5) return show('alert-error', 'Please write a little more.')
+  const row = { kind: document.getElementById('fb-kind').value, message: msg.slice(0, 2000), contact: document.getElementById('fb-contact').value.trim().slice(0, 200) || null, page: (window._prevPage || '').slice(0, 40), sid: TRK.sid }
+  try { const { error } = await supabaseClient.from('feedback').insert(row); if (error) throw error
+    show('alert-success', 'Thank you. This goes straight to the founder.'); document.getElementById('fb-msg').value = ''; trk('feedback', 'feedback', { kind: row.kind }) }
+  catch (e) { show('alert-error', 'Could not send right now. Please try again in a minute.') }
+}
+
+async function loadInsights() {
+  const days = +document.getElementById('ins-days').value, since = new Date(Date.now() - days * 864e5).toISOString()
+  const el = document.getElementById('ins-body'); el.textContent = 'Loading…'
+  let rows = [], from = 0
+  for (;;) { const { data, error } = await supabaseClient.from('site_events').select('created_at,sid,ev,page,meta').gte('created_at', since).order('created_at', { ascending: false }).range(from, from + 999)
+    if (error) { el.textContent = 'Could not load: ' + error.message; return }
+    rows = rows.concat(data || []); if (!data || data.length < 1000 || rows.length >= 20000) break; from += 1000 }
+  const sessions = new Set(rows.map(r => r.sid)), pv = rows.filter(r => r.ev === 'page')
+  const cnt = (arr, f) => { const m = {}; arr.forEach(r => { const k = f(r); m[k] = (m[k] || 0) + 1 }); return Object.entries(m).sort((a, b) => b[1] - a[1]) }
+  const tbl = (title, list, hdr) => `<div class="section-title" style="margin-top:18px">${title}</div><div class="table-wrap"><table><thead><tr><th>${hdr}</th><th>Count</th></tr></thead><tbody>${list.slice(0, 15).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('') || '<tr><td colspan=2>No data yet</td></tr>'}</tbody></table></div>`
+  const ans = rows.filter(r => r.ev === 'ans'), ok = ans.filter(r => r.meta && r.meta.ok).length, to = rows.filter(r => r.ev === 'timeout').length
+  const perSess = {}; pv.forEach(r => { perSess[r.sid] = (perSess[r.sid] || 0) + 1 })
+  const bounce = Object.values(perSess).filter(n => n === 1).length
+  const byTool = {}; ans.forEach(r => { const t = r.meta?.t || '?'; (byTool[t] = byTool[t] || { n: 0, ok: 0 }); byTool[t].n++; if (r.meta?.ok) byTool[t].ok++ })
+  el.innerHTML = `<div class="metrics"><div class="metric"><div class="metric-val">${sessions.size}</div><div class="metric-label">Visitors (anonymous)</div></div><div class="metric"><div class="metric-val">${pv.length}</div><div class="metric-label">Page views</div></div><div class="metric"><div class="metric-val">${ans.length}</div><div class="metric-label">Questions answered</div></div><div class="metric"><div class="metric-val">${ans.length ? Math.round(ok / ans.length * 100) : 0}%</div><div class="metric-label">Answered correctly</div></div></div>
+    <p style="font-size:13px;color:var(--muted)">${Object.keys(perSess).length ? Math.round(bounce / Object.keys(perSess).length * 100) : 0}% of visitors viewed only one page. ${to} questions timed out.</p>
+    ${tbl('Pages viewed', cnt(pv, r => r.page || '?'), 'Page')}
+    ${tbl('Study sessions started', cnt(rows.filter(r => r.ev === 'start'), r => r.meta?.t || '?'), 'Tool')}
+    ${tbl('Accuracy by tool', Object.entries(byTool).map(([t, v]) => [t + ' (' + Math.round(v.ok / v.n * 100) + '% correct)', v.n]), 'Tool')}
+    ${tbl('Most-studied categories', cnt(ans, r => (r.meta?.t || '?') + ' / ' + (r.meta?.c || '?')), 'Category')}
+    ${tbl('Hardest categories (most misses)', cnt(ans.filter(r => r.meta && !r.meta.ok), r => (r.meta?.t || '?') + ' / ' + (r.meta?.c || '?')), 'Category')}
+    ${tbl('Where visitors leave (last page of a visit)', (() => { const last = {}; pv.forEach(r => { if (!last[r.sid]) last[r.sid] = r.page }); return cnt(Object.values(last).map(p => ({ p })), r => r.p) })(), 'Last page')}`
+}
+
+async function loadFeedbackAdmin() {
+  const el = document.getElementById('fb-body'); el.textContent = 'Loading…'
+  const { data, error } = await supabaseClient.from('feedback').select('*').order('created_at', { ascending: false }).limit(200)
+  if (error) { el.textContent = 'Could not load: ' + error.message; return }
+  if (!data.length) { el.textContent = 'Nothing yet.'; return }
+  el.className = ''
+  el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>When</th><th>Type</th><th>Message</th><th>Contact</th><th>Page</th><th>Status</th></tr></thead><tbody>${data.map(f => `<tr><td>${new Date(f.created_at).toLocaleDateString()}</td><td><span class="badge badge-blue">${esc(f.kind)}</span></td><td style="white-space:pre-wrap;max-width:420px">${esc(f.message)}</td><td>${esc(f.contact || '')}</td><td>${esc(f.page || '')}</td><td><select class="form-select" style="font-size:12px;padding:4px 6px" onchange="setFbStatus(${f.id},this.value)">${['new', 'reviewing', 'done', 'dismissed'].map(x => `<option ${f.status === x ? 'selected' : ''}>${x}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`
+}
+async function setFbStatus(id, st) { await supabaseClient.from('feedback').update({ status: st }).eq('id', id) }
+// ── RECOMMENDATIONS ───────────────────────────────────────
+const RECS = {
+  Apprentice: [
+    { t:'Start with electrical safety', d:'Free OSHA-based course and practice questions. Good first topic before your first inspection.', go:"showPage('prep');setCat('Electrical safety & OSHA')", l:'Study safety questions' },
+    { t:'Grounding and bonding basics', d:'The topic most apprentices find hardest. Free flashcards.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
+    { t:'Practice basic sizing', d:'Conductor ampacity and branch-circuit problems, basic level first.', go:"calcGo('Conductor sizing',1)", l:'Start with basics' },
+    { t:'Study one code article at a time', d:'Timed or untimed questions by NEC article: wiring methods, boxes, grounding and more.', go:"codeOpen()", l:'Code article study' },
+    { t:'Read the code book free online', d:'NFPA lets you read the NEC online for free.', href:'https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70', l:'NFPA 70 (NEC)' },
+  ],
+  Journeyman: [
+    { t:'2023 NEC changes', d:'Newer code editions show up on exams. Practice the changes.', go:"showPage('prep');setCat('NEC 2023 changes')", l:'Practice NEC 2023' },
+    { t:'Load calculations and sizing', d:'Thousands of free problems: motors, service sizing, conductors, voltage drop, with worked solutions.', go:"calcOpen()", l:'Start calc practice' },
+    { t:'Grounding and bonding', d:'Heavy on most journeyman exams. Flashcards plus a practice quiz.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
+    { t:'Classified locations and health care', d:'Articles 500-517: what wiring methods and materials are allowed per class, division and zone.', go:"codeOpen()", l:'Open code articles' },
+    { t:'Timed practice', d:'Set a per-question countdown to simulate exam pressure.', go:"calcOpen()", l:'Try a timed set' },
+    { t:'Wisconsin code changes', d:'Wisconsin adopted the 2023 NEC. Know the state-specific rules.', go:"showPage('prep');setCat('Wisconsin 2023 NEC');prepMode('quiz')", l:'Wisconsin quiz' },
+    { t:'Your state licensing board', d:'Exam dates, applications and approved code edition come from your state.', go:"showPage('states')", l:'State links' },
+  ],
+  Licensed: [
+    { t:'Wisconsin 2023 NEC Transition (4 hrs)', d:'Opens once DSPS approves it. Create an account to get the announcement.', go:"showPage('courses')", l:'See courses' },
+    { t:'NEC 2023 Code Update (8 hrs)', d:'Planned for states on the 2023 NEC. Pending approval.', go:"showPage('courses')", l:'See courses' },
+    { t:'Check your renewal rules', d:'Hours and deadlines differ by license and state.', go:"showPage('states')", l:'State links' },
+    { t:'Free refresher', d:'Keep sharp with the free safety course.', go:"openFree('electrical-safety-osha','course-osha.html')", l:'Open free course' },
+  ],
+}
+function renderRecs(kind, btn, target) {
+  if (btn) { btn.parentElement.querySelectorAll('.btn-sm').forEach(b => b.classList.remove('active')); btn.classList.add('active') }
+  const el = document.getElementById(target || 'home-recs'); if (!el) return
+  el.innerHTML = RECS[kind].map(r => `<div class="rec"><h4>${esc(r.t)}</h4><p>${esc(r.d)}</p>${r.href ? `<a href="${r.href}" target="_blank" rel="noopener">${esc(r.l)} →</a>` : `<button class="lnk" onclick="${r.go}">${esc(r.l)} →</button>`}</div>`).join('')
+}
+
+// ── SUPPORT ───────────────────────────────────────────────
+function donate() {
+  if (STRIPE_DONATE_LINK) { window.open(STRIPE_DONATE_LINK, '_blank'); return }
+  const n = document.getElementById('donate-note')
+  n.textContent = 'Contributions open very soon. Thank you for wanting to help.'
+  n.style.display = 'block'
+}
+
 // ── UTILS ─────────────────────────────────────────────────
 function showPage(id) {
+  window._prevPage = (document.querySelector('.page.active')?.id || '').replace('page-', '')
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById('page-' + id).classList.add('active')
   window.scrollTo(0, 0)
+  try { trk('page', id) } catch (e) {}
 }
 
 function switchTab(btn, paneId) {
