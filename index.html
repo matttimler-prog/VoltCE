@@ -229,7 +229,7 @@
   <div class="container">
     <div class="metrics">
       <div class="metric"><div class="metric-val" id="home-q">300+</div><div class="metric-label">Flashcards &amp; code questions</div></div>
-      <div class="metric"><div class="metric-val">2,000</div><div class="metric-label">Load calc problems</div></div>
+      <div class="metric"><div class="metric-val">2,500</div><div class="metric-label">Load calc problems</div></div>
       <div class="metric"><div class="metric-val">2023</div><div class="metric-label">NEC edition</div></div>
       <div class="metric"><div class="metric-val">$0</div><div class="metric-label">No sign-up needed</div></div>
     </div>
@@ -338,7 +338,7 @@
 <div id="page-calc" class="page">
   <div class="container">
     <div class="page-title">Load calc &amp; sizing practice</div>
-    <div class="page-sub">2,000 free practice problems: conductor sizing, branch circuits, dwelling service calculations, motors, voltage drop, grounding and box fill. Every answer comes with the worked solution.</div>
+    <div class="page-sub">2,500 free practice problems: conductor sizing, branch circuits, dwelling and commercial loads, motors, transformers, parallel conductors, conduit fill, voltage drop, grounding and box fill. Every answer comes with the worked solution.</div>
     <div class="alert alert-info" style="font-size:13px">Based on the 2023 NEC. Unless a problem says otherwise, assume 75°C-rated terminations, copper conductors and standard overcurrent device sizes from 240.6(A). Study practice written by VoltCE, not official exam questions, and no CE credit. Have your code book handy.</div>
     <div class="row-btns" id="calc-cats"></div>
     <div class="row-btns" id="calc-diff"></div>
@@ -968,7 +968,7 @@ function calcOpen() {
   if (window.CALC_BANK) { calcReset(); return }
   if (CALC.loading) return
   CALC.loading = true
-  document.getElementById('calc-body').innerHTML = '<div class="empty">Loading 2,000 problems…</div>'
+  document.getElementById('calc-body').innerHTML = '<div class="empty">Loading 2,500 problems…</div>'
   const sc = document.createElement('script'); sc.src = 'calc-bank.js'
   sc.onload = () => { CALC.loading = false; calcReset() }
   sc.onerror = () => { CALC.loading = false; document.getElementById('calc-body').innerHTML = '<div class="empty">Could not load the problems. Refresh and try again.</div>' }
@@ -1015,7 +1015,7 @@ const RECS = {
   ],
   Journeyman: [
     { t:'2023 NEC changes', d:'Newer code editions show up on exams. Practice the changes.', go:"showPage('prep');setCat('NEC 2023 changes')", l:'Practice NEC 2023' },
-    { t:'Load calculations and sizing', d:'2,000 free problems: motors, service sizing, conductors, voltage drop, with worked solutions.', go:"calcOpen()", l:'Start calc practice' },
+    { t:'Load calculations and sizing', d:'2,500 free problems: motors, service sizing, conductors, voltage drop, with worked solutions.', go:"calcOpen()", l:'Start calc practice' },
     { t:'Grounding and bonding', d:'Heavy on most journeyman exams. Flashcards plus a practice quiz.', go:"showPage('prep');setCat('Grounding & bonding')", l:'Open flashcards' },
     { t:'Wisconsin code changes', d:'Wisconsin adopted the 2023 NEC. Know the state-specific rules.', go:"showPage('prep');setCat('Wisconsin 2023 NEC');prepMode('quiz')", l:'Wisconsin quiz' },
     { t:'Your state licensing board', d:'Exam dates, applications and approved code edition come from your state.', go:"showPage('states')", l:'State links' },
