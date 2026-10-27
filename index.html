@@ -204,8 +204,7 @@
   <div class="nav-logo">Volt<span>CE</span></div>
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
-    <button class="nav-link" onclick="calcOpen()">Calc practice</button>
-    <button class="nav-link" onclick="codeOpen()">Code articles</button>
+    <button class="nav-link" onclick="showPage('study')">Study tools</button>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
@@ -227,6 +226,7 @@
       <button class="hero-btn hero-btn-primary" onclick="showPage('prep')">Start free exam prep</button>
       <button class="hero-btn hero-btn-outline" onclick="calcOpen()">Load calc practice</button>
       <button class="hero-btn hero-btn-outline" onclick="codeOpen()">Code article study</button>
+      <button class="hero-btn hero-btn-outline" onclick="showPage('study')">All study tools</button>
       <button class="hero-btn hero-btn-donate" onclick="showPage('support')">Support VoltCE</button>
     </div>
   </div>
@@ -357,6 +357,7 @@
     <div class="page-title">Code article study</div>
     <div class="page-sub">Study one NEC article at a time, or mix them all. Classified locations, health care, EV charging, solar, pools, special occupancies and more. <span id="code-total"></span>. Study practice written by VoltCE for the 2023 NEC; check every answer against your code book.</div>
     <div id="code-list">
+      <div id="code-ed"></div>
       <div class="row-btns"><input class="form-input" id="code-search" placeholder="Find an article (e.g. 680, pool, hazardous)" style="max-width:320px" oninput="codeList()"><button class="btn-primary" style="width:auto;padding:10px 18px" onclick="codeStartAll()">Random mix of everything</button></div>
       <div id="code-groups"></div>
     </div>
@@ -366,6 +367,71 @@
       <div class="row-btns" id="code-diff"></div>
       <div id="code-body"></div>
     </div>
+  </div>
+</div>
+
+<!-- ── STUDY HUB ─────────────────────────────────────────── -->
+<div id="page-study" class="page">
+  <div class="container">
+    <div class="page-title">Free study tools</div>
+    <div class="page-sub">Everything here is free. Practice written by VoltCE for the 2023 NEC, with an explanation, a reference and the math behind every answer. Not official exam questions, no CE credit.</div>
+    <div class="rec-grid">
+      <div class="rec" style="cursor:pointer" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
+      <div class="rec" style="cursor:pointer" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="calcOpen()"><h4>Load calc and sizing</h4><p>Thousands of problems: services, motors, conductors, conduit fill, transformers.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="theoryOpen()"><h4>Electrical theory and formulas</h4><p>Ohm's law, power, AC, three-phase, transformers, motors, with full worked math.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="chgOpen()"><h4>Edition changes (2017, 2020, 2023, 2026)</h4><p>Review what changed between NEC editions, article by article. Cards and quiz.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="showPage('prep')"><h4>Safety, grounding and NEC 2023 changes</h4><p>Flashcards and quizzes on OSHA, grounding and bonding, and the 2023 updates.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FLASHCARDS ────────────────────────────────────────── -->
+<div id="page-fc" class="page">
+  <div class="container">
+    <div class="page-title">Code flashcards</div>
+    <div class="page-sub">Memorization cards. Tier 1: major code articles. Tier 2: every other article. Tier 3: formulas and rules of thumb. Tap a card to flip it.</div>
+    <div class="tabs" id="fc-tiers"></div>
+    <div class="row-btns" id="fc-cats"></div>
+    <label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fc-shuf" checked onchange="fcStart()"> Shuffle</label>
+    <div id="fc-body"></div>
+  </div>
+</div>
+
+<!-- ── INDEX LOOKUP DRILL ────────────────────────────────── -->
+<div id="page-idx" class="page">
+  <div class="container">
+    <div class="page-title">Code book index lookup drill</div>
+    <div class="page-sub">Open the index at the back of your NEC, find the entry word, then turn to the right section. Step 1: pick the keyword you would look up. Step 2: pick the section you would turn to. You will be told if you are right and how to find it next time.</div>
+    <div class="row-btns" id="idx-cats"></div>
+    <div id="idx-body"></div>
+  </div>
+</div>
+
+<!-- ── THEORY ─────────────────────────────────────────────── -->
+<div id="page-theory" class="page">
+  <div class="container">
+    <div class="page-title">Electrical theory and formula practice</div>
+    <div class="page-sub">Ohm's law, power, AC theory, three-phase, transformers, motors and more. Wrong answers show the formula, the math step by step and how to solve it yourself next time.</div>
+    <div id="theory-set"></div>
+    <div class="row-btns" id="theory-cats"></div>
+    <div class="row-btns" id="theory-diff"></div>
+    <div id="theory-body"></div>
+  </div>
+</div>
+
+<!-- ── EDITION CHANGES ───────────────────────────────────── -->
+<div id="page-chg" class="page">
+  <div class="container">
+    <div class="page-title">Edition changes: what moved between NEC editions</div>
+    <div class="page-sub">States adopt different editions. Pick the edition you know and the edition you are studying, then review what changed, article by article, as flashcards or a quiz. Steps are chained: 2017 to 2023 shows the 2017-to-2020 and the 2020-to-2023 changes.</div>
+    <div class="card-sm" style="margin-bottom:12px"><div class="row-btns" style="margin:0"><b style="font-size:13px">From</b><select class="form-select" id="chg-from" style="width:auto;padding:6px 10px;font-size:13px" onchange="chgSet()"></select><b style="font-size:13px">to</b><select class="form-select" id="chg-to" style="width:auto;padding:6px 10px;font-size:13px" onchange="chgSet()"></select><select class="form-select" id="chg-art" style="width:auto;max-width:260px;padding:6px 10px;font-size:13px" onchange="chgSet()"></select></div></div>
+    <div class="tabs"><button class="tab active" id="chg-t1" onclick="chgMode('cards')">Review cards</button><button class="tab" id="chg-t2" onclick="chgMode('quiz')">Quiz</button></div>
+    <div id="chg-set"></div>
+    <div id="chg-cardbox"><div id="chg-body"></div></div>
+    <div id="chg-quizbox" style="display:none"><div id="chgq-set"></div><div id="chgq-body"></div></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px">Summaries written by VoltCE from public change summaries. Always confirm in the actual code book for your edition and check your state's adopted edition and amendments.</p>
   </div>
 </div>
 
@@ -993,7 +1059,7 @@ function makeTrainer(o) {
     tmode: loadPref('tmode', 'off'), limit: loadPref('tlimit', 60), onTimeout: loadPref('tout', 'skip'), rand: loadPref('rand', true), active: false }
   const $ = id => document.getElementById(o.id + '-' + id)
   const bank = () => window[o.bank] || []
-  const list = () => bank().filter(x => (!T._only || T._only.has(x.ar)) && (S.cat === 'All' || (o.group ? o.group(x) === S.cat : x[o.catField] === S.cat)) && (!S.diff || x.d === S.diff))
+  const list = () => bank().filter(x => (!T._only || T._only.has(x.ar)) && (!o.extra || o.extra(x)) && (S.cat === 'All' || (o.group ? o.group(x) === S.cat : x[o.catField] === S.cat)) && (!S.diff || x.d === S.diff))
   const T = {}
   T.S = S
   T.open = function () {
@@ -1110,18 +1176,24 @@ function artGroup(n) {
   if (n <= 760) return 'Special conditions (Articles 700–760)'
   return 'Communications systems (Articles 770–820)'
 }
+const EDS = [2017, 2020, 2023, 2026]
+const ED = { cur: loadPref('ed', 2023) }
+function setEd(v) { ED.cur = +v; savePref('ed', ED.cur); if (CODET.S.active) CODET.restart(); else codeList() }
+function edSelect() { return `<div class="card-sm" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">Code edition your state uses</b><select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="setEd(this.value)">${EDS.map(e => `<option value="${e}" ${ED.cur === e ? 'selected' : ''}>${e} NEC</option>`).join('')}</select><span style="font-size:12px;color:var(--muted)">Only questions that are correct under that edition are shown. Use Edition changes to see what moved between editions.</span></div>` }
 const CODET = makeTrainer({ id: 'code', v: 'CODET', page: 'code', bank: 'CODE_BANK', file: 'code-bank.js', catField: 'ar', kind: 'code',
   group: x => x.ar,
+  extra: x => (x.eds || [2023]).includes(ED.cur),
   onReady: T => { T.S.active = false; T.S.cat = 'All'; codeList() },
-  chips: T => { document.getElementById('code-set').innerHTML = T.settingsHtml(); const S = T.S
+  chips: T => { document.getElementById('code-set').innerHTML = edSelect() + T.settingsHtml(); const S = T.S
     document.getElementById('code-diff').innerHTML = ['All levels', 'Basic', 'Intermediate', 'Advanced'].map((l, k) => `<button class="btn-sm cat-chip ${S.diff === k ? 'active' : ''}" onclick="CODET.setDiff(${k})">${l}</button>`).join('') } })
 const CODE_UI = { arts: [], groups: [] }
 function codeOpen() { CODET.open() }
 function codeList() {
-  const bank = window.CODE_BANK || [], counts = {}
+  const bank = (window.CODE_BANK || []).filter(x => (x.eds || [2023]).includes(ED.cur)), counts = {}
   bank.forEach(x => counts[x.ar] = (counts[x.ar] || 0) + 1)
   CODE_UI.arts = Object.keys(counts).sort((a, b) => artNum(a) - artNum(b))
   document.getElementById('code-session').style.display = 'none'
+  document.getElementById('code-ed').innerHTML = edSelect()
   const lst = document.getElementById('code-list'); lst.style.display = 'block'
   const q = (document.getElementById('code-search').value || '').toLowerCase()
   const groups = {}
@@ -1148,6 +1220,140 @@ function codeStartGroup(gi) {
 }
 function codeBack() { clearInterval(CODET.S.tid); CODET._only = null; codeList() }
 
+
+// ── lazy data loader ─────
+function loadData(file, glob, cb, errEl) {
+  if (window[glob]) return cb()
+  const sc = document.createElement('script'); sc.src = file; sc.onload = cb
+  sc.onerror = () => { if (errEl) document.getElementById(errEl).innerHTML = '<div class="empty">Could not load. Refresh and try again.</div>' }
+  document.head.appendChild(sc)
+}
+
+// theory page
+const THEORYT = makeTrainer({ id: 'theory', v: 'THEORYT', page: 'theory', bank: 'THEORY_BANK', file: 'theory-bank.js', catField: 'c', kind: 'calc',
+  onReady: T => T.restart(),
+  chips: T => { const S = T.S, cats = ['All', ...T.cats()]
+    document.getElementById('theory-set').innerHTML = T.settingsHtml()
+    document.getElementById('theory-cats').innerHTML = cats.map((c, k) => `<button class="btn-sm cat-chip ${S.cat === c ? 'active' : ''}" onclick="THEORYT.setCat(THEORYT.cats()[${k - 1}] || 'All')">${esc(c)}</button>`).join('')
+    document.getElementById('theory-diff').innerHTML = ['All levels', 'Basic', 'Intermediate', 'Advanced'].map((l, k) => `<button class="btn-sm cat-chip ${S.diff === k ? 'active' : ''}" onclick="THEORYT.setDiff(${k})">${l}</button>`).join('') } })
+function theoryOpen() { THEORYT.open() }
+
+// flashcards
+const FC = { tier: 1, cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [] }
+const FC_TIERS = { 1: 'Tier 1: major articles', 2: 'Tier 2: all other articles', 3: 'Tier 3: formulas' }
+function fcOpen() { showPage('fc'); document.getElementById('fc-body').innerHTML = '<div class="empty">Loading cards…</div>'; loadData('fc-bank.js', 'FC_BANK', fcStart, 'fc-body') }
+function fcSetTier(t) { FC.tier = t; FC.cat = 'All'; fcStart() }
+function fcSetCat(k) { FC.cat = k < 0 ? 'All' : FC.cats[k]; fcStart() }
+function fcStart() {
+  const bank = window.FC_BANK || []
+  const tierItems = bank.filter(x => x.t === FC.tier)
+  const seen = {}; FC.cats = []; tierItems.forEach(x => { if (!seen[x.c]) { seen[x.c] = 1; FC.cats.push(x.c) } })
+  FC.cats.sort((a, b) => { const na = artNum(a), nb = artNum(b); return na && nb ? na - nb : a.localeCompare(b) })
+  document.getElementById('fc-tiers').innerHTML = [1, 2, 3].map(t => `<button class="tab ${FC.tier === t ? 'active' : ''}" onclick="fcSetTier(${t})">${FC_TIERS[t]} (${bank.filter(x => x.t === t).length})</button>`).join('')
+  document.getElementById('fc-cats').innerHTML = ['All'].concat(FC.cats).map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k - 1})">${esc(c)}</button>`).join('')
+  let d = tierItems.filter(x => FC.cat === 'All' || x.c === FC.cat)
+  const sh = document.getElementById('fc-shuf'); if (sh && sh.checked) d = shuffle(d.map((_, i) => i)).map(i => d[i])
+  FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
+  fcRender()
+}
+function fcRender() {
+  const b = document.getElementById('fc-body')
+  if (!FC.deck.length) { b.innerHTML = '<div class="empty">No cards in this set yet.</div>'; return }
+  if (FC.i >= FC.deck.length) {
+    b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${FC.known} of ${FC.deck.length} marked "got it"</div>
+      <p class="page-sub">${FC.again.length} cards marked for review.</p>
+      <div class="row-btns" style="justify-content:center">${FC.again.length ? '<button class="btn-primary" style="max-width:220px" onclick="fcReview()">Review those cards</button>' : ''}<button class="btn-sm" onclick="fcStart()">Start over</button></div></div>`
+    return
+  }
+  const c = FC.deck[FC.i]
+  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${FC.i + 1} of ${FC.deck.length} · ${esc(c.c)}</div>
+    <div class="flash" onclick="fcFlip()">${FC.flipped ? `<div class="side">Answer</div><div class="big" style="font-weight:500;font-size:17px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Question</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to flip</div>`}</div>
+    <div class="row-btns">${FC.flipped ? '<button class="btn-sm" onclick="fcMark(false)">Review again</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="fcMark(true)">Got it</button>' : '<button class="btn-sm" onclick="fcFlip()">Show answer</button>'}</div>`
+}
+function fcFlip() { FC.flipped = !FC.flipped; fcRender() }
+function fcMark(ok) { if (ok) FC.known++; else FC.again.push(FC.deck[FC.i]); FC.i++; FC.flipped = false; fcRender() }
+function fcReview() { FC.deck = shuffle(FC.again.map((_, i) => i)).map(i => FC.again[i]); FC.i = 0; FC.known = 0; FC.again = []; FC.flipped = false; fcRender() }
+
+// index lookup drill
+const IDX = { cat: 'All', order: [], i: 0, step: 1, kSel: -1, sSel: -1, score: 0, done: 0 }
+function idxOpen() { showPage('idx'); document.getElementById('idx-body').innerHTML = '<div class="empty">Loading drills…</div>'; loadData('index-bank.js', 'IDX_BANK', idxStart, 'idx-body') }
+function idxList() { const b = window.IDX_BANK || []; return b.filter(x => IDX.cat === 'All' || x.c === IDX.cat) }
+function idxSetCat(k) { const cats = [...new Set((window.IDX_BANK || []).map(x => x.c))]; IDX.cat = k < 0 ? 'All' : cats[k]; idxStart() }
+function idxStart() {
+  const cats = [...new Set((window.IDX_BANK || []).map(x => x.c))]
+  document.getElementById('idx-cats').innerHTML = ['All'].concat(cats).map((c, k) => `<button class="btn-sm cat-chip ${IDX.cat === c ? 'active' : ''}" onclick="idxSetCat(${k - 1})">${esc(c)}</button>`).join('')
+  const l = idxList(); IDX.order = shuffle(l.map((_, i) => i)); IDX.i = 0; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; IDX.score = 0; IDX.done = 0
+  idxRender()
+}
+function idxRender() {
+  const b = document.getElementById('idx-body'), l = idxList()
+  if (!l.length) { b.innerHTML = '<div class="empty">No drills in this set.</div>'; return }
+  if (IDX.i >= IDX.order.length) { b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${IDX.score} of ${IDX.done} fully correct</div><p class="page-sub">Both the keyword and the section right.</p><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="idxStart()">Start over</button></div>`; return }
+  const q = l[IDX.order[IDX.i]], fin = IDX.step === 3
+  const opts = (arr, sel, ans, stepDone, fn) => arr.map((x, k) => `<button class="opt ${stepDone ? (k === ans ? 'right' : (k === sel ? 'wrong' : '')) : ''}" ${stepDone ? 'disabled' : ''} onclick="${fn}(${k})">${esc(x)}</button>`).join('')
+  b.innerHTML = `<div class="card"><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Drill ${IDX.i + 1} of ${IDX.order.length} · ${IDX.score} fully correct · ${esc(q.c)}</div>
+    <div style="font-size:15px;font-weight:500;margin-bottom:12px;line-height:1.55">${esc(q.q)}</div>
+    <div class="section-title" style="font-size:13px">Step 1: which word do you look up in the index?</div>
+    ${opts(q.k, IDX.kSel, q.ka, IDX.step > 1, 'idxPickK')}
+    ${IDX.step > 1 ? `<div class="section-title" style="font-size:13px;margin-top:14px">Step 2: which section do you turn to?</div>${opts(q.s, IDX.sSel, q.sa, fin, 'idxPickS')}` : ''}
+    ${fin ? `<div class="expl"><b>${IDX.kSel === q.ka && IDX.sSel === q.sa ? 'Both right.' : (IDX.kSel === q.ka ? 'Right keyword, wrong section.' : (IDX.sSel === q.sa ? 'Right section, but the best index word was different.' : 'Both need another look.'))}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div><div class="row-btns"><button class="btn-sm" onclick="idxNext()">Next drill →</button></div>` : ''}</div>`
+}
+function idxPickK(k) { IDX.kSel = k; IDX.step = 2; idxRender() }
+function idxPickS(k) { const q = idxList()[IDX.order[IDX.i]]; IDX.sSel = k; IDX.step = 3; IDX.done++; if (k === q.sa && IDX.kSel === q.ka) IDX.score++; idxRender() }
+function idxNext() { IDX.i++; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; idxRender() }
+
+
+// edition changes
+const CHG_STEPS = ['2017->2020', '2020->2023', '2023->2026']
+const CHGU = { mode: 'cards', deck: [], i: 0, flipped: false }
+function chgRange() {
+  const f = +document.getElementById('chg-from').value, t = +document.getElementById('chg-to').value
+  const a = EDS.indexOf(f), b = EDS.indexOf(t); const set = new Set()
+  for (let k = a; k < b; k++) set.add(CHG_STEPS[k])
+  const art = document.getElementById('chg-art').value
+  return x => set.has(x.step) && (art === 'All' || x.ar === art)
+}
+const CHGT = makeTrainer({ id: 'chgq', v: 'CHGT', page: 'chg', bank: 'CHG_BANK', file: 'chg-bank.js', catField: 'ar', kind: 'code', extra: x => chgRange()(x), onReady: () => {} })
+function chgOpen() {
+  showPage('chg'); document.getElementById('chg-body').innerHTML = '<div class="empty">Loading…</div>'
+  loadData('chg-bank.js', 'CHG_BANK', () => {
+    const fs = document.getElementById('chg-from'), ts = document.getElementById('chg-to')
+    if (!fs.options.length) {
+      fs.innerHTML = EDS.slice(0, 3).map(e => `<option value="${e}">${e} NEC</option>`).join('')
+      ts.innerHTML = EDS.slice(1).map(e => `<option value="${e}" ${e === 2023 ? 'selected' : ''}>${e} NEC</option>`).join('')
+      fs.value = String(Math.min(2020, ED.cur === 2017 ? 2017 : 2020)); if (ED.cur < 2023) fs.value = String(ED.cur)
+    }
+    chgSet()
+  }, 'chg-body')
+}
+function chgSet() {
+  const fs = document.getElementById('chg-from'), ts = document.getElementById('chg-to')
+  if (+ts.value <= +fs.value) { ts.value = String(EDS[EDS.indexOf(+fs.value) + 1]) }
+  const sel = document.getElementById('chg-art'), cur = sel.value || 'All'
+  const f = +fs.value, t = +ts.value, steps = new Set(); for (let k = EDS.indexOf(f); k < EDS.indexOf(t); k++) steps.add(CHG_STEPS[k])
+  const arts = [...new Set((window.CHG_BANK || []).filter(x => steps.has(x.step)).map(x => x.ar))].sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b))
+  sel.innerHTML = '<option value="All">All articles</option>' + arts.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('')
+  sel.value = arts.includes(cur) ? cur : 'All'
+  if (CHGU.mode === 'cards') chgCards(); else { CHGT.restart(); document.getElementById('chgq-set').innerHTML = CHGT.settingsHtml() }
+}
+function chgMode(m) {
+  CHGU.mode = m
+  document.getElementById('chg-t1').classList.toggle('active', m === 'cards'); document.getElementById('chg-t2').classList.toggle('active', m === 'quiz')
+  document.getElementById('chg-cardbox').style.display = m === 'cards' ? 'block' : 'none'; document.getElementById('chg-quizbox').style.display = m === 'quiz' ? 'block' : 'none'
+  chgSet()
+}
+function chgCards() {
+  const r = chgRange(); CHGU.deck = (window.CHG_BANK || []).filter(r); CHGU.deck = CHGU.deck.map((_, i) => i).sort((a, b) => artNum(CHGU.deck[a].ar) - artNum(CHGU.deck[b].ar) || a - b).map(i => CHGU.deck[i]); CHGU.i = 0; CHGU.flipped = false; chgRenderCard()
+}
+function chgRenderCard() {
+  const b = document.getElementById('chg-body'), d = CHGU.deck
+  if (!d.length) { b.innerHTML = '<div class="empty">No recorded changes for that selection.</div>'; return }
+  if (CHGU.i >= d.length) { b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">Reviewed ${d.length} changes</div><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="chgCards()">Review again</button></div>`; return }
+  const c = d[CHGU.i], lab = c.step.replace('->', ' → ')
+  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Change ${CHGU.i + 1} of ${d.length} · ${esc(c.ar)} · <span class="badge badge-blue">${lab}</span></div>
+    <div class="flash" onclick="CHGU.flipped=!CHGU.flipped;chgRenderCard()">${CHGU.flipped ? `<div class="side">What changed</div><div class="big" style="font-weight:500;font-size:16px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Topic</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to see what changed</div>`}</div>
+    <div class="row-btns"><button class="btn-sm" onclick="if(CHGU.i>0){CHGU.i--;CHGU.flipped=false;chgRenderCard()}">← Back</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="CHGU.i++;CHGU.flipped=false;chgRenderCard()">Next →</button></div>`
+}
 // ── RECOMMENDATIONS ───────────────────────────────────────
 const RECS = {
   Apprentice: [
