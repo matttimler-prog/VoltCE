@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VoltCE — Free Electrician Exam Prep &amp; Continuing Education</title>
 <meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0A1A3D">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="symbols.js"></script>
+<script src="practice.js"></script>
+<script src="reviews.js"></script>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
@@ -37,9 +46,19 @@
   body { font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.5; background: radial-gradient(1200px 500px at 70% -100px, #F5F7F9, transparent 70%), var(--gray); color: var(--text); font-size: 15px; }
 
   /* ── NAV ── */
-  .nav { background: var(--gray); border-bottom: 2px solid var(--ink); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .nav { background: var(--gray); border-bottom: 2px solid var(--ink); padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   .nav-logo { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: 0.6px; cursor: pointer; line-height: 1; }
   .nav-logo span { color: var(--blue); }
+  .nav-logo img { display: block; height: 54px; width: auto; mix-blend-mode: multiply; }
+  .nav-logo:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .corner-sym { position: absolute; top: 4px; right: 12px; color: var(--ink); opacity: .13; pointer-events: none; line-height: 0; }
+  .corner-sym .vcsym { display: block; }
+  .card-sym { position: absolute; top: 12px; right: 12px; color: var(--ink); opacity: .22; line-height: 0; }
+  .course-card { position: relative; }
+  .rev-star { background: none; border: 0; font-size: 28px; line-height: 1; color: #B8860B; cursor: pointer; padding: 2px 3px; }
+  .rev-star:focus-visible { outline: 3px solid var(--blue); border-radius: 4px; }
+  .pq-launch { margin: -4px 0 14px; }
+  @media (max-width: 640px) { .corner-sym .vcsym { width: 44px; height: 44px; } .nav-logo img { height: 46px; } }
   .nav-links { display: flex; gap: 6px; align-items: center; }
   .nav-link { font-size: 13px; color: var(--muted); background: transparent; border: none; padding: 6px 12px; border-radius: 6px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
   .nav-link:hover, .nav-link.active { background: rgba(20,32,44,0.08); color: var(--ink); }
@@ -306,11 +325,12 @@
 <!-- ── NAV ─────────────────────────────────────────────── -->
 <div class="banner">Every donation helps us keep free classes free for people who cannot afford large courses. <a onclick="donate()">Donate</a></div>
 <nav class="nav">
-  <div class="nav-logo" onclick="showPage('home')">Volt<span>CE</span></div>
+  <div class="nav-logo" onclick="showPage('home')" role="link" tabindex="0" aria-label="VoltCE home" onkeydown="if(event.key==='Enter')showPage('home')"><img src="/brand/voltce-logo-light-bg.svg" alt="VoltCE" height="54"></div>
   <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">Menu</button>
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
     <button class="nav-link" onclick="showPage('study')">Study tools</button>
+    <button class="nav-link" onclick="PQ.open()">Practice quizzes</button>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
     <button class="nav-link" onclick="showPage('states')">State resources</button>
     <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
@@ -391,6 +411,19 @@
       <button class="btn-sm" id="filter-Contractor" onclick="filterCourses('Contractor',this)">Contractor</button>
     </div>
     <div id="all-courses" class="courses-grid"></div>
+    <div class="section-title" style="margin-top:36px">Course reviews</div>
+    <div class="page-sub">From people who finished a course. Every review is read before it is shown.</div>
+    <div id="rev-list"><div class="empty">Loading reviews…</div></div>
+    <div id="rev-form" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- ── PRACTICE QUIZZES ──────────────────────────────────── -->
+<div id="page-practice" class="page">
+  <div class="container">
+    <div class="page-title">Practice quizzes</div>
+    <div class="page-sub">Short ten-question quizzes by section, with a score and an explanation for every answer. Practice only: separate from any course exam, and no CE credit.</div>
+    <div id="pq-body"></div>
   </div>
 </div>
 
@@ -728,8 +761,10 @@
       <button class="tab" onclick="switchTab(this,'admin-completions')">Completions & DSPS</button>
       <button class="tab" onclick="switchTab(this,'admin-insights');loadInsights()">Site usage</button>
       <button class="tab" onclick="switchTab(this,'admin-feedback');loadFeedbackAdmin()">Suggestions</button>
+      <button class="tab" onclick="switchTab(this,'admin-reviews');Reviews.loadAdmin()">Reviews</button>
     </div>
     <div id="admin-insights" class="tab-pane"><div class="card"><div class="row-btns" style="margin-top:0"><b>Anonymous site usage</b><select class="form-select" id="ins-days" style="width:auto;padding:6px 10px;font-size:13px" onchange="loadInsights()"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></div><div id="ins-body" class="empty">Open this tab to load.</div></div></div>
+    <div id="admin-reviews" class="tab-pane"><div class="card"><div class="section-title">Course reviews</div><p class="page-sub" style="margin-top:0">Reviews stay hidden until you approve them.</p><div id="admin-reviews-body" class="empty">Open this tab to load.</div></div></div>
     <div id="admin-feedback" class="tab-pane"><div class="card"><div class="section-title">Suggestions and corrections</div><div id="fb-body" class="empty">Open this tab to load.</div></div></div>
     <div id="admin-students" class="tab-pane active">
       <div class="card">
@@ -943,7 +978,8 @@ function renderDashboard(profile, enrollments, completions) {
         const done = completedIds.includes(slug)
         const pct = done ? 100 : 35
         return `<div class="course-row">
-          <div class="course-icon" style="background:${c.bg};color:${c.ic}">${c.icon}</div>
+          <span class="card-sym" aria-hidden="true">${VCSYM.forLabel(c.title, 34)}</span>
+    <div class="course-icon" style="background:${c.bg};color:${c.ic}">${c.icon}</div>
           <div style="flex:1">
             <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">${c.title}</div>
             <div style="font-size:12px;color:var(--muted);margin-bottom:6px">${c.hours} CEU hours</div>
@@ -1282,6 +1318,8 @@ function makeTrainer(o) {
   T.render = function () {
     const body = $('body'); if (!body) return
     if (o.chips) { o.chips(T) }
+    window['_topic_' + o.page] = S.cat !== 'All' ? S.cat : (T._only && T._only.size === 1 ? [...T._only][0] : ''); setCorner(o.page, window['_topic_' + o.page])
+    pqLaunch(o.page, o.bank, window['_topic_' + o.page])
     const l = list()
     if (!l.length) { body.innerHTML = '<div class="empty">No problems match that filter.</div>'; return }
     if (S.i >= S.order.length) {
@@ -1407,6 +1445,7 @@ function fcStart() {
   let d = tierItems.filter(x => FC.cat === 'All' || x.c === FC.cat)
   const sh = document.getElementById('fc-shuf'); if (sh && sh.checked) d = shuffle(d.map((_, i) => i)).map(i => d[i])
   FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
+  window._topic_fc = FC.cat === 'All' ? '' : FC.cat; setCorner('fc', window._topic_fc)
   trk('start', 'fc', { t: 'fc', c: FC.cat === 'All' ? 'tier' + FC.tier : FC.cat })
   fcRender()
 }
@@ -1434,6 +1473,7 @@ function idxOpen() { showPage('idx'); document.getElementById('idx-body').innerH
 function idxList() { const b = window.IDX_BANK || []; return b.filter(x => IDX.cat === 'All' || x.c === IDX.cat) }
 function idxSetCat(k) { const cats = [...new Set((window.IDX_BANK || []).map(x => x.c))]; IDX.cat = k < 0 ? 'All' : cats[k]; idxStart() }
 function idxStart() {
+  window._topic_idx = (typeof IDX !== 'undefined' && IDX.cat !== 'All') ? IDX.cat : ''; setCorner('idx', window._topic_idx)
   const cats = [...new Set((window.IDX_BANK || []).map(x => x.c))]
   document.getElementById('idx-cats').innerHTML = ['All'].concat(cats).map((c, k) => `<button class="btn-sm cat-chip ${IDX.cat === c ? 'active' : ''}" onclick="idxSetCat(${k - 1})">${esc(c)}</button>`).join('')
   const l = idxList(); IDX.order = shuffle(l.map((_, i) => i)); IDX.i = 0; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; IDX.score = 0; IDX.done = 0
@@ -1730,6 +1770,25 @@ function donate() {
 }
 
 // ── UTILS ─────────────────────────────────────────────────
+// corner symbols: page default, or the topic being studied
+const PAGE_SYM = { prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', courses: 'book', support: 'bolt', feedback: 'book' }
+function setCorner(page, label) {
+  try {
+    const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
+    let el = c.querySelector(':scope > .corner-sym')
+    if (!el) { el = document.createElement('div'); el.className = 'corner-sym'; el.setAttribute('aria-hidden', 'true'); c.style.position = 'relative'; c.prepend(el) }
+    const topic = label && label !== 'All'
+    el.innerHTML = topic ? VCSYM.forLabel(label, 64) : VCSYM.svg(PAGE_SYM[page] || 'book', 64)
+  } catch (e) {}
+}
+const PQ_BANK = { CODE_BANK: 'code', CALC_BANK: 'calc', THEORY_BANK: 'theory', CHG_BANK: 'chg' }
+function pqLaunch(page, bankName, topic) {
+  const pg = document.getElementById('page-' + page); if (!pg) return
+  let el = pg.querySelector('.pq-launch')
+  if (!el) { const sub = pg.querySelector('.page-sub'); if (!sub) return; el = document.createElement('div'); el.className = 'pq-launch'; sub.after(el) }
+  const b = PQ_BANK[bankName]; if (!b) return
+  el.innerHTML = `<button class="btn-sm" onclick="PQ.start('${b}', ${JSON.stringify(topic || 'All').replace(/"/g, '&quot;')})">Take a 10-question practice quiz${topic ? ' on this section' : ''}</button>`
+}
 function showPage(id) {
   const cur = (document.querySelector('.page.active')?.id || '').replace('page-', '')
   if (id !== cur && !FX.busy && FX.on && performance.now() - FX.click.t < 80) {
@@ -1742,6 +1801,8 @@ function showPage(id) {
   window.scrollTo(0, 0)
   document.querySelector('.nav-links')?.classList.remove('open')
   try { trk('page', id) } catch (e) {}
+  if (PAGE_SYM[id]) setCorner(id, window['_topic_' + id] || '')
+  if (id === 'courses') { try { Reviews.load() } catch (e) {} }
 }
 
 function switchTab(btn, paneId) {
