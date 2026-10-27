@@ -1203,7 +1203,7 @@ function artGroup(n) {
 const EDS = [2017, 2020, 2023, 2026]
 const ED = { cur: loadPref('ed', 2023) }
 function setEd(v) { ED.cur = +v; savePref('ed', ED.cur); if (CODET.S.active) CODET.restart(); else codeList() }
-function edSelect() { return `<div class="card-sm" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">Code edition your state uses</b><select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="setEd(this.value)">${EDS.map(e => `<option value="${e}" ${ED.cur === e ? 'selected' : ''}>${e} NEC</option>`).join('')}</select><span style="font-size:12px;color:var(--muted)">Only questions that are correct under that edition are shown. Use Edition changes to see what moved between editions.</span></div>` }
+function edSelect() { return `<div class="card-sm" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">Code edition your state uses</b><select class="form-select" style="width:auto;padding:6px 10px;font-size:13px" onchange="setEd(this.value)">${EDS.map(e => `<option value="${e}" ${ED.cur === e ? 'selected' : ''}>${e} NEC</option>`).join('')}</select><span style="font-size:12px;color:var(--muted)">Only questions that are correct under that edition are shown. Use Edition changes to see what moved between editions.${ED.cur === 2026 ? ' <b>2026 coverage is partial: only rules we could confirm are shown.</b>' : ''}</span></div>` }
 const CODET = makeTrainer({ id: 'code', v: 'CODET', page: 'code', bank: 'CODE_BANK', file: 'code-bank.js', catField: 'ar', kind: 'code',
   group: x => x.ar,
   extra: x => (x.eds || [2023]).includes(ED.cur),
