@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="symbols.js"></script>
 <script src="practice.js"></script>
+<script defer src="art-names.js"></script>
 <script src="reviews.js"></script>
 <script src="stats.js"></script>
 <link rel="stylesheet" href="fxhover.css">
@@ -616,7 +617,7 @@
     <div class="page-sub">Memorization cards in three levels. Randomized mix shuffles every card. Code section cards cover the code book article by article: start with the 25 major articles, then add all the rest. Formula cards cover the math. Tap a card to flip it.</div>
     <div class="tabs" id="fc-tiers"></div>
     <div id="fc-scope"></div>
-    <div class="row-btns" id="fc-cats"></div>
+    <div id="fc-cats"></div>
     <label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fc-shuf" checked onchange="fcStart()"> Shuffle</label>
     <div id="fc-body"></div>
   </div>
@@ -1541,8 +1542,8 @@ const THEORYT = makeTrainer({ id: 'theory', v: 'THEORYT', page: 'theory', bank: 
 function theoryOpen() { THEORYT.open() }
 
 // flashcards
-const FC = { level: 'code', scope: 'major', cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [], cats: [] }
-const FC_LEVELS = { rand: 'Randomized mix', code: 'Code section cards', formula: 'Formula cards' }
+const FC = { dir: 'mix', level: 'code', scope: 'major', cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [], cats: [] }
+const FC_LEVELS = { rand: 'Randomized mix', names: 'Article names', code: 'Code section cards', formula: 'Formula cards' }
 // The 25 major articles to know cold: the heaviest-tested parts of the code book.
 const FC_MAJOR = [90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690]
 const fcIsMajor = x => FC_MAJOR.includes(artNum(x.c))
@@ -1550,9 +1551,20 @@ function fcOpen() { showPage('fc'); document.getElementById('fc-body').innerHTML
 function fcSetLevel(l) { FC.level = l; FC.cat = 'All'; fcStart() }
 function fcSetScope(sc) { FC.scope = sc; FC.cat = 'All'; fcStart() }
 function fcSetCat(k) { FC.cat = k < 0 ? 'All' : FC.cats[k]; fcStart() }
+function fcNameCards() {
+  const out = []
+  ;(window.ART_NAMES || []).filter(a => FC.scope === 'all' || a.m).forEach(a => {
+    const short = a.t.split(':')[0].split(';')[0], c = 'Art. ' + a.n + ' ' + short, h = a.h || ''
+    if (FC.dir !== 't2n') out.push({ c, f: 'Article ' + a.n, b: a.t, h, r: 'NEC Article ' + a.n })
+    if (FC.dir !== 'n2t') out.push({ c, f: 'Which NEC article covers: ' + short + '?', b: 'Article ' + a.n, h, r: 'NEC Article ' + a.n + ' ' + a.t })
+  })
+  return out
+}
+function fcSetDir(d) { FC.dir = d; fcStart() }
 function fcPool() {
   const bank = window.FC_BANK || []
   if (FC.level === 'rand') return bank
+  if (FC.level === 'names') return fcNameCards()
   if (FC.level === 'formula') return bank.filter(x => x.t === 3)
   return bank.filter(x => x.t !== 3 && (FC.scope === 'all' || fcIsMajor(x)))
 }
@@ -1561,10 +1573,13 @@ function fcStart() {
   const seen = {}; FC.cats = []; if (FC.level !== 'rand') pool.forEach(x => { if (!seen[x.c]) { seen[x.c] = 1; FC.cats.push(x.c) } })
   FC.cats.sort((a, b) => { const na = artNum(a), nb = artNum(b); return na && nb ? na - nb : a.localeCompare(b) })
   const nCode = bank.filter(x => x.t !== 3).length
-  document.getElementById('fc-tiers').innerHTML = Object.keys(FC_LEVELS).map(l => `<button class="tab ${FC.level === l ? 'active' : ''}" onclick="fcSetLevel('${l}')">${FC_LEVELS[l]} (${l === 'rand' ? bank.length : l === 'code' ? nCode : bank.length - nCode})</button>`).join('')
-  document.getElementById('fc-scope').innerHTML = FC.level === 'code' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${FC_MAJOR.length} articles, ${bank.filter(x => x.t !== 3 && fcIsMajor(x)).length} cards)</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nCode} cards)</button></div>
+  document.getElementById('fc-tiers').innerHTML = Object.keys(FC_LEVELS).map(l => `<button class="tab ${FC.level === l ? 'active' : ''}" onclick="fcSetLevel('${l}')">${FC_LEVELS[l]} (${l === 'rand' ? bank.length : l === 'names' ? (window.ART_NAMES || []).length : l === 'code' ? nCode : bank.length - nCode})</button>`).join('')
+  const nm = window.ART_NAMES || []
+  document.getElementById('fc-scope').innerHTML = FC.level === 'names' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${nm.filter(a => a.m).length})</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nm.length})</button>
+    <span style="width:14px"></span><button class="btn-sm cat-chip ${FC.dir === 'mix' ? 'active' : ''}" onclick="fcSetDir('mix')">Both directions</button><button class="btn-sm cat-chip ${FC.dir === 'n2t' ? 'active' : ''}" onclick="fcSetDir('n2t')">Number → name</button><button class="btn-sm cat-chip ${FC.dir === 't2n' ? 'active' : ''}" onclick="fcSetDir('t2n')">Name → number</button></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Memorize what each article covers: 250 is Grounding and Bonding, 240 is Overcurrent Protection. Names follow the 2023 NEC. In the 2026 NEC, load calculations moved from Article 220 to Article 120.</p>` : FC.level === 'code' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${FC_MAJOR.length} articles, ${bank.filter(x => x.t !== 3 && fcIsMajor(x)).length} cards)</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nCode} cards)</button></div>
     ${FC.scope === 'major' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Major articles: 90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690. These are where most exam questions come from.</p>' : ''}` : (FC.level === 'rand' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Every card, code articles and formulas, in random order.</p>' : '')
-  document.getElementById('fc-cats').innerHTML = FC.level === 'rand' ? '' : `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${FC.cat === 'All' ? 'active' : ''}" onclick="fcSetCat(-1)">All in this set (${pool.length})</button></div>` + (FC.level === 'code' ? chapterBlocks(FC.cats.map(c => [c, pool.filter(x => x.c === c).length]), FC.cat, (c, i) => `onclick="fcSetCat(${i})"`, { unit: 'cards' }) : `<div class="row-btns">${FC.cats.map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k})">${esc(c)}</button>`).join('')}</div>`)
+  document.getElementById('fc-cats').innerHTML = FC.level === 'rand' ? '' : `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${FC.cat === 'All' ? 'active' : ''}" onclick="fcSetCat(-1)">All in this set (${pool.length})</button></div>` + (FC.level === 'code' || FC.level === 'names' ? chapterBlocks(FC.cats.map(c => [c, pool.filter(x => x.c === c).length]), FC.cat, (c, i) => `onclick="fcSetCat(${i})"`, { unit: 'cards' }) : `<div class="row-btns">${FC.cats.map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k})">${esc(c)}</button>`).join('')}</div>`)
   let d = pool.filter(x => FC.cat === 'All' || x.c === FC.cat)
   const sh = document.getElementById('fc-shuf'); if (FC.level === 'rand' || (sh && sh.checked)) d = shuffle(d.map((_, i) => i)).map(i => d[i])
   FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
@@ -1583,7 +1598,7 @@ function fcRender() {
   }
   const c = FC.deck[FC.i]
   b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${FC.i + 1} of ${FC.deck.length} · ${esc(c.c)}</div>
-    <div class="flash" onclick="fcFlip()">${FC.flipped ? `<div class="side">Answer</div><div class="big" style="font-weight:500;font-size:17px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Question</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to flip</div>`}</div>
+    <div class="flash" onclick="fcFlip()">${FC.flipped ? `<div class="side">Answer</div><div class="big" style="font-weight:500;font-size:17px">${esc(c.b)}</div>${c.h ? `<div style="margin-top:10px;font-size:13px;color:var(--muted)">${esc(c.h)}</div>` : ''}<div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Question</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to flip</div>`}</div>
     <div class="row-btns">${FC.flipped ? '<button class="btn-sm" onclick="fcMark(false)">Review again</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="fcMark(true)">Got it</button>' : '<button class="btn-sm" onclick="fcFlip()">Show answer</button>'}</div>`
 }
 function fcFlip() { FC.flipped = !FC.flipped; fcRender() }
