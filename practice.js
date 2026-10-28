@@ -1,12 +1,13 @@
 /* VoltCE practice quizzes: short, section-based, with scores, explanations and an optional Facebook share.
    These are practice only. They are separate from any course exam and earn no CE credit. */
 (function () {
-  const SITE = 'https://volt-ce.vercel.app/';
+  const SITE = 'https://voltceu.com/';
   const BANKS = {
     code: { label: 'Code articles', file: 'code-bank.js', glob: 'CODE_BANK', field: 'ar', filter: x => (x.eds || [2023]).includes(window.ED ? ED.cur : 2023) },
     calc: { label: 'Load calculations', file: 'calc-bank.js', glob: 'CALC_BANK', field: 'c' },
     theory: { label: 'Electrical theory', file: 'theory-bank.js', glob: 'THEORY_BANK', field: 'c' },
-    chg: { label: 'Edition changes', file: 'chg-bank.js', glob: 'CHG_BANK', field: 'ar' }
+    chg: { label: 'Edition changes', file: 'chg-bank.js', glob: 'CHG_BANK', field: 'ar' },
+    master: { label: 'Master prep', file: 'master-bank.js', glob: 'MASTER_BANK', field: 'c' }
   };
   const N = 10;
   const Q = { qStart: 0, bank: 'code', section: 'All', qs: [], i: 0, sel: -1, answered: false, score: 0, missed: [] };
@@ -65,13 +66,13 @@
   function render() {
     const body = $('pq-body');
     if (Q.i >= Q.qs.length) return result();
-    const q = Q.qs[Q.i]; if (!Q.answered && !Q.qStart) Q.qStart = Date.now();
+    const q = Q.qs[Q.i]; if (!Q.answered && !Q.qStart) Q.qStart = Date.now(); window._rq = { q: q.q, o: q.o, a: q.a, r: q.r, bank: 'practice' };
     body.innerHTML = `<div class="card">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Question ${Q.i + 1} of ${Q.qs.length}</span><span>${Q.score} correct so far</span></div>
       <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
       ${q.o.map((x, k) => `<button class="opt ${Q.answered ? (k === q.a ? 'right' : (k === Q.sel ? 'wrong' : '')) : ''}" ${Q.answered ? 'disabled' : ''} onclick="PQ.pick(${k})">${String.fromCharCode(65 + k)}. ${esc(x)}</button>`).join('')}
       ${Q.answered ? `<div class="expl"><b>${Q.sel === q.a ? 'Correct.' : 'Not quite.'}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>
-        <div class="row-btns"><button class="btn-sm" onclick="PQ.next()">${Q.i + 1 >= Q.qs.length ? 'See my score' : 'Next question'} →</button></div>` : ''}
+        <div class="row-btns"><button class="btn-sm" onclick="PQ.next()">${Q.i + 1 >= Q.qs.length ? 'See my score' : 'Next question'} →</button><button class="btn-sm" style="margin-left:auto;opacity:.8" onclick="reportQ()">Report this question</button></div>` : ''}
     </div>`;
   }
   function pick(k) {

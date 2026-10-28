@@ -361,6 +361,7 @@
   <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">Menu</button>
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
+    <button class="nav-link" onclick="MASTT.open()">Master prep</button>
     <button class="nav-link" onclick="showPage('study')">Study tools</button>
     <button class="nav-link" onclick="PQ.open()">Practice quizzes</button>
     <button class="nav-link" onclick="Stats.open()">Progress</button>
@@ -554,6 +555,23 @@
   </div>
 </div>
 
+<div id="page-master" class="page">
+  <div class="container">
+    <div class="page-title">Master electrician exam prep</div>
+    <div class="page-sub">Free, and built for the harder exam: multi-step design calculations, services and feeders, motors, transformers, short-circuit current, hazardous locations and Wisconsin practice. Every answer shows the worked solution and the code reference.</div>
+    <div class="alert alert-info" style="font-size:13px">Based on the 2023 NEC, with 75°C terminations, copper conductors and standard sizes from 240.6(A) unless a problem says otherwise. Study practice written by VoltCE, not official exam questions, and no CE credit. Have your code book and calculator ready. See a wrong answer? Use <b>Report this question</b>; corrections help most.</div>
+    <div id="master-hero" class="rec-grid" style="margin-bottom:14px"></div>
+    <div id="master-set"></div>
+    <div id="master-body"></div>
+    <div class="section-title" style="margin-top:22px">Pick a topic</div>
+    <details class="card-sm" id="master-d1" open style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:600">Master-level problems</summary><div id="master-cats-m" style="margin-top:10px"></div></details>
+    <div class="section-title" style="margin-top:16px;font-size:16px">Advanced calculations, by chapter</div>
+    <div id="master-cats-c"></div>
+    <div class="section-title" style="margin-top:16px;font-size:16px">Advanced code and design questions, by chapter</div>
+    <div id="master-cats-k"></div>
+  </div>
+</div>
+
 <!-- ── CODE ARTICLE STUDY ────────────────────────────────── -->
 <div id="page-code" class="page">
   <div class="container">
@@ -582,6 +600,7 @@
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="MASTT.open()"><h4>Master electrician prep</h4><p>Harder multi-step calculations and design questions for the master exam, with worked solutions.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="calcOpen()"><h4>Load calc and sizing</h4><p>Thousands of problems: services, motors, conductors, conduit fill, transformers.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="theoryOpen()"><h4>Electrical theory and formulas</h4><p>Ohm's law, power, AC, three-phase, transformers, motors, with full worked math.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="chgOpen()"><h4>Edition changes (2017, 2020, 2023, 2026)</h4><p>Review what changed between NEC editions, article by article. Cards and quiz.</p></div>
@@ -594,8 +613,9 @@
 <div id="page-fc" class="page">
   <div class="container">
     <div class="page-title">Code flashcards</div>
-    <div class="page-sub">Memorization cards. Tier 1: major code articles. Tier 2: every other article. Tier 3: formulas and rules of thumb. Tap a card to flip it.</div>
+    <div class="page-sub">Memorization cards in three levels. Randomized mix shuffles every card. Code section cards cover the code book article by article: start with the 25 major articles, then add all the rest. Formula cards cover the math. Tap a card to flip it.</div>
     <div class="tabs" id="fc-tiers"></div>
+    <div id="fc-scope"></div>
     <div class="row-btns" id="fc-cats"></div>
     <label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fc-shuf" checked onchange="fcStart()"> Shuffle</label>
     <div id="fc-body"></div>
@@ -1379,8 +1399,9 @@ function makeTrainer(o) {
       ${q.o.map((x, k) => `<button class="opt ${S.answered ? (k === q.a ? 'right' : (k === S.sel ? 'wrong' : '')) : ''}" ${S.answered ? 'disabled' : ''} onclick="${o.v}.pick(${k})">${String.fromCharCode(65 + k)}. ${esc(x)}</button>`).join('')}
       ${S.timedOut ? '<div class="alert alert-error" style="margin-top:10px;margin-bottom:0">Time is up. The question is locked.</div>' : ''}
       ${S.answered ? `<div class="expl"><b>${o.kind === 'calc' ? 'Worked solution.' : 'Why.'}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>` : ''}
-      <div class="row-btns">${S.answered ? `<button class="btn-sm" onclick="${o.v}.next()">Next question →</button>` : `<button class="btn-sm" onclick="${o.v}.skip()">Skip</button>`}</div>
+      <div class="row-btns">${S.answered ? `<button class="btn-sm" onclick="${o.v}.next()">Next question →</button>` : `<button class="btn-sm" onclick="${o.v}.skip()">Skip</button>`}<button class="btn-sm" style="margin-left:auto;opacity:.8" onclick="reportQ()">Report this question</button></div>
     </div>`
+    window._rq = { q: q.q, o: q.o, a: q.a, r: q.r, bank: o.id }
     T.startQ()
   }
   return T
@@ -1398,16 +1419,64 @@ const CALCT = makeTrainer({ id: 'calc', v: 'CALCT', page: 'calc', bank: 'CALC_BA
 function calcOpen() { CALCT.open() }
 function calcGo(c, d) { CALCT.S.cat = c; CALCT.S.diff = d; CALCT.open() }
 
+
+// master prep page
+const MGROUPS = { mast: 'master-cats-m', calc: 'master-cats-c', code: 'master-cats-k' }
+const MASTT = makeTrainer({ id: 'master', v: 'MASTT', page: 'master', bank: 'MASTER_BANK', file: 'master-bank.js', catField: 'c', kind: 'calc', extra: x => !MASTT._grp || x.g === MASTT._grp,
+  onReady: T => { T.S.diff = 0; T.restart() },
+  chips: T => {
+    const S = T.S, bank = window.MASTER_BANK || [], by = { mast: {}, calc: {}, code: {} }
+    bank.forEach(x => { by[x.g][x.c] = (by[x.g][x.c] || 0) + 1 })
+    document.getElementById('master-set').innerHTML = T.settingsHtml()
+    const nM = Object.values(by.mast).reduce((a, b) => a + b, 0)
+    document.getElementById('master-hero').innerHTML = `<div class="rec" style="cursor:pointer" onclick="MASTT.setCat('All')"><h4>Mixed master exam practice</h4><p>${bank.length.toLocaleString()} problems across every area below. Turn on the countdown to practice under exam pressure.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="MASTT.setGroup('mast')"><h4>Master-level problems</h4><p>${nM} multi-step design calculations and judgment questions written for the master exam.</p></div>
+      <div class="rec" style="cursor:pointer" onclick="MASTT.setGroup('calc')"><h4>Calculations only</h4><p>Services, motors, transformers, conduit fill, voltage drop and more, advanced level.</p></div>`
+    const items = g => Object.keys(by[g]).filter(c => g !== 'code' || by[g][c] >= 3).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(c => [c, by[g][c]])
+    const hand = c => `data-c="${esc(c)}" onclick="MASTT.setCat(this.dataset.c)"`
+    document.getElementById('master-cats-m').innerHTML = `<div class="row-btns">${items('mast').map(([c, n]) => `<button class="btn-sm cat-chip ${S.cat === c ? 'active' : ''}" ${hand(c)}>${esc(c.replace(/^Master: /, ''))} (${n})</button>`).join('')}</div>`
+    document.getElementById('master-cats-c').innerHTML = chapterBlocks(items('calc'), S.cat, hand)
+    document.getElementById('master-cats-k').innerHTML = chapterBlocks(items('code'), S.cat, hand)
+    document.getElementById('master-d1').style.display = nM ? '' : 'none'
+  } })
+const mastTop = () => { const el = document.getElementById('master-hero'); if (el) window.scrollTo({ top: el.offsetTop + 60, behavior: 'smooth' }) }
+MASTT.setGroup = function (g) { MASTT.S.cat = 'All'; MASTT._grp = g; MASTT.restart(); mastTop() }
+{ const sc = MASTT.setCat; MASTT.setCat = c => { MASTT._grp = null; sc(c); mastTop() } }
+
 // code articles page
 function artNum(label) { const m = /Art\. (\d+)/.exec(label); return m ? +m[1] : 0 }
+const CH_NAMES = ['Chapter 1: General (Arts. 90–110)', 'Chapter 2: Wiring and protection (Arts. 200–285)', 'Chapter 3: Wiring methods and materials (Arts. 300–399)', 'Chapter 4: Equipment for general use (Arts. 400–499)', 'Chapter 5: Special occupancies (Arts. 500–599)', 'Chapter 6: Special equipment (Arts. 600–699)', 'Chapter 7: Special conditions (Arts. 700–799)', 'Chapter 8: Communications systems (Arts. 800–899)', 'Chapter 9: Tables', 'Annexes (Annex D load examples and more)', 'Theory and formulas']
 function artGroup(n) {
-  if (n <= 285) return 'General requirements (Articles 100–285)'
-  if (n <= 392) return 'Wiring methods and conductors (Articles 300–392)'
-  if (n <= 495) return 'Equipment for general use (Articles 400–495)'
-  if (n <= 590) return 'Special occupancies (Articles 500–590)'
-  if (n <= 695) return 'Special equipment (Articles 600–695)'
-  if (n <= 760) return 'Special conditions (Articles 700–760)'
-  return 'Communications systems (Articles 770–820)'
+  if (n <= 199) return CH_NAMES[0]
+  if (n <= 299) return CH_NAMES[1]
+  if (n <= 399) return CH_NAMES[2]
+  if (n <= 499) return CH_NAMES[3]
+  if (n <= 599) return CH_NAMES[4]
+  if (n <= 699) return CH_NAMES[5]
+  if (n <= 799) return CH_NAMES[6]
+  return CH_NAMES[7]
+}
+// Calculation categories that live in Chapter 9 tables or the Annexes rather than in one article.
+const CH_CALC = { 'Conduit fill': 8, 'Voltage drop': 8, 'Dwelling load (standard method)': 9, 'Dwelling load (optional method)': 9, 'Commercial loads': 9 }
+function chapterOf(label) {
+  const l = String(label).replace(/^Changes: /, '')
+  if (/^Theory: /.test(l)) return CH_NAMES[10]
+  if (l in CH_CALC) return CH_NAMES[CH_CALC[l]]
+  if (/^Annex/i.test(l)) return CH_NAMES[9]
+  const n = artNum(l) || (/^Chapter 7/.test(l) ? 720 : 0)
+  if (n) return artGroup(n)
+  const calcMap = { 'Box fill': 2, 'Branch circuits': 1, 'Conductor sizing': 2, 'Parallel conductors': 2, 'Motors (single)': 3, 'Motors (multiple)': 3, 'Transformers': 3 }
+  return CH_NAMES[calcMap[l] != null ? calcMap[l] : 10]
+}
+// Collapsible chapter blocks: items = [label, count, handlerArgs]; hand(label, idx) returns the onclick string.
+function chapterBlocks(items, active, hand, opts) {
+  opts = opts || {}
+  const by = {}; items.forEach((it, i) => { (by[chapterOf(it[0])] = by[chapterOf(it[0])] || []).push([it, i]) })
+  return CH_NAMES.filter(c => by[c]).map(c => {
+    const list = by[c], n = list.reduce((a, [it]) => a + (it[1] || 0), 0), has = list.some(([it]) => it[0] === active)
+    return `<details class="card-sm" style="margin-bottom:8px" ${has || opts.open ? 'open' : ''}><summary style="cursor:pointer;font-weight:600">${esc(c)} <small style="font-weight:400;color:var(--muted)">· ${list.length} ${list.length === 1 ? 'topic' : 'topics'}${n ? ', ' + n.toLocaleString() + ' ' + (opts.unit || 'questions') : ''}</small></summary>
+      <div class="row-btns" style="margin-top:10px">${list.map(([it, i]) => `<button class="btn-sm cat-chip ${it[0] === active ? 'active' : ''}" ${hand(it[0], i)}>${esc(it[0].replace(/^Master: /, ''))}${it[1] ? ' (' + it[1] + ')' : ''}</button>`).join('')}</div></details>`
+  }).join('')
 }
 const EDS = [2017, 2020, 2023, 2026]
 const ED = { cur: loadPref('ed', 2023) }
@@ -1431,10 +1500,10 @@ function codeList() {
   const q = (document.getElementById('code-search').value || '').toLowerCase()
   const groups = {}
   CODE_UI.arts.forEach((a, i) => { if (q && !a.toLowerCase().includes(q)) return; (groups[artGroup(artNum(a))] = groups[artGroup(artNum(a))] || []).push([a, i]) })
-  CODE_UI.groups = Object.keys(groups)
+  CODE_UI.groups = Object.keys(groups).sort((a, b) => CH_NAMES.indexOf(a) - CH_NAMES.indexOf(b))
   document.getElementById('code-total').textContent = bank.length.toLocaleString() + ' questions across ' + CODE_UI.arts.length + ' article groups'
-  document.getElementById('code-groups').innerHTML = Object.entries(groups).map(([g, items], gi) => `<div class="section-title" style="margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span>${esc(g)}</span><button class="btn-sm" onclick="codeStartGroup(${gi})">Random mix of this group</button></div>
-    <div class="rec-grid">${items.map(([a, i]) => `<div class="rec" style="cursor:pointer" onclick="codeStartArt(${i})"><h4>${esc(a)}</h4><p style="margin:0">${counts[a]} questions</p></div>`).join('')}</div>`).join('')
+  document.getElementById('code-groups').innerHTML = CODE_UI.groups.map(g => [g, groups[g]]).map(([g, items], gi) => `<details class="card-sm" style="margin-top:12px" ${q ? 'open' : ''}><summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>${esc(g)} <small style="font-weight:400;color:var(--muted)">· ${items.length} articles</small></b><button class="btn-sm" onclick="event.preventDefault();event.stopPropagation();codeStartGroup(${gi})">Random mix of this group</button></summary>
+    <div class="rec-grid" style="margin-top:12px">${items.map(([a, i]) => `<div class="rec" style="cursor:pointer" onclick="codeStartArt(${i})"><h4>${esc(a)}</h4><p style="margin:0">${counts[a]} questions</p></div>`).join('')}</div></details>`).join('')
 }
 function codeShowSession(title) {
   document.getElementById('code-list').style.display = 'none'
@@ -1472,23 +1541,35 @@ const THEORYT = makeTrainer({ id: 'theory', v: 'THEORYT', page: 'theory', bank: 
 function theoryOpen() { THEORYT.open() }
 
 // flashcards
-const FC = { tier: 1, cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [] }
-const FC_TIERS = { 1: 'Tier 1: major articles', 2: 'Tier 2: all other articles', 3: 'Tier 3: formulas' }
+const FC = { level: 'code', scope: 'major', cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [], cats: [] }
+const FC_LEVELS = { rand: 'Randomized mix', code: 'Code section cards', formula: 'Formula cards' }
+// The 25 major articles to know cold: the heaviest-tested parts of the code book.
+const FC_MAJOR = [90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690]
+const fcIsMajor = x => FC_MAJOR.includes(artNum(x.c))
 function fcOpen() { showPage('fc'); document.getElementById('fc-body').innerHTML = '<div class="empty">Loading cards…</div>'; loadData('fc-bank.js', 'FC_BANK', fcStart, 'fc-body') }
-function fcSetTier(t) { FC.tier = t; FC.cat = 'All'; fcStart() }
+function fcSetLevel(l) { FC.level = l; FC.cat = 'All'; fcStart() }
+function fcSetScope(sc) { FC.scope = sc; FC.cat = 'All'; fcStart() }
 function fcSetCat(k) { FC.cat = k < 0 ? 'All' : FC.cats[k]; fcStart() }
-function fcStart() {
+function fcPool() {
   const bank = window.FC_BANK || []
-  const tierItems = bank.filter(x => x.t === FC.tier)
-  const seen = {}; FC.cats = []; tierItems.forEach(x => { if (!seen[x.c]) { seen[x.c] = 1; FC.cats.push(x.c) } })
+  if (FC.level === 'rand') return bank
+  if (FC.level === 'formula') return bank.filter(x => x.t === 3)
+  return bank.filter(x => x.t !== 3 && (FC.scope === 'all' || fcIsMajor(x)))
+}
+function fcStart() {
+  const bank = window.FC_BANK || [], pool = fcPool()
+  const seen = {}; FC.cats = []; if (FC.level !== 'rand') pool.forEach(x => { if (!seen[x.c]) { seen[x.c] = 1; FC.cats.push(x.c) } })
   FC.cats.sort((a, b) => { const na = artNum(a), nb = artNum(b); return na && nb ? na - nb : a.localeCompare(b) })
-  document.getElementById('fc-tiers').innerHTML = [1, 2, 3].map(t => `<button class="tab ${FC.tier === t ? 'active' : ''}" onclick="fcSetTier(${t})">${FC_TIERS[t]} (${bank.filter(x => x.t === t).length})</button>`).join('')
-  document.getElementById('fc-cats').innerHTML = ['All'].concat(FC.cats).map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k - 1})">${esc(c)}</button>`).join('')
-  let d = tierItems.filter(x => FC.cat === 'All' || x.c === FC.cat)
-  const sh = document.getElementById('fc-shuf'); if (sh && sh.checked) d = shuffle(d.map((_, i) => i)).map(i => d[i])
+  const nCode = bank.filter(x => x.t !== 3).length
+  document.getElementById('fc-tiers').innerHTML = Object.keys(FC_LEVELS).map(l => `<button class="tab ${FC.level === l ? 'active' : ''}" onclick="fcSetLevel('${l}')">${FC_LEVELS[l]} (${l === 'rand' ? bank.length : l === 'code' ? nCode : bank.length - nCode})</button>`).join('')
+  document.getElementById('fc-scope').innerHTML = FC.level === 'code' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${FC_MAJOR.length} articles, ${bank.filter(x => x.t !== 3 && fcIsMajor(x)).length} cards)</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nCode} cards)</button></div>
+    ${FC.scope === 'major' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Major articles: 90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690. These are where most exam questions come from.</p>' : ''}` : (FC.level === 'rand' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Every card, code articles and formulas, in random order.</p>' : '')
+  document.getElementById('fc-cats').innerHTML = FC.level === 'rand' ? '' : `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${FC.cat === 'All' ? 'active' : ''}" onclick="fcSetCat(-1)">All in this set (${pool.length})</button></div>` + (FC.level === 'code' ? chapterBlocks(FC.cats.map(c => [c, pool.filter(x => x.c === c).length]), FC.cat, (c, i) => `onclick="fcSetCat(${i})"`, { unit: 'cards' }) : `<div class="row-btns">${FC.cats.map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k})">${esc(c)}</button>`).join('')}</div>`)
+  let d = pool.filter(x => FC.cat === 'All' || x.c === FC.cat)
+  const sh = document.getElementById('fc-shuf'); if (FC.level === 'rand' || (sh && sh.checked)) d = shuffle(d.map((_, i) => i)).map(i => d[i])
   FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
   window._topic_fc = FC.cat === 'All' ? '' : FC.cat; setCorner('fc', window._topic_fc)
-  trk('start', 'fc', { t: 'fc', c: FC.cat === 'All' ? 'tier' + FC.tier : FC.cat })
+  trk('start', 'fc', { t: 'fc', c: FC.cat === 'All' ? FC.level + (FC.level === 'code' ? ':' + FC.scope : '') : FC.cat })
   fcRender()
 }
 function fcRender() {
@@ -1611,6 +1692,21 @@ setInterval(trkFlush, 8000)
 window.addEventListener('pagehide', trkFlush)
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') trkFlush() })
 
+// One anonymous 'visit' event per browser session: where the visitor came from and what kind of device. No names, no IPs.
+try { if (!sessionStorage.getItem('vc_visit')) { sessionStorage.setItem('vc_visit', '1')
+  let ref = ''; try { ref = new URL(document.referrer).hostname.replace(/^www\./, '') } catch (e) {}
+  if (ref === location.hostname) ref = ''
+  const u = new URLSearchParams(location.search)
+  trk('visit', 'landing', { ref: ref || 'direct', utm: (u.get('utm_source') || '').slice(0, 30) || null, dev: innerWidth < 700 ? 'phone' : innerWidth < 1100 ? 'tablet' : 'desktop' }) } } catch (e) {}
+
+function reportQ() {
+  const r = window._rq || window.PQ_CUR; if (!r) return
+  window._prevPage = (document.querySelector('.page.active')?.id || '').replace('page-', '')
+  showPage('feedback')
+  document.getElementById('fb-kind').value = 'correction'
+  document.getElementById('fb-msg').value = 'Question: ' + r.q + '\nKeyed answer: ' + String.fromCharCode(65 + r.a) + '. ' + r.o[r.a] + '\n\nWhat I think is wrong (and the correct answer / code section):\n'
+  document.getElementById('fb-msg').focus()
+}
 async function sendFeedback() {
   const msg = document.getElementById('fb-msg').value.trim(), note = document.getElementById('fb-note')
   const show = (cls, t) => { note.className = 'alert ' + cls; note.textContent = t; note.style.display = 'block' }
@@ -1637,6 +1733,10 @@ async function loadInsights() {
   const byTool = {}; ans.forEach(r => { const t = r.meta?.t || '?'; (byTool[t] = byTool[t] || { n: 0, ok: 0 }); byTool[t].n++; if (r.meta?.ok) byTool[t].ok++ })
   el.innerHTML = `<div class="metrics"><div class="metric"><div class="metric-val">${sessions.size}</div><div class="metric-label">Visitors (anonymous)</div></div><div class="metric"><div class="metric-val">${pv.length}</div><div class="metric-label">Page views</div></div><div class="metric"><div class="metric-val">${ans.length}</div><div class="metric-label">Questions answered</div></div><div class="metric"><div class="metric-val">${ans.length ? Math.round(ok / ans.length * 100) : 0}%</div><div class="metric-label">Answered correctly</div></div></div>
     <p style="font-size:13px;color:var(--muted)">${Object.keys(perSess).length ? Math.round(bounce / Object.keys(perSess).length * 100) : 0}% of visitors viewed only one page. ${to} questions timed out.</p>
+    ${(() => { const byDay = {}; rows.forEach(r => { const d = new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'America/Chicago' }); const o = byDay[d] = byDay[d] || { s: new Set(), pv: 0, ans: 0 }; o.s.add(r.sid); if (r.ev === 'page') o.pv++; if (r.ev === 'ans') o.ans++ })
+      return `<div class="section-title" style="margin-top:18px">Traffic by day (Central time)</div><div class="table-wrap"><table><thead><tr><th>Day</th><th>Visitors</th><th>Page views</th><th>Questions answered</th></tr></thead><tbody>${Object.entries(byDay).sort((a, b) => b[0].localeCompare(a[0])).map(([d, o]) => `<tr><td>${d}</td><td>${o.s.size}</td><td>${o.pv}</td><td>${o.ans}</td></tr>`).join('')}</tbody></table></div>` })()}
+    ${tbl('Where visitors come from (new sessions)', cnt(rows.filter(r => r.ev === 'visit'), r => r.meta?.utm ? 'campaign: ' + r.meta.utm : (r.meta?.ref || 'direct')), 'Source')}
+    ${tbl('Devices (new sessions)', cnt(rows.filter(r => r.ev === 'visit'), r => r.meta?.dev || '?'), 'Device')}
     ${tbl('Pages viewed', cnt(pv, r => r.page || '?'), 'Page')}
     ${tbl('Study sessions started', cnt(rows.filter(r => r.ev === 'start'), r => r.meta?.t || '?'), 'Tool')}
     ${tbl('Accuracy by tool', Object.entries(byTool).map(([t, v]) => [t + ' (' + Math.round(v.ok / v.n * 100) + '% correct)', v.n]), 'Tool')}
@@ -1814,7 +1914,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
@@ -1824,7 +1924,7 @@ function setCorner(page, label) {
     el.innerHTML = topic ? VCSYM.forLabel(label, 64) : VCSYM.svg(PAGE_SYM[page] || 'book', 64)
   } catch (e) {}
 }
-const PQ_BANK = { CODE_BANK: 'code', CALC_BANK: 'calc', THEORY_BANK: 'theory', CHG_BANK: 'chg' }
+const PQ_BANK = { CODE_BANK: 'code', CALC_BANK: 'calc', THEORY_BANK: 'theory', CHG_BANK: 'chg', MASTER_BANK: 'master' }
 function pqLaunch(page, bankName, topic) {
   const pg = document.getElementById('page-' + page); if (!pg) return
   let el = pg.querySelector('.pq-launch')
