@@ -363,6 +363,7 @@
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
     <button class="nav-link" onclick="MASTT.open()">Master prep</button>
+    <button class="nav-link" onclick="CYCT.open()">Code cycles</button>
     <button class="nav-link" onclick="showPage('study')">Study tools</button>
     <button class="nav-link" onclick="PQ.open()">Practice quizzes</button>
     <button class="nav-link" onclick="Stats.open()">Progress</button>
@@ -573,6 +574,22 @@
   </div>
 </div>
 
+<div id="page-cyc" class="page">
+  <div class="container">
+    <div class="page-title">Practice by code cycle</div>
+    <div class="page-sub">States adopt different editions of the NEC. Pick your exam level and the code cycle you are being tested on, then study only questions that are correct for that edition. A separate mode drills what changed when each cycle arrived.</div>
+    <div class="alert alert-info" style="font-size:13px">Each question is tagged with the editions where its answer holds true, so a rule that changed is never marked wrong for the older cycle. Always confirm which edition your state and exam use. Study practice written by VoltCE, not official exam questions, and no CE credit.</div>
+    <div class="card-sm" style="margin-bottom:12px"><div class="form-label" style="margin-bottom:6px">Exam level</div><div class="row-btns" id="cyc-level" style="margin:0"></div></div>
+    <div class="form-label" style="margin:10px 0 6px">Code cycle</div>
+    <div class="rec-grid" id="cyc-eds" style="margin-bottom:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div>
+    <div class="row-btns" id="cyc-mode" style="margin-bottom:12px"></div>
+    <div id="cyc-set"></div>
+    <div id="cyc-body"></div>
+    <div class="section-title" style="margin-top:22px">Pick a topic</div>
+    <div id="cyc-cats"></div>
+  </div>
+</div>
+
 <!-- ── CODE ARTICLE STUDY ────────────────────────────────── -->
 <div id="page-code" class="page">
   <div class="container">
@@ -602,6 +619,7 @@
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen();setTimeout(()=>fcSetLevel('names'),400)"><h4>Article names: memorize the code book</h4><p>250 is Grounding and Bonding, 240 is Overcurrent Protection. Flashcards and a quiz, major 25 articles or all of them.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="CYCT.open()"><h4>Practice by code cycle</h4><p>2017, 2020, 2023 or 2026 NEC: questions that are correct for your edition, journeyman or master level, plus what changed.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="MASTT.open()"><h4>Master electrician prep</h4><p>Harder multi-step calculations and design questions for the master exam, with worked solutions.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="calcOpen()"><h4>Load calc and sizing</h4><p>Thousands of problems: services, motors, conductors, conduit fill, transformers.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="theoryOpen()"><h4>Electrical theory and formulas</h4><p>Ohm's law, power, AC, three-phase, transformers, motors, with full worked math.</p></div>
@@ -1445,9 +1463,29 @@ const mastTop = () => { const el = document.getElementById('master-hero'); if (e
 MASTT.setGroup = function (g) { MASTT.S.cat = 'All'; MASTT._grp = g; MASTT.restart(); mastTop() }
 { const sc = MASTT.setCat; MASTT.setCat = c => { MASTT._grp = null; sc(c); mastTop() } }
 
+
+// code cycle page: questions filtered by NEC edition and exam level
+const CYC = { lvl: loadPref('cyc_lvl', 'J'), ed: +loadPref('cyc_ed', 2023), mode: 'core' }
+const CYC_BIT = { 2017: 1, 2020: 2, 2023: 4, 2026: 8 }
+const cycOk = x => ((CYC.lvl === 'M') ? x.d === 3 : x.d <= 2) && (CYC.mode === 'chg' ? (x.k === 'chg' && x.t === CYC_BIT[CYC.ed]) : (x.k !== 'chg' && (x.b & CYC_BIT[CYC.ed])))
+const CYCT = makeTrainer({ id: 'cyc', v: 'CYCT', page: 'cyc', bank: 'CYCLE_BANK', file: 'cycle-bank.js', catField: 'c', kind: 'code', extra: cycOk,
+  onReady: T => { T.S.diff = 0; T.restart() },
+  chips: T => {
+    const S = T.S, bank = window.CYCLE_BANK || [], keep = { lvl: CYC.lvl, mode: CYC.mode }
+    const count = (lvl, ed, mode) => bank.filter(x => ((lvl === 'M') ? x.d === 3 : x.d <= 2) && (mode === 'chg' ? (x.k === 'chg' && x.t === CYC_BIT[ed]) : (x.k !== 'chg' && (x.b & CYC_BIT[ed])))).length
+    document.getElementById('cyc-level').innerHTML = [['J', 'Journeyman', 'basic and intermediate questions'], ['M', 'Master', 'advanced calculations and design']].map(([k, l, d]) => `<button class="btn-sm cat-chip ${CYC.lvl === k ? 'active' : ''}" onclick="cycSet('lvl','${k}')">${l}</button>`).join('') + '<span style="font-size:12.5px;color:var(--muted)">' + (CYC.lvl === 'M' ? 'Advanced calculations and design questions.' : 'Basic and intermediate questions.') + '</span>'
+    document.getElementById('cyc-eds').innerHTML = [2017, 2020, 2023, 2026].map(e => `<div class="rec ${CYC.ed === e ? 'sel' : ''}" style="cursor:pointer;${CYC.ed === e ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="cycSet('ed',${e})"><h4>${e} NEC</h4><p style="margin:0">${count(CYC.lvl, e, CYC.mode).toLocaleString()} ${CYC.mode === 'chg' ? 'change questions' : 'questions'}</p></div>`).join('')
+    document.getElementById('cyc-mode').innerHTML = [['core', 'Questions for this code cycle'], ['chg', 'What changed in this cycle']].map(([k, l]) => `<button class="btn-sm cat-chip ${CYC.mode === k ? 'active' : ''}" onclick="cycSet('mode','${k}')">${l}</button>`).join('') + (CYC.mode === 'chg' ? `<span style="font-size:12.5px;color:var(--muted)">${CYC.ed === 2017 ? 'The 2017 NEC is the starting point here, so there are no changes to drill.' : 'Rules added or changed when the ' + CYC.ed + ' NEC arrived, compared with the ' + (CYC.ed === 2020 ? 2017 : CYC.ed === 2023 ? 2020 : 2023) + ' NEC.'}</span>` : '')
+    document.getElementById('cyc-set').innerHTML = T.settingsHtml()
+    const m = {}; bank.filter(cycOk).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
+    const items = Object.keys(m).sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b)).map(c => [c, m[c]])
+    document.getElementById('cyc-cats').innerHTML = `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${S.cat === 'All' ? 'active' : ''}" onclick="CYCT.setCat('All')">Mixed: all topics (${items.reduce((a, b) => a + b[1], 0).toLocaleString()})</button></div>` + chapterBlocks(items, S.cat, c => `data-c="${esc(c)}" onclick="CYCT.setCat(this.dataset.c)"`)
+  } })
+function cycSet(k, v) { CYC[k] = v; if (k === 'lvl') savePref('cyc_lvl', v); if (k === 'ed') savePref('cyc_ed', v); CYCT.S.cat = 'All'; CYCT.restart() }
+
 // code articles page
 function artNum(label) { const m = /Art\. (\d+)/.exec(label); return m ? +m[1] : 0 }
-const CH_NAMES = ['Chapter 1: General (Arts. 90–110)', 'Chapter 2: Wiring and protection (Arts. 200–285)', 'Chapter 3: Wiring methods and materials (Arts. 300–399)', 'Chapter 4: Equipment for general use (Arts. 400–499)', 'Chapter 5: Special occupancies (Arts. 500–599)', 'Chapter 6: Special equipment (Arts. 600–699)', 'Chapter 7: Special conditions (Arts. 700–799)', 'Chapter 8: Communications systems (Arts. 800–899)', 'Chapter 9: Tables', 'Annexes (Annex D load examples and more)', 'Theory and formulas']
+const CH_NAMES = ['Chapter 1: General (Arts. 90–110)', 'Chapter 2: Wiring and protection (Arts. 200–285)', 'Chapter 3: Wiring methods and materials (Arts. 300–399)', 'Chapter 4: Equipment for general use (Arts. 400–499)', 'Chapter 5: Special occupancies (Arts. 500–599)', 'Chapter 6: Special equipment (Arts. 600–699)', 'Chapter 7: Special conditions (Arts. 700–799)', 'Chapter 8: Communications systems (Arts. 800–899)', 'Chapter 9: Tables', 'Annexes (Annex D load examples and more)', 'Theory and formulas', 'Master-level problems']
 function artGroup(n) {
   if (n <= 199) return CH_NAMES[0]
   if (n <= 299) return CH_NAMES[1]
@@ -1463,6 +1501,7 @@ const CH_CALC = { 'Conduit fill': 8, 'Voltage drop': 8, 'Dwelling load (standard
 function chapterOf(label) {
   const l = String(label).replace(/^Changes: /, '')
   if (/^Theory: /.test(l)) return CH_NAMES[10]
+  if (/^Master: /.test(l) && !artNum(l)) return CH_NAMES[11]
   if (l in CH_CALC) return CH_NAMES[CH_CALC[l]]
   if (/^Annex/i.test(l)) return CH_NAMES[9]
   const n = artNum(l) || (/^Chapter 7/.test(l) ? 720 : 0)
@@ -1932,7 +1971,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
