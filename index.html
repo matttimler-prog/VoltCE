@@ -616,7 +616,7 @@
     <div class="page-sub">Everything here is free. Practice written by VoltCE for the 2023 NEC, with an explanation, a reference and the math behind every answer. Not official exam questions, no CE credit.</div>
     <div class="rec-grid">
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
-      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen();setTimeout(()=>fcSetLevel('names'),400)"><h4>Article names: memorize the code book</h4><p>250 is Grounding and Bonding, 240 is Overcurrent Protection. Flashcards and a quiz, major 25 articles or all of them.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen();setTimeout(()=>fcSetLevel('m25'),400)"><h4>Article names: memorize the code book</h4><p>250 is Grounding and Bonding, 240 is Overcurrent Protection. Flashcards and a quiz, major 25 articles or all of them.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="CYCT.open()"><h4>Practice by code cycle</h4><p>2017, 2020, 2023 or 2026 NEC: questions that are correct for your edition, journeyman or master level, plus what changed.</p></div>
@@ -1583,20 +1583,20 @@ function theoryOpen() { THEORYT.open() }
 
 // flashcards
 const FC = { dir: 'mix', level: 'code', scope: 'major', cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [], cats: [] }
-const FC_LEVELS = { rand: 'Randomized mix', names: 'Article names', code: 'Code section cards', formula: 'Formula cards' }
+const FC_LEVELS = { m25: '25 major article names', rand: 'Randomized mix', names: 'All article names', code: 'Code section cards', formula: 'Formula cards' }
 // The 25 major articles to know cold: the heaviest-tested parts of the code book.
 const FC_MAJOR = [90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690]
 const fcIsMajor = x => FC_MAJOR.includes(artNum(x.c))
 function fcOpen() { showPage('fc'); document.getElementById('fc-body').innerHTML = '<div class="empty">Loading cards…</div>'; loadData('fc-bank.js', 'FC_BANK', fcStart, 'fc-body') }
-function fcSetLevel(l) { FC.level = l; FC.cat = 'All'; fcStart() }
+function fcSetLevel(l) { FC.level = l; if (l === 'm25' && FC.dir === 'mix') FC.dir = 'n2t'; FC.cat = 'All'; fcStart() }
 function fcSetScope(sc) { FC.scope = sc; FC.cat = 'All'; fcStart() }
 function fcSetChapter(i) { FC.cat = '__ch:' + i; fcStart() }
 function fcSetCat(k) { FC.cat = k < 0 ? 'All' : FC.cats[k]; fcStart() }
 function fcNameCards() {
   const out = []
-  ;(window.ART_NAMES || []).filter(a => FC.scope === 'all' || a.m).forEach(a => {
-    const short = a.t.split(':')[0].split(';')[0], c = 'Art. ' + a.n + ' ' + short, h = a.h || ''
-    if (FC.dir !== 't2n') out.push({ c, f: 'Article ' + a.n, b: a.t, h, r: 'NEC Article ' + a.n })
+  ;(window.ART_NAMES || []).filter(a => (FC.level !== 'm25' && FC.scope === 'all') || a.m).forEach(a => {
+    const short = a.t.split(':')[0].split(';')[0].replace(/\s*\(.*\)\s*$/, ''), c = 'Art. ' + a.n + ' ' + short, h = (a.t !== short ? 'Full title: ' + a.t + (a.h ? '. ' : '') : '') + (a.h || '')
+    if (FC.dir !== 't2n') out.push({ c, f: 'Article ' + a.n, b: short, h, r: 'NEC Article ' + a.n })
     if (FC.dir !== 'n2t') out.push({ c, f: 'Which NEC article covers: ' + short + '?', b: 'Article ' + a.n, h, r: 'NEC Article ' + a.n + ' ' + a.t })
   })
   return out
@@ -1605,7 +1605,7 @@ function fcSetDir(d) { FC.dir = d; fcStart() }
 function fcPool() {
   const bank = window.FC_BANK || []
   if (FC.level === 'rand') return bank
-  if (FC.level === 'names') return fcNameCards()
+  if (FC.level === 'names' || FC.level === 'm25') return fcNameCards()
   if (FC.level === 'formula') return bank.filter(x => x.t === 3)
   return bank.filter(x => x.t !== 3 && (FC.scope === 'all' || fcIsMajor(x)))
 }
@@ -1614,19 +1614,21 @@ function fcStart() {
   const seen = {}; FC.cats = []; if (FC.level !== 'rand') pool.forEach(x => { if (!seen[x.c]) { seen[x.c] = 1; FC.cats.push(x.c) } })
   FC.cats.sort((a, b) => { const na = artNum(a), nb = artNum(b); return na && nb ? na - nb : a.localeCompare(b) })
   const nCode = bank.filter(x => x.t !== 3).length
-  document.getElementById('fc-tiers').innerHTML = Object.keys(FC_LEVELS).map(l => `<button class="tab ${FC.level === l ? 'active' : ''}" onclick="fcSetLevel('${l}')">${FC_LEVELS[l]} (${l === 'rand' ? bank.length : l === 'names' ? (window.ART_NAMES || []).length : l === 'code' ? nCode : bank.length - nCode})</button>`).join('')
+  document.getElementById('fc-tiers').innerHTML = Object.keys(FC_LEVELS).map(l => `<button class="tab ${FC.level === l ? 'active' : ''}" onclick="fcSetLevel('${l}')">${FC_LEVELS[l]} (${l === 'rand' ? bank.length : l === 'm25' ? (window.ART_NAMES || []).filter(a => a.m).length : l === 'names' ? (window.ART_NAMES || []).length : l === 'code' ? nCode : bank.length - nCode})</button>`).join('')
   const nm = window.ART_NAMES || []
-  document.getElementById('fc-scope').innerHTML = FC.level === 'names' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${nm.filter(a => a.m).length})</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nm.length})</button>
+  const dirRow = `<button class="btn-sm cat-chip ${FC.dir === 'n2t' ? 'active' : ''}" onclick="fcSetDir('n2t')">Number → name</button><button class="btn-sm cat-chip ${FC.dir === 't2n' ? 'active' : ''}" onclick="fcSetDir('t2n')">Name → number</button><button class="btn-sm cat-chip ${FC.dir === 'mix' ? 'active' : ''}" onclick="fcSetDir('mix')">Both (2 cards each)</button>`
+  document.getElementById('fc-scope').innerHTML = FC.level === 'm25' ? `<div class="row-btns" style="margin:0 0 8px">${dirRow}</div>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">The 25 articles to know cold: 90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690. One card each. 250 is Grounding and Bonding, 240 is Overcurrent Protection. Names follow the 2023 NEC.</p>` : FC.level === 'names' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${nm.filter(a => a.m).length})</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nm.length})</button>
     <span style="width:14px"></span><button class="btn-sm cat-chip ${FC.dir === 'mix' ? 'active' : ''}" onclick="fcSetDir('mix')">Both directions</button><button class="btn-sm cat-chip ${FC.dir === 'n2t' ? 'active' : ''}" onclick="fcSetDir('n2t')">Number → name</button><button class="btn-sm cat-chip ${FC.dir === 't2n' ? 'active' : ''}" onclick="fcSetDir('t2n')">Name → number</button></div>
     <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Memorize what each article covers: 250 is Grounding and Bonding, 240 is Overcurrent Protection. Names follow the 2023 NEC. In the 2026 NEC, load calculations moved from Article 220 to Article 120.</p>` : FC.level === 'code' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${FC_MAJOR.length} articles, ${bank.filter(x => x.t !== 3 && fcIsMajor(x)).length} cards)</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nCode} cards)</button></div>
     ${FC.scope === 'major' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Major articles: 90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690. These are where most exam questions come from.</p>' : ''}` : (FC.level === 'rand' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Every card, code articles and formulas, in random order.</p>' : '')
-  document.getElementById('fc-cats').innerHTML = FC.level === 'rand' ? '' : `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${FC.cat === 'All' ? 'active' : ''}" onclick="fcSetCat(-1)">All in this set (${pool.length})</button></div>` + (FC.level === 'code' || FC.level === 'names' ? chapterBlocks(FC.cats.map(c => [c, pool.filter(x => x.c === c).length]), FC.cat, (c, i) => `onclick="fcSetCat(${i})"`, { unit: 'cards', chap: i => `fcSetChapter(${i})` }) : `<div class="row-btns">${FC.cats.map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k})">${esc(c)}</button>`).join('')}</div>`)
+  document.getElementById('fc-cats').innerHTML = FC.level === 'rand' ? '' : `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${FC.cat === 'All' ? 'active' : ''}" onclick="fcSetCat(-1)">All in this set (${pool.length})</button></div>` + (FC.level === 'code' || FC.level === 'names' || FC.level === 'm25' ? chapterBlocks(FC.cats.map(c => [c, pool.filter(x => x.c === c).length]), FC.cat, (c, i) => `onclick="fcSetCat(${i})"`, { unit: 'cards', chap: i => `fcSetChapter(${i})` }) : `<div class="row-btns">${FC.cats.map((c, k) => `<button class="btn-sm cat-chip ${FC.cat === c ? 'active' : ''}" onclick="fcSetCat(${k})">${esc(c)}</button>`).join('')}</div>`)
   let d = pool.filter(x => FC.cat === 'All' || (FC.cat.startsWith('__ch:') ? chapterOf(x.c) === CH_NAMES[+FC.cat.slice(5)] : x.c === FC.cat))
   const sh = document.getElementById('fc-shuf'); if (FC.level === 'rand' || (sh && sh.checked)) d = shuffle(d.map((_, i) => i)).map(i => d[i])
   FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
   window._topic_fc = FC.cat === 'All' || FC.cat.startsWith('__ch:') ? '' : FC.cat; setCorner('fc', window._topic_fc)
   { const pg = document.getElementById('page-fc'); let el = pg.querySelector('.pq-launch'); if (!el) { const sub = pg.querySelector('.page-sub'); el = document.createElement('div'); el.className = 'pq-launch'; sub.after(el) }
-    el.innerHTML = FC.level === 'names' ? `<button class="btn-sm" onclick="PQ.start('${FC.scope === 'all' ? 'namesA' : 'namesM'}','All')">Take an article-names quiz (${FC.scope === 'all' ? 'all articles' : 'major 25'})</button>` : '' }
+    el.innerHTML = FC.level === 'names' || FC.level === 'm25' ? `<button class="btn-sm" onclick="PQ.start('${FC.level === 'names' && FC.scope === 'all' ? 'namesA' : 'namesM'}','All')">Take an article-names quiz (${FC.level === 'names' && FC.scope === 'all' ? 'all articles' : 'major 25'})</button>` : '' }
   trk('start', 'fc', { t: 'fc', c: FC.cat.startsWith('__ch:') ? 'chapter' + FC.cat.slice(5) : FC.cat === 'All' ? FC.level + (FC.level === 'code' ? ':' + FC.scope : '') : FC.cat })
   fcRender()
 }
