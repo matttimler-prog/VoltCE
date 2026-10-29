@@ -599,6 +599,7 @@
     <div class="page-sub">Everything here is free. Practice written by VoltCE for the 2023 NEC, with an explanation, a reference and the math behind every answer. Not official exam questions, no CE credit.</div>
     <div class="rec-grid">
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen();setTimeout(()=>fcSetLevel('names'),400)"><h4>Article names: memorize the code book</h4><p>250 is Grounding and Bonding, 240 is Overcurrent Protection. Flashcards and a quiz, major 25 articles or all of them.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-c)" onclick="MASTT.open()"><h4>Master electrician prep</h4><p>Harder multi-step calculations and design questions for the master exam, with worked solutions.</p></div>
@@ -1584,6 +1585,8 @@ function fcStart() {
   const sh = document.getElementById('fc-shuf'); if (FC.level === 'rand' || (sh && sh.checked)) d = shuffle(d.map((_, i) => i)).map(i => d[i])
   FC.deck = d; FC.i = 0; FC.flipped = false; FC.known = 0; FC.again = []
   window._topic_fc = FC.cat === 'All' ? '' : FC.cat; setCorner('fc', window._topic_fc)
+  { const pg = document.getElementById('page-fc'); let el = pg.querySelector('.pq-launch'); if (!el) { const sub = pg.querySelector('.page-sub'); el = document.createElement('div'); el.className = 'pq-launch'; sub.after(el) }
+    el.innerHTML = FC.level === 'names' ? `<button class="btn-sm" onclick="PQ.start('${FC.scope === 'all' ? 'namesA' : 'namesM'}','All')">Take an article-names quiz (${FC.scope === 'all' ? 'all articles' : 'major 25'})</button>` : '' }
   trk('start', 'fc', { t: 'fc', c: FC.cat === 'All' ? FC.level + (FC.level === 'code' ? ':' + FC.scope : '') : FC.cat })
   fcRender()
 }

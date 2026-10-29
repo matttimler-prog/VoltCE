@@ -7,7 +7,9 @@
     calc: { label: 'Load calculations', file: 'calc-bank.js', glob: 'CALC_BANK', field: 'c' },
     theory: { label: 'Electrical theory', file: 'theory-bank.js', glob: 'THEORY_BANK', field: 'c' },
     chg: { label: 'Edition changes', file: 'chg-bank.js', glob: 'CHG_BANK', field: 'ar' },
-    master: { label: 'Master prep', file: 'master-bank.js', glob: 'MASTER_BANK', field: 'c' }
+    master: { label: 'Master prep', file: 'master-bank.js', glob: 'MASTER_BANK', field: 'c' },
+    namesM: { label: 'Article names: major 25', file: 'art-names.js', glob: 'ART_QS', field: 'c', filter: x => x.mj },
+    namesA: { label: 'Article names: all', file: 'art-names.js', glob: 'ART_QS', field: 'c' }
   };
   const N = 10;
   const Q = { qStart: 0, bank: 'code', section: 'All', qs: [], i: 0, sel: -1, answered: false, score: 0, missed: [] };
