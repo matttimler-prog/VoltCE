@@ -68,6 +68,16 @@
   .nav-link:hover, .nav-link.active { background: rgba(20,32,44,0.08); color: var(--ink); }
   .nav-link.btn { background: var(--ink); color: #fff; font-weight: 500; }
   .nav-link.btn:hover { background: var(--blue); color:#fff; }
+  .dd { position: relative; }
+  .dd-btn .caret, .dd-sub-btn .caret { font-size: 11px; opacity: .7; margin-left: 2px; }
+  .dd-menu, .dd-submenu { display: none; position: absolute; min-width: 230px; background: var(--gray); border: 2px solid var(--ink); border-radius: 8px; padding: 6px; z-index: 200; box-shadow: 0 8px 24px rgba(20,32,44,.18); }
+  .dd-menu { top: 100%; left: 0; margin-top: 6px; }
+  .dd-submenu { top: -8px; right: 100%; left: auto; margin-right: -2px; }
+  .dd.open > .dd-menu, .dd-sub.open > .dd-submenu { display: block; }
+  @media (hover: hover) and (min-width: 601px) { .dd:hover > .dd-menu, .dd-sub:hover > .dd-submenu { display: block; } .dd::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 8px; } }
+  .dd-sub { position: relative; }
+  .dd-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; text-align: left; font: inherit; font-size: 13px; color: var(--ink); background: transparent; border: 0; padding: 9px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+  .dd-item:hover, .dd-sub.open > .dd-sub-btn { background: rgba(20,32,44,0.08); }
 
   /* ── PAGES ── */
   .page { display: none; min-height: calc(100vh - 56px); }
@@ -347,6 +357,9 @@
     .nav-links { display: none; position: absolute; top: 54px; left: 0; right: 0; background: var(--gray); border-bottom: 2px solid var(--ink); flex-direction: column; align-items: stretch; padding: 8px 16px 14px; gap: 2px; }
     .nav-links.open { display: flex; }
     .nav-links .nav-link { text-align: left; padding: 11px 12px; font-size: 15px; }
+    .dd-menu, .dd-submenu { position: static; right: auto; border: 0; box-shadow: none; background: transparent; padding: 0 0 0 14px; margin: 0; min-width: 0; }
+    .dd-btn { width: 100%; display: flex; justify-content: space-between; }
+    .dd-item { font-size: 15px; padding: 11px 12px; white-space: normal; }
   }
   .nav-toggle { display: none; background: var(--ink); color: #fff; border: 0; border-radius: 6px; padding: 7px 14px; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
@@ -361,18 +374,45 @@
   <div class="nav-logo" onclick="showPage('home')" role="link" tabindex="0" aria-label="VoltCE home" onkeydown="if(event.key==='Enter')showPage('home')"><img src="/brand/voltce-logo-light-bg.svg" alt="VoltCE" height="54"></div>
   <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">Menu</button>
   <div class="nav-links">
-    <button class="nav-link" onclick="showPage('prep')">Free exam prep</button>
-    <button class="nav-link" onclick="MASTT.open()">Master prep</button>
-    <button class="nav-link" onclick="CYCT.open()">Code cycles</button>
-    <button class="nav-link" onclick="FLT.open()">Florida exam</button>
-    <button class="nav-link" onclick="showPage('study')">Study tools</button>
-    <button class="nav-link" onclick="PQ.open()">Practice quizzes</button>
-    <button class="nav-link" onclick="Stats.open()">Progress</button>
+    <div class="dd">
+      <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Exam prep <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="dd-menu">
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Electrician exams <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="showPage('prep')">Free exam prep</button>
+            <button class="dd-item" onclick="MASTT.open()">Master prep</button>
+            <button class="dd-item" onclick="CYCT.open()">Code cycles</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Florida contractor exam <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navFL('biz')">Business part</button>
+            <button class="dd-item" onclick="navFL('tech')">Technical/Safety part</button>
+            <button class="dd-item" onclick="navFL(null)">Everything mixed</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dd">
+      <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Study <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="dd-menu">
+        <button class="dd-item" onclick="showPage('study')">Study tools</button>
+        <button class="dd-item" onclick="PQ.open()">Practice quizzes</button>
+        <button class="dd-item" onclick="Stats.open()">Progress</button>
+      </div>
+    </div>
     <button class="nav-link" onclick="showPage('courses')">Courses</button>
-    <button class="nav-link" onclick="showPage('states')">State resources</button>
-    <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
-    <button class="nav-link" onclick="showPage('feedback')">Suggest</button>
-    <button class="nav-link" onclick="showPage('support')">Support us</button>
+    <div class="dd">
+      <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">More <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="dd-menu">
+        <button class="dd-item" onclick="showPage('states')">State resources</button>
+        <button class="dd-item" onclick="showPage('pricing')">Pricing</button>
+        <button class="dd-item" onclick="showPage('feedback')">Suggest</button>
+        <button class="dd-item" onclick="showPage('support')">Support us</button>
+      </div>
+    </div>
     <span id="nav-user-name" style="font-size:13px;color:var(--muted);display:none"></span>
     <button class="nav-link" id="nav-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-link" id="nav-admin-btn" style="display:none" onclick="showPage('admin')">Admin</button>
@@ -2045,6 +2085,21 @@ function showPage(id) {
   if (PAGE_SYM[id]) setCorner(id, window['_topic_' + id] || '')
   if (id === 'courses') { try { Reviews.load() } catch (e) {} }
 }
+
+// nav dropdowns: click to open (works on touch), hover on desktop, Escape or outside click closes
+function closeDD() { document.querySelectorAll('.dd.open,.dd-sub.open').forEach(e => { e.classList.remove('open'); const b = e.querySelector(':scope > .dd-btn,:scope > .dd-sub-btn'); if (b) b.setAttribute('aria-expanded', 'false') }) }
+function navFL(sec) { FLT._sec = sec; FLT.S.cat = 'All'; FLT.open() }
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.dd-btn,.dd-sub-btn')
+  if (btn) {
+    const box = btn.parentElement, was = box.classList.contains('open')
+    box.parentElement.querySelectorAll(':scope > .open, :scope > * > .open').forEach(x => { if (x !== box) { x.classList.remove('open'); const xb = x.querySelector(':scope > .dd-btn,:scope > .dd-sub-btn'); if (xb) xb.setAttribute('aria-expanded', 'false') } })
+    box.classList.toggle('open', !was); btn.setAttribute('aria-expanded', String(!was)); return
+  }
+  if (e.target.closest('.dd-item')) { closeDD(); document.querySelector('.nav-links')?.classList.remove('open'); return }
+  if (!e.target.closest('.dd')) closeDD()
+})
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDD() })
 
 function switchTab(btn, paneId) {
   const parent = btn.closest('.tabs')
