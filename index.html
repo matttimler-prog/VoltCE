@@ -1585,15 +1585,15 @@ FLT.setSec = function (g) { FLT.S.cat = 'All'; FLT._sec = g; FLT.restart(); flTo
 
 // Wisconsin electrician exam prep (2023 NEC): journeyman and master, built from the site's banks by build_wi.py
 const WI_G = { code: 'Code articles', calc: 'Calculations', theory: 'Electrical theory', wis: 'Wisconsin rules' }
-const WIT = makeTrainer({ id: 'wi', v: 'WIT', page: 'wi', bank: 'WI_BANK', file: 'wi-bank.js', catField: 'c', kind: 'code', extra: x => x.l === WIT._lvl && (!WIT._grp || x.g === WIT._grp),
+const WIT = makeTrainer({ id: 'wi', v: 'WIT', page: 'wi', bank: 'WI_BANK', file: 'wi-bank.js', catField: 'c', kind: 'code', extra: x => (x.l === WIT._lvl || x.l === 'B') && (!WIT._grp || x.g === WIT._grp),
   onReady: T => { T.S.diff = 0; T.restart() },
   chips: T => {
     const S = T.S, bank = window.WI_BANK || [], lvl = WIT._lvl
-    const cnt = (l, g) => bank.filter(x => x.l === l && (!g || x.g === g)).length
+    const cnt = (l, g) => bank.filter(x => (x.l === l || x.l === 'B') && (!g || x.g === g)).length
     document.getElementById('wi-set').innerHTML = T.settingsHtml()
     document.getElementById('wi-hero').innerHTML = [['J', 'Journeyman electrician', 'Code articles, load and sizing calculations and electrical theory at the journeyman level.'], ['M', 'Master electrician', 'Harder multi-step design calculations, services and feeders, motors and transformers, and Wisconsin master practice.']].map(([l, h, p]) => `<div class="rec ${lvl === l ? 'sel' : ''}" style="cursor:pointer;${lvl === l ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="WIT.setLvl('${l}')"><h4>${h}</h4><p>${cnt(l).toLocaleString()} questions. ${p}</p></div>`).join('')
     document.getElementById('wi-groups').innerHTML = `<button class="btn-sm cat-chip ${!WIT._grp ? 'active' : ''}" onclick="WIT.setGrp(null)">All (${cnt(lvl).toLocaleString()})</button>` + Object.keys(WI_G).filter(g => cnt(lvl, g)).map(g => `<button class="btn-sm cat-chip ${WIT._grp === g ? 'active' : ''}" onclick="WIT.setGrp('${g}')">${WI_G[g]} (${cnt(lvl, g).toLocaleString()})</button>`).join('')
-    const m = {}; bank.filter(x => x.l === lvl && (!WIT._grp || x.g === WIT._grp)).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
+    const m = {}; bank.filter(x => (x.l === lvl || x.l === 'B') && (!WIT._grp || x.g === WIT._grp)).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
     const items = Object.keys(m).sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b)).map(c => [c, m[c]])
     document.getElementById('wi-cats').innerHTML = `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${S.cat === 'All' ? 'active' : ''}" onclick="WIT.setCat('All')">Mixed: all topics (${items.reduce((a, b) => a + b[1], 0).toLocaleString()})</button></div>` + chapterBlocks(items, S.cat, c => `data-c="${esc(c)}" onclick="WIT.setCat(this.dataset.c)"`)
   } })

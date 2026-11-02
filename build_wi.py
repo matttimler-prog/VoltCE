@@ -27,8 +27,23 @@ for x in ca: add(x, 'calc', 1)
 for x in th: add(x, 'theory', 1)
 for x in mb:
     if not old.search(x['r']): add(x, 'code' if x['g'] == 'code' else 'calc', 0 if x['g'] == 'code' else 1)
+# Wisconsin rules questions written from SPS 316 / SPS 305 sources (reviewed set in wi/ folder passed as argv)
+import sys, glob
+dropped_old = [q for q in out if q['g'] == 'wis']
+out = [q for q in out if q['g'] != 'wis']          # replaced by the newer, source-checked set
+seen = {q['q'] for q in out}
+drops = set(json.load(open(sys.argv[2])) ) if len(sys.argv) > 2 else set()
+for f in sorted(glob.glob(sys.argv[1] + '/wi_*.json')) if len(sys.argv) > 1 else []:
+    for x in json.load(open(f)):
+        key = x['q']
+        if key in seen or key in drops: continue
+        seen.add(key)
+        r = x['r'] + (' (DSPS proposed order; confirm final text)' if x.get('prop') else '')
+        out.append({'c': x['c'], 'g': 'wis', 'l': x['lv'], 'w': 0, 'd': x['d'], 'q': x['q'], 'o': x['o'], 'a': x['a'], 'e': x['e'], 'r': r})
+print('old WI items replaced:', len(dropped_old))
 random.Random(11).shuffle(out)
 open('wi-bank.js', 'w').write('window.WI_BANK=' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';')
 from collections import Counter
 print(len(out), Counter((q['l'], q['g']) for q in out))
+print('wis by category', Counter(q['c'] for q in out if q['g']=='wis'))
 print('answer index', Counter(q['a'] for q in out))
