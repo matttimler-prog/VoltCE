@@ -377,20 +377,21 @@
     <div class="dd">
       <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Exam prep <span class="caret" aria-hidden="true">▾</span></button>
       <div class="dd-menu">
+        <button class="dd-item" onclick="showPage('prep')">Free exam prep</button>
+        <button class="dd-item" onclick="MASTT.open()">Master prep</button>
+        <button class="dd-item" onclick="CYCT.open()">Code cycles</button>
+      </div>
+    </div>
+    <div class="dd">
+      <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Exam prep by state <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="dd-menu">
+        <!-- To add a state: copy this .dd-sub block, rename it, and point its items at that state's trainer. -->
         <div class="dd-sub">
-          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Electrician exams <span class="caret" aria-hidden="true">›</span></button>
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Florida <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
-            <button class="dd-item" onclick="showPage('prep')">Free exam prep</button>
-            <button class="dd-item" onclick="MASTT.open()">Master prep</button>
-            <button class="dd-item" onclick="CYCT.open()">Code cycles</button>
-          </div>
-        </div>
-        <div class="dd-sub">
-          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Florida contractor exam <span class="caret" aria-hidden="true">›</span></button>
-          <div class="dd-submenu">
-            <button class="dd-item" onclick="navFL('biz')">Business part</button>
-            <button class="dd-item" onclick="navFL('tech')">Technical/Safety part</button>
-            <button class="dd-item" onclick="navFL(null)">Everything mixed</button>
+            <button class="dd-item" onclick="navFL('biz')">Contractor: Business part</button>
+            <button class="dd-item" onclick="navFL('tech')">Contractor: Technical/Safety part</button>
+            <button class="dd-item" onclick="navFL(null)">Contractor: Everything mixed</button>
           </div>
         </div>
       </div>
