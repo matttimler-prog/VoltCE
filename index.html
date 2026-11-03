@@ -394,6 +394,13 @@
             <button class="dd-item" onclick="navFL(null)">Contractor: Everything mixed</button>
           </div>
         </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Wisconsin <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navWI('J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navWI('M')">Master electrician</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="dd">
@@ -629,6 +636,20 @@
     <div id="cyc-body"></div>
     <div class="section-title" style="margin-top:22px">Pick a topic</div>
     <div id="cyc-cats"></div>
+  </div>
+</div>
+
+<div id="page-wi" class="page">
+  <div class="container">
+    <div class="page-title">Wisconsin electrician exam prep</div>
+    <div class="page-sub">Free practice for the Wisconsin journeyman and master electrician exams: code-article questions, load and sizing calculations with worked solutions, and electrical theory, all written for the 2023 NEC.</div>
+    <div class="alert alert-info" style="font-size:13px">Wisconsin's updated electrical code, based on the 2023 NEC, took effect September 1, 2026, and the Department of Safety and Professional Services said it expected its licensing exams to be updated by October 1, 2026. This bank only includes questions that are correct under the 2023 NEC. Study practice written by VoltCE, not official exam questions. The exam is open book, so have your 2023 code book handy, and confirm the current exam outline with DSPS before you test. The Wisconsin rules questions are checked against the adopted text of SPS 316 (Register September 2026), SPS 305 and Wis. Stat. chs. 101 and 182.0175. Fees, dates and rules change, so check the current rule before you rely on a detail.</div>
+    <div id="wi-hero" class="rec-grid" style="margin-bottom:14px"></div>
+    <div id="wi-groups" class="row-btns" style="margin-bottom:12px"></div>
+    <div id="wi-set"></div>
+    <div id="wi-body"></div>
+    <div class="section-title" style="margin-top:22px">Practice by topic</div>
+    <div id="wi-cats"></div>
   </div>
 </div>
 
@@ -1475,7 +1496,7 @@ function makeTrainer(o) {
       <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
       ${q.o.map((x, k) => `<button class="opt ${S.answered ? (k === q.a ? 'right' : (k === S.sel ? 'wrong' : '')) : ''}" ${S.answered ? 'disabled' : ''} onclick="${o.v}.pick(${k})">${String.fromCharCode(65 + k)}. ${esc(x)}</button>`).join('')}
       ${S.timedOut ? '<div class="alert alert-error" style="margin-top:10px;margin-bottom:0">Time is up. The question is locked.</div>' : ''}
-      ${S.answered ? `<div class="expl"><b>${o.kind === 'calc' ? 'Worked solution.' : 'Why.'}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>` : ''}
+      ${S.answered ? `<div class="expl"><b>${(o.kind === 'calc' || q.w) ? 'Worked solution.' : 'Why.'}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>` : ''}
       <div class="row-btns">${S.answered ? `<button class="btn-sm" onclick="${o.v}.next()">Next question →</button>` : `<button class="btn-sm" onclick="${o.v}.skip()">Skip</button>`}<button class="btn-sm" style="margin-left:auto;opacity:.8" onclick="reportQ()">Report this question</button></div>
     </div>`
     window._rq = { q: q.q, o: q.o, a: q.a, r: q.r, bank: o.id }
@@ -1561,6 +1582,29 @@ const FLT = makeTrainer({ id: 'fl', v: 'FLT', page: 'fl', bank: 'FL_BANK', file:
 const flTop = () => { const el = document.getElementById('fl-hero'); if (el) window.scrollTo({ top: el.offsetTop + 60, behavior: 'smooth' }) }
 FLT.setSec = function (g) { FLT.S.cat = 'All'; FLT._sec = g; FLT.restart(); flTop() }
 { const sc = FLT.setCat; FLT.setCat = c => { FLT._sec = null; sc(c); flTop() } }
+
+// Wisconsin electrician exam prep (2023 NEC): journeyman and master, built from the site's banks by build_wi.py
+const WI_G = { code: 'Code articles', calc: 'Calculations', theory: 'Electrical theory', wis: 'Wisconsin rules' }
+const WIT = makeTrainer({ id: 'wi', v: 'WIT', page: 'wi', bank: 'WI_BANK', file: 'wi-bank.js', catField: 'c', kind: 'code', extra: x => (x.l === WIT._lvl || x.l === 'B') && (!WIT._grp || x.g === WIT._grp),
+  onReady: T => { T.S.diff = 0; T.restart() },
+  chips: T => {
+    const S = T.S, bank = window.WI_BANK || [], lvl = WIT._lvl
+    const cnt = (l, g) => bank.filter(x => (x.l === l || x.l === 'B') && (!g || x.g === g)).length
+    document.getElementById('wi-set').innerHTML = T.settingsHtml()
+    document.getElementById('wi-hero').innerHTML = [['J', 'Journeyman electrician', 'Code articles, load and sizing calculations and electrical theory at the journeyman level.'], ['M', 'Master electrician', 'Harder multi-step design calculations, services and feeders, motors and transformers, and Wisconsin master practice.']].map(([l, h, p]) => `<div class="rec ${lvl === l ? 'sel' : ''}" style="cursor:pointer;${lvl === l ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="WIT.setLvl('${l}')"><h4>${h}</h4><p>${cnt(l).toLocaleString()} questions. ${p}</p></div>`).join('')
+    document.getElementById('wi-groups').innerHTML = `<button class="btn-sm cat-chip ${!WIT._grp ? 'active' : ''}" onclick="WIT.setGrp(null)">All (${cnt(lvl).toLocaleString()})</button>` + Object.keys(WI_G).filter(g => cnt(lvl, g)).map(g => `<button class="btn-sm cat-chip ${WIT._grp === g ? 'active' : ''}" onclick="WIT.setGrp('${g}')">${WI_G[g]} (${cnt(lvl, g).toLocaleString()})</button>`).join('')
+    const m = {}; bank.filter(x => (x.l === lvl || x.l === 'B') && (!WIT._grp || x.g === WIT._grp)).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
+    const items = Object.keys(m).sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b)).map(c => [c, m[c]])
+    const wis = items.filter(it => /^Wisconsin: /.test(it[0])), rest = items.filter(it => !/^Wisconsin: /.test(it[0]))
+    const hand = c => `data-c="${esc(c)}" onclick="WIT.setCat(this.dataset.c)"`
+    document.getElementById('wi-cats').innerHTML = `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${S.cat === 'All' ? 'active' : ''}" onclick="WIT.setCat('All')">Mixed: all topics (${items.reduce((a, b) => a + b[1], 0).toLocaleString()})</button></div>` +
+      (wis.length ? `<div class="card-sm" style="margin-bottom:8px"><b style="font-size:14px">Wisconsin rules</b><div class="row-btns" style="margin-top:10px">${wis.map(it => `<button class="btn-sm cat-chip ${it[0] === S.cat ? 'active' : ''}" ${hand(it[0])}>${esc(it[0].replace(/^Wisconsin: /, ''))} (${it[1]})</button>`).join('')}</div></div>` : '') +
+      (rest.length ? chapterBlocks(rest, S.cat, c => hand(c)) : '')
+  } })
+WIT._lvl = 'J'; WIT._grp = null
+const wiTop = () => { const el = document.getElementById('wi-groups'); if (el) window.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' }) }
+WIT.setLvl = l => { WIT._lvl = l; WIT._grp = null; WIT.S.cat = 'All'; WIT.restart(); wiTop() }
+WIT.setGrp = g => { WIT._grp = g; WIT.S.cat = 'All'; WIT.restart() }
 
 // code articles page
 function artNum(label) { const m = /Art\. (\d+)/.exec(label); return m ? +m[1] : 0 }
@@ -2053,7 +2097,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { fl: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { fl: 'meter', wi: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
@@ -2089,6 +2133,7 @@ function showPage(id) {
 
 // nav dropdowns: click to open (works on touch), hover on desktop, Escape or outside click closes
 function closeDD() { document.querySelectorAll('.dd.open,.dd-sub.open').forEach(e => { e.classList.remove('open'); const b = e.querySelector(':scope > .dd-btn,:scope > .dd-sub-btn'); if (b) b.setAttribute('aria-expanded', 'false') }) }
+function navWI(l) { WIT._lvl = l; WIT._grp = null; WIT.S.cat = 'All'; WIT.open() }
 function navFL(sec) { FLT._sec = sec; FLT.S.cat = 'All'; FLT.open() }
 document.addEventListener('click', e => {
   const btn = e.target.closest('.dd-btn,.dd-sub-btn')
