@@ -395,6 +395,14 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Colorado <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('co','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('co','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('co','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Florida <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navFL('biz')">Contractor: Business part</button>
@@ -416,6 +424,22 @@
             <button class="dd-item" onclick="navST('mi','J')">Journeyman electrician</button>
             <button class="dd-item" onclick="navST('mi','M')">Master electrician</button>
             <button class="dd-item" onclick="navST('mi','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">New York City <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('nyc','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('nyc','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('nyc','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Tennessee <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('tn','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('tn','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('tn','C')">Electrical contractor</button>
           </div>
         </div>
         <div class="dd-sub">
@@ -1644,6 +1668,9 @@ const ST_CFG = {
   mi: { name: 'Michigan', ed: '2023 NEC', note: 'Michigan adopted the 2023 NEC with Michigan amendments (Michigan Electrical Code, Part 8), effective March 12, 2024. LARA licenses journeymen, masters and electrical contractors, and PSI gives the exams (journeyman and master are 75% to pass). The electrical contractor license is issued by LARA Bureau of Construction Codes with a qualifying master electrician, Form BCC-974 and a $300 fee. The PSI Michigan electrical bulletin (updated August 2024) lists an Electrical Contractor exam of 40 questions, 75% to pass, open book, so expect the contractor exam as well as the master exam; LARA pages do not list it, so confirm with LARA (the state exam was dropped in 2017); Detroit still runs its own contractor license and exam. Check with LARA and your city. Study practice written by VoltCE, not official exam questions. Confirm the exam outline, allowed references and code edition in the current PSI candidate bulletin before you test.' },
   az: { name: 'Arizona', ed: '2023 NEC', note: 'Arizona has no statewide journeyman or master license and no statewide NEC edition; each city or county adopts its own (Phoenix and Tucson list the 2023 NEC). The Registrar of Contractors licenses electrical contractors (C-11, R-11, CR-11) after 4 years of experience, a statutes-and-rules exam and a trade exam. The journeyman and master cards below are code-level practice, and the contractor card covers Registrar of Contractors licensing. Study practice written by VoltCE, not official exam questions. Confirm your city or county edition and the current exam outline before you test.' },
   ga: { name: 'Georgia', ed: '2023 NEC', note: 'Georgia adopted the 2023 NEC effective January 1, 2025, with state amendments. The Division of Electrical Contractors licenses Class I (restricted) and Class II (unrestricted) electrical contractors, and PSI gives the exam. The state licenses contractors rather than individual journeymen, so journeyman credentials here are local or apprenticeship-based; check with your city or county. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and amendment dates with the board before you test.' },
+  tn: { name: 'Tennessee', ed: '2023 NEC', note: '' },
+  nyc: { name: 'New York City', ed: 'NYC Electrical Code', note: '' },
+  co: { name: 'Colorado', ed: '2023 NEC', note: '' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
 const ST_LV = {
@@ -2194,7 +2221,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { fl: 'meter', wi: 'meter', mi: 'meter', az: 'meter', ga: 'meter', tx: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { fl: 'meter', wi: 'meter', mi: 'meter', az: 'meter', ga: 'meter', tx: 'meter', tn: 'meter', nyc: 'meter', co: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
