@@ -387,11 +387,43 @@
       <div class="dd-menu">
         <!-- To add a state: copy this .dd-sub block, rename it, and point its items at that state's trainer. -->
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Arizona <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('az','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('az','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('az','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Florida <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navFL('biz')">Contractor: Business part</button>
             <button class="dd-item" onclick="navFL('tech')">Contractor: Technical/Safety part</button>
             <button class="dd-item" onclick="navFL(null)">Contractor: Everything mixed</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Georgia <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('ga','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('ga','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('ga','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Michigan <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('mi','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('mi','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('mi','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Texas <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('tx','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('tx','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('tx','C')">Electrical contractor</button>
           </div>
         </div>
         <div class="dd-sub">
@@ -1606,6 +1638,70 @@ const wiTop = () => { const el = document.getElementById('wi-groups'); if (el) w
 WIT.setLvl = l => { WIT._lvl = l; WIT._grp = null; WIT.S.cat = 'All'; WIT.restart(); wiTop() }
 WIT.setGrp = g => { WIT._grp = g; WIT.S.cat = 'All'; WIT.restart() }
 
+// ── More states: data-driven exam-prep pages (journeyman, master, contractor), built by build_state.py ──
+const ST_CFG = {
+  mi: { name: 'Michigan', ed: '2023 NEC', note: '' },
+  az: { name: 'Arizona', ed: '2023 NEC', note: '' },
+  ga: { name: 'Georgia', ed: '2020 NEC', note: '' },
+  tx: { name: 'Texas', ed: '2023 NEC', note: '' },
+}
+const ST_LV = {
+  J: ['Journeyman electrician', 'Code articles, load and sizing calculations and electrical theory at the journeyman level, plus the state rules you need to know.'],
+  M: ['Master electrician', 'Harder multi-step design calculations, services and feeders, motors and transformers, and master-level state rules.'],
+  C: ['Electrical contractor', 'Business, law and licensing questions for the contractor exam, plus the master-level code and calculations.'],
+}
+const ST_G = { code: 'Code articles', calc: 'Calculations', theory: 'Electrical theory', wis: 'State rules' }
+const STT = {}
+function stInit(id) {
+  const c = ST_CFG[id], P = id + '-'
+  document.body.insertAdjacentHTML('beforeend', `<div id="page-${id}" class="page"><div class="container">
+    <div class="page-title">${c.name} electrician exam prep</div>
+    <div class="page-sub">Free practice for the ${c.name} journeyman, master and contractor exams: code-article questions, load and sizing calculations with worked solutions, electrical theory, and ${c.name} licensing rules.</div>
+    <div class="alert alert-info" style="font-size:13px" id="${P}note"></div>
+    <div id="${P}hero" class="rec-grid" style="margin-bottom:14px"></div>
+    <div id="${P}groups" class="row-btns" style="margin-bottom:12px"></div>
+    <div id="${P}set"></div><div id="${P}body"></div>
+    <div class="section-title" style="margin-top:22px">Practice by topic</div>
+    <div id="${P}cats"></div>
+    <div class="section-title" style="margin-top:22px">Licensing boards, applications and rules</div>
+    <div id="${P}links"></div>
+  </div></div>`)
+  const pre = c.name + ': ', bankName = id.toUpperCase() + '_BANK'
+  const inLvl = (x, l) => x.l === l || x.l === 'B' || (l === 'C' && x.l === 'M' && x.g !== 'wis')
+  const T = makeTrainer({ id, v: 'STT.' + id, page: id, bank: bankName, file: id + '-bank.js', catField: 'c', kind: 'code',
+    extra: x => inLvl(x, T._lvl) && (!T._grp || x.g === T._grp),
+    onReady: T => { T.S.diff = 0; T.restart() },
+    chips: T => {
+      const S = T.S, bank = window[bankName] || [], lvl = T._lvl
+      const cnt = (l, g) => bank.filter(x => inLvl(x, l) && (!g || x.g === g)).length
+      const el = k => document.getElementById(P + k)
+      el('set').innerHTML = T.settingsHtml()
+      el('note').innerHTML = c.note || (c.name + ' electrical code is based on the ' + c.ed + '. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and code edition with the state board before you test.')
+      el('hero').innerHTML = Object.keys(ST_LV).filter(l => cnt(l)).map(l => `<div class="rec" style="cursor:pointer;${lvl === l ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="STT.${id}.setLvl('${l}')"><h4>${ST_LV[l][0]}</h4><p>${cnt(l).toLocaleString()} questions. ${ST_LV[l][1]}</p></div>`).join('')
+      el('groups').innerHTML = `<button class="btn-sm cat-chip ${!T._grp ? 'active' : ''}" onclick="STT.${id}.setGrp(null)">All (${cnt(lvl).toLocaleString()})</button>` + Object.keys(ST_G).filter(g => cnt(lvl, g)).map(g => `<button class="btn-sm cat-chip ${T._grp === g ? 'active' : ''}" onclick="STT.${id}.setGrp('${g}')">${ST_G[g]} (${cnt(lvl, g).toLocaleString()})</button>`).join('')
+      const m = {}; bank.filter(x => inLvl(x, lvl) && (!T._grp || x.g === T._grp)).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
+      const items = Object.keys(m).sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b)).map(k => [k, m[k]])
+      const own = items.filter(it => it[0].startsWith(pre)), rest = items.filter(it => !it[0].startsWith(pre))
+      const hand = k => `data-c="${esc(k)}" onclick="STT.${id}.setCat(this.dataset.c)"`
+      el('cats').innerHTML = `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${S.cat === 'All' ? 'active' : ''}" onclick="STT.${id}.setCat('All')">Mixed: all topics (${items.reduce((a, b) => a + b[1], 0).toLocaleString()})</button></div>` +
+        (own.length ? `<div class="card-sm" style="margin-bottom:8px"><b style="font-size:14px">${c.name} rules</b><div class="row-btns" style="margin-top:10px">${own.map(it => `<button class="btn-sm cat-chip ${it[0] === S.cat ? 'active' : ''}" ${hand(it[0])}>${esc(it[0].slice(pre.length))} (${it[1]})</button>`).join('')}</div></div>` : '') +
+        (rest.length ? chapterBlocks(rest, S.cat, k => hand(k)) : '')
+      el('links').innerHTML = stLinksHtml(c.name)
+    } })
+  T._lvl = 'J'; T._grp = null
+  T.setLvl = l => { T._lvl = l; T._grp = null; T.S.cat = 'All'; T.restart(); const e = document.getElementById(P + 'groups'); if (e) window.scrollTo({ top: e.offsetTop - 20, behavior: 'smooth' }) }
+  T.setGrp = g => { T._grp = g; T.S.cat = 'All'; T.restart() }
+  STT[id] = T
+}
+Object.keys(ST_CFG).forEach(stInit)
+function navST(id, l) { const T = STT[id]; T._lvl = l; T._grp = null; T.S.cat = 'All'; T.open() }
+function stLinksHtml(name) {
+  const L = (window.ST_LINKS || {})[name] || []
+  if (!L.length) return '<div class="empty">Links coming soon.</div>'
+  const by = {}; L.forEach(x => { (by[x.category] = by[x.category] || []).push(x) })
+  return Object.keys(by).map(k => `<div class="card-sm" style="margin-bottom:8px"><b style="font-size:14px">${esc(k)}</b>` + by[k].map(x => `<div style="margin-top:8px;font-size:13px"><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><div style="color:var(--muted)">${esc(x.desc || '')}</div></div>`).join('') + '</div>').join('')
+}
+
 // code articles page
 function artNum(label) { const m = /Art\. (\d+)/.exec(label); return m ? +m[1] : 0 }
 const CH_NAMES = ['Chapter 1: General (Arts. 90–110)', 'Chapter 2: Wiring and protection (Arts. 200–285)', 'Chapter 3: Wiring methods and materials (Arts. 300–399)', 'Chapter 4: Equipment for general use (Arts. 400–499)', 'Chapter 5: Special occupancies (Arts. 500–599)', 'Chapter 6: Special equipment (Arts. 600–699)', 'Chapter 7: Special conditions (Arts. 700–799)', 'Chapter 8: Communications systems (Arts. 800–899)', 'Chapter 9: Tables', 'Annexes (Annex D load examples and more)', 'Theory and formulas', 'Master-level problems']
@@ -2097,7 +2193,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { fl: 'meter', wi: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { fl: 'meter', wi: 'meter', mi: 'meter', az: 'meter', ga: 'meter', tx: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
@@ -2163,5 +2259,6 @@ function showAlert(id, msg) {
   el.style.display = 'block'
 }
 </script>
+<script src="state-links.js" defer></script>
 </body>
 </html>
