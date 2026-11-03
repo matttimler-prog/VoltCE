@@ -473,6 +473,7 @@
             <button class="dd-item" onclick="navWI('M')">Master electrician</button>
           </div>
         </div>
+        <button class="dd-item" onclick="navST('nascla','C')">NASCLA contractor exam (multi-state)</button>
       </div>
     </div>
     <div class="dd">
@@ -1691,6 +1692,7 @@ const ST_CFG = {
   co: { name: 'Colorado', ed: '2026 NEC', note: 'Colorado adopted the 2026 NEC effective August 1, 2026 (State Electrical Board, Rule 1.5 of 3 CCR 710-1), and the PSI exams moved to the 2026 NEC on the same date; confirm the effective date on the DPO site. Colorado licenses residential wireman, journeyman and master electricians, and electrical contractor registration requires a master. PSI exams have 90 scored questions in 240 minutes, with 70 percent to pass, closed book except the NEC. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and fees before you test.' },
   nc: { name: 'North Carolina', ed: '2023 NEC', note: '' },
   sc: { name: 'South Carolina', ed: '2023 NEC', note: '' },
+  nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA contractor exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
 const ST_LV = {
@@ -1703,8 +1705,8 @@ const STT = {}
 function stInit(id) {
   const c = ST_CFG[id], P = id + '-'
   document.body.insertAdjacentHTML('beforeend', `<div id="page-${id}" class="page"><div class="container">
-    <div class="page-title">${c.name} electrician exam prep</div>
-    <div class="page-sub">Free practice for the ${c.name} journeyman, master and contractor exams: code-article questions, load and sizing calculations with worked solutions, electrical theory, and ${c.name} licensing rules.</div>
+    <div class="page-title">${c.title || c.name + ' electrician exam prep'}</div>
+    <div class="page-sub">${c.sub || 'Free practice for the ' + c.name + ' journeyman, master and contractor exams: code-article questions, load and sizing calculations with worked solutions, electrical theory, and ' + c.name + ' licensing rules.'}</div>
     <div class="alert alert-info" style="font-size:13px" id="${P}note"></div>
     <div id="${P}hero" class="rec-grid" style="margin-bottom:14px"></div>
     <div id="${P}groups" class="row-btns" style="margin-bottom:12px"></div>
@@ -1725,7 +1727,7 @@ function stInit(id) {
       const el = k => document.getElementById(P + k)
       el('set').innerHTML = T.settingsHtml()
       el('note').innerHTML = c.note || (c.name + ' electrical code is based on the ' + c.ed + '. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and code edition with the state board before you test.')
-      el('hero').innerHTML = Object.keys(ST_LV).filter(l => cnt(l)).map(l => `<div class="rec" style="cursor:pointer;${lvl === l ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="STT.${id}.setLvl('${l}')"><h4>${ST_LV[l][0]}</h4><p>${cnt(l).toLocaleString()} questions. ${ST_LV[l][1]}</p></div>`).join('')
+      el('hero').innerHTML = Object.keys(ST_LV).filter(l => cnt(l) && (!c.only || l === 'C')).map(l => `<div class="rec" style="cursor:pointer;${lvl === l ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="STT.${id}.setLvl('${l}')"><h4>${c.only ? c.name + ' contractor exam' : ST_LV[l][0]}</h4><p>${cnt(l).toLocaleString()} questions. ${c.only ? 'Exam format, registration, and business, law and project management practice.' : ST_LV[l][1]}</p></div>`).join('')
       el('groups').innerHTML = `<button class="btn-sm cat-chip ${!T._grp ? 'active' : ''}" onclick="STT.${id}.setGrp(null)">All (${cnt(lvl).toLocaleString()})</button>` + Object.keys(ST_G).filter(g => cnt(lvl, g)).map(g => `<button class="btn-sm cat-chip ${T._grp === g ? 'active' : ''}" onclick="STT.${id}.setGrp('${g}')">${ST_G[g]} (${cnt(lvl, g).toLocaleString()})</button>`).join('')
       const m = {}; bank.filter(x => inLvl(x, lvl) && (!T._grp || x.g === T._grp)).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
       const items = Object.keys(m).sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b)).map(k => [k, m[k]])
@@ -1736,7 +1738,7 @@ function stInit(id) {
         (rest.length ? chapterBlocks(rest, S.cat, k => hand(k)) : '')
       el('links').innerHTML = stLinksHtml(c.name)
     } })
-  T._lvl = 'J'; T._grp = null
+  T._lvl = c.lvl || 'J'; T._grp = null
   T.setLvl = l => { T._lvl = l; T._grp = null; T.S.cat = 'All'; T.restart(); const e = document.getElementById(P + 'groups'); if (e) window.scrollTo({ top: e.offsetTop - 20, behavior: 'smooth' }) }
   T.setGrp = g => { T._grp = g; T.S.cat = 'All'; T.restart() }
   STT[id] = T
