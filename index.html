@@ -435,6 +435,22 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">North Carolina <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('nc','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('nc','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('nc','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">South Carolina <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('sc','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('sc','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('sc','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Tennessee <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navST('tn','J')">Journeyman electrician</button>
@@ -1673,6 +1689,8 @@ const ST_CFG = {
   tn: { name: 'Tennessee', ed: '2017 NEC', note: 'Tennessee is on the 2017 NEC (State Fire Marshal, effective October 1, 2018), so the code questions below are written to the 2017 edition. Tennessee does not issue a state journeyman or master license: the Board for Licensing Contractors licenses electrical contractors (CE) for work of 25,000 dollars or more, and the Limited Licensed Electrician covers smaller jobs. Journeyman and master credentials are local. Exam administration moved from PSI to Prov in July 2026. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline, fees and code edition with the Board before you test.' },
   nyc: { name: 'New York City', ed: '2020 NEC', note: 'New York City uses its own code: the 2025 NYC Electrical Code, based on the 2020 NEC and in full effect since December 21, 2025. The Department of Buildings licenses Master Electricians and Special Electricians. There is no journeyman, apprentice or separate contractor license, and the Master Electrician business is the contracting entity. The NEC-based code questions below use the 2020 NEC, which the NYC code is built on; NYC amendments differ, so study the NYC Electrical Code for the exam. The DOB exam bulletin still cites the older code, so confirm the exam content with DOB. Study practice written by VoltCE, not official exam questions.' },
   co: { name: 'Colorado', ed: '2026 NEC', note: 'Colorado adopted the 2026 NEC effective August 1, 2026 (State Electrical Board, Rule 1.5 of 3 CCR 710-1), and the PSI exams moved to the 2026 NEC on the same date; confirm the effective date on the DPO site. Colorado licenses residential wireman, journeyman and master electricians, and electrical contractor registration requires a master. PSI exams have 90 scored questions in 240 minutes, with 70 percent to pass, closed book except the NEC. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and fees before you test.' },
+  nc: { name: 'North Carolina', ed: '2023 NEC', note: '' },
+  sc: { name: 'South Carolina', ed: '2023 NEC', note: '' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
 const ST_LV = {
@@ -2223,7 +2241,7 @@ function donate() {
 
 // ── UTILS ─────────────────────────────────────────────────
 // corner symbols: page default, or the topic being studied
-const PAGE_SYM = { fl: 'meter', wi: 'meter', mi: 'meter', az: 'meter', ga: 'meter', tx: 'meter', tn: 'meter', nyc: 'meter', co: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
+const PAGE_SYM = { fl: 'meter', wi: 'meter', mi: 'meter', az: 'meter', ga: 'meter', tx: 'meter', tn: 'meter', nyc: 'meter', co: 'meter', nc: 'meter', sc: 'meter', cyc: 'book', master: 'meter', prep: 'book', calc: 'meter', code: 'book', study: 'bolt', fc: 'book', idx: 'book', theory: 'ac', chg: 'book', practice: 'bolt', stats: 'meter', courses: 'book', support: 'bolt', feedback: 'book' }
 function setCorner(page, label) {
   try {
     const pg = document.getElementById('page-' + page); const c = pg && pg.querySelector('.container'); if (!c) return
