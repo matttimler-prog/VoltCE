@@ -1719,7 +1719,7 @@ function stInit(id) {
     <div id="${P}links"></div>
   </div></div>`)
   const pre = c.name + ': ', bankName = id.toUpperCase() + '_BANK'
-  const inLvl = (x, l) => x.l === l || x.l === 'B' || (l === 'C' && x.l === 'M' && x.g !== 'wis')
+  const inLvl = (x, l) => l === 'A' || x.l === l || x.l === 'B' || (l === 'C' && x.l === 'M' && x.g !== 'wis')
   const T = makeTrainer({ id, v: 'STT.' + id, page: id, bank: bankName, file: id + '-bank.js', catField: 'c', kind: 'code',
     extra: x => inLvl(x, T._lvl) && (!T._grp || x.g === T._grp),
     onReady: T => { T.S.diff = 0; T.restart() },
@@ -1729,7 +1729,7 @@ function stInit(id) {
       const el = k => document.getElementById(P + k)
       el('set').innerHTML = T.settingsHtml()
       el('note').innerHTML = c.note || (c.name + ' electrical code is based on the ' + c.ed + '. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and code edition with the state board before you test.')
-      el('hero').innerHTML = Object.keys(ST_LV).filter(l => cnt(l) && (!c.only || l === 'C')).map(l => `<div class="rec" style="cursor:pointer;${lvl === l ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="STT.${id}.setLvl('${l}')"><h4>${c.only ? c.name + ' contractor exam' : ST_LV[l][0]}</h4><p>${cnt(l).toLocaleString()} questions. ${c.only ? 'Exam format, registration, and business, law and project management practice.' : ST_LV[l][1]}</p></div>`).join('')
+      el('hero').innerHTML = (c.heros || Object.keys(ST_LV).filter(l => !c.only || l === 'C').map(l => [l, c.only ? c.name + ' contractor exam' : ST_LV[l][0], c.only ? 'Exam format, registration, and business, law and project management practice.' : ST_LV[l][1]])).filter(h => cnt(h[0])).map(h => `<div class="rec" style="cursor:pointer;${lvl === h[0] ? 'outline:2px solid var(--amber,#e8a600)' : ''}" onclick="STT.${id}.setLvl('${h[0]}')"><h4>${h[1]}</h4><p>${cnt(h[0]).toLocaleString()} questions. ${h[2]}</p></div>`).join('')
       el('groups').innerHTML = `<button class="btn-sm cat-chip ${!T._grp ? 'active' : ''}" onclick="STT.${id}.setGrp(null)">All (${cnt(lvl).toLocaleString()})</button>` + Object.keys(ST_G).filter(g => cnt(lvl, g)).map(g => `<button class="btn-sm cat-chip ${T._grp === g ? 'active' : ''}" onclick="STT.${id}.setGrp('${g}')">${ST_G[g]} (${cnt(lvl, g).toLocaleString()})</button>`).join('')
       const m = {}; bank.filter(x => inLvl(x, lvl) && (!T._grp || x.g === T._grp)).forEach(x => { m[x.c] = (m[x.c] || 0) + 1 })
       const items = Object.keys(m).sort((a, b) => artNum(a) - artNum(b) || a.localeCompare(b)).map(k => [k, m[k]])
@@ -1738,7 +1738,7 @@ function stInit(id) {
       el('cats').innerHTML = `<div class="row-btns" style="margin-bottom:8px"><button class="btn-sm cat-chip ${S.cat === 'All' ? 'active' : ''}" onclick="STT.${id}.setCat('All')">Mixed: all topics (${items.reduce((a, b) => a + b[1], 0).toLocaleString()})</button></div>` +
         (own.length ? `<div class="card-sm" style="margin-bottom:8px"><b style="font-size:14px">${c.name} rules</b><div class="row-btns" style="margin-top:10px">${own.map(it => `<button class="btn-sm cat-chip ${it[0] === S.cat ? 'active' : ''}" ${hand(it[0])}>${esc(it[0].slice(pre.length))} (${it[1]})</button>`).join('')}</div></div>` : '') +
         (rest.length ? chapterBlocks(rest, S.cat, k => hand(k)) : '')
-      el('links').innerHTML = stLinksHtml(c.name)
+      el('links').innerHTML = stRefsHtml(c) + stLinksHtml(c.linkKey || c.name)
     } })
   T._lvl = c.lvl || 'J'; T._grp = null
   T.setLvl = l => { T._lvl = l; T._grp = null; T.S.cat = 'All'; T.restart(); const e = document.getElementById(P + 'groups'); if (e) window.scrollTo({ top: e.offsetTop - 20, behavior: 'smooth' }) }
@@ -1747,6 +1747,10 @@ function stInit(id) {
 }
 Object.keys(ST_CFG).forEach(stInit)
 function navST(id, l) { const T = STT[id]; T._lvl = l; T._grp = null; T.S.cat = 'All'; T.open() }
+function stRefsHtml(c) {
+  if (!c.refs || !c.refs.length) return ''
+  return '<div class="card-sm" style="margin-bottom:8px"><b style="font-size:14px">Reference books for this exam</b><ol style="margin:8px 0 0 18px;font-size:13px">' + c.refs.map(r => '<li style="margin-top:4px">' + esc(r) + '</li>').join('') + '</ol><div style="margin-top:8px;font-size:12px;color:var(--muted)">Check the current PSI candidate bulletin for the exact editions allowed in the exam room.</div></div>'
+}
 function stLinksHtml(name) {
   const L = (window.ST_LINKS || {})[name] || []
   if (!L.length) return '<div class="empty">Links coming soon.</div>'
