@@ -473,7 +473,15 @@
             <button class="dd-item" onclick="navWI('M')">Master electrician</button>
           </div>
         </div>
-        <button class="dd-item" onclick="navST('nascla','C')">NASCLA contractor exam (multi-state)</button>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">NASCLA (multi-state) <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('nj','J')">Journeyman electricians</button>
+            <button class="dd-item" onclick="navST('nm','A')">Electrical contractors (master/unlimited)</button>
+            <button class="dd-item" onclick="navST('nr','J')">Residential electrical contractors</button>
+            <button class="dd-item" onclick="navST('nascla','C')">Commercial general building</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="dd">
@@ -1694,7 +1702,7 @@ const ST_CFG = {
   co: { name: 'Colorado', ed: '2026 NEC', note: 'Colorado adopted the 2026 NEC effective August 1, 2026 (State Electrical Board, Rule 1.5 of 3 CCR 710-1), and the PSI exams moved to the 2026 NEC on the same date; confirm the effective date on the DPO site. Colorado licenses residential wireman, journeyman and master electricians, and electrical contractor registration requires a master. PSI exams have 90 scored questions in 240 minutes, with 70 percent to pass, closed book except the NEC. Study practice written by VoltCE, not official exam questions. Confirm the current exam outline and fees before you test.' },
   nc: { name: 'North Carolina', ed: '2020 NEC', note: 'North Carolina is on the 2020 NEC with state amendments (effective November 1, 2021, State Building Code Council); one- and two-family dwellings stay on the 2017 NC Electrical Code. The 2023 NEC is adopted but delayed with no date set. North Carolina licenses electrical contractors, not individual journeymen or masters: Limited, Intermediate and Unlimited classes by project size and experience, plus special restricted classes. Study practice written by VoltCE, not official exam questions. The board website could not be reached while researching, so confirm the exam format, fees and requirements with the State Board of Examiners of Electrical Contractors before you test.' },
   sc: { name: 'South Carolina', ed: '2023 NEC', note: 'South Carolina adopted the 2023 NEC with state modifications (Building Codes Council, August 2025), and local jurisdictions must enforce it from January 1, 2027; the 2020 NEC with state modifications is still enforced until then. South Carolina has no state journeyman or master license: electrical contractors are licensed by the Contractors Licensing Board (Mechanical Contractor with the Electrical subclassification) or, for residential work, the Residential Builders Commission, and PSI gives the exams. Journeyman and master certifications are local. Study practice written by VoltCE, not official exam questions. Confirm the current exam format, fees and code date with LLR before you test.' },
-  nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA contractor exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
+  nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA commercial general building exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
 const ST_LV = {
@@ -1718,7 +1726,7 @@ function stInit(id) {
     <div class="section-title" style="margin-top:22px">Licensing boards, applications and rules</div>
     <div id="${P}links"></div>
   </div></div>`)
-  const pre = c.name + ': ', bankName = id.toUpperCase() + '_BANK'
+  const pre = c.pre || (c.name + ': '), bankName = id.toUpperCase() + '_BANK'
   const inLvl = (x, l) => l === 'A' || x.l === l || x.l === 'B' || (l === 'C' && x.l === 'M' && x.g !== 'wis')
   const T = makeTrainer({ id, v: 'STT.' + id, page: id, bank: bankName, file: id + '-bank.js', catField: 'c', kind: 'code',
     extra: x => inLvl(x, T._lvl) && (!T._grp || x.g === T._grp),

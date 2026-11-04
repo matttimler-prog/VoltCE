@@ -6,9 +6,11 @@ citation names no other edition. State rules items (levels J|M|C|B) are added as
 Levels: J = difficulty<=2, M = 3 (code/calc/theory); state items carry their own level. Output fields as build_wi.py.
 """
 import json, re, random, sys
-st, ed, rules = sys.argv[1], int(sys.argv[2]), sys.argv[3]
-bit = {2017: 1, 2020: 2, 2023: 4, 2026: 8}[ed]
-other = '|'.join(str(y)[2:] for y in (2017, 2020, 2023, 2026) if y != ed)
+st, rules = sys.argv[1], sys.argv[3]
+eds = [int(e) for e in sys.argv[2].split('+')]       # e.g. 2023 or 2020+2023 (question must be valid in every listed edition)
+bit = 0
+for e in eds: bit |= {2017: 1, 2020: 2, 2023: 4, 2026: 8}[e]
+other = '|'.join(str(y)[2:] for y in (2017, 2020, 2023, 2026) if y not in eds)
 old = re.compile(r'20(%s)' % other)
 def load(f):
     s = open(f).read(); return json.loads(s[s.index('=')+1:].rstrip().rstrip(';'))
@@ -22,7 +24,7 @@ def add(x, g, w=0):
     out.append({'c': cat, 'g': g, 'l': 'J' if x['d'] <= 2 else 'M', 'w': w, 'd': x['d'], 'q': x['q'], 'o': x['o'], 'a': x['a'], 'e': x['e'], 'r': x['r']})
 RULES_ONLY = len(sys.argv) > 4 and sys.argv[4] == 'rules-only'
 for x in ([] if RULES_ONLY else cy):
-    if x['k'] != 'chg' and x['b'] & bit:
+    if x['k'] != 'chg' and (x['b'] & bit) == bit:
         add(x, 'code' if x['k'] == 'code' else 'calc', 0 if x['k'] == 'code' else 1)
 for x in ([] if RULES_ONLY else ca): add(x, 'calc', 1)
 for x in ([] if RULES_ONLY else th): add(x, 'theory', 1)
