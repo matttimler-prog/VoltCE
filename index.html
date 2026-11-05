@@ -419,11 +419,26 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Louisiana <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('la','C')">Electrical contractor (state license)</button>
+            <button class="dd-item" onclick="navST('la','A')">All levels: contractor and local electrician</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Michigan <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navST('mi','J')">Journeyman electrician</button>
             <button class="dd-item" onclick="navST('mi','M')">Master electrician</button>
             <button class="dd-item" onclick="navST('mi','C')">Electrical contractor</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Minnesota <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('mn','J')">Journeyworker electrician</button>
+            <button class="dd-item" onclick="navST('mn','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('mn','C')">Electrical contractor</button>
           </div>
         </div>
         <div class="dd-sub">
@@ -1068,6 +1083,8 @@ const STATES = [
   { name:'North Carolina', hours:'Board of Examiners of Electrical Contractors', url:'https://ncleg.gov/EnactedLegislation/Statutes/HTML/ByArticle/Chapter_87/Article_4.html', status:'pending' },
   { name:'South Carolina', hours:'LLR Contractors Licensing Board', url:'https://llr.sc.gov/clb/clb_general.aspx', status:'pending' },
   { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
+  { name:'Louisiana', hours:'Residential contractors 6 hrs; check LSLBC and local boards', url:'https://lslbc.gov/continuing-education/', status:'pending' },
+  { name:'Minnesota', hours:'Journeyworker/master 16 hrs per 2 years (12 on NEC)', url:'https://www.dli.mn.gov/node/2886', status:'pending' },
   { name:'Michigan', hours:'LARA Bureau of Construction Codes', url:'https://www.michigan.gov/lara/bureau-list/bcc/Sections/Licensing-Section', status:'pending' },
   { name:'Georgia', hours:'Board of Electrical Contractors', url:'https://sos.ga.gov/page/board-electrical-contractors-faq', status:'pending' },
 ]
