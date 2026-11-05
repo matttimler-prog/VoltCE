@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#0A1A3D">
+<link rel="canonical" href="https://voltceu.com/">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="symbols.js"></script>
 <script src="practice.js"></script>
@@ -1458,6 +1459,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderStates()
   await checkSession()
   handleUrlParams()
+  try { if (location.pathname !== '/' && routeOpen(location.pathname)) routeSync(ROUTE_ID[location.pathname.replace(/^\/+|\/+$/g, '')]) } catch (e) {}
 })
 
 async function checkSession() {
@@ -2830,10 +2832,63 @@ function showPage(id) {
   if (FX.busy) { pg.classList.add('wire-in'); setTimeout(() => pg.classList.remove('wire-in'), 1000) }
   window.scrollTo(0, 0)
   document.querySelector('.nav-links')?.classList.remove('open')
-  try { trk('page', id) } catch (e) {}
+  try { trk('page', id, window._utmSent ? null : (window._utmSent = true, UTM_LAND)) } catch (e) {}
   if (PAGE_SYM[id]) setCorner(id, window['_topic_' + id] || '')
   if (id === 'courses') { try { Reviews.load() } catch (e) {} }
+  try { routeSync(id) } catch (e) {}
 }
+
+// ── ROUTES: one real address per page (voltceu.com/michigan). vercel.json serves index.html for these paths ──
+const UTM_LAND = (() => { try { const p = new URLSearchParams(location.search), o = {}; ['source', 'medium', 'campaign', 'content'].forEach(k => { const v = p.get('utm_' + k); if (v) o[k] = v.slice(0, 60) }); return Object.keys(o).length ? o : null } catch (e) { return null } })()
+const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const ROUTES = (() => {
+  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', wi: 'wisconsin', fl: 'florida-contractor' }
+  Object.keys(ST_CFG).forEach(id => { r[id] = slugify(ST_CFG[id].name) })
+  return r
+})()
+const ROUTE_ID = Object.fromEntries(Object.entries(ROUTES).map(([id, s]) => [s, id]))
+const ROUTE_SUB = { stfc: 1, idx: 1, study: 1 }   // sub-screens keep the address of the page they came from
+let _routing = false
+function routeMeta(id) {
+  const c = typeof ST_CFG !== 'undefined' && ST_CFG[id]
+  let t = 'VoltCE — Free Electrician Exam Prep & Continuing Education'
+  let d = (document.querySelector('meta[name=description]') || {}).content || ''
+  if (c) {
+    t = c.name + ' electrician exam prep' + (c.ed ? ' (' + c.ed + ')' : '') + ' | VoltCE'
+    d = 'Free ' + c.name + ' electrician exam practice: state rules questions, ' + (c.ed || 'NEC') + ' code questions, flashcards and a keyword index. Study practice by VoltCE, not official exam questions.'
+  } else if (id === 'wi') { t = 'Wisconsin electrician exam prep | VoltCE'; d = 'Free Wisconsin electrician exam practice questions and flashcards.' }
+  else if (id === 'fl') { t = 'Florida electrical contractor exam prep | VoltCE'; d = 'Free Florida electrical contractor exam practice questions.' }
+  else if (id === 'courses') { t = 'Electrician continuing education courses | VoltCE' }
+  else if (id === 'states') { t = 'Electrician exam prep by state | VoltCE'; d = 'Pick your state for free electrician exam prep, license links and continuing education hours.' }
+  else if (id === 'pricing') { t = 'Pricing | VoltCE' }
+  return { t, d }
+}
+function routeSync(id) {
+  if (_routing || ROUTE_SUB[id]) return
+  const slug = ROUTES[id]
+  const path = slug === undefined ? '/' : '/' + slug
+  if (location.pathname !== path) history.pushState({ id }, '', path)
+  const m = routeMeta(slug === undefined ? 'home' : id)
+  document.title = m.t
+  const md = document.querySelector('meta[name=description]'); if (md && m.d) md.setAttribute('content', m.d)
+  let cn = document.querySelector('link[rel=canonical]')
+  if (!cn) { cn = document.createElement('link'); cn.rel = 'canonical'; document.head.appendChild(cn) }
+  cn.href = 'https://voltceu.com' + path
+}
+function routeOpen(path) {
+  const slug = path.replace(/^\/+|\/+$/g, '')
+  const id = ROUTE_ID[slug]
+  _routing = true
+  try {
+    if (id === undefined) { if (slug === '') showPage('home'); return false }
+    if (STT[id]) navST(id, STT[id]._lvl || 'J')
+    else if (id === 'wi') WIT.open()
+    else if (id === 'fl') FLT.open()
+    else showPage(id)
+    return true
+  } finally { _routing = false }
+}
+window.addEventListener('popstate', () => { try { routeOpen(location.pathname) } catch (e) {} })
 
 // nav dropdowns: click to open (works on touch), hover on desktop, Escape or outside click closes
 function closeDD() { document.querySelectorAll('.dd.open,.dd-sub.open').forEach(e => { e.classList.remove('open'); const b = e.querySelector(':scope > .dd-btn,:scope > .dd-sub-btn'); if (b) b.setAttribute('aria-expanded', 'false') }) }
