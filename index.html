@@ -648,6 +648,35 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">North Dakota <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('nd','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('nd','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('nd','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Ohio <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('oh','C')">Electrical contractor (state license)</button>
+            <button class="dd-item" onclick="navST('oh','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Oklahoma <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('ok','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('ok','C')">Electrical contractor</button>
+            <button class="dd-item" onclick="navST('ok','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Pennsylvania <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('pa','A')">All levels: state rules and local licensing</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">South Carolina <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navST('sc','J')">Journeyman electrician</button>
@@ -1289,6 +1318,10 @@ const STATES = [
   { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
   { name:'Louisiana', hours:'Residential contractors 6 hrs; check LSLBC and local boards', url:'https://lslbc.gov/continuing-education/', status:'pending' },
   { name:'Minnesota', hours:'Journeyworker/master 16 hrs per 2 years (12 on NEC)', url:'https://www.dli.mn.gov/node/2886', status:'pending' },
+  { name:'Oklahoma', hours:'6 hrs every 3 years', url:'https://oklahoma.gov/cib/your-industry/testing-and-exam-information.html', status:'pending' },
+  { name:'Ohio', hours:'10 hrs per year (5 on electrical code)', url:'https://com.ohio.gov/divisions-and-programs/industrial-compliance/ocilb', status:'pending' },
+  { name:'Pennsylvania', hours:'No statewide license; Pittsburgh 8 hrs CE', url:'https://www.phila.gov/services/business-self-employment/starting-a-business/trade-licenses/get-an-electrical-contractor-license/', status:'pending' },
+  { name:'North Dakota', hours:'8 hrs; check the State Electrical Board', url:'https://www.mikeholt.com/statelicense.php?id=ND', status:'pending' },
   { name:'New Mexico', hours:'Journeyman 16 hrs per 3 years (8 on current code)', url:'https://www.rld.nm.gov/construction-industries/committees-commissions/', status:'pending' },
   { name:'New Jersey', hours:'Check the Board of Examiners of Electrical Contractors', url:'https://njconsumeraffairs.gov/elec/Pages/members.aspx', status:'pending' },
   { name:'Nevada', hours:'Local cards: Reno 18 or 30 hrs; check your jurisdiction', url:'https://www.nvcontractorsboard.com/licensing/license-examinations/', status:'pending' },
@@ -1977,6 +2010,10 @@ const ST_CFG = {
   njs: { name: 'New Jersey', ed: '2023 NEC', lvl: 'A', note: "New Jersey licenses electrical contractors, Class A journeymen, Class B wiremen and Class A apprentices statewide through the Board of Examiners of Electrical Contractors, with PSI exams; there is no master license. The 2023 NEC applies through the Uniform Construction Code electrical subcode from August 17, 2026, with a grace period for complete permit applications until February 17, 2027, so the code questions follow the 2023 NEC. Reciprocity, journeyman continuing education hours and some exam details could not be confirmed, and sources conflict on the hours. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board and the Department of Community Affairs before you test." },
   nv: { name: 'Nevada', ed: '2023 NEC', lvl: 'C', note: "Nevada has no statewide NEC edition and no statewide journeyman or master license; the State Contractors Board licenses electrical contractors in the C-2 classes with PSI exams, while Clark County and Reno issue electrician cards after ICC exams. Clark County enforces the 2023 NEC with Southern Nevada amendments from January 11, 2026 and Washoe County also uses the 2023 NEC, so the code questions follow the 2023 NEC; the PSI exam bulletin we found still lists the 2017 NEC, and fee amounts were not verified. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Contractors Board and your local jurisdiction before you test." },
   mt: { name: 'Montana', ed: '2023 NEC', lvl: 'A', note: "Montana licenses residential, journeyman and master electricians and electrical contractors statewide through the Montana State Electrical Board, with PSI open book exams. The Building Codes Division lists the 2023 NEC with Montana amendments effective September 26, 2026, while the board exam page and some references still describe the 2020 NEC, so the code questions follow the 2023 NEC and you should confirm which edition your exam uses. Questions on that edition conflict between sources and were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board before you test." },
+  ok: { name: 'Oklahoma', ed: '2023 NEC', lvl: 'A', note: "Oklahoma licenses apprentices, journeymen and electrical contractors statewide through the Construction Industries Board, with residential, unlimited and limited classes and PSI exams; there is no separate master license. The Oklahoma Uniform Building Code Commission adopted the 2023 NEC effective September 14, 2024, and exam questions use the 2023 NEC from December 14, 2024, though a locality with its own code and inspector can enforce locally. Experience hours and fees came only from a third party and were not confirmed, so questions on them were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board before you test." },
+  oh: { name: 'Ohio', ed: '2023 NEC', lvl: 'C', note: "Ohio licenses commercial electrical contractors statewide through the Ohio Construction Industry Licensing Board under ORC Chapter 4740, with PSI exams; there is no statewide journeyman or master license, so those and permits are local. The 2023 NEC applies statewide, effective March 1, 2024 for commercial and April 15, 2024 for residential work, so the code questions follow the 2023 NEC. Exam format details came from third parties and were left out of the questions. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board and your local building department before you test." },
+  pa: { name: 'Pennsylvania', ed: '2020 NEC', lvl: 'A', note: "Pennsylvania has no statewide electrician or electrical contractor license; the state level is the Uniform Construction Code, which sets the code, and home improvement contractor registration with the Attorney General, while Philadelphia and Pittsburgh license electricians locally. The 2020 NEC is enforced through the Uniform Construction Code with the 2021 I-Codes effective January 1, 2026, so the code questions follow the 2020 NEC. Fees, passing scores and exam references for the local licenses were not confirmed. Study practice written by VoltCE, not official exam questions. Confirm the exam, fees and code edition with your city before you test." },
+  nd: { name: 'North Dakota', ed: '2023 NEC', lvl: 'A', note: "North Dakota licenses master, journeyman, Class B and power limited electricians statewide through the State Electrical Board under N.D.C.C. chapter 43-09, with no separate electrical contractor license, and contracting is done by masters or power limited electricians who file proof of insurance. The 2023 NEC applies statewide through the 2023 North Dakota Laws, Rules and Wiring Standards, effective July 1, 2024. The board website could not be read, so exam details, fees and continuing education hours rest on third parties and sources conflict. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board before you test." },
   nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA commercial general building exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
