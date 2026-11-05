@@ -468,6 +468,51 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Hawaii <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('hi','J')">Journey worker electrician</button>
+            <button class="dd-item" onclick="navST('hi','M')">Supervising electrician</button>
+            <button class="dd-item" onclick="navST('hi','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Idaho <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('id','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('id','C')">Electrical contractor</button>
+            <button class="dd-item" onclick="navST('id','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Illinois <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('il','M')">Chicago supervising electrician</button>
+            <button class="dd-item" onclick="navST('il','C')">Chicago electrical contractor</button>
+            <button class="dd-item" onclick="navST('il','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Indiana <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('in','A')">All levels: code and state rules</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Iowa <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('ia','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('ia','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('ia','C')">Electrical contractor</button>
+            <button class="dd-item" onclick="navST('ia','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Kansas <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('ks','A')">All levels: local licensing and code</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Louisiana <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navST('la','C')">Electrical contractor (state license)</button>
@@ -1148,12 +1193,18 @@ const STATES = [
   { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
   { name:'Louisiana', hours:'Residential contractors 6 hrs; check LSLBC and local boards', url:'https://lslbc.gov/continuing-education/', status:'pending' },
   { name:'Minnesota', hours:'Journeyworker/master 16 hrs per 2 years (12 on NEC)', url:'https://www.dli.mn.gov/node/2886', status:'pending' },
-  { name:'Alabama', hours:'Contractors 14 hrs per 2 years; check the Alabama Electrical Contractors Board', url:'https://aecb.alabama.gov/', status:'pending' },
-  { name:'Alaska', hours:'See Alaska DOLWD Mechanical Inspection and DCCED', url:'https://labor.alaska.gov/lss/elect.htm', status:'pending' },
-  { name:'Arkansas', hours:'8 hrs per NEC cycle; check ADLL', url:'https://www.labor.arkansas.gov/', status:'pending' },
-  { name:'California', hours:'DLSE certified electrician 32 hrs per 3 years; C-10 none', url:'https://www.dir.ca.gov/dlse/ECU/', status:'pending' },
-  { name:'Connecticut', hours:'4 hrs per year; check DCP', url:'https://portal.ct.gov/dcp/license-services-division/all-license-applications/electrical-work', status:'pending' },
-  { name:'Delaware', hours:'Master and limited 10 hrs per 2 years (5 on NEC); journeyperson 5 NEC hrs', url:'https://dpr.delaware.gov/boards/electrician/', status:'pending' },
+  { name:'Hawaii', hours:'NEC update course or exam each 3-year renewal (HRS 448E-8.5)', url:'https://cca.hawaii.gov/pvl/boards-and-programs/', status:'pending' },
+  { name:'Idaho', hours:'No CE currently required for journeyman or master; check DOPL', url:'https://dopl.idaho.gov/ele/', status:'pending' },
+  { name:'Illinois', hours:'No statewide CE; Chicago and local rules vary', url:'https://chicago.gov/TradeLicensing', status:'pending' },
+  { name:'Indiana', hours:'No statewide license or CE; check your city', url:'https://in.gov/dhs/boards-and-commissions', status:'pending' },
+  { name:'Iowa', hours:'18 hrs per 3 years (6 on the NEC)', url:'https://dial.iowa.gov/boards/electrical-examining-board', status:'pending' },
+  { name:'Kansas', hours:'No statewide license or CE; check your city or county', url:'https://www.sedgwick.gov/mabcd/master-journeyman-trade-certificates/', status:'pending' },
+  { name:'Alabama', hours:'Contractors 14 hrs per 2 years; check the Alabama Electrical Contractors Board', url:'https://aecb.alabama.gov/?p=988', status:'pending' },
+  { name:'Alaska', hours:'See Alaska DOLWD Mechanical Inspection and DCCED', url:'https://dol.alaska.gov/lss/plumbing_electrical.htm', status:'pending' },
+  { name:'Arkansas', hours:'8 hrs per NEC cycle; check ADLL', url:'https://labor.arkansas.gov/labor/code-enforcement/electrical-inspection-and-licensing/', status:'pending' },
+  { name:'California', hours:'DLSE certified electrician 32 hrs per 3 years; C-10 none', url:'https://dir.ca.gov/dlse/ECU/ECUonline.html', status:'pending' },
+  { name:'Connecticut', hours:'4 hrs per year; check DCP', url:'https://portal.ct.gov/dcp/occupational-and-professional-division/occupational-boards/electrical-work-examining-board', status:'pending' },
+  { name:'Delaware', hours:'Master and limited 10 hrs per 2 years (5 on NEC); journeyperson 5 NEC hrs', url:'https://dpr.delaware.gov/boards/electrician/newlicense', status:'pending' },
   { name:'Michigan', hours:'LARA Bureau of Construction Codes', url:'https://www.michigan.gov/lara/bureau-list/bcc/Sections/Licensing-Section', status:'pending' },
   { name:'Georgia', hours:'Board of Electrical Contractors', url:'https://sos.ga.gov/page/board-electrical-contractors-faq', status:'pending' },
 ]
@@ -1800,6 +1851,12 @@ const ST_CFG = {
   ca: { name: 'California', ed: '2023 NEC', lvl: 'A', note: "California has no statewide journeyman or master license. The Contractors State License Board issues the C-10 electrical contractor license (4 years of journey-level experience, Law and Business plus trade exam), and the Division of Labor Standards Enforcement certifies electricians who work for C-10 contractors in five categories. The 2025 California Electrical Code, based on the 2023 NEC with California amendments, took effect January 1, 2026, so code questions are written to the 2023 NEC; California amendments are not covered. Study practice written by VoltCE, not official exam questions. The exam vendor and open book rules for the DLSE exam were not consistent across sources, so confirm with CSLB and DLSE before you test." },
   ct: { name: 'Connecticut', ed: '2020 NEC', lvl: 'C', note: "Connecticut licenses individuals through the Department of Consumer Protection, Electrical Work Examining Board; E-1 is the unlimited electrical contractor and E-2 the unlimited journeyperson, and exams are given through PSI. The 2020 NEC is part of the 2022 Connecticut State Building Code with Connecticut amendments, which are not covered here; a 2026 code that references the 2023 NEC is awaiting approval with no new effective date as of August 2026. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with DCP before you test." },
   de: { name: 'Delaware', ed: '2023 NEC', lvl: 'A', note: "Delaware licenses master, limited, journeyperson, residential and apprentice electricians statewide through the Board of Electrical Examiners, with exams run by ProV at a 75 percent pass mark. The 2023 NEC is listed in the 2026 Delaware State Fire Prevention Regulations, effective January 1, 2026; Delaware amendments to the 2023 NEC were not confirmed. There is no separate statewide electrical contractor license. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board and the State Fire Marshal before you test." },
+  hi: { name: 'Hawaii', ed: '2020 NEC', lvl: 'A', note: "Hawaii licenses individual electricians statewide through the Board of Electricians and Plumbers under HRS 448E (journey worker, and the master equivalent called supervising electrician), with exams given by PSI. The electrical contractor license C-13 is separate, from the Contractors License Board, and is not covered here. The State Building Code Council adopted the 2020 NEC statewide on March 15, 2022, with state buildings required to comply by March 14, 2023 and counties by March 14, 2024; the final text of the Hawaii amendments was not retrieved, so the code questions are written to the base 2020 NEC. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board and your county before you test." },
+  id: { name: 'Idaho', ed: '2023 NEC', lvl: 'A', note: "Idaho licenses electricians statewide through the Idaho Electrical Board within the Division of Occupational and Professional Licenses (journeyman, master, provisional journeyman, limited installer and electrical contractor), and local jurisdictions may not require extra licensure. Idaho Code 54-1001 adopts the 2023 NEC with Idaho amendments in IDAPA 24.39.10, moved to by DOPL effective April 19, 2024; the amendments are not covered here. Exam passing score and length could not be confirmed from an official source, and the board was reviewing rules in 2026. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with DOPL before you test." },
+  il: { name: 'Illinois', ed: '2017 NEC', lvl: 'A', note: "Illinois has no statewide electrician or electrical contractor license; licensing and code adoption are local. This page follows Chicago, where Title 14E incorporates the 2017 NEC with Chicago amendments (the exam book is the Chicago Electrical Code 2018 Edition), so the code questions are written to the 2017 NEC and Chicago amendments are not covered. Chicago licenses supervising electricians (the master-level analog) and registers electrical contractors, with the written exam given by Continental Testing Services. The statewide Electrician Licensing Act was listed as dead in June 2026. Other cities and counties differ, so check yours. Study practice written by VoltCE, not official exam questions. Confirm the exam, fees and code edition with the City of Chicago or your local building department before you test." },
+  in: { name: 'Indiana', ed: '2023 NEC', lvl: 'A', note: "Indiana has no statewide electrician or electrical contractor license; licensing is local, such as Indianapolis and Marion County. The codified statewide code appears to be the 2008 NEC, but the Fire Prevention and Building Safety Commission adopted a 2026 Indiana Electrical Code based on the 2023 NEC as a final rule on August 4, 2026, with the effective date still pending when this page was written. The code questions here follow the 2023 NEC for that reason, so check which edition applies to you. The state rules questions cover the Commission and the home improvement contract law. Study practice written by VoltCE, not official exam questions. Confirm the code edition and any local exam with your city or county before you test." },
+  ia: { name: 'Iowa', ed: '2023 NEC', lvl: 'A', note: "Iowa licenses journeyman, master and electrical contractor statewide through the Electrical Examining Board, now administered by the Division of Industrial Services (DIAL), with exams given by PSI at a 70 percent pass mark. The 2023 NEC is adopted statewide, and Iowa law (HF 2800, signed June 2, 2026) adds Iowa modifications such as no AFCI requirement for one and two family dwellings. DIAL describes the change as reverting to the unamended 2023 NEC while the bill text keeps the modifications, so confirm the exact rule with DIAL. The code questions here are written to the base 2023 NEC. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with DIAL before you test." },
+  ks: { name: 'Kansas', ed: '2023 NEC', lvl: 'A', note: "Kansas has no statewide electrician license and no statewide NEC adoption; cities and counties license electricians and adopt codes under K.S.A. 12-1525 to 12-1527. Wichita and Sedgwick County enforce the 2023 NEC with local amendments from January 1, 2025, so the code questions follow the 2023 NEC, but other jurisdictions and the state buildings rules differ and some Kansas exams have used the 2017 NEC. A 2026 bill to move licensing to the State Fire Marshal died, so those questions are labeled not law. Study practice written by VoltCE, not official exam questions. Confirm the exam, fees and code edition with your city or county before you test." },
   nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA commercial general building exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
