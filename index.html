@@ -80,6 +80,11 @@
   .dd.open > .dd-menu, .dd-sub.open > .dd-submenu { display: block; }
   @media (hover: hover) and (min-width: 601px) { .dd:hover > .dd-menu, .dd-sub:hover > .dd-submenu { display: block; } .dd::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 8px; } }
   .dd-sub { position: relative; }
+  /* the state list is long: scroll inside the menu and open each state's levels in place instead of flying out sideways */
+  .dd-menu:has(> .dd-sub) { max-height: calc(100vh - 90px); max-height: calc(100dvh - 90px); overflow-y: auto; overscroll-behavior: contain; min-width: 260px; }
+  .dd-menu:has(> .dd-sub) .dd-submenu { position: static; min-width: 0; border: 0; box-shadow: none; background: transparent; margin: 0; padding: 0 0 4px 14px; }
+  .dd-menu:has(> .dd-sub) .dd-sub:hover > .dd-submenu { display: none; }
+  .dd-menu:has(> .dd-sub) .dd-sub.open > .dd-submenu { display: block; }
   .dd-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; text-align: left; font: inherit; font-size: 13px; color: var(--ink); background: transparent; border: 0; padding: 9px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
   .dd-item:hover, .dd-sub.open > .dd-sub-btn { background: rgba(20,32,44,0.08); }
 
@@ -359,7 +364,7 @@
     .metrics { grid-template-columns: 1fr 1fr; }
     .nav-toggle { display: inline-block !important; }
     .nav-links { display: none; position: absolute; top: 54px; left: 0; right: 0; background: var(--gray); border-bottom: 2px solid var(--ink); flex-direction: column; align-items: stretch; padding: 8px 16px 14px; gap: 2px; }
-    .nav-links.open { display: flex; }
+    .nav-links.open { display: flex; max-height: calc(100vh - 125px); max-height: calc(100dvh - 125px); overflow-y: auto; overscroll-behavior: contain; }
     .nav-links .nav-link { text-align: left; padding: 11px 12px; font-size: 15px; }
     .dd-menu, .dd-submenu { position: static; right: auto; border: 0; box-shadow: none; background: transparent; padding: 0 0 0 14px; margin: 0; min-width: 0; }
     .dd-btn { width: 100%; display: flex; justify-content: space-between; }
