@@ -632,6 +632,14 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">New York <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('nys','J')">Journeyman electrician (local licenses)</button>
+            <button class="dd-item" onclick="navST('nys','M')">Master electrician (local licenses)</button>
+            <button class="dd-item" onclick="navST('nys','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">New York City <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navST('nyc','J')">Journeyman electrician</button>
@@ -1391,6 +1399,7 @@ const STATES = [
   { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
   { name:'Louisiana', hours:'Residential contractors 6 hrs; check LSLBC and local boards', url:'https://lslbc.gov/continuing-education/', status:'pending' },
   { name:'Minnesota', hours:'Journeyworker/master 16 hrs per 2 years (12 on NEC)', url:'https://www.dli.mn.gov/node/2886', status:'pending' },
+  { name:'New York', hours:'Set locally; Suffolk County 8 hrs every 2 years', url:'https://dos.ny.gov/system/files/documents/2026/02/2025-uniform-code-adoption.pdf', status:'pending' },
   { name:'Virginia', hours:'3 hrs every 3 years', url:'https://www.dpor.virginia.gov/sites/default/files/boards/Tradesman/A501-27TRADEREGS.pdf', status:'pending' },
   { name:'Washington', hours:'24 hrs every 3 years', url:'https://lni.wa.gov/licensing-permits/electrical/electrical-licensing-exams-education/electrician', status:'pending' },
   { name:'West Virginia', hours:'No CE required', url:'https://firemarshal.wv.gov/fm-divisions/regulatory-licensing', status:'pending' },
@@ -2105,6 +2114,7 @@ const ST_CFG = {
   wa: { name: 'Washington', ed: '2023 NEC', lvl: 'A', note: "Washington licenses electricians, administrators and electrical contractors statewide through Labor and Industries, with PSI open book exams. The 2023 NEC has been enforced since April 1, 2024, and the 2026 NEC is adopted but takes effect December 31, 2026. The state exam page and the PSI bulletin still name the 2020 NEC for exams, so check which edition your exam uses. Reciprocity and fee questions were left out because they could not be verified. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with Labor and Industries before you test." },
   wvs: { name: 'West Virginia', ed: '2020 NEC', lvl: 'A', note: "West Virginia licenses journeyman, master and specialty electricians statewide through the State Fire Marshal, with no continuing education for renewal and no separate state electrical contractor license. The 2020 NEC has applied since August 1, 2022 and the exam uses the 2020 NEC, but a newer State Building Code that cites the 2023 NEC may be taking effect, so confirm the edition before you test. Experience hours conflict between the statute and the licensing page, so those details were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Fire Marshal before you test." },
   wy: { name: 'Wyoming', ed: '2026 NEC', lvl: 'A', note: "Wyoming licenses apprentice, journeyman, master and contractor electricians statewide through the Electrical Board and the Fire Prevention and Electrical Safety department. The state fire marshal site lists the 2026 NEC while some other sources still show the 2023 NEC, and the effective date was not confirmed, so check the edition before you test. The exam vendor and format came from third parties and were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the department before you test." },
+  nys: { name: 'New York', ed: '2023 NEC', lvl: 'A', note: "New York State has no statewide journeyman, master or electrical contractor license, so licensing, exams and continuing education are set by each city, town or county, such as Buffalo, Rochester, Suffolk County and the Nassau County towns, and New York City has its own page. The 2023 NEC applies through the 2025 Building Code of New York State effective December 31, 2025, so the code questions follow the 2023 NEC. The NEC amendments, exam vendors and fees were not confirmed, and 26 draft questions that could not be verified were left out. Study practice written by VoltCE, not official exam questions. Confirm your local licensing office and code edition before you test." },
   nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA commercial general building exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
