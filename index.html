@@ -741,6 +741,39 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Virginia <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('va','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('va','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('va','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Washington <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('wa','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('wa','M')">Master and administrator</button>
+            <button class="dd-item" onclick="navST('wa','C')">Electrical contractor</button>
+            <button class="dd-item" onclick="navST('wa','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">West Virginia <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('wvs','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('wvs','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('wvs','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Wyoming <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('wy','J')">Journeyman electrician</button>
+            <button class="dd-item" onclick="navST('wy','M')">Master electrician</button>
+            <button class="dd-item" onclick="navST('wy','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Wisconsin <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navWI('J')">Journeyman electrician</button>
@@ -1358,6 +1391,10 @@ const STATES = [
   { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
   { name:'Louisiana', hours:'Residential contractors 6 hrs; check LSLBC and local boards', url:'https://lslbc.gov/continuing-education/', status:'pending' },
   { name:'Minnesota', hours:'Journeyworker/master 16 hrs per 2 years (12 on NEC)', url:'https://www.dli.mn.gov/node/2886', status:'pending' },
+  { name:'Virginia', hours:'3 hrs every 3 years', url:'https://www.dpor.virginia.gov/sites/default/files/boards/Tradesman/A501-27TRADEREGS.pdf', status:'pending' },
+  { name:'Washington', hours:'24 hrs every 3 years', url:'https://lni.wa.gov/licensing-permits/electrical/electrical-licensing-exams-education/electrician', status:'pending' },
+  { name:'West Virginia', hours:'No CE required', url:'https://firemarshal.wv.gov/fm-divisions/regulatory-licensing', status:'pending' },
+  { name:'Wyoming', hours:'16 hrs every 3 years', url:'https://wsfm.wyo.gov/electrical-safety/licensing', status:'pending' },
   { name:'South Dakota', hours:'16 hrs every 2 years', url:'https://dlr.sd.gov/electrical/licensing.aspx', status:'pending' },
   { name:'Utah', hours:'16 hrs every 2 years', url:'https://commerce.utah.gov/dopl/electrical/frequently-asked-questions/', status:'pending' },
   { name:'Vermont', hours:'15 hrs every 3 years', url:'https://firesafety.vermont.gov/node/141', status:'pending' },
@@ -2064,6 +2101,10 @@ const ST_CFG = {
   sd: { name: 'South Dakota', ed: '2023 NEC', lvl: 'A', note: "South Dakota licenses apprentices, journeymen, Class B residential electricians and electrical contractors statewide through the Electrical Commission; there is no separate master license. The 2023 NEC applies statewide with South Dakota amendments, so the code questions follow the 2023 NEC. The exam vendor, book rules and fee amounts were not confirmed, and questions whose dates conflicted between sources were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Commission before you test." },
   ut: { name: 'Utah', ed: '2023 NEC', lvl: 'A', note: "Utah licenses apprentice, journeyman, master and residential electricians statewide through the Division of Professional Licensing, with Prov exams that allow open books. Utah Code 15A-2-103 incorporates the 2023 NEC, so the code questions follow the 2023 NEC, and the Chapter 3 amendments were not reviewed. The practical exam fees and the journeyman hour totals differ between sources, so those details were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Division before you test." },
   vt: { name: 'Vermont', ed: '2023 NEC', lvl: 'A', note: "Vermont licenses master, journeyman and specialty electricians statewide through the Electricians Licensing Board and the Division of Fire Safety, with ProV open book exams. The 2023 NEC applies through the 2025 Vermont Electrical Safety Rules effective November 5, 2025, so the code questions follow the 2023 NEC, and the Vermont amendments were not reviewed. Statute questions that rested on summaries were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Division before you test." },
+  va: { name: 'Virginia', ed: '2020 NEC', lvl: 'A', note: "Virginia licenses journeyman and master tradesmen and Class A, B and C electrical contractors statewide through the DPOR Board for Contractors, with PSI open book exams. The 2020 NEC applies statewide under the Virginia building codes effective January 18, 2024, so the code questions follow the 2020 NEC. Exam fees, the renewal period and the contractor dollar thresholds came from third party copies and differ between sources, so fee questions were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with DPOR before you test." },
+  wa: { name: 'Washington', ed: '2023 NEC', lvl: 'A', note: "Washington licenses electricians, administrators and electrical contractors statewide through Labor and Industries, with PSI open book exams. The 2023 NEC has been enforced since April 1, 2024, and the 2026 NEC is adopted but takes effect December 31, 2026. The state exam page and the PSI bulletin still name the 2020 NEC for exams, so check which edition your exam uses. Reciprocity and fee questions were left out because they could not be verified. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with Labor and Industries before you test." },
+  wvs: { name: 'West Virginia', ed: '2020 NEC', lvl: 'A', note: "West Virginia licenses journeyman, master and specialty electricians statewide through the State Fire Marshal, with no continuing education for renewal and no separate state electrical contractor license. The 2020 NEC has applied since August 1, 2022 and the exam uses the 2020 NEC, but a newer State Building Code that cites the 2023 NEC may be taking effect, so confirm the edition before you test. Experience hours conflict between the statute and the licensing page, so those details were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Fire Marshal before you test." },
+  wy: { name: 'Wyoming', ed: '2026 NEC', lvl: 'A', note: "Wyoming licenses apprentice, journeyman, master and contractor electricians statewide through the Electrical Board and the Fire Prevention and Electrical Safety department. The state fire marshal site lists the 2026 NEC while some other sources still show the 2023 NEC, and the effective date was not confirmed, so check the edition before you test. The exam vendor and format came from third parties and were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the department before you test." },
   nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA commercial general building exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
