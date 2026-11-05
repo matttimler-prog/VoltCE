@@ -671,9 +671,25 @@
           </div>
         </div>
         <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Oregon <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('orr','J')">General journeyman (J)</button>
+            <button class="dd-item" onclick="navST('orr','M')">General supervising electrician (S)</button>
+            <button class="dd-item" onclick="navST('orr','A')">All levels</button>
+          </div>
+        </div>
+        <div class="dd-sub">
           <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Pennsylvania <span class="caret" aria-hidden="true">›</span></button>
           <div class="dd-submenu">
             <button class="dd-item" onclick="navST('pa','A')">All levels: state rules and local licensing</button>
+          </div>
+        </div>
+        <div class="dd-sub">
+          <button class="dd-item dd-sub-btn" aria-haspopup="true" aria-expanded="false">Rhode Island <span class="caret" aria-hidden="true">›</span></button>
+          <div class="dd-submenu">
+            <button class="dd-item" onclick="navST('ri','J')">Journeyperson (Class B)</button>
+            <button class="dd-item" onclick="navST('ri','C')">Electrical contractor (Class A)</button>
+            <button class="dd-item" onclick="navST('ri','A')">All levels</button>
           </div>
         </div>
         <div class="dd-sub">
@@ -1318,6 +1334,8 @@ const STATES = [
   { name:'Ohio', hours:'See state board', url:'https://www.com.ohio.gov', status:'pending' },
   { name:'Louisiana', hours:'Residential contractors 6 hrs; check LSLBC and local boards', url:'https://lslbc.gov/continuing-education/', status:'pending' },
   { name:'Minnesota', hours:'Journeyworker/master 16 hrs per 2 years (12 on NEC)', url:'https://www.dli.mn.gov/node/2886', status:'pending' },
+  { name:'Oregon', hours:'24 hrs every 3 years', url:'https://www.oregon.gov/bcd/licensing/Pages/individual-licenses.aspx', status:'pending' },
+  { name:'Rhode Island', hours:'15 hrs every 2 years', url:'https://dlt.ri.gov/', status:'pending' },
   { name:'Oklahoma', hours:'6 hrs every 3 years', url:'https://oklahoma.gov/cib/your-industry/testing-and-exam-information.html', status:'pending' },
   { name:'Ohio', hours:'10 hrs per year (5 on electrical code)', url:'https://com.ohio.gov/divisions-and-programs/industrial-compliance/ocilb', status:'pending' },
   { name:'Pennsylvania', hours:'No statewide license; Pittsburgh 8 hrs CE', url:'https://www.phila.gov/services/business-self-employment/starting-a-business/trade-licenses/get-an-electrical-contractor-license/', status:'pending' },
@@ -2014,6 +2032,8 @@ const ST_CFG = {
   oh: { name: 'Ohio', ed: '2023 NEC', lvl: 'C', note: "Ohio licenses commercial electrical contractors statewide through the Ohio Construction Industry Licensing Board under ORC Chapter 4740, with PSI exams; there is no statewide journeyman or master license, so those and permits are local. The 2023 NEC applies statewide, effective March 1, 2024 for commercial and April 15, 2024 for residential work, so the code questions follow the 2023 NEC. Exam format details came from third parties and were left out of the questions. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board and your local building department before you test." },
   pa: { name: 'Pennsylvania', ed: '2020 NEC', lvl: 'A', note: "Pennsylvania has no statewide electrician or electrical contractor license; the state level is the Uniform Construction Code, which sets the code, and home improvement contractor registration with the Attorney General, while Philadelphia and Pittsburgh license electricians locally. The 2020 NEC is enforced through the Uniform Construction Code with the 2021 I-Codes effective January 1, 2026, so the code questions follow the 2020 NEC. Fees, passing scores and exam references for the local licenses were not confirmed. Study practice written by VoltCE, not official exam questions. Confirm the exam, fees and code edition with your city before you test." },
   nd: { name: 'North Dakota', ed: '2023 NEC', lvl: 'A', note: "North Dakota licenses master, journeyman, Class B and power limited electricians statewide through the State Electrical Board under N.D.C.C. chapter 43-09, with no separate electrical contractor license, and contracting is done by masters or power limited electricians who file proof of insurance. The 2023 NEC applies statewide through the 2023 North Dakota Laws, Rules and Wiring Standards, effective July 1, 2024. The board website could not be read, so exam details, fees and continuing education hours rest on third parties and sources conflict. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Board before you test." },
+  orr: { name: 'Oregon', ed: '2026 NEC', lvl: 'A', note: "Oregon licenses electricians statewide through the Building Codes Division with the Electrical and Elevator Board; the general supervising license is the master equivalent and electrical contractors need a supervising electrician on staff. The 2026 Oregon Electrical Specialty Code based on the 2026 NEC took effect October 1, 2026 with Oregon amendments, so the code questions follow the 2026 NEC. The exam vendor and reference list were not confirmed and the CE hour split was left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Building Codes Division before you test." },
+  ri: { name: 'Rhode Island', ed: '2023 NEC', lvl: 'A', note: "Rhode Island licenses electricians statewide through the Board of Examiners of Electricians under the Department of Labor and Training; Class B is journeyperson and Class A is electrical contractor, with no master title. The 2023 NEC applies statewide with a short list of Rhode Island changes, and sources differ on whether it took effect December 1 or December 31, 2025. The exam vendor, book rules and question counts were not confirmed, and questions with conflicting sources were left out. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and code edition with the Department before you test." },
   nascla: { name: 'NASCLA', ed: '', only: true, title: 'NASCLA commercial general building exam prep', sub: 'Free practice for the NASCLA accredited contractor exams, which many states accept for a contractor license, with links to PSI to register and schedule the exam.', lvl: 'C', note: 'NASCLA exams are given through PSI. These questions cover exam format, registration, business, law and project management, and accepting states. Study practice written by VoltCE, not official exam questions. Confirm the current exam, fees and your state requirements with NASCLA, PSI and your state board before you test.' },
   tx: { name: 'Texas', ed: '2026 NEC', note: 'Texas adopted the 2026 NEC effective September 1, 2026 (TDLR, 16 TAC §73.100), and TDLR state exams moved to the 2026 NEC on the same date. PSI gives the exams, which are open book with your own NEC, and 70% is the pass mark. Code questions below are written to the 2026 NEC. Study practice written by VoltCE, not official exam questions. Confirm the exam outline and fees in the current PSI candidate bulletin before you test.' },
 }
