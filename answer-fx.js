@@ -11,6 +11,7 @@
   var eio = function (t) { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2 }
   var eo = function (t) { return 1 - Math.pow(1 - clamp(t), 3) }
   var fade = function (p, i, o) { i = i || .1; o = o || .25; return Math.min(clamp(p / i), clamp((1 - p) / o)) }
+  var YEL = function () { return '#FFD45A' }
   var GOLD = '#FFC23D', CYAN = '#5ADBFF', GREEN = '#3BE38A', WHITE = '#FFFFFF', RED = '#FF4D4D', ORANGE = '#FF8A3D'
 
   function zig(x1, y1, x2, y2, n, jit) {
@@ -47,6 +48,7 @@
     c.strokeStyle = lit > 0 ? '#fff' : 'rgba(255,255,255,.3)'; c.lineWidth = 2; c.beginPath(); c.moveTo(x - r * .3, y + r * .8); c.lineTo(x - r * .2, y - r * .2); c.lineTo(x + r * .2, y - r * .2); c.lineTo(x + r * .3, y + r * .8); c.stroke()
     c.restore()
   }
+  function puff(c, x, y, r, a) { var g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, 'rgba(70,74,86,' + a + ')'); g.addColorStop(1, 'rgba(70,74,86,0)'); c.globalAlpha = 1; c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill() }
   function tick(p, dur, fps) { return Math.floor(p * dur * (fps || 15)) }
 
   /* ---------------- correct answers ---------------- */
@@ -157,17 +159,37 @@
         c.globalAlpha = a; glow(c, blink ? RED : 'rgba(0,0,0,0)', blink ? 16 : 0); line(c, blink ? RED : 'rgba(255,255,255,.8)', 4, a); c.strokeRect(x - 48, y - 24, 90, 48); c.fillStyle = blink ? RED : 'rgba(255,255,255,.8)'; c.fillRect(x + 43, y - 10, 8, 20)
         c.shadowBlur = 0; c.fillStyle = lvl > .5 ? GREEN : (lvl > .25 ? GOLD : RED); c.fillRect(x - 43, y - 19, 80 * lvl, 38)
         c.fillStyle = '#fff'; c.font = 'bold 26px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('!', x - 3, y + 1) } },
-    { name: 'Static glitch', dur: 1.5,
-      init: function () { return { k: -1, bars: [], dots: [] } },
-      draw: function (c, p, s, W, H) { var kk = tick(p, 1.5, 12); if (kk !== s.k) { s.k = kk; s.bars = []; s.dots = []; var i; for (i = 0; i < 16; i++) s.bars.push({ y: R(0, H), h: R(4, 20), w: R(80, 280), dx: R(-30, 30) }); for (i = 0; i < 90; i++) s.dots.push([R(-1, 1), R(0, H), R(1, 3)]) }
-        var cx = eio(p) * W, bw = W * .2, a = clamp(Math.min(p / .08, (1 - p) / .2)); c.globalAlpha = a * .9
-        s.bars.forEach(function (b) { var x = cx + b.dx - b.w / 2; c.fillStyle = 'rgba(255,60,70,.5)'; c.fillRect(x - 6, b.y, b.w, b.h); c.fillStyle = 'rgba(70,220,255,.45)'; c.fillRect(x + 6, b.y + 2, b.w, b.h) })
-        c.fillStyle = 'rgba(210,215,225,.7)'; s.dots.forEach(function (d) { c.fillRect(cx + d[0] * bw, d[1], d[2], d[2]) }); c.fillStyle = 'rgba(0,0,0,.18)'; for (var y = 0; y < H; y += 5) c.fillRect(cx - bw, y, bw * 2, 1.5) } },
-    { name: 'Overload embers', dur: 1.7,
-      init: function (W, H) { var e = [], sm = [], i; for (i = 0; i < 80; i++) e.push({ x: R(0, W), y: H + 10, vx: R(30, 150), vy: -R(140, 420), r: R(1.6, 4), t0: 0 }); e.forEach(function (k) { k.t0 = k.x / W * .5 }); for (i = 0; i < 16; i++) sm.push({ x: W * (i + .5) / 16, r: R(26, 54), t0: i / 16 * .5 }); return { e: e, sm: sm } },
-      draw: function (c, p, s, W, H) { var T = p * 1.7, a = fade(p, .08, .3), g = c.createLinearGradient(0, H, 0, H * .55); g.addColorStop(0, 'rgba(255,70,40,.4)'); g.addColorStop(1, 'rgba(255,70,40,0)'); c.globalAlpha = a; c.fillStyle = g; c.fillRect(0, H * .55, W, H * .45)
-        s.sm.forEach(function (k) { var t = T - k.t0; if (t < 0 || t > 1.2) return; c.globalAlpha = .26 * clamp(1 - t / 1.2); c.fillStyle = '#8A8F9C'; c.beginPath(); c.arc(k.x + t * 40, H - 20 - t * H * .5, k.r * (1 + t), 0, TAU); c.fill() })
-        s.e.forEach(function (k) { var t = T - k.t0; if (t < 0 || t > 1.1) return; var al = clamp(1 - t / 1.1); glow(c, ORANGE, 10); c.globalAlpha = al; c.fillStyle = al > .5 ? '#FFD28A' : ORANGE; c.beginPath(); c.arc(k.x + k.vx * t, k.y + k.vy * t + 80 * t * t, k.r, 0, TAU); c.fill() }) } }
+    { name: 'Arc blast', dur: 1.9,
+      init: function (W, H) { var arcs = [], i; for (i = 0; i < 9; i++) { var an = (i / 9) * TAU + R(-.2, .2); arcs.push(zig(0, 0, Math.cos(an) * Math.max(W, H) * R(.5, .9), Math.sin(an) * Math.max(W, H) * R(.5, .9), 12, 60)) }
+        var emb = []; for (i = 0; i < 90; i++) { var a2 = R(0, TAU), v = R(200, 900); emb.push({ vx: Math.cos(a2) * v, vy: Math.sin(a2) * v - 150, r: R(1.5, 4.5), c: [WHITE, '#FFE0A0', ORANGE, RED][i % 4] }) }
+        return { cx: W * R(.35, .65), cy: H * R(.4, .6), arcs: arcs, emb: emb } },
+      draw: function (c, p, s, W, H) { var cx = s.cx, cy = s.cy, big = Math.max(W, H), T = p * 1.9
+        var flash = p < .06 ? p / .06 : clamp(1 - (p - .06) / .22); c.globalAlpha = .55 * flash; c.fillStyle = '#FFF3D6'; c.fillRect(0, 0, W, H)
+        var r = big * .75 * eo(p * 1.6), fa = clamp(1 - p / .75), g = c.createRadialGradient(cx, cy, 0, cx, cy, Math.max(r, 1)); g.addColorStop(0, 'rgba(255,255,235,1)'); g.addColorStop(.25, 'rgba(255,200,90,.95)'); g.addColorStop(.6, 'rgba(255,90,30,.7)'); g.addColorStop(1, 'rgba(120,20,0,0)')
+        c.globalAlpha = fa; c.fillStyle = g; c.beginPath(); c.arc(cx, cy, Math.max(r, 1), 0, TAU); c.fill()
+        c.globalAlpha = clamp(.9 - p * 1.3); glow(c, WHITE, 20); line(c, '#FFF', 6, clamp(.9 - p * 1.3)); c.beginPath(); c.arc(cx, cy, big * 1.1 * eo(p * 1.3), 0, TAU); c.stroke()
+        var af = clamp(1 - p / .55), grow = eo(p * 2.2); c.save(); c.translate(cx, cy)
+        s.arcs.forEach(function (pts, i) { glow(c, i % 2 ? CYAN : '#B58CFF', 26); line(c, i % 2 ? CYAN : '#B58CFF', 7, af * .7); seg(c, pts, 0, grow); glow(c, WHITE, 8); line(c, WHITE, 2.5, af); seg(c, pts, 0, grow) }); c.restore()
+        s.emb.forEach(function (k) { var al = clamp(1 - T / 1.3); if (al <= 0) return; glow(c, ORANGE, 10); c.globalAlpha = al; c.fillStyle = k.c; c.beginPath(); c.arc(cx + k.vx * T * .55, cy + k.vy * T * .55 + 260 * T * T, k.r, 0, TAU); c.fill() })
+        var smk = clamp((p - .3) / .7); c.shadowBlur = 0; for (var i = 0; i < 7; i++) puff(c, cx + (i - 3) * 50, cy - smk * H * .3 - (i % 3) * 20, 70 + smk * 70, .5 * (1 - smk)) } },
+    { name: 'Transformer explosion', dur: 2.1,
+      init: function (W, H) { var d = [], i; for (i = 0; i < 26; i++) d.push({ vx: R(-1, 1) * W * .9, vy: -R(250, 800), w: R(8, 22), h: R(5, 14), rot: R(-9, 9), c: ['#6B7385', '#3E4455', '#9AA0AE', '#B5651D'][i % 4] })
+        var f = []; for (i = 0; i < 70; i++) { var a = R(0, TAU), v = R(120, 700); f.push({ vx: Math.cos(a) * v, vy: Math.sin(a) * v - 100, r: R(1.5, 3.5), c: [GOLD, ORANGE, WHITE][i % 3] }) }
+        return { d: d, f: f, x: W * R(.4, .6), y: H * .55 } },
+      draw: function (c, p, s, W, H) { var x = s.x, y = s.y, big = Math.max(W, H), pre = .34
+        if (p < pre) { var q = p / pre, sx = lerp(W + 100, x, eo(q)), sh = q > .6 ? R(-5, 5) * (q - .6) * 4 : 0, sy = q > .6 ? R(-4, 4) * (q - .6) * 4 : 0; c.save(); c.translate(sx + sh, y + sy); c.globalAlpha = 1
+          c.fillStyle = '#4A5163'; c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 3; c.fillRect(-52, -50, 104, 100); c.strokeRect(-52, -50, 104, 100); c.fillStyle = '#8A92A6'; for (var i = 0; i < 3; i++) { c.fillRect(-36 + i * 36, -72, 12, 22); c.fillRect(-38 + i * 36, -76, 16, 6) }
+          c.strokeStyle = 'rgba(0,0,0,.4)'; c.lineWidth = 2; for (i = 0; i < 5; i++) { c.beginPath(); c.moveTo(-52, -30 + i * 20); c.lineTo(52, -30 + i * 20); c.stroke() }
+          var heat = clamp((q - .35) / .65); c.fillStyle = 'rgba(255,' + Math.round(150 - heat * 110) + ',40,' + (heat * .75) + ')'; c.fillRect(-52, -50, 104, 100)
+          if (heat > 0) { glow(c, ORANGE, 14); line(c, YEL(), 2, heat); for (i = 0; i < 3; i++) { c.beginPath(); c.moveTo(-52, R(-40, 40)); c.lineTo(-70 + R(-14, 0), R(-50, 50)); c.stroke() } } c.restore(); return }
+        var t = (p - pre) / (1 - pre), T = t * 1.4
+        var fl = t < .08 ? t / .08 : clamp(1 - (t - .08) / .2); c.globalAlpha = .6 * fl; c.fillStyle = '#FFF1CF'; c.fillRect(0, 0, W, H)
+        var r = big * .62 * eo(t * 1.5), g = c.createRadialGradient(x, y, 0, x, y, Math.max(r, 1)); g.addColorStop(0, 'rgba(255,255,230,1)'); g.addColorStop(.3, 'rgba(255,190,70,.95)'); g.addColorStop(.7, 'rgba(255,70,20,.6)'); g.addColorStop(1, 'rgba(90,10,0,0)')
+        c.globalAlpha = clamp(1 - t / .7); c.fillStyle = g; c.beginPath(); c.arc(x, y, Math.max(r, 1), 0, TAU); c.fill()
+        glow(c, WHITE, 18); line(c, '#fff', 7, clamp(.9 - t * 1.4)); c.beginPath(); c.arc(x, y, big * .95 * eo(t * 1.3), 0, TAU); c.stroke()
+        s.d.forEach(function (k) { var al = clamp(1 - t / .95); if (al <= 0) return; c.save(); c.translate(x + k.vx * T * .6, y + k.vy * T * .6 + 520 * T * T); c.rotate(k.rot * T); c.globalAlpha = al; c.shadowBlur = 0; c.fillStyle = k.c; c.fillRect(-k.w / 2, -k.h / 2, k.w, k.h); c.restore() })
+        s.f.forEach(function (k) { var al = clamp(1 - t / .8); if (al <= 0) return; glow(c, ORANGE, 10); c.globalAlpha = al; c.fillStyle = k.c; c.beginPath(); c.arc(x + k.vx * T * .6, y + k.vy * T * .6 + 300 * T * T, k.r, 0, TAU); c.fill() })
+        c.shadowBlur = 0; var sm = clamp((t - .15) / .85); for (var j = 0; j < 8; j++) puff(c, x + (j - 3.5) * 40, y - sm * H * .45 - (j % 3) * 25, 60 + sm * 80, .55 * (1 - sm)) } }
   ]
 
   /* ---------------- player ---------------- */
