@@ -1866,6 +1866,50 @@ function fmtT(sec) { sec = Math.max(0, Math.round(sec)); return Math.floor(sec /
 function loadPref(k, d) { try { const v = localStorage.getItem('vc_' + k); return v === null ? d : JSON.parse(v) } catch (e) { return d } }
 function savePref(k, v) { try { localStorage.setItem('vc_' + k, JSON.stringify(v)) } catch (e) {} }
 
+// ── Read aloud: questions, answer choices and explanations spoken with the browser's built-in voice (no account, no cost) ──
+const Speak = (() => {
+  const ok = typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+  let cfg = { on: false, rate: 1 }
+  try { const s = JSON.parse(localStorage.getItem('voltce_tts') || 'null'); if (s && typeof s === 'object') cfg = Object.assign(cfg, { on: !!s.on, rate: [0.8, 1, 1.25, 1.5].includes(+s.rate) ? +s.rate : 1 }) } catch (e) {}
+  const save = () => { try { localStorage.setItem('voltce_tts', JSON.stringify(cfg)) } catch (e) {} }
+  let voice = null, last = ''
+  const pickVoice = () => { try { const v = speechSynthesis.getVoices(); voice = v.find(x => /^en[-_]US/i.test(x.lang) && /natural|google|samantha|aria|jenny|zira|siri|premium/i.test(x.name)) || v.find(x => /^en[-_]US/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null } catch (e) {} }
+  if (ok) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice) } catch (e) {} }
+  const clean = s => String(s == null ? '' : s)
+    .replace(/\bkVA\b/g, 'kilovolt amps').replace(/\bVA\b/g, 'volt amps').replace(/\bkW\b/g, 'kilowatts').replace(/\bkcmil\b/gi, 'K C mil')
+    .replace(/\bAWG\b/g, 'A W G').replace(/\bNEC\b/g, 'N E C').replace(/\b(GFCI|AFCI|EGC|OCPD|NFPA|OSHA|DSPS|LARA|PSI)\b/g, m => m.split('').join(' '))
+    .replace(/(\d)\s*A\b/g, '$1 amps').replace(/(\d)\s*V\b/g, '$1 volts').replace(/(\d)\s*Hz\b/g, '$1 hertz').replace(/(\d)\s*(?:ohms?|Ω)/g, '$1 ohms')
+    .replace(/(\d)\s*°\s*C\b/g, '$1 degrees Celsius').replace(/(\d)\s*°\s*F\b/g, '$1 degrees Fahrenheit')
+    .replace(/[×x](?=\s*\d)/g, ' times ').replace(/≥/g, ' at least ').replace(/≤/g, ' at most ').replace(/√/g, ' square root of ').replace(/§/g, 'section ')
+    .replace(/\s+/g, ' ').trim()
+  const chunks = t => { const parts = t.split(/(?<=[.?!;:])\s+/), out = []; let cur = ''; parts.forEach(p => { if ((cur + ' ' + p).length > 170 && cur) { out.push(cur); cur = p } else cur = (cur + ' ' + p).trim() }); if (cur) out.push(cur); return out }
+  const stop = () => { if (ok) try { speechSynthesis.cancel() } catch (e) {} }
+  const say = text => {
+    if (!ok) return; stop()
+    chunks(clean(text)).forEach(c => { const u = new SpeechSynthesisUtterance(c); u.rate = cfg.rate; u.lang = (voice && voice.lang) || 'en-US'; if (voice) u.voice = voice; try { speechSynthesis.speak(u) } catch (e) {} })
+  }
+  const textFor = (q, S, n, tot) => {
+    const L = k => String.fromCharCode(65 + k)
+    if (!S.answered) return 'Question ' + n + ' of ' + tot + '. ' + q.q + ' ' + q.o.map((x, k) => L(k) + '. ' + x + '.').join(' ')
+    const right = q.o[q.a]; const lead = S.timedOut ? 'Time is up. The answer is ' : (S.sel === q.a ? 'Correct. ' : 'Not quite. The answer is ')
+    return lead + (S.sel === q.a && !S.timedOut ? L(q.a) + '. ' + right + '.' : L(q.a) + '. ' + right + '.') + ' ' + (q.e ? String(q.e).slice(0, 700) : '')
+  }
+  return {
+    ok, reg: {}, get on() { return cfg.on }, get rate() { return cfg.rate }, stop,
+    cue(q, S, id) { if (!ok || !cfg.on) return; const key = id + ':' + S.i + ':' + (S.answered ? 1 : 0) + ':' + (S.timedOut ? 1 : 0); if (key === last) return; last = key; say(textFor(q, S, S.i + 1, S.order.length)) },
+    replay(v) { try { const T = Speak.reg[v], S = T.S, q = T.cur(); if (q) { last = ''; say(textFor(q, S, S.i + 1, S.order.length)) } } catch (e) {} },
+    toggle(v) { cfg.on = !cfg.on; save(); last = ''; if (!cfg.on) stop(); try { Speak.reg[v].render() } catch (e) {} },
+    setRate(v, x) { cfg.rate = +x; save(); last = ''; try { Speak.reg[v].render() } catch (e) {} },
+    row(v) {
+      if (!ok) return ''
+      const ico = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-right:5px"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>'
+      return '<div class="tts-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px"><button type="button" class="btn-sm" aria-pressed="' + cfg.on + '" onclick="Speak.toggle(\'' + v + '\')">' + ico + 'Read aloud: ' + (cfg.on ? 'on' : 'off') + '</button>' +
+        (cfg.on ? '<button type="button" class="btn-sm" onclick="Speak.replay(\'' + v + '\')">Replay</button><label style="font-size:12px;color:var(--muted)">Speed <select aria-label="Reading speed" onchange="Speak.setRate(\'' + v + '\',this.value)" style="font-size:12px">' + [[0.8, 'Slow'], [1, 'Normal'], [1.25, 'Fast'], [1.5, 'Faster']].map(a => '<option value="' + a[0] + '"' + (a[0] === cfg.rate ? ' selected' : '') + '>' + a[1] + '</option>').join('') + '</select></label>' : '') + '</div>'
+    }
+  }
+})()
+try { document.addEventListener('visibilitychange', () => { if (document.hidden) Speak.stop() }); window.addEventListener('pagehide', Speak.stop) } catch (e) {}
+
 function makeTrainer(o) {
   const S = { cat: 'All', diff: 0, order: [], i: 0, answered: false, sel: -1, timedOut: false, score: 0, done: 0, timeouts: 0, times: [], sessStart: 0, qStart: 0, tid: null,
     tmode: loadPref('tmode', 'off'), limit: loadPref('tlimit', 60), onTimeout: loadPref('tout', 'skip'), rand: loadPref('rand', true), active: false }
@@ -1931,6 +1975,7 @@ function makeTrainer(o) {
     const q = list()[S.order[S.i]]; clearInterval(S.tid)
     S.times.push((Date.now() - S.qStart) / 1000)
     S.sel = k; S.answered = true; S.done++; if (k === q.a) S.score++
+    try { window.AnsFX && AnsFX.play(k === q.a) } catch (e) {}
     trk('ans', o.id, { t: o.id, c: String(q[o.catField] || '').slice(0, 40), ok: k === q.a ? 1 : 0, s: Math.round(S.times[S.times.length - 1] || 0) }); T.render()
   }
   T.next = function () { S.i++; S.answered = false; S.sel = -1; S.timedOut = false; T.render() }
@@ -1958,6 +2003,7 @@ function makeTrainer(o) {
     const tm = S.tmode === 'off' ? '' : `<span class="tmr" id="${o.id}-tmr">${S.tmode === 'down' ? fmtT(S.limit) : '0:00'}</span>`
     body.innerHTML = `<div class="card">
       <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Question ${S.i + 1} of ${S.order.length} · ${S.score} correct · ${esc(q[o.catField])} · ${['', 'Basic', 'Intermediate', 'Advanced'][q.d]}</span>${tm}</div>
+      ${Speak.row(o.v)}
       <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
       ${q.o.map((x, k) => `<button class="opt ${S.answered ? (k === q.a ? 'right' : (k === S.sel ? 'wrong' : '')) : ''}" ${S.answered ? 'disabled' : ''} onclick="${o.v}.pick(${k})">${String.fromCharCode(65 + k)}. ${esc(x)}</button>`).join('')}
       ${S.timedOut ? '<div class="alert alert-error" style="margin-top:10px;margin-bottom:0">Time is up. The question is locked.</div>' : ''}
@@ -1965,7 +2011,10 @@ function makeTrainer(o) {
       <div class="row-btns">${S.answered ? `<button class="btn-sm" onclick="${o.v}.next()">Next question →</button>` : `<button class="btn-sm" onclick="${o.v}.skip()">Skip</button>`}<button class="btn-sm" style="margin-left:auto;opacity:.8" onclick="reportQ()">Report this question</button></div>
     </div>`
     window._rq = { q: q.q, o: q.o, a: q.a, r: q.r, bank: o.id }
+    T.cur = () => q
+    Speak.reg[o.v] = T
     T.startQ()
+    Speak.cue(q, S, o.id)
   }
   return T
 }
@@ -2844,6 +2893,7 @@ function showPage(id) {
   if (PAGE_SYM[id]) setCorner(id, window['_topic_' + id] || '')
   if (id === 'courses') { try { Reviews.load() } catch (e) {} }
   try { routeSync(id) } catch (e) {}
+  try { Speak.stop() } catch (e) {}
 }
 
 // ── ROUTES: one real address per page (voltceu.com/michigan). vercel.json serves index.html for these paths ──
@@ -2931,5 +2981,6 @@ function showAlert(id, msg) {
 }
 </script>
 <script src="state-links.js" defer></script>
+<script src="answer-fx.js" defer></script>
 </body>
 </html>
