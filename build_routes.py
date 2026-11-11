@@ -32,7 +32,9 @@ if '--pages' in sys.argv:
     for m in re.finditer(r"^  (\w+): \{ name: ['\"]([^'\"]+)['\"], ed: '([^']*)'(.*)$", h, re.M):
         nm = re.search(r'note: "([^"]*)"', m.group(4))
         cfgs[slugify(m.group(2))] = (m.group(2), m.group(3), nm.group(1) if nm else '')
-    other = {'courses': ('Electrician continuing education courses | VoltCE', 'Online electrician continuing education courses from VoltCE.'),
+    other = {'circuit-lab': ('Circuit Lab: build and simulate electrical circuits | VoltCE', 'Free circuit constructor for motors, transformers and control circuits. Wire it right and watch it run, wire it wrong and watch it fail. Export a wiring diagram.'),
+             'ladder-logic': ('Ladder logic editor and simulator | VoltCE', 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export Structured Text.'),
+             'courses': ('Electrician continuing education courses | VoltCE', 'Online electrician continuing education courses from VoltCE.'),
              'states': ('Electrician exam prep by state | VoltCE', 'Pick your state for free electrician exam prep, license links and continuing education hours.'),
              'pricing': ('Pricing | VoltCE', 'VoltCE pricing for electrician continuing education courses.'),
              'wisconsin': ('Wisconsin electrician exam prep | VoltCE', 'Free Wisconsin electrician exam practice questions and flashcards.'),
