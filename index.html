@@ -392,6 +392,13 @@
       </div>
     </div>
     <div class="dd">
+      <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Labs <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="dd-menu">
+        <button class="dd-item" onclick="showPage('lab')">Circuit Lab</button>
+        <button class="dd-item" onclick="showPage('ladder')">Ladder Logic</button>
+      </div>
+    </div>
+    <div class="dd">
       <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Exam prep by state <span class="caret" aria-hidden="true">▾</span></button>
       <div class="dd-menu">
         <!-- To add a state: copy this .dd-sub block, rename it, and point its items at that state's trainer. -->
@@ -999,6 +1006,20 @@
 </div>
 
 <!-- ── CALC PRACTICE ─────────────────────────────────────── -->
+<div id="page-lab" class="page">
+  <div class="lab-wrap">
+    <div class="lab-top"><h1>Circuit Lab</h1><p>Build circuits, turn them on, and see them work, or fail. Motors, transformers, relays, breakers and fuses all behave like the real thing. Free, no sign-up.</p></div>
+    <div id="lab-root" class="lab-root"><div style="padding:40px;text-align:center;color:var(--muted)">Loading the lab…</div></div>
+  </div>
+</div>
+
+<div id="page-ladder" class="page">
+  <div class="lab-wrap">
+    <div class="lab-top"><h1>Ladder Logic</h1><p>Build ladder rungs, run them against a live PLC simulation, and export your program. Free, no sign-up.</p></div>
+    <div id="ladder-root" class="lab-root"><div style="padding:40px;text-align:center;color:var(--muted)">Loading the editor…</div></div>
+  </div>
+</div>
+
 <div id="page-calc" class="page">
   <div class="container">
     <div class="page-title">Load calc &amp; sizing practice</div>
@@ -2878,6 +2899,16 @@ function pqLaunch(page, bankName, topic) {
   const b = PQ_BANK[bankName]; if (!b) return
   el.innerHTML = `<button class="btn-sm" onclick="PQ.start('${b}', ${JSON.stringify(topic || 'All').replace(/"/g, '&quot;')})">Take a 10-question practice quiz${topic ? ' on this section' : ''}</button>`
 }
+const LabLoad = (() => {
+  const cache = {}
+  const css = h => { if (!document.querySelector('link[data-lab="' + h + '"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.dataset.lab = h; document.head.appendChild(l) } }
+  const js = src => cache[src] || (cache[src] = new Promise((res, rej) => { const e = document.createElement('script'); e.src = src; e.onload = res; e.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(e) }))
+  const seq = list => list.reduce((p, s) => p.then(() => js(s)), Promise.resolve())
+  return {
+    lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=1', 'lab-export.js?v=1']) },
+    ladder() { css('lab.css?v=1'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
+  }
+})()
 function showPage(id) {
   const cur = (document.querySelector('.page.active')?.id || '').replace('page-', '')
   if (id !== cur && !FX.busy && FX.on && performance.now() - FX.click.t < 80) {
@@ -2894,13 +2925,15 @@ function showPage(id) {
   if (id === 'courses') { try { Reviews.load() } catch (e) {} }
   try { routeSync(id) } catch (e) {}
   try { Speak.stop() } catch (e) {}
+  if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh() }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
+  if (id === 'ladder') LabLoad.ladder().then(() => { Ladder.mount(document.getElementById('ladder-root')) }).catch(() => { const r = document.getElementById('ladder-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the editor. Check your connection and reload.</div>' })
 }
 
 // ── ROUTES: one real address per page (voltceu.com/michigan). vercel.json serves index.html for these paths ──
 const UTM_LAND = (() => { try { const p = new URLSearchParams(location.search), o = {}; ['source', 'medium', 'campaign', 'content'].forEach(k => { const v = p.get('utm_' + k); if (v) o[k] = v.slice(0, 60) }); return Object.keys(o).length ? o : null } catch (e) { return null } })()
 const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const ROUTES = (() => {
-  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', wi: 'wisconsin', fl: 'florida-contractor' }
+  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', wi: 'wisconsin', fl: 'florida-contractor' }
   Object.keys(ST_CFG).forEach(id => { r[id] = slugify(ST_CFG[id].name) })
   return r
 })()
@@ -2919,6 +2952,8 @@ function routeMeta(id) {
   else if (id === 'courses') { t = 'Electrician continuing education courses | VoltCE' }
   else if (id === 'states') { t = 'Electrician exam prep by state | VoltCE'; d = 'Pick your state for free electrician exam prep, license links and continuing education hours.' }
   else if (id === 'pricing') { t = 'Pricing | VoltCE' }
+  else if (id === 'lab') { t = 'Circuit Lab: free electrical circuit simulator | VoltCE'; d = 'Build circuits with motors, transformers, relays, breakers and fuses. Wire them right and they work; wire them wrong and they trip, burn or blow up. Free.' }
+  else if (id === 'ladder') { t = 'Ladder logic editor and simulator | VoltCE'; d = 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export your program.' }
   return { t, d }
 }
 function routeSync(id) {

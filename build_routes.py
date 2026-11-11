@@ -5,7 +5,7 @@ h = open('index.html').read()
 slugify = lambda s: re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 import subprocess
 TRACKED = set(subprocess.run(['git', 'ls-files'], capture_output=True, text=True).stdout.split()) if os.path.isdir('.git') else set()
-slugs = ['courses', 'states', 'pricing', 'wisconsin', 'florida-contractor']
+slugs = ['courses', 'states', 'pricing', 'circuit-lab', 'ladder-logic', 'wisconsin', 'florida-contractor']
 for m in re.finditer(r"^  (\w+): \{ name: ['\"]([^'\"]+)['\"], ed: '", h, re.M):
     s = slugify(m.group(2))
     if s not in slugs: slugs.append(s)
