@@ -396,6 +396,7 @@
       <div class="dd-menu">
         <button class="dd-item" onclick="showPage('lab')">Circuit Lab</button>
         <button class="dd-item" onclick="showPage('ladder')">Ladder Logic</button>
+        <button class="dd-item" onclick="showPage('svc')">Service &amp; Panel Builder</button>
       </div>
     </div>
     <div class="dd">
@@ -1013,6 +1014,12 @@
   </div>
 </div>
 
+<div id="page-svc" class="page">
+  <div class="lab-wrap">
+    <div class="lab-top"><h1>Service &amp; Panel Builder</h1><p>Build a service from the utility down: meters, mains, transformers, panels and loads. It sizes breakers and wire, checks voltage drop and fault current, and explains what is happening. Free, no sign-up.</p></div>
+    <div id="svc-root" class="lab-root"><div style="padding:40px;text-align:center;color:var(--muted)">Loading the builder…</div></div>
+  </div>
+</div>
 <div id="page-ladder" class="page">
   <div class="lab-wrap">
     <div class="lab-top"><h1>Ladder Logic</h1><p>Build ladder rungs, run them against a live PLC simulation, and export your program. Free, no sign-up.</p></div>
@@ -2906,6 +2913,7 @@ const LabLoad = (() => {
   const seq = list => list.reduce((p, s) => p.then(() => js(s)), Promise.resolve())
   return {
     lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=1', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
+    svc() { css('lab.css?v=1'); css('svc.css?v=1'); return seq(['svc-core.js?v=1', 'svc.js?v=1']) },
     ladder() { css('lab.css?v=1'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
 })()
@@ -2926,6 +2934,7 @@ function showPage(id) {
   try { routeSync(id) } catch (e) {}
   try { Speak.stop() } catch (e) {}
   if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh() }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
+  if (id === 'svc') LabLoad.svc().then(() => { Svc.mount(document.getElementById('svc-root')) }).catch(() => { const r = document.getElementById('svc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the builder. Check your connection and reload.</div>' })
   if (id === 'ladder') LabLoad.ladder().then(() => { Ladder.mount(document.getElementById('ladder-root')) }).catch(() => { const r = document.getElementById('ladder-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the editor. Check your connection and reload.</div>' })
 }
 
@@ -2933,7 +2942,7 @@ function showPage(id) {
 const UTM_LAND = (() => { try { const p = new URLSearchParams(location.search), o = {}; ['source', 'medium', 'campaign', 'content'].forEach(k => { const v = p.get('utm_' + k); if (v) o[k] = v.slice(0, 60) }); return Object.keys(o).length ? o : null } catch (e) { return null } })()
 const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const ROUTES = (() => {
-  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', wi: 'wisconsin', fl: 'florida-contractor' }
+  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', wi: 'wisconsin', fl: 'florida-contractor' }
   Object.keys(ST_CFG).forEach(id => { r[id] = slugify(ST_CFG[id].name) })
   return r
 })()
@@ -2953,6 +2962,7 @@ function routeMeta(id) {
   else if (id === 'states') { t = 'Electrician exam prep by state | VoltCE'; d = 'Pick your state for free electrician exam prep, license links and continuing education hours.' }
   else if (id === 'pricing') { t = 'Pricing | VoltCE' }
   else if (id === 'lab') { t = 'Circuit Lab: free electrical circuit simulator | VoltCE'; d = 'Build circuits with motors, transformers, relays, breakers and fuses. Wire them right and they work; wire them wrong and they trip, burn or blow up. Free.' }
+  else if (id === 'svc') { t = 'Service and panel builder: sizing, voltage drop, fault current | VoltCE'; d = 'Free electrical service and panel builder. Design a one-line from utility to panels and transformers, size breakers and wire, and see voltage drop and fault current explained.' }
   else if (id === 'ladder') { t = 'Ladder logic editor and simulator | VoltCE'; d = 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export your program.' }
   return { t, d }
 }

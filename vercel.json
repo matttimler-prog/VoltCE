@@ -23,7 +23,7 @@
   ],
   "rewrites": [
     {
-      "source": "/(courses|states|pricing|circuit-lab|ladder-logic|wisconsin|florida-contractor|louisiana|minnesota|michigan|arizona|georgia|tennessee|new-york-city|colorado|north-carolina|south-carolina|nascla-journeyman|nascla-electrical-contractor|nascla-residential-electrical|florida-electrical|alabama|alaska|arkansas|california|connecticut|delaware|hawaii|idaho|illinois|indiana|iowa|kansas|missouri|maryland|mississippi|massachusetts|kentucky|maine|nebraska|new-hampshire|new-mexico|new-jersey|nevada|montana|oklahoma|ohio|pennsylvania|north-dakota|oregon|rhode-island|south-dakota|utah|vermont|virginia|washington|west-virginia|wyoming|new-york|nascla|texas)",
+      "source": "/(courses|states|pricing|circuit-lab|ladder-logic|service-panel-builder|wisconsin|florida-contractor|louisiana|minnesota|michigan|arizona|georgia|tennessee|new-york-city|colorado|north-carolina|south-carolina|nascla-journeyman|nascla-electrical-contractor|nascla-residential-electrical|florida-electrical|alabama|alaska|arkansas|california|connecticut|delaware|hawaii|idaho|illinois|indiana|iowa|kansas|missouri|maryland|mississippi|massachusetts|kentucky|maine|nebraska|new-hampshire|new-mexico|new-jersey|nevada|montana|oklahoma|ohio|pennsylvania|north-dakota|oregon|rhode-island|south-dakota|utah|vermont|virginia|washington|west-virginia|wyoming|new-york|nascla|texas)",
       "destination": "/index.html"
     }
   ]
