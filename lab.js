@@ -461,6 +461,8 @@
     challenge = c; c.done = false; chalOK = 0; Lab.load(c.start ? c.start() : blank(), true); el.goal.hidden = false; el.goal.className = 'lab-goal'
     el.goal.innerHTML = '🎯 <b>' + esc(c.title) + '.</b> ' + esc(c.goal) + (c.hint ? ' <details><summary>Hint</summary>' + esc(c.hint) + '</details>' : '')
   }
+  Lab.addPart = function (type, x, y, label) { var c = addComp(type, snap(x), snap(y)); if (c && label) { c.label = label; renderComp(c) } return c }
+  Lab.focus = function (x, y, w, h) { var r = el.svg.getBoundingClientRect(), k = Math.min(r.width / (w + 80), r.height / (h + 80), 1.5); V.k = k; V.x = r.width / 2 - (x + w / 2) * k; V.y = r.height / 2 - (y + h / 2) * k; applyView() }
   Lab.model = function () { return M }
   Lab.view = function () { return V }
   Lab.run = function (on) { power(on) }
@@ -479,6 +481,7 @@
     if (saved && saved.comps && saved.comps.length) Lab.load(saved)
     else if (root.LabEx) { Lab.loadExample('lamp') } else { snapshot(); renderAll() }
     inspector(); updateButtons()
+    if (root.LabAssist && root.LabAssist.attach) root.LabAssist.attach(host)
   }
   Lab.refresh = function () { if (mounted) { fillExamples(); fillChallenges() } }
   root.Lab = Lab

@@ -2905,7 +2905,7 @@ const LabLoad = (() => {
   const js = src => cache[src] || (cache[src] = new Promise((res, rej) => { const e = document.createElement('script'); e.src = src; e.onload = res; e.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(e) }))
   const seq = list => list.reduce((p, s) => p.then(() => js(s)), Promise.resolve())
   return {
-    lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=1', 'lab-export.js?v=1']) },
+    lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=1', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
     ladder() { css('lab.css?v=1'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
 })()
