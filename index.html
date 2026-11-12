@@ -1284,6 +1284,7 @@
     </div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'dash-courses')">My courses</button>
+      <button class="tab" onclick="switchTab(this,'dash-goals')">Goals &amp; reminders <span id="gr-badge" class="gr-badge" style="display:none"></span></button>
       <button class="tab" onclick="switchTab(this,'dash-certs')">Certificates</button>
       <button class="tab" onclick="switchTab(this,'dash-account')">Account</button>
     </div>
@@ -1295,6 +1296,33 @@
           <div class="section-title">Available courses</div>
           <div id="available-courses"></div>
         </div>
+      </div>
+    </div>
+    <div id="dash-due"></div>
+    <div id="dash-goals" class="tab-pane">
+      <div class="card">
+        <div class="section-title">Goals</div>
+        <div id="gr-goals"></div>
+        <form id="gr-goal-form" class="gr-form" onsubmit="return Goals.addGoal(event)">
+          <select id="gg-kind" aria-label="Goal type" onchange="Goals.kindChange()">
+            <option value="ceu">Earn CEU hours</option><option value="exam">Pass my exam</option><option value="lessons">Finish lessons</option><option value="custom">Something else</option>
+          </select>
+          <input id="gg-title" maxlength="120" placeholder="Goal (e.g. Finish my 16 hours)" aria-label="Goal">
+          <input id="gg-target" type="number" min="1" step="any" placeholder="Target" aria-label="Target number">
+          <input id="gg-due" type="date" aria-label="Due date">
+          <button class="btn-outline" type="submit">Add goal</button>
+        </form>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="section-title">Reminders</div>
+        <div id="gr-rems"></div>
+        <form id="gr-rem-form" class="gr-form" onsubmit="return Goals.addRem(event)">
+          <input id="gr-title" maxlength="120" placeholder="Remind me to... (e.g. Renew my license)" aria-label="Reminder">
+          <input id="gr-date" type="date" aria-label="Remind on" required>
+          <select id="gr-rep" aria-label="Repeat"><option value="none">Once</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+          <button class="btn-outline" type="submit">Add reminder</button>
+        </form>
+        <div class="gr-note">Reminders show up here and at the top of your dashboard when you sign in. Email reminders are not available yet.</div>
       </div>
     </div>
     <div id="dash-certs" class="tab-pane">
@@ -1613,6 +1641,7 @@ function renderDashboard(profile, enrollments, completions) {
   document.getElementById('m-enrolled').textContent = enrollments.length
   document.getElementById('m-completed').textContent = completions.length
   document.getElementById('m-ceus').textContent = totalCeus.toFixed(1)
+  window._ceuTotal = totalCeus; try { Goals.load() } catch (e) {}
   document.getElementById('m-renewal').textContent = 'Jun 2028'
 
   document.getElementById('acc-name').textContent = `${profile.first_name} ${profile.last_name}`
@@ -3035,6 +3064,7 @@ function showAlert(id, msg) {
 </script>
 <script src="state-links.js" defer></script>
 <script src="answer-fx.js" defer></script>
-<script src="nudge.js?v=1" defer></script>
+<script src="nudge.js?v=2" defer></script>
+<script src="goals.js?v=1" defer></script>
 </body>
 </html>

@@ -71,7 +71,7 @@
   function showSignup() {
     signupDone = true;
     build('signup', 'Save your progress with a free account',
-      'Free accounts keep your completed lessons and CEU records in one place. Study goals and reminders are coming to accounts next, and members get them first.',
+      'Free accounts keep your completed lessons and CEU records in one place. You can also set study goals and reminders, like finishing your hours before renewal.',
       'Create free account', 'Not now', function () {
         try { trk('nudge_click', 'signup') } catch (e) {}
         showPage('auth'); if (typeof authMode !== 'undefined' && authMode === 'login') toggleAuthMode();
