@@ -1857,7 +1857,7 @@ function renderPrep() {
   if (!list.length) { body.innerHTML = '<div class="empty">No questions in this topic.</div>'; return }
   if (PREP.mode === 'flash') {
     const q = list[PREP.order[PREP.i % PREP.order.length]]
-    body.innerHTML = `<div class="flash" onclick="flipCard()">
+    body.innerHTML = Speak.card('PREPF', renderPrep, () => ({ key: 'pf:' + PREP.i + ':' + PREP.flipped, text: PREP.flipped ? 'Answer. ' + q.o[q.a] + '. ' + (q.e || '') : q.q })) + `<div class="flash" onclick="flipCard()">
         <div class="side">${PREP.flipped ? 'Answer' : 'Question'} · ${esc(q.c)}</div>
         ${PREP.flipped ? `<div class="ans">${esc(q.o[q.a])}</div><div>${esc(q.e)}</div>` : `<div class="big">${esc(q.q)}</div>`}
       </div>
@@ -1873,6 +1873,7 @@ function renderPrep() {
     const q = list[PREP.order[PREP.qi]]
     body.innerHTML = `<div class="card">
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Question ${PREP.qi + 1} of ${PREP.order.length} · ${PREP.score} correct · ${esc(q.c)}</div>
+      ${Speak.card('PREPT', renderPrep, () => ({ key: 'pq:' + PREP.qi + ':' + (PREP.answered ? 1 : 0), text: Speak.qText(q, PREP.answered, PREP.sel, PREP.qi + 1, PREP.order.length) }))}
       <div style="font-size:16px;font-weight:500;margin-bottom:10px;line-height:1.5">${esc(q.q)}</div>
       ${q.o.map((o, k) => `<button class="opt ${PREP.answered ? (k === q.a ? 'right' : (k === PREP.sel ? 'wrong' : '')) : ''}" ${PREP.answered ? 'disabled' : ''} onclick="pickAnswer(${k})">${String.fromCharCode(65 + k)}. ${esc(o)}</button>`).join('')}
       ${PREP.answered ? `<div class="expl">${esc(q.e)}</div><div class="row-btns"><button class="btn-sm" onclick="nextQuestion()">Next question →</button></div>` : ''}
@@ -1886,7 +1887,7 @@ function prepCta() {
 }
 function flipCard() { PREP.flipped = !PREP.flipped; renderPrep() }
 function stepCard(d) { const n = PREP.order.length; PREP.i = (PREP.i + d + n) % n; PREP.flipped = false; renderPrep() }
-function pickAnswer(k) { const q = prepBank()[PREP.order[PREP.qi]]; PREP.sel = k; PREP.answered = true; PREP.done++; if (k === q.a) PREP.score++; renderPrep() }
+function pickAnswer(k) { const q = prepBank()[PREP.order[PREP.qi]]; PREP.sel = k; PREP.answered = true; PREP.done++; if (k === q.a) PREP.score++; try { window.AnsFX && AnsFX.play(k === q.a) } catch (e) {} renderPrep() }
 function nextQuestion() { PREP.qi++; PREP.answered = false; renderPrep() }
 
 // ── PRACTICE ENGINE (calc + code articles, with timer) ─────
@@ -1925,7 +1926,9 @@ const Speak = (() => {
   return {
     ok, reg: {}, get on() { return cfg.on }, get rate() { return cfg.rate }, stop,
     cue(q, S, id) { if (!ok || !cfg.on) return; const key = id + ':' + S.i + ':' + (S.answered ? 1 : 0) + ':' + (S.timedOut ? 1 : 0); if (key === last) return; last = key; say(textFor(q, S, S.i + 1, S.order.length)) },
-    replay(v) { try { const T = Speak.reg[v], S = T.S, q = T.cur(); if (q) { last = ''; say(textFor(q, S, S.i + 1, S.order.length)) } } catch (e) {} },
+    replay(v) { try { const T = Speak.reg[v]; if (T.sayFn) { last = ''; say(T.sayFn()); return } const S = T.S, q = T.cur(); if (q) { last = ''; say(textFor(q, S, S.i + 1, S.order.length)) } } catch (e) {} },
+    qText(q, answered, sel, n, tot) { return textFor(q, { answered: !!answered, sel: sel, timedOut: false }, n, tot) },
+    card(v, render, fn) { Speak.reg[v] = { render, sayFn: () => fn().text }; const f = fn(); if (ok && cfg.on && f.key !== last) { last = f.key; say(f.text) } return Speak.row(v) },
     toggle(v) { cfg.on = !cfg.on; save(); last = ''; if (!cfg.on) stop(); try { Speak.reg[v].render() } catch (e) {} },
     setRate(v, x) { cfg.rate = +x; save(); last = ''; try { Speak.reg[v].render() } catch (e) {} },
     row(v) {
@@ -2426,7 +2429,7 @@ function fcRender() {
     return
   }
   const c = FC.deck[FC.i]
-  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${FC.i + 1} of ${FC.deck.length} · ${esc(c.c)}</div>
+  b.innerHTML = Speak.card('FCT', fcRender, () => ({ key: 'fc:' + FC.i + ':' + FC.flipped, text: FC.flipped ? 'Answer. ' + c.b + ' ' + (c.h || '') : c.f })) + `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${FC.i + 1} of ${FC.deck.length} · ${esc(c.c)}</div>
     <div class="flash" onclick="fcFlip()">${FC.flipped ? `<div class="side">Answer</div><div class="big" style="font-weight:500;font-size:17px">${esc(c.b)}</div>${c.h ? `<div style="margin-top:10px;font-size:13px;color:var(--muted)">${esc(c.h)}</div>` : ''}<div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Question</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to flip</div>`}</div>
     <div class="row-btns">${FC.flipped ? '<button class="btn-sm" onclick="fcMark(false)">Review again</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="fcMark(true)">Got it</button>' : '<button class="btn-sm" onclick="fcFlip()">Show answer</button>'}</div>`
 }
@@ -2453,7 +2456,12 @@ function idxRender() {
   if (IDX.i >= IDX.order.length) { b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">${IDX.score} of ${IDX.done} fully correct</div><p class="page-sub">Both the keyword and the section right.</p><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="idxStart()">Start over</button></div>`; return }
   const q = l[IDX.order[IDX.i]], fin = IDX.step === 3
   const opts = (arr, sel, ans, stepDone, fn) => arr.map((x, k) => `<button class="opt ${stepDone ? (k === ans ? 'right' : (k === sel ? 'wrong' : '')) : ''}" ${stepDone ? 'disabled' : ''} onclick="${fn}(${k})">${esc(x)}</button>`).join('')
+  const idxSay = () => { const L = k => String.fromCharCode(65 + k), ol = a => a.map((x, k) => L(k) + '. ' + x + '.').join(' ')
+    if (IDX.step === 1) return { key: 'ix:' + IDX.i + ':1', text: 'Drill ' + (IDX.i + 1) + ' of ' + IDX.order.length + '. ' + q.q + ' Step 1: which word do you look up in the index? ' + ol(q.k) }
+    if (IDX.step === 2) return { key: 'ix:' + IDX.i + ':2', text: (IDX.kSel === q.ka ? 'Right keyword. ' : 'The best index word was ' + q.k[q.ka] + '. ') + 'Step 2: which section do you turn to? ' + ol(q.s) }
+    return { key: 'ix:' + IDX.i + ':3', text: (IDX.kSel === q.ka && IDX.sSel === q.sa ? 'Both right. ' : 'Not quite. ') + 'The section is ' + q.s[q.sa] + '. ' + (q.e || '') } }
   b.innerHTML = `<div class="card"><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Drill ${IDX.i + 1} of ${IDX.order.length} · ${IDX.score} fully correct · ${esc(q.c)}</div>
+    ${Speak.card('IDXT', idxRender, idxSay)}
     <div style="font-size:15px;font-weight:500;margin-bottom:12px;line-height:1.55">${esc(q.q)}</div>
     <div class="section-title" style="font-size:13px">Step 1: which word do you look up in the index?</div>
     ${opts(q.k, IDX.kSel, q.ka, IDX.step > 1, 'idxPickK')}
@@ -2461,7 +2469,7 @@ function idxRender() {
     ${fin ? `<div class="expl"><b>${IDX.kSel === q.ka && IDX.sSel === q.sa ? 'Both right.' : (IDX.kSel === q.ka ? 'Right keyword, wrong section.' : (IDX.sSel === q.sa ? 'Right section, but the best index word was different.' : 'Both need another look.'))}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div><div class="row-btns"><button class="btn-sm" onclick="idxNext()">Next drill →</button></div>` : ''}</div>`
 }
 function idxPickK(k) { IDX.kSel = k; IDX.step = 2; idxRender() }
-function idxPickS(k) { const q = idxList()[IDX.order[IDX.i]]; trk('ans', 'idx', { t: 'idx', c: String(q.c).slice(0, 40), ok: (k === q.sa && IDX.kSel === q.ka) ? 1 : 0 }); IDX.sSel = k; IDX.step = 3; IDX.done++; if (k === q.sa && IDX.kSel === q.ka) IDX.score++; idxRender() }
+function idxPickS(k) { const q = idxList()[IDX.order[IDX.i]]; trk('ans', 'idx', { t: 'idx', c: String(q.c).slice(0, 40), ok: (k === q.sa && IDX.kSel === q.ka) ? 1 : 0 }); IDX.sSel = k; IDX.step = 3; IDX.done++; try { window.AnsFX && AnsFX.play(k === q.sa && IDX.kSel === q.ka) } catch (e) {} if (k === q.sa && IDX.kSel === q.ka) IDX.score++; idxRender() }
 function idxNext() { IDX.i++; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; idxRender() }
 
 
@@ -2565,7 +2573,7 @@ function sfRender() {
     return
   }
   const c = SF.deck[SF.i]
-  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${SF.i + 1} of ${SF.deck.length} · ${esc(c.c)}</div>
+  b.innerHTML = Speak.card('SFT', sfRender, () => ({ key: 'sf:' + SF.i + ':' + SF.flipped, text: SF.flipped ? 'Answer. ' + c.b + ' ' + (c.h || '') : c.f })) + `<div style="font-size:12px;color:var(--muted);margin:10px 0">Card ${SF.i + 1} of ${SF.deck.length} · ${esc(c.c)}</div>
     <div class="flash" onclick="sfFlip()">${SF.flipped ? `<div class="side">Answer</div><div class="big" style="font-weight:500;font-size:17px">${esc(c.b)}</div>${c.h ? `<div style="margin-top:10px;font-size:13px;color:var(--muted)">${esc(c.h)}</div>` : ''}${c.r ? `<div style="margin-top:12px;font-size:12px;color:var(--muted)">${esc(c.r)}</div>` : ''}` : `<div class="side">Question</div><div class="big" style="font-size:17px">${esc(c.f)}</div>`}</div>
     <div class="row-btns">${SF.flipped ? '<button class="btn-sm" onclick="sfMark(false)">Review again</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="sfMark(true)">Got it</button>' : '<button class="btn-sm" onclick="sfFlip()">Show answer</button>'}</div>`
 }
@@ -2641,7 +2649,7 @@ function chgRenderCard() {
   if (!d.length) { b.innerHTML = '<div class="empty">No recorded changes for that selection.</div>'; return }
   if (CHGU.i >= d.length) { b.innerHTML = `<div class="card" style="text-align:center"><div class="page-title">Reviewed ${d.length} changes</div><button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="chgCards()">Review again</button></div>`; return }
   const c = d[CHGU.i], lab = c.step.replace('->', ' → ')
-  b.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0">Change ${CHGU.i + 1} of ${d.length} · ${esc(c.ar)} · <span class="badge badge-blue">${lab}</span></div>
+  b.innerHTML = Speak.card('CHGC', chgRenderCard, () => ({ key: 'chg:' + CHGU.i + ':' + CHGU.flipped, text: CHGU.flipped ? 'What changed. ' + c.b : 'Topic. ' + c.f })) + `<div style="font-size:12px;color:var(--muted);margin:10px 0">Change ${CHGU.i + 1} of ${d.length} · ${esc(c.ar)} · <span class="badge badge-blue">${lab}</span></div>
     <div class="flash" onclick="CHGU.flipped=!CHGU.flipped;chgRenderCard()">${CHGU.flipped ? `<div class="side">What changed</div><div class="big" style="font-weight:500;font-size:16px">${esc(c.b)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Reference: ${esc(c.r || '')}</div>` : `<div class="side">Topic</div><div class="big">${esc(c.f)}</div><div style="margin-top:12px;font-size:12px;color:var(--muted)">Tap to see what changed</div>`}</div>
     <div class="row-btns"><button class="btn-sm" onclick="if(CHGU.i>0){CHGU.i--;CHGU.flipped=false;chgRenderCard()}">← Back</button><button class="btn-primary" style="width:auto;padding:9px 18px" onclick="CHGU.i++;CHGU.flipped=false;chgRenderCard()">Next →</button></div>`
 }

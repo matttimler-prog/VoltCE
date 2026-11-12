@@ -71,6 +71,7 @@
     const q = Q.qs[Q.i]; if (!Q.answered && !Q.qStart) Q.qStart = Date.now(); window._rq = { q: q.q, o: q.o, a: q.a, r: q.r, bank: 'practice' };
     body.innerHTML = `<div class="card">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Question ${Q.i + 1} of ${Q.qs.length}</span><span>${Q.score} correct so far</span></div>
+      ${typeof Speak !== 'undefined' ? Speak.card('PQT', render, () => ({ key: 'pr:' + Q.i + ':' + (Q.answered ? 1 : 0), text: Speak.qText(q, Q.answered, Q.sel, Q.i + 1, Q.qs.length) })) : ''}
       <div style="font-size:15px;font-weight:500;margin-bottom:10px;line-height:1.55">${esc(q.q)}</div>
       ${q.o.map((x, k) => `<button class="opt ${Q.answered ? (k === q.a ? 'right' : (k === Q.sel ? 'wrong' : '')) : ''}" ${Q.answered ? 'disabled' : ''} onclick="PQ.pick(${k})">${String.fromCharCode(65 + k)}. ${esc(x)}</button>`).join('')}
       ${Q.answered ? `<div class="expl"><b>${Q.sel === q.a ? 'Correct.' : 'Not quite.'}</b> ${esc(q.e)}<div style="margin-top:6px;font-size:12px;opacity:.8">Reference: ${esc(q.r)}</div></div>
@@ -82,6 +83,7 @@
     Q.sel = k; Q.answered = true;
     try { trk('ans', 'practice', { t: 'practice', c: String(q[BANKS[Q.bank].field] || BANKS[Q.bank].label).slice(0, 40), ok: k === q.a ? 1 : 0, s: Math.round((Date.now() - (Q.qStart || Date.now())) / 1000) }) } catch (e) {}
     if (k === q.a) Q.score++; else Q.missed.push({ q, sel: k });
+    try { window.AnsFX && AnsFX.play(k === q.a) } catch (e) {}
     render();
   }
   function next() { Q.qStart = 0; Q.i++; Q.sel = -1; Q.answered = false; render() }
