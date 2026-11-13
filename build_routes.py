@@ -5,7 +5,7 @@ h = open('index.html').read()
 slugify = lambda s: re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 import subprocess
 TRACKED = set(subprocess.run(['git', 'ls-files'], capture_output=True, text=True).stdout.split()) if os.path.isdir('.git') else set()
-slugs = ['courses', 'states', 'pricing', 'circuit-lab', 'ladder-logic', 'service-panel-builder', 'nec-220-load-calculator', 'wisconsin', 'florida-contractor']
+slugs = ['courses', 'states', 'pricing', 'circuit-lab', 'ladder-logic', 'service-panel-builder', 'nec-220-load-calculator', 'run-ladder-logic-on-a-plc', 'whats-new', 'wisconsin', 'florida-contractor']
 for m in re.finditer(r"^  (\w+): \{ name: ['\"]([^'\"]+)['\"], ed: '", h, re.M):
     s = slugify(m.group(2))
     if s not in slugs: slugs.append(s)
@@ -37,6 +37,8 @@ if '--pages' in sys.argv:
     other = {'circuit-lab': ('Circuit Lab: build and simulate electrical circuits | VoltCE', 'Free circuit constructor for motors, transformers and control circuits. Wire it right and watch it run, wire it wrong and watch it fail. Export a wiring diagram.'),
              'ladder-logic': ('Ladder logic editor and simulator | VoltCE', 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export Structured Text.'),
              'nec-220-load-calculator': ('NEC 220 load calculation lab | VoltCE', 'Free NEC 220 load calculation lab for houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings, with the code section beside every step.'),
+             'run-ladder-logic-on-a-plc': ('Run ladder logic on a real PLC with OpenPLC | VoltCE', 'Export your ladder program as an OpenPLC project and run it on a Raspberry Pi: install, upload, wire the inputs and outputs, and common problems.'),
+             'whats-new': ("What's new on VoltCE", 'Recent additions to VoltCE: new labs, study tools, reminders and the installable app.'),
              'service-panel-builder': ('Service and panel builder | VoltCE', 'Free electrical service and panel builder: size breakers and wire, check voltage drop and fault current, and learn how services and distribution work.'),
              'courses': ('Electrician continuing education courses | VoltCE', 'Online electrician continuing education courses from VoltCE.'),
              'states': ('Electrician exam prep by state | VoltCE', 'Pick your state for free electrician exam prep, license links and continuing education hours.'),
