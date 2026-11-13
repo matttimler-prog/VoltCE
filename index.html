@@ -397,7 +397,7 @@
         <button class="dd-item" onclick="showPage('lab')">Circuit Lab</button>
         <button class="dd-item" onclick="showPage('ladder')">Ladder Logic</button>
         <button class="dd-item" onclick="showPage('svc')">Service &amp; Panel Builder</button>
-        <button class="dd-item" onclick="showPage('n220')">NEC 220 Load Calculator</button>
+        <button class="dd-item" onclick="showPage('n220')">NEC 220 Load Calculation Lab</button>
       </div>
     </div>
     <div class="dd">
@@ -1025,7 +1025,7 @@
 </div>
 <div id="page-n220" class="page">
   <div class="lab-wrap">
-    <div class="lab-top"><h1>NEC 220 dwelling load calculator</h1><p>Work out a house service the way the code book does: step by step, with the NEC section beside every line. Standard and optional methods. Free, no sign-up.</p></div>
+    <div class="lab-top"><h1>NEC 220 load calculation lab</h1><p>Work out a service the way the code book does, step by step, with the NEC section beside every line. Houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings. Free, no sign-up.</p></div>
     <div id="n220-root" class="lab-root" style="padding:0 16px 24px"></div>
   </div>
 </div>
@@ -2966,7 +2966,7 @@ const LabLoad = (() => {
   return {
     lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=1', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
     svc() { css('lab.css?v=1'); css('svc.css?v=1'); return seq(['svc-core.js?v=1', 'svc.js?v=1']) },
-    n220() { css('lab.css?v=1'); css('nec220.css?v=1'); return seq(['nec220-core.js?v=1', 'nec220.js?v=1']) },
+    n220() { css('lab.css?v=1'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
     ladder() { css('lab.css?v=1'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
 })()
@@ -3017,7 +3017,7 @@ function routeMeta(id) {
   else if (id === 'pricing') { t = 'Pricing | VoltCE' }
   else if (id === 'lab') { t = 'Circuit Lab: free electrical circuit simulator | VoltCE'; d = 'Build circuits with motors, transformers, relays, breakers and fuses. Wire them right and they work; wire them wrong and they trip, burn or blow up. Free.' }
   else if (id === 'svc') { t = 'Service and panel builder: sizing, voltage drop, fault current | VoltCE'; d = 'Free electrical service and panel builder. Design a one-line from utility to panels and transformers, size breakers and wire, and see voltage drop and fault current explained.' }
-  else if (id === 'n220') { t = 'NEC 220 dwelling load calculator | VoltCE'; d = 'Free NEC 220 dwelling load calculator: standard and optional methods with the code section beside every step, then the next standard service size.' }
+  else if (id === 'n220') { t = 'NEC 220 load calculation lab | VoltCE'; d = 'Free NEC 220 load calculation lab for houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings, with the code section beside every step.' }
   else if (id === 'ladder') { t = 'Ladder logic editor and simulator | VoltCE'; d = 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export your program.' }
   return { t, d }
 }
