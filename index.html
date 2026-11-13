@@ -1322,7 +1322,9 @@
           <select id="gr-rep" aria-label="Repeat"><option value="none">Once</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
           <button class="btn-outline" type="submit">Add reminder</button>
         </form>
-        <div class="gr-note">Reminders show up here and at the top of your dashboard when you sign in. Email reminders are not available yet.</div>
+        <label class="gr-opt"><input type="checkbox" id="gr-email" onchange="Goals.setEmail(this.checked)"> Email me when a reminder is due (about 8 AM Central)</label>
+        <div class="gr-note" id="gr-email-msg"></div>
+        <div class="gr-note">Reminders show up here and at the top of your dashboard when you sign in. You can also turn on email reminders above.</div>
       </div>
     </div>
     <div id="dash-certs" class="tab-pane">
@@ -3065,6 +3067,6 @@ function showAlert(id, msg) {
 <script src="state-links.js" defer></script>
 <script src="answer-fx.js" defer></script>
 <script src="nudge.js?v=2" defer></script>
-<script src="goals.js?v=1" defer></script>
+<script src="goals.js?v=2" defer></script>
 </body>
 </html>
