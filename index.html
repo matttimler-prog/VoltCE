@@ -2972,7 +2972,7 @@ const LabLoad = (() => {
   const seq = list => list.reduce((p, s) => p.then(() => js(s)), Promise.resolve())
   return {
     lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=1', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
-    svc() { css('lab.css?v=1'); css('svc.css?v=1'); return seq(['svc-core.js?v=1', 'svc.js?v=1']) },
+    svc() { css('lab.css?v=1'); css('svc.css?v=2'); return seq(['svc-core.js?v=2', 'svc.js?v=2']) },
     n220() { css('lab.css?v=1'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
     ladder() { css('lab.css?v=1'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }

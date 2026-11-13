@@ -14,7 +14,18 @@
   function snap() { var s = JSON.stringify(model); if (hist[hi] === s) return; hist = hist.slice(0, hi + 1); hist.push(s); if (hist.length > 80) hist.shift(); hi = hist.length - 1; try { localStorage.setItem(KEY, s) } catch (e) { } btns() }
   function load(m, keep) { model = K.normalize(clone(m)); if (!keep) sel = model.root.id; hist = []; hi = -1; snap(); update() }
   function undo(d) { var i = hi + d; if (i < 0 || i >= hist.length) return; hi = i; model = JSON.parse(hist[i]); if (!K.find(model, sel)) sel = model.root.id; try { localStorage.setItem(KEY, hist[i]) } catch (e) { } update(); btns() }
-  function update() { R = K.calc(model); drawCanvas(); drawSide(); btns() }
+  function update() { R = K.calc(model); drawCanvas(); drawSide(); btns(); drawChal() }
+  var chal = null, chalDone = false
+  function drawChal() {
+    var p = host && host.querySelector('.svc-chal'); if (!p) return
+    if (!chal) { p.hidden = true; return }
+    var c = K.challenges.filter(function (x) { return x.id === chal })[0], res = K.checkChallenge(chal, model), all = res.every(function (r) { return r.ok })
+    p.hidden = false
+    p.className = 'svc-chal' + (all ? ' done' : '')
+    p.innerHTML = '<div class="sc-h"><b>' + esc(c.title) + '</b><button class="btn btn-outline" data-a="chalx">Close challenge</button></div><p>' + esc(c.brief) + '</p><ul>' + res.map(function (r) { return '<li class="' + (r.ok ? 'ok' : '') + '"><span aria-hidden="true">' + (r.ok ? '\u2713' : '\u25CB') + '</span> ' + esc(r.text) + (r.ok ? ' (done)' : ' (not yet)') + '</li>' }).join('') + '</ul>' + (all ? '<p class="sc-win"><b>Challenge complete.</b> Try the next one from the Challenge menu.</p>' : '<details><summary>Need a hint?</summary><p>' + esc(c.hint) + '</p></details>')
+    if (all && !chalDone) { chalDone = true; try { trk('svc_challenge', chal) } catch (e) {} }
+  }
+  function startChal(id) { chal = id || null; chalDone = false; if (id) { var c = K.challenges.filter(function (x) { return x.id === id })[0]; load(c.build()) } else drawChal() }
   function btns() { var u = $('[data-a=undo]'), r = $('[data-a=redo]'); if (u) u.disabled = hi <= 0; if (r) r.disabled = hi >= hist.length - 1 }
   function selNode() { var f = sel && K.find(model, sel); return f ? f.node : null }
 
@@ -233,25 +244,26 @@
   /* ---------- build ---------- */
   function build(h) {
     host = h; h.classList.add('svc-root')
-    h.innerHTML = '<div class="lab-bar"><label class="lab-sel">Examples <select data-a="ex"><option value="">Pick one…</option>' + K.examples.map(function (e) { return '<option value="' + e.id + '">' + esc(e.title) + '</option>' }).join('') + '</select></label><span class="lab-sep"></span>' +
+    h.innerHTML = '<div class="lab-bar"><label class="lab-sel">Examples <select data-a="ex"><option value="">Pick one…</option>' + K.examples.map(function (e) { return '<option value="' + e.id + '">' + esc(e.title) + '</option>' }).join('') + '</select></label><label class="lab-sel">Challenge <select data-a="chal"><option value="">None</option>' + K.challenges.map(function (c) { return '<option value="' + c.id + '">' + esc(c.title) + '</option>' }).join('') + '</select></label><span class="lab-sep"></span>' +
       '<span class="sv-add">Add to selected:</span><button class="btn btn-outline" data-add="meter">Meter</button><button class="btn btn-outline" data-add="disc">Main / disconnect</button><button class="btn btn-outline" data-add="bus">Switchboard</button><button class="btn btn-outline" data-add="xfmr">Transformer</button><button class="btn btn-outline" data-add="panel">Panel</button><button class="btn btn-outline" data-add="load">Motor load</button><span class="lab-sep"></span>' +
       '<button class="btn btn-outline" data-a="dup">Copy</button><button class="btn btn-outline" data-a="del">Delete</button><button class="btn" style="background:#1B5FC0;color:#fff" data-a="auto" title="Pick breaker, wire and AIC sizes for the loads">Auto-size</button><span class="lab-sep"></span>' +
       '<button class="btn btn-outline" data-a="undo">Undo</button><button class="btn btn-outline" data-a="redo">Redo</button><span class="lab-sep"></span>' +
       '<label class="lab-sel">Export <select data-a="exp"><option value="">Choose…</option><option value="svg">One-line diagram (SVG)</option><option value="png">One-line diagram (PNG)</option><option value="print">Print</option><option value="csv">Feeder schedule (CSV)</option><option value="panels">Panel schedules (CSV)</option><option value="json">Save (.json)</option></select></label><label class="btn btn-outline sv-imp">Import<input type="file" accept=".json,application/json" hidden data-a="imp"></label></div>' +
-      '<div class="svc-main"><div class="svc-cv"><div class="svc-toast" hidden role="status"></div><div class="svc-scroll"></div><div class="svc-hint">Click a box to select it, then use Add to grow the system. The right panel explains what is happening and lets you change sizes.</div></div><div class="svc-side"></div></div>'
+      '<div class="svc-chal" hidden></div><div class="svc-main"><div class="svc-cv"><div class="svc-toast" hidden role="status"></div><div class="svc-scroll"></div><div class="svc-hint">Click a box to select it, then use Add to grow the system. The right panel explains what is happening and lets you change sizes.</div></div><div class="svc-side"></div></div>'
     h.addEventListener('click', function (e) {
       var g = e.target.closest('[data-id]'); if (g && g.closest('.svc-scroll')) { sel = g.getAttribute('data-id'); drawCanvas(); drawSide(); return }
       var b = e.target.closest('button'); if (!b) return
       var add = b.getAttribute('data-add'); if (add) return addNode(add)
       var a = b.getAttribute('data-a')
-      if (a === 'del') del(); else if (a === 'dup') dup(); else if (a === 'auto') autosize(); else if (a === 'undo') undo(-1); else if (a === 'redo') undo(1)
+      if (a === 'chalx') { chal = null; var cs = host.querySelector('[data-a=chal]'); if (cs) cs.value = ''; drawChal() } else if (a === 'del') del(); else if (a === 'dup') dup(); else if (a === 'auto') autosize(); else if (a === 'undo') undo(-1); else if (a === 'redo') undo(1)
       else if (a === 'whole') { sel = null; drawCanvas(); drawSide() }
       else if (a === 'addc') addCircuit(b.getAttribute('data-q'))
       else if (a === 'delc') { var n = selNode(); n.circuits = n.circuits.filter(function (c) { return c.id !== b.getAttribute('data-cid') }); snap(); update() }
     })
     h.addEventListener('change', function (e) {
       var t = e.target, a = t.getAttribute('data-a')
-      if (a === 'ex') { if (t.value) { var ex = K.examples.filter(function (x) { return x.id === t.value })[0]; load(ex.build()); toast(ex.text) } t.value = ''; return }
+      if (a === 'ex') { if (t.value) { var ex = K.examples.filter(function (x) { return x.id === t.value })[0]; chal = null; var cs2 = host.querySelector('[data-a=chal]'); if (cs2) cs2.value = ''; load(ex.build()); toast(ex.text) } t.value = ''; return }
+      if (a === 'chal') { startChal(t.value); return }
       if (a === 'exp') { doExport(t.value); t.value = ''; return }
       if (a === 'imp') { var f = t.files[0]; if (!f) return; var rd = new FileReader(); rd.onload = function () { try { var j = JSON.parse(rd.result); if (!j.root) throw 0; load(j); toast('Imported ' + f.name) } catch (er) { toast('That is not a VoltCE service file (.json).') } }; rd.readAsText(f); t.value = ''; return }
       if (t.hasAttribute('data-f') || t.hasAttribute('data-cf')) setField(t)
