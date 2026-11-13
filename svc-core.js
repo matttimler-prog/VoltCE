@@ -349,6 +349,39 @@
     return mdl('Find the problems', u)
   })
 
-  var K = { SYSTEMS: SYSTEMS, OCPD: OCPD, SIZES: SIZES, KINDS: KINDS, node: node, circuit: circuit, walk: walk, find: find, normalize: normalize, calc: calc, autoSize: autoSize, describe: describe, examples: ex, ampacity: ampacity, resist: resist, nextOCPD: nextOCPD, sizeFor: sizeFor, motorFLA: motorFLA, circuitVA: circuitVA, uid: uid }
+  /* ---------- guided challenges: a start model, goals checked live against calc() ---------- */
+  var CH = []
+  function CHAL(id, title, brief, hint, build, goals) { CH.push({ id: id, title: title, brief: brief, hint: hint, build: build, goals: goals }) }
+  function badCount(R) { var n = 0; Object.keys(R).forEach(function (k) { (R[k].warnings || []).forEach(function (w) { if (w.lvl === 'bad') n++ }) }); return n }
+  function ofType(model, t) { var out = []; walk(model.root, function (n) { if (n.type === t) out.push(n) }); return out }
+  var G_CLEAN = { text: 'No red problems anywhere in the diagram', ok: function (m, R) { return badCount(R) === 0 } }
+
+  CHAL('fixit', '1. Fix the red flags', 'This service has an undersized feeder, a breaker that is too small, an overloaded transformer and a long run. Clear every red problem.',
+    'Click a red box and read what the right panel says. The Auto-size button picks safe breaker, wire and interrupting ratings for you, then see what it changed.',
+    function () { return ex.filter(function (x) { return x.id === 'trouble' })[0].build() }, [G_CLEAN])
+  CHAL('drop', '2. Long run to the garage', 'The garage subpanel sits 250 feet from the house on small wire, so lights dim and motors struggle. Cut the voltage drop on that feeder to 3% or less without creating new problems.',
+    'Voltage drop falls when the wire gets bigger or the run gets shorter. Try a bigger wire size on the Garage subpanel feeder. Copper beats aluminum for drop.',
+    function () { var m = ex.filter(function (x) { return x.id === 'garage' })[0].build(), g = ofType(m, 'panel').filter(function (p) { return /garage/i.test(p.name) })[0]; g.feeder = { size: '10', mat: 'Cu', len: 250, sets: 1 }; g.ocpd = 60; return m },
+    [{ text: 'Garage feeder voltage drop is 3% or less', ok: function (m, R) { var g = ofType(m, 'panel').filter(function (p) { return /garage/i.test(p.name) })[0]; return !!g && R[g.id].dropPct <= 3.0001 } }, G_CLEAN])
+  CHAL('motor', '3. A 25 HP motor, done right', 'A 25 HP, 460 V motor is wired with a 12 AWG feeder and a 100 A breaker. Fix the feeder and the breaker so the motor can start and run.',
+    'Motor wire must carry 125% of the motor full-load current (NEC 430.22). The breaker can be up to 250% of full-load current so the starting surge does not trip it, but no less than 125%.',
+    function () { var u = U('3P-277/480', 35), d = add(u, f(node('disc', 'Main disconnect', {}), '4/0', 5, 200, 'Cu', 35)); add(d, f(node('load', 'Pump motor 25 HP', { kind: 'motor', motor: true, hp: 25, v: '480' }), '12', 60, 100, 'Cu', 35)); return mdl('Motor circuit', u) },
+    [{ text: 'The motor feeder wire and breaker are sized correctly', ok: function (m, R) { var l = ofType(m, 'load')[0]; return !!l && !(R[l.id].warnings || []).some(function (w) { return w.lvl === 'bad' }) } }, G_CLEAN])
+  CHAL('xfmr', '4. Build a 208 V panel from a 480 V service', 'The utility brings 480 V but your shop equipment runs on 208 V. Add a transformer and a panel, give the panel loads, and size it so it is working but not overloaded.',
+    'Select the Main disconnect, press Add to selected > Transformer, then select the transformer and add a Panel. Add a few circuits to the panel (the right panel has Add circuit). Aim for the transformer to be loaded between 25% and 80%.',
+    function () { var u = U('3P-277/480', 35), m = add(u, f(node('meter', 'Utility meter'), '250', 10, 200, 'Cu', 42)); add(m, f(node('disc', 'Main disconnect', {}), '250', 5, 200, 'Cu', 42)); return mdl('480 V service', u) },
+    [{ text: 'A transformer steps 480 V down to 120/208 V', ok: function (m) { return ofType(m, 'xfmr').some(function (x) { return x.props.sec === '3P-120/208' && x.props.pri === '3P-277/480' }) } },
+      { text: 'A panel is fed from the transformer', ok: function (m) { return ofType(m, 'xfmr').some(function (x) { return x.kids.some(function (k) { return k.type === 'panel' }) }) } },
+      { text: 'The transformer is loaded between 25% and 80%', ok: function (m, R) { return ofType(m, 'xfmr').some(function (x) { var p = R[x.id].xloadPct; return p >= 25 && p <= 80 }) } }, G_CLEAN])
+  CHAL('aic', '5. Breakers that can survive a fault', 'This service is next to a strong utility transformer. A breaker with too low an interrupting rating (AIC) can explode in a short circuit. Raise the ratings that need it.',
+    'Click each box and compare the available fault current with the breaker rating (kA). Pick an AIC rating at or above the available fault current. Auto-size also sets AIC.',
+    function () { var u = U('1P-120/240', 65), d = add(u, f(node('disc', 'Main breaker', {}), '4/0', 3, 200, 'Cu', 10)), p = add(d, f(node('panel', 'Main panel', { bus: 200, spaces: 40 }), '4/0', 5, 200, 'Cu', 10)); p.circuits = [circuit('Range', 'range', '240', 9600, { breaker: 50, wire: '6' }), circuit('Lighting', 'lighting', '120', 1500, { breaker: 15, wire: '14' }), circuit('Receptacles', 'recep', '120', 1800, { breaker: 20, wire: '12' })]; return mdl('Strong utility', u) },
+    [G_CLEAN])
+  function checkChallenge(id, model) {
+    var c = CH.filter(function (x) { return x.id === id })[0]; if (!c) return null
+    var R = calc(model); return c.goals.map(function (g) { var ok = false; try { ok = !!g.ok(model, R) } catch (e) {} return { text: g.text, ok: ok } })
+  }
+
+  var K = { SYSTEMS: SYSTEMS, OCPD: OCPD, SIZES: SIZES, KINDS: KINDS, node: node, circuit: circuit, walk: walk, find: find, normalize: normalize, calc: calc, autoSize: autoSize, describe: describe, examples: ex, challenges: CH, checkChallenge: checkChallenge, ampacity: ampacity, resist: resist, nextOCPD: nextOCPD, sizeFor: sizeFor, motorFLA: motorFLA, circuitVA: circuitVA, uid: uid }
   return K
 })

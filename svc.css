@@ -23,3 +23,12 @@
 .sv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; } .sv-chip { font: 12px system-ui; padding: 5px 10px; border: 1px solid var(--border); border-radius: 999px; background: #fff; cursor: pointer; } .sv-chip:hover { border-color: var(--blue); background: var(--blue-light); }
 .sv-add { font-size: 12px; color: var(--muted); } .sv-imp { cursor: pointer; display: inline-flex; align-items: center; }
 @media (max-width: 980px) { .svc-main { grid-template-columns: 1fr; } .svc-side { border: 0; border-top: 1px solid var(--border); max-height: none; } .svc-scroll { max-height: 520px; min-height: 360px; } }
+
+.svc-chal { padding: 12px 16px; border-bottom: 1px solid var(--border, #d5dde6); background: #f4f8fd; font-size: 14px; }
+.svc-chal .sc-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.svc-chal p { margin: 6px 0; line-height: 1.45; }
+.svc-chal ul { list-style: none; padding: 0; margin: 6px 0; }
+.svc-chal li { padding: 3px 0; color: var(--muted, #555); }
+.svc-chal li.ok { color: #14693a; font-weight: 600; }
+.svc-chal.done { background: #eef9f1; }
+.svc-chal summary { cursor: pointer; color: #1B5FC0; }

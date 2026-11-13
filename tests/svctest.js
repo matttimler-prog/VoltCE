@@ -32,4 +32,18 @@ K.examples.slice(0,5).forEach(e=>{const R2=K.calc(e.build());const b=Object.valu
 // neutral
 const u2=K.node('utility','U',{sys:'1P-120/240',isc:10}),p2=K.node('panel','P',{bus:100,spaces:20});u2.kids.push(p2);p2.ocpd=100;p2.feeder={size:'3',mat:'Cu',len:5,sets:1};p2.circuits=[K.circuit('A','general','120',2400),K.circuit('B','general','120',1200)]
 R=K.calc(K.normalize({root:u2}));ok(near(R[p2.id].neutral,10,0.01),'neutral = difference '+R[p2.id].neutral)
+
+// guided challenges: start unsolved, solvable
+{
+  ok(K.challenges.length===5,'5 challenges')
+  K.challenges.forEach(c=>{const r=K.checkChallenge(c.id,c.build());ok(r.some(x=>!x.ok),'challenge starts unsolved '+c.id)})
+  let a=K.challenges[0].build();K.autoSize(a);ok(K.checkChallenge('fixit',a).every(x=>x.ok),'fixit solvable by auto-size')
+  let b=K.challenges[1].build(),gp;K.walk(b.root,n=>{if(/garage/i.test(n.name))gp=n});gp.feeder.size='2';ok(K.checkChallenge('drop',b).every(x=>x.ok),'drop solved')
+  let c2=K.challenges[2].build(),ld;K.walk(c2.root,n=>{if(n.type==='load')ld=n});ld.feeder.size='8';ld.ocpd=70;ok(K.checkChallenge('motor',c2).every(x=>x.ok),'motor solved')
+  let d=K.challenges[3].build(),dd;K.walk(d.root,n=>{if(n.type==='disc')dd=n})
+  const xf=K.node('xfmr','T1',{pri:'3P-277/480',sec:'3P-120/208',kva:45,z:5});xf.ocpd=60;xf.feeder={size:'6',mat:'Cu',len:10,sets:1};dd.kids.push(xf)
+  const pp=K.node('panel','Shop panel',{bus:125,spaces:30});xf.kids.push(pp);pp.ocpd=125;pp.feeder={size:'1',mat:'Cu',len:10,sets:1};pp.circuits=[K.circuit('Welder','general','208',9000,{breaker:60,wire:'6'}),K.circuit('Lights','lighting','120',3000,{breaker:20,wire:'12'})]
+  d=K.normalize(d);K.autoSize(d);const rr=K.checkChallenge('xfmr',d);console.log('xfmr challenge',JSON.stringify(rr));ok(rr.slice(0,2).every(x=>x.ok),'xfmr+panel detected')
+  let e=K.challenges[4].build();K.autoSize(e);ok(K.checkChallenge('aic',e).every(x=>x.ok),'aic solved')
+}
 console.log('svc tests: pass',pass,'fail',fail);process.exit(fail?1:0)
