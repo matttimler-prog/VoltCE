@@ -1,0 +1,23 @@
+{
+  "name": "VoltCE: Electrician Exam Prep and Continuing Education",
+  "short_name": "VoltCE",
+  "description": "Free electrician exam prep, circuit lab, load calculators and continuing education.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0A1A3D",
+  "theme_color": "#0A1A3D",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Circuit Lab", "url": "/circuit-lab?source=shortcut", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "NEC 220 Load Calculation Lab", "url": "/nec-220-load-calculator?source=shortcut", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Service & Panel Builder", "url": "/service-panel-builder?source=shortcut", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
