@@ -375,6 +375,7 @@
     .dd-btn { width: 100%; display: flex; justify-content: space-between; }
     .dd-item { font-size: 15px; padding: 11px 12px; white-space: normal; }
   }
+  @media (pointer: coarse) { .nav-toggle, #fx-toggle { min-height: 40px; } }
   .nav-toggle { display: none; background: var(--ink); color: #fff; border: 0; border-radius: 6px; padding: 7px 14px; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
   :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
@@ -403,6 +404,7 @@
         <button class="dd-item" onclick="showPage('ladder')">Ladder Logic</button>
         <button class="dd-item" onclick="showPage('svc')">Service &amp; Panel Builder</button>
         <button class="dd-item" onclick="showPage('n220')">NEC 220 Load Calculation Lab</button>
+        <button class="dd-item" onclick="showPage('plchw')">Run ladder on a real PLC</button>
       </div>
     </div>
     <div class="dd">
@@ -836,6 +838,7 @@
       <div class="dd-menu">
         <button class="dd-item" onclick="showPage('states')">State resources</button>
         <button class="dd-item" onclick="showPage('pricing')">Pricing</button>
+        <button class="dd-item" onclick="showPage('whatsnew')">What's new</button>
         <button class="dd-item" onclick="showPage('feedback')">Suggest</button>
         <button class="dd-item" onclick="showPage('support')">Support us</button>
       </div>
@@ -1027,6 +1030,44 @@
     <div class="lab-top"><h1>Service &amp; Panel Builder</h1><p>Build a service from the utility down: meters, mains, transformers, panels and loads. It sizes breakers and wire, checks voltage drop and fault current, and explains what is happening. Free, no sign-up.</p></div>
     <div class="lab-disc">Teaching tool, not a code-compliance determination. Real designs must follow the adopted NEC, the manufacturer instructions and the authority having jurisdiction.</div>
     <div id="svc-root" class="lab-root"><div style="padding:40px;text-align:center;color:var(--muted)">Loading the builder…</div></div>
+  </div>
+</div>
+<div id="page-plchw" class="page">
+  <div class="container" style="max-width:780px">
+    <div class="page-title">Run your ladder logic on a real PLC</div>
+    <div class="page-sub">Build and test a program in the Ladder Logic editor, export it, and run it on free OpenPLC software on a Raspberry Pi or another supported board.</div>
+    <div class="lab-disc" style="margin:14px 0">VoltCE has not tested exports on specific hardware. Treat this as a learning path. Check the OpenPLC documentation for your board, and never use a hobby setup for safety functions or on mains-voltage equipment without a qualified person.</div>
+    <h2 style="margin:22px 0 6px;font-size:20px">Before you start</h2>
+    <ul style="line-height:1.6;padding-left:20px">
+      <li>A Raspberry Pi (or another board OpenPLC supports) that can run the OpenPLC Runtime.</li>
+      <li>Low-voltage practice parts only: push buttons, LEDs with resistors, or a relay module made for the board. Raspberry Pi pins are 3.3 V and are not protected, so never connect 120 V or 240 V to them.</li>
+      <li>A working program in the <a href="/ladder-logic" onclick="event.preventDefault();showPage('ladder')">Ladder Logic editor</a> that behaves the way you want in the simulation.</li>
+    </ul>
+    <h2 style="margin:22px 0 6px;font-size:20px">Steps</h2>
+    <ol style="line-height:1.65;padding-left:20px">
+      <li><b>Test in the simulator.</b> Run the program in the editor first and check each rung with the input switches.</li>
+      <li><b>Export.</b> In the editor choose Export, then <i>OpenPLC project (.st)</i>. This is IEC 61131-3 Structured Text with input addresses starting at <code>%IX0.0</code> and output addresses at <code>%QX0.0</code>, assigned in the order the tags appear. Export the <i>Tag list (.csv)</i> too: it shows which tag got which address.</li>
+      <li><b>Install the OpenPLC Runtime</b> on the board. On a Raspberry Pi the OpenPLC project documents these steps: clone the OpenPLC_v3 repository from GitHub, run <code>./install.sh rpi</code> (it can take a long time), then reboot. OpenPLC starts after the reboot.</li>
+      <li><b>Open the web page.</b> In a browser on the same network go to the board's IP address on port <code>8080</code>. Log in, and change the default password in the Users menu.</li>
+      <li><b>Upload.</b> Choose <i>Programs</i>, pick the exported <code>.st</code> file, upload it, and add a short description. OpenPLC compiles it. If it finishes cleanly the status changes to running. If not, the status shows stopped and the errors appear in the runtime log.</li>
+      <li><b>Wire the I/O.</b> Match each address from the tag list to a pin on your board using the pin table in the OpenPLC documentation for your board. Then test with the buttons and LEDs, one input at a time.</li>
+    </ol>
+    <h2 style="margin:22px 0 6px;font-size:20px">Things that trip people up</h2>
+    <ul style="line-height:1.6;padding-left:20px">
+      <li><b>Inputs read backwards.</b> OpenPLC notes that on a Raspberry Pi, <code>%IX0.0</code> and <code>%IX0.1</code> have pull-up resistors and read TRUE with nothing connected, so their logic is reversed. Check the current table for your board.</li>
+      <li><b>A stop button.</b> In a real control circuit a stop button is wired normally closed so a broken wire stops the machine. In ladder logic the matching contact is then examine-if-open or closed depending on how it is wired. Test it both ways.</li>
+      <li><b>Timers.</b> The export converts timer presets to milliseconds. Real scan time is about 20 ms, so very short timers are not exact.</li>
+      <li><b>Compile errors.</b> Open the runtime log on the dashboard. Common causes are a tag with spaces or symbols, or a rung with no output.</li>
+    </ul>
+    <p style="margin-top:20px"><button class="btn" onclick="showPage('ladder')">Open the Ladder Logic editor</button></p>
+    <p style="font-size:13px;color:var(--muted);margin-top:18px">Sources: <a href="https://openplcproject.github.io/runtime/raspberry-pi" target="_blank" rel="noopener">OpenPLC on Raspberry Pi</a>, <a href="https://openplcproject.github.io/reference/basics/upload" target="_blank" rel="noopener">Uploading your project to OpenPLC</a>.</p>
+  </div>
+</div>
+<div id="page-whatsnew" class="page">
+  <div class="container" style="max-width:780px">
+    <div class="page-title">What's new</div>
+    <div class="page-sub">Recent additions to VoltCE, newest first. Everything here is free to use.</div>
+    <div id="wn-body" style="margin-top:14px"></div>
   </div>
 </div>
 <div id="page-n220" class="page">
@@ -1964,8 +2005,10 @@ const Speak = (() => {
     .replace(/\s+/g, ' ').trim()
   const chunks = t => { const parts = t.split(/(?<=[.?!;:])\s+/), out = []; let cur = ''; parts.forEach(p => { if ((cur + ' ' + p).length > 170 && cur) { out.push(cur); cur = p } else cur = (cur + ' ' + p).trim() }); if (cur) out.push(cur); return out }
   const stop = () => { if (ok) try { speechSynthesis.cancel() } catch (e) {} }
+  const ttsSeen = {}
   const say = text => {
     if (!ok) return; stop()
+    try { const pg = window._curPage || '?'; if (!ttsSeen[pg]) { ttsSeen[pg] = 1; trk('tts_read', pg, { rate: cfg.rate }) } } catch (e) {}
     chunks(clean(text)).forEach(c => { const u = new SpeechSynthesisUtterance(c); u.rate = cfg.rate; u.lang = (voice && voice.lang) || 'en-US'; if (voice) u.voice = voice; try { speechSynthesis.speak(u) } catch (e) {} })
   }
   const textFor = (q, S, n, tot) => {
@@ -1980,7 +2023,7 @@ const Speak = (() => {
     replay(v) { try { const T = Speak.reg[v]; if (T.sayFn) { last = ''; say(T.sayFn()); return } const S = T.S, q = T.cur(); if (q) { last = ''; say(textFor(q, S, S.i + 1, S.order.length)) } } catch (e) {} },
     qText(q, answered, sel, n, tot) { return textFor(q, { answered: !!answered, sel: sel, timedOut: false }, n, tot) },
     card(v, render, fn) { Speak.reg[v] = { render, sayFn: () => fn().text }; const f = fn(); if (ok && cfg.on && f.key !== last) { last = f.key; say(f.text) } return Speak.row(v) },
-    toggle(v) { cfg.on = !cfg.on; save(); last = ''; if (!cfg.on) stop(); try { Speak.reg[v].render() } catch (e) {} },
+    toggle(v) { cfg.on = !cfg.on; save(); try { trk(cfg.on ? 'tts_on' : 'tts_off', window._curPage || '?') } catch (e) {} last = ''; if (!cfg.on) stop(); try { Speak.reg[v].render() } catch (e) {} },
     setRate(v, x) { cfg.rate = +x; save(); last = ''; try { Speak.reg[v].render() } catch (e) {} },
     row(v) {
       if (!ok) return ''
@@ -2771,6 +2814,8 @@ async function loadInsights() {
     ${tbl('Where visitors come from (new sessions)', cnt(rows.filter(r => r.ev === 'visit'), r => r.meta?.utm ? 'campaign: ' + r.meta.utm : (r.meta?.ref || 'direct')), 'Source')}
     ${tbl('Devices (new sessions)', cnt(rows.filter(r => r.ev === 'visit'), r => r.meta?.dev || '?'), 'Device')}
     ${tbl('Pages viewed', cnt(pv, r => r.page || '?'), 'Page')}
+    ${(() => { const rs = new Set(rows.filter(r => r.ev === 'tts_read').map(r => r.sid)), ons = rows.filter(r => r.ev === 'tts_on').length; return `<div class="section-title" style="margin-top:18px">Read aloud</div><p style="font-size:13px;color:var(--muted)">${rs.size} of ${sessions.size} visitors (${sessions.size ? Math.round(rs.size / sessions.size * 100) : 0}%) had a question or card read aloud. Switched on ${ons} time${ons === 1 ? '' : 's'} in this period.</p>` })()}
+    ${tbl('Read aloud by page (sessions)', cnt(rows.filter(r => r.ev === 'tts_read'), r => r.page || '?'), 'Page')}
     ${tbl('Study sessions started', cnt(rows.filter(r => r.ev === 'start'), r => r.meta?.t || '?'), 'Tool')}
     ${tbl('Accuracy by tool', Object.entries(byTool).map(([t, v]) => [t + ' (' + Math.round(v.ok / v.n * 100) + '% correct)', v.n]), 'Tool')}
     ${tbl('Most-studied categories', cnt(ans, r => (r.meta?.t || '?') + ' / ' + (r.meta?.c || '?')), 'Category')}
@@ -2971,10 +3016,10 @@ const LabLoad = (() => {
   const js = src => cache[src] || (cache[src] = new Promise((res, rej) => { const e = document.createElement('script'); e.src = src; e.onload = res; e.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(e) }))
   const seq = list => list.reduce((p, s) => p.then(() => js(s)), Promise.resolve())
   return {
-    lab() { css('lab.css?v=1'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=2', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
-    svc() { css('lab.css?v=1'); css('svc.css?v=3'); return seq(['svc-core.js?v=3', 'svc.js?v=3']) },
-    n220() { css('lab.css?v=1'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
-    ladder() { css('lab.css?v=1'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
+    lab() { css('lab.css?v=2'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=2', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
+    svc() { css('lab.css?v=2'); css('svc.css?v=3'); return seq(['svc-core.js?v=3', 'svc.js?v=3']) },
+    n220() { css('lab.css?v=2'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
+    ladder() { css('lab.css?v=2'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
 })()
 function showPage(id) {
@@ -2988,22 +3033,42 @@ function showPage(id) {
   if (FX.busy) { pg.classList.add('wire-in'); setTimeout(() => pg.classList.remove('wire-in'), 1000) }
   window.scrollTo(0, 0)
   document.querySelector('.nav-links')?.classList.remove('open')
+  window._curPage = id
   try { trk('page', id, window._utmSent ? null : (window._utmSent = true, UTM_LAND)) } catch (e) {}
   if (PAGE_SYM[id]) setCorner(id, window['_topic_' + id] || '')
   if (id === 'courses') { try { Reviews.load() } catch (e) {} }
   try { routeSync(id) } catch (e) {}
   try { Speak.stop() } catch (e) {}
   if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh(); LabLink.apply('lab'); Share.open('lab') }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
+  if (id === 'whatsnew') renderWhatsNew()
   if (id === 'svc') LabLoad.svc().then(() => { Svc.mount(document.getElementById('svc-root')); LabLink.apply('svc'); Share.open('svc') }).catch(() => { const r = document.getElementById('svc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the builder. Check your connection and reload.</div>' })
   if (id === 'n220') LabLoad.n220().then(() => { N220.mount(document.getElementById('n220-root')); LabLink.apply('n220') }).catch(() => { const r = document.getElementById('n220-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the calculator. Check your connection and reload.</div>' })
   if (id === 'ladder') LabLoad.ladder().then(() => { Ladder.mount(document.getElementById('ladder-root')); LabLink.apply('ladder'); Share.open('ladder') }).catch(() => { const r = document.getElementById('ladder-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the editor. Check your connection and reload.</div>' })
+}
+
+const WHATS_NEW = [
+  ['Nov 13, 2026', 'Service Builder challenges, generator and transfer switch', 'Six guided challenges with a live checklist, plus a Generator + ATS node that checks generator size and its 115% conductor rule. Circuit Lab has a forward/reverse motor starter with interlock.'],
+  ['Nov 13, 2026', 'Study streaks and weak-topic practice', 'See your study streak, your best streak and the topics you miss most, then practice the weakest one in a click.'],
+  ['Nov 13, 2026', 'Share a design by link', 'Copy a link that carries your whole circuit, ladder program or service one-line, so someone else can open exactly what you built.'],
+  ['Nov 13, 2026', 'Install VoltCE as an app', 'Add VoltCE to your phone or computer from the Install app button. Study pages keep working with a weak connection.'],
+  ['Nov 13, 2026', 'Load calculation lab', 'NEC 220 for houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings, with the code section beside every line.'],
+  ['Nov 13, 2026', 'Email reminders and renewal notices', 'Signed-in users can opt in to email reminders, and set a license renewal date to get notices 90, 30 and 7 days ahead.'],
+  ['Nov 12, 2026', 'Goals and reminders', 'Set study goals and reminders on your dashboard, with automatic progress toward your CEU hours.'],
+  ['Nov 12, 2026', 'Read aloud and answer animations', 'Have questions, answers and flashcards read to you, with a speed control.'],
+  ['Nov 11, 2026', 'Service and Panel Builder', 'Design a one-line from the utility to panels and loads. It checks sizing, voltage drop and fault current and explains what is happening.'],
+  ['Nov 11, 2026', 'Circuit Lab assistant', 'Explain a circuit, describe one by text or voice, or trace an uploaded diagram.']
+]
+function renderWhatsNew() {
+  const el = document.getElementById('wn-body'); if (!el || el.dataset.done) return
+  el.dataset.done = '1'
+  el.innerHTML = WHATS_NEW.map(([d, t, b]) => `<div style="padding:14px 0;border-bottom:1px solid var(--border,#d5dde6)"><div style="font-size:12px;color:var(--muted)">${d}</div><div style="font-weight:600;font-size:16px;margin:2px 0 4px">${t}</div><div style="font-size:14px;line-height:1.5;color:var(--muted)">${b}</div></div>`).join('')
 }
 
 // ── ROUTES: one real address per page (voltceu.com/michigan). vercel.json serves index.html for these paths ──
 const UTM_LAND = (() => { try { const p = new URLSearchParams(location.search), o = {}; ['source', 'medium', 'campaign', 'content'].forEach(k => { const v = p.get('utm_' + k); if (v) o[k] = v.slice(0, 60) }); return Object.keys(o).length ? o : null } catch (e) { return null } })()
 const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const ROUTES = (() => {
-  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', n220: 'nec-220-load-calculator', wi: 'wisconsin', fl: 'florida-contractor' }
+  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', n220: 'nec-220-load-calculator', plchw: 'run-ladder-logic-on-a-plc', whatsnew: 'whats-new', wi: 'wisconsin', fl: 'florida-contractor' }
   Object.keys(ST_CFG).forEach(id => { r[id] = slugify(ST_CFG[id].name) })
   return r
 })()
@@ -3025,6 +3090,8 @@ function routeMeta(id) {
   else if (id === 'lab') { t = 'Circuit Lab: free electrical circuit simulator | VoltCE'; d = 'Build circuits with motors, transformers, relays, breakers and fuses. Wire them right and they work; wire them wrong and they trip, burn or blow up. Free.' }
   else if (id === 'svc') { t = 'Service and panel builder: sizing, voltage drop, fault current | VoltCE'; d = 'Free electrical service and panel builder. Design a one-line from utility to panels and transformers, size breakers and wire, and see voltage drop and fault current explained.' }
   else if (id === 'n220') { t = 'NEC 220 load calculation lab | VoltCE'; d = 'Free NEC 220 load calculation lab for houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings, with the code section beside every step.' }
+  else if (id === 'plchw') { t = 'Run ladder logic on a real PLC with OpenPLC | VoltCE'; d = 'Export your ladder program as an OpenPLC project and run it on a Raspberry Pi: install, upload, wire the inputs and outputs, and common problems.' }
+  else if (id === 'whatsnew') { t = "What's new on VoltCE"; d = 'Recent additions to VoltCE: new labs, study tools, reminders and the installable app.' }
   else if (id === 'ladder') { t = 'Ladder logic editor and simulator | VoltCE'; d = 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export your program.' }
   return { t, d }
 }
