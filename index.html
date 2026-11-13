@@ -2992,10 +2992,10 @@ function showPage(id) {
   if (id === 'courses') { try { Reviews.load() } catch (e) {} }
   try { routeSync(id) } catch (e) {}
   try { Speak.stop() } catch (e) {}
-  if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh(); LabLink.apply('lab') }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
-  if (id === 'svc') LabLoad.svc().then(() => { Svc.mount(document.getElementById('svc-root')); LabLink.apply('svc') }).catch(() => { const r = document.getElementById('svc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the builder. Check your connection and reload.</div>' })
+  if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh(); LabLink.apply('lab'); Share.open('lab') }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
+  if (id === 'svc') LabLoad.svc().then(() => { Svc.mount(document.getElementById('svc-root')); LabLink.apply('svc'); Share.open('svc') }).catch(() => { const r = document.getElementById('svc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the builder. Check your connection and reload.</div>' })
   if (id === 'n220') LabLoad.n220().then(() => { N220.mount(document.getElementById('n220-root')); LabLink.apply('n220') }).catch(() => { const r = document.getElementById('n220-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the calculator. Check your connection and reload.</div>' })
-  if (id === 'ladder') LabLoad.ladder().then(() => { Ladder.mount(document.getElementById('ladder-root')); LabLink.apply('ladder') }).catch(() => { const r = document.getElementById('ladder-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the editor. Check your connection and reload.</div>' })
+  if (id === 'ladder') LabLoad.ladder().then(() => { Ladder.mount(document.getElementById('ladder-root')); LabLink.apply('ladder'); Share.open('ladder') }).catch(() => { const r = document.getElementById('ladder-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the editor. Check your connection and reload.</div>' })
 }
 
 // ── ROUTES: one real address per page (voltceu.com/michigan). vercel.json serves index.html for these paths ──
@@ -3092,5 +3092,6 @@ function showAlert(id, msg) {
 <script src="goals.js?v=3" defer></script>
 <script src="lablink.js?v=1" defer></script>
 <script src="pwa.js?v=1" defer></script>
+<script src="share.js?v=1" defer></script>
 </body>
 </html>
