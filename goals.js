@@ -8,7 +8,7 @@ var Goals = (function () {
     '.gr-row .t{flex:1;min-width:160px}.gr-row .m{font-size:12px;color:var(--muted)}.gr-row.done .t{text-decoration:line-through;color:var(--muted)}' +
     '.gr-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-top:5px;max-width:320px}.gr-bar i{display:block;height:100%;background:var(--green)}' +
     '.gr-row button{font:inherit;font-size:12px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:4px 9px}.gr-row button:hover{border-color:var(--ink)}' +
-    '.gr-note{font-size:12px;color:var(--muted);margin-top:10px}.gr-empty{color:var(--muted);font-size:13px;padding:6px 0}' +
+    '.gr-opt{display:block;margin-top:12px;font-size:13px}.gr-note{font-size:12px;color:var(--muted);margin-top:10px}.gr-empty{color:var(--muted);font-size:13px;padding:6px 0}' +
     '.gr-badge{background:var(--red);color:#fff;border-radius:9px;padding:0 6px;font-size:11px;margin-left:4px}' +
     '.gr-due{background:var(--amber-light);border:1px solid var(--amber);color:var(--amber);border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:14px}.gr-due b{color:var(--ink)}.gr-due button{margin-left:8px;font:inherit;font-size:12px;cursor:pointer;border:1px solid var(--amber);background:#fff;border-radius:6px;padding:3px 9px}';
   document.head.appendChild(css);
@@ -21,6 +21,7 @@ var Goals = (function () {
     if (!currentUser) return;
     var a = await supabaseClient.from('user_goals').select('*').order('created_at'), b = await supabaseClient.from('user_reminders').select('*').order('remind_on');
     G = (a && a.data) || []; R = (b && b.data) || []; render();
+    var pr = await supabaseClient.from('profiles').select('email_reminders').eq('id', currentUser.id).single(); if ($('gr-email')) $('gr-email').checked = !!(pr && pr.data && pr.data.email_reminders);
   }
   function render() {
     var gl = $('gr-goals'), rl = $('gr-rems'); if (!gl) return;
@@ -70,5 +71,19 @@ var Goals = (function () {
   async function delGoal(id) { await supabaseClient.from('user_goals').delete().eq('id', id); G = G.filter(function (x) { return x.id !== id }); render() }
   async function bump(id, n) { var g = G.filter(function (x) { return x.id === id })[0]; if (!g) return; var v = (g.current || 0) + n; var r = await supabaseClient.from('user_goals').update({ current: v, done: !!(g.target && v >= g.target) }).eq('id', id).select().single(); if (r.data) { Object.assign(g, r.data); render() } }
   async function toggle(id) { var g = G.filter(function (x) { return x.id === id })[0]; if (!g) return; var r = await supabaseClient.from('user_goals').update({ done: !g.done }).eq('id', id).select().single(); if (r.data) { Object.assign(g, r.data); render() } }
-  return { load: load, addGoal: addGoal, addRem: addRem, doneRem: doneRem, delRem: delRem, delGoal: delGoal, bump: bump, toggle: toggle, kindChange: kindChange, _state: function () { return { G: G, R: R } } };
+  async function setEmail(on) {
+    var r = await supabaseClient.from('profiles').update({ email_reminders: !!on }).eq('id', currentUser.id).select('email_reminders').single(), m = $('gr-email-msg');
+    if (!r.data) { $('gr-email').checked = !on; if (m) m.textContent = 'Could not save that. Try again.'; return }
+    if (m) m.textContent = on ? 'Email reminders are on. You can unsubscribe from any email.' : 'Email reminders are off.'
+  }
+  return { setEmail: setEmail, load: load, addGoal: addGoal, addRem: addRem, doneRem: doneRem, delRem: delRem, delGoal: delGoal, bump: bump, toggle: toggle, kindChange: kindChange, _state: function () { return { G: G, R: R } } };
+})();
+(function () {
+  try {
+    var u = new URLSearchParams(location.search).get('unsub'); if (!u) return;
+    var d = document.createElement('div'); d.setAttribute('role', 'status');
+    d.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:950;background:#fff;border:2px solid #111;border-radius:8px;padding:10px 16px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.18)';
+    d.textContent = u === 'done' ? 'You are unsubscribed from VoltCE reminder emails.' : 'That unsubscribe link is not valid. You can turn emails off in your dashboard.';
+    document.body.appendChild(d); setTimeout(function () { d.remove() }, 8000);
+  } catch (e) {}
 })();
