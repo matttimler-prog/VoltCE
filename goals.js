@@ -71,12 +71,24 @@ var Goals = (function () {
   async function delGoal(id) { await supabaseClient.from('user_goals').delete().eq('id', id); G = G.filter(function (x) { return x.id !== id }); render() }
   async function bump(id, n) { var g = G.filter(function (x) { return x.id === id })[0]; if (!g) return; var v = (g.current || 0) + n; var r = await supabaseClient.from('user_goals').update({ current: v, done: !!(g.target && v >= g.target) }).eq('id', id).select().single(); if (r.data) { Object.assign(g, r.data); render() } }
   async function toggle(id) { var g = G.filter(function (x) { return x.id === id })[0]; if (!g) return; var r = await supabaseClient.from('user_goals').update({ done: !g.done }).eq('id', id).select().single(); if (r.data) { Object.assign(g, r.data); render() } }
+  function setRenewal(d) {
+    var m = $('m-renewal'), i = $('acc-renewal'); if (i) i.value = d || '';
+    if (!m) return; if (!d) { m.textContent = 'Set date'; return }
+    var p = d.split('-'); m.textContent = new Date(+p[0], p[1] - 1, +p[2]).toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+  }
+  async function saveRenewal() {
+    var v = $('acc-renewal').value || null, msg = $('acc-renewal-msg');
+    var r = await supabaseClient.from('profiles').update({ renewal_date: v }).eq('id', currentUser.id).select('renewal_date').single();
+    if (!r.data) { msg.textContent = 'Could not save. Try again.'; return }
+    try { currentProfile.renewal_date = v } catch (e) {}
+    setRenewal(v); msg.textContent = v ? 'Saved.' : 'Cleared.';
+  }
   async function setEmail(on) {
     var r = await supabaseClient.from('profiles').update({ email_reminders: !!on }).eq('id', currentUser.id).select('email_reminders').single(), m = $('gr-email-msg');
     if (!r.data) { $('gr-email').checked = !on; if (m) m.textContent = 'Could not save that. Try again.'; return }
     if (m) m.textContent = on ? 'Email reminders are on. You can unsubscribe from any email.' : 'Email reminders are off.'
   }
-  return { setEmail: setEmail, load: load, addGoal: addGoal, addRem: addRem, doneRem: doneRem, delRem: delRem, delGoal: delGoal, bump: bump, toggle: toggle, kindChange: kindChange, _state: function () { return { G: G, R: R } } };
+  return { setRenewal: setRenewal, saveRenewal: saveRenewal, setEmail: setEmail, load: load, addGoal: addGoal, addRem: addRem, doneRem: doneRem, delRem: delRem, delGoal: delGoal, bump: bump, toggle: toggle, kindChange: kindChange, _state: function () { return { G: G, R: R } } };
 })();
 (function () {
   try {
