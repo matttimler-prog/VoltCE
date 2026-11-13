@@ -16,7 +16,9 @@ HEAD = [
     {"source": "/(.*)", "headers": [
         {"key": "X-Content-Type-Options", "value": "nosniff"},
         {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
-        {"key": "X-Frame-Options", "value": "SAMEORIGIN"}]}]
+        {"key": "X-Frame-Options", "value": "SAMEORIGIN"}]},
+    {"source": "/sw.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}, {"key": "Service-Worker-Allowed", "value": "/"}]},
+    {"source": "/manifest.webmanifest", "headers": [{"key": "Content-Type", "value": "application/manifest+json"}, {"key": "Cache-Control", "value": "public, max-age=3600"}]}]
 cfg = {"cleanUrls": True, "trailingSlash": False, "buildCommand": "python3 build_routes.py --pages",
        "headers": HEAD, "rewrites": [{"source": "/(" + alt + ")", "destination": "/index.html"}]}
 json.dump(cfg, open('vercel.json', 'w'), indent=2); open('vercel.json', 'a').write('\n')

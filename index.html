@@ -7,7 +7,12 @@
 <meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VoltCE">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#0A1A3D">
 <link rel="canonical" href="https://voltceu.com/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -838,6 +843,7 @@
     <span id="nav-user-name" style="font-size:13px;color:var(--muted);display:none"></span>
     <button class="nav-link" id="nav-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-link" id="nav-admin-btn" style="display:none" onclick="showPage('admin')">Admin</button>
+    <button class="nav-link" id="nav-install-btn" style="display:none" onclick="installApp()">Install app</button>
     <button class="nav-link btn" id="nav-auth-btn" onclick="showPage('auth')">Sign in</button>
     <button class="nav-link" id="nav-logout-btn" style="display:none" onclick="logout()">Sign out</button>
   </div>
@@ -3085,5 +3091,6 @@ function showAlert(id, msg) {
 <script src="nudge.js?v=2" defer></script>
 <script src="goals.js?v=3" defer></script>
 <script src="lablink.js?v=1" defer></script>
+<script src="pwa.js?v=1" defer></script>
 </body>
 </html>
