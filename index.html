@@ -1280,7 +1280,7 @@
       <div class="metric"><div class="metric-val" id="m-enrolled">—</div><div class="metric-label">Enrolled</div></div>
       <div class="metric"><div class="metric-val" id="m-completed">—</div><div class="metric-label">Completed</div></div>
       <div class="metric"><div class="metric-val" id="m-ceus">—</div><div class="metric-label">CEU hours</div></div>
-      <div class="metric"><div class="metric-val" id="m-renewal">—</div><div class="metric-label">WI renewal</div></div>
+      <div class="metric" style="cursor:pointer" onclick="switchTab(document.querySelectorAll('#page-dashboard .tab')[3],'dash-account')" title="Set or change your renewal date"><div class="metric-val" id="m-renewal">—</div><div class="metric-label">License renewal</div></div>
     </div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'dash-courses')">My courses</button>
@@ -1346,6 +1346,9 @@
           <div class="card-sm"><div style="color:var(--muted);margin-bottom:3px">State</div><div style="font-weight:500">Wisconsin</div></div>
           <div class="card-sm"><div style="color:var(--muted);margin-bottom:3px">Plan</div><div style="font-weight:500" id="acc-plan">Free</div></div>
         </div>
+        <div class="card-sm" style="margin-top:10px;font-size:13px"><label for="acc-renewal" style="color:var(--muted);display:block;margin-bottom:6px">License renewal date</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input id="acc-renewal" type="date" style="padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font:inherit;font-size:13px"><button class="btn-outline" onclick="Goals.saveRenewal()">Save date</button><span id="acc-renewal-msg" style="color:var(--muted)"></span></div>
+          <div style="color:var(--muted);margin-top:6px">With email reminders on (Goals &amp; reminders tab), we email you 90, 30 and 7 days before this date.</div></div>
         <div style="margin-top:14px"><button class="btn-outline" onclick="showPage('pricing')">Upgrade plan</button></div>
       </div>
     </div>
@@ -1644,7 +1647,7 @@ function renderDashboard(profile, enrollments, completions) {
   document.getElementById('m-completed').textContent = completions.length
   document.getElementById('m-ceus').textContent = totalCeus.toFixed(1)
   window._ceuTotal = totalCeus; try { Goals.load() } catch (e) {}
-  document.getElementById('m-renewal').textContent = 'Jun 2028'
+  Goals.setRenewal(profile.renewal_date)
 
   document.getElementById('acc-name').textContent = `${profile.first_name} ${profile.last_name}`
   document.getElementById('acc-email').textContent = profile.email
@@ -3067,6 +3070,6 @@ function showAlert(id, msg) {
 <script src="state-links.js" defer></script>
 <script src="answer-fx.js" defer></script>
 <script src="nudge.js?v=2" defer></script>
-<script src="goals.js?v=2" defer></script>
+<script src="goals.js?v=3" defer></script>
 </body>
 </html>
