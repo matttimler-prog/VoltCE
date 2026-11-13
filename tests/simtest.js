@@ -110,5 +110,13 @@ function starter() {
 { const s = mk([{ id: 's', type: 'src1' }, { id: 'l', type: 'lamp' }], ['s.L~l.a', 'l.b~s.N']); const r = run(s, 0.2); near(r.wire.w1.i, 0.5, 0.01, 'neutral wire current') }
 // 28. ground fault: hot to gnd symbol trips breaker
 { const s = mk([{ id: 's', type: 'src1' }, { id: 'b', type: 'brk' }, { id: 'g', type: 'gnd' }], ['s.L~b.in1', 'b.out1~g.g']); run(s, 0.3); ok(allEv(s).includes('fault'), 'ground fault trips') }
+
+// forward/reverse starter example: direction flips, interlock blocks the other contactor
+{ const E = require('../lab-examples.js').LabEx, ex = E.examples.find(x => x.id === 'fwdrev'); ok(!!ex, 'fwdrev example exists')
+  const s = S.create(ex.build()); let r = run(s, 0.5)
+  s.press('PB2', true); run(s, 0.4); s.press('PB2', false); r = run(s, 1.5); ok(r.comp.M1.running && r.comp.M1.dir === 1, 'forward runs forward')
+  s.press('PB1', true); run(s, 0.4); s.press('PB1', false); r = run(s, 0.5); ok(!r.comp.M1.running, 'stop stops')
+  s.press('PB3', true); run(s, 0.4); s.press('PB3', false); r = run(s, 1.5); ok(r.comp.M1.running && r.comp.M1.dir === -1, 'reverse runs reversed')
+  s.press('PB2', true); run(s, 0.5); s.press('PB2', false); r = run(s, 0.5); ok(!r.comp.KFc.energized && r.comp.KRc.energized, 'interlock keeps forward contactor out while reverse runs') }
 console.log('sim tests: pass', pass, 'fail', fail)
 process.exit(fail ? 1 : 0)

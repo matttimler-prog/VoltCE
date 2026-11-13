@@ -35,7 +35,7 @@ R=K.calc(K.normalize({root:u2}));ok(near(R[p2.id].neutral,10,0.01),'neutral = di
 
 // guided challenges: start unsolved, solvable
 {
-  ok(K.challenges.length===5,'5 challenges')
+  ok(K.challenges.length===6,'6 challenges')
   K.challenges.forEach(c=>{const r=K.checkChallenge(c.id,c.build());ok(r.some(x=>!x.ok),'challenge starts unsolved '+c.id)})
   let a=K.challenges[0].build();K.autoSize(a);ok(K.checkChallenge('fixit',a).every(x=>x.ok),'fixit solvable by auto-size')
   let b=K.challenges[1].build(),gp;K.walk(b.root,n=>{if(/garage/i.test(n.name))gp=n});gp.feeder.size='2';ok(K.checkChallenge('drop',b).every(x=>x.ok),'drop solved')
@@ -45,5 +45,13 @@ R=K.calc(K.normalize({root:u2}));ok(near(R[p2.id].neutral,10,0.01),'neutral = di
   const pp=K.node('panel','Shop panel',{bus:125,spaces:30});xf.kids.push(pp);pp.ocpd=125;pp.feeder={size:'1',mat:'Cu',len:10,sets:1};pp.circuits=[K.circuit('Welder','general','208',9000,{breaker:60,wire:'6'}),K.circuit('Lights','lighting','120',3000,{breaker:20,wire:'12'})]
   d=K.normalize(d);K.autoSize(d);const rr=K.checkChallenge('xfmr',d);console.log('xfmr challenge',JSON.stringify(rr));ok(rr.slice(0,2).every(x=>x.ok),'xfmr+panel detected')
   let e=K.challenges[4].build();K.autoSize(e);ok(K.checkChallenge('aic',e).every(x=>x.ok),'aic solved')
+  let g=K.challenges[5].build();K.autoSize(g);ok(K.checkChallenge('gen',g).every(x=>x.ok),'gen challenge solved by auto-size')
+  // generator / ATS checks
+  const sb=K.examples.find(x=>x.id==='standby').build();let Rg=K.calc(sb),at;K.walk(sb.root,n=>{if(n.type==='ats')at=n})
+  ok(Object.values(Rg).every(r=>!r.warnings.some(w=>w.lvl==='bad')),'standby example is clean')
+  ok(near(Rg[at.id].genFLA,60000/(Math.sqrt(3)*208),0.1),'gen FLA 3P 208: '+Rg[at.id].genFLA)
+  at.props.genKva=20;Rg=K.calc(sb);ok(Rg[at.id].warnings.some(w=>w.lvl==='bad'&&/only 20 kVA/.test(w.msg)),'undersized generator flagged')
+  at.props.genKva=60;at.props.genWire='8';Rg=K.calc(sb);ok(Rg[at.id].warnings.some(w=>/115%/.test(w.msg)&&w.lvl==='bad'),'115% conductor rule flagged')
+  ok(K.describe(sb,at.id,K.calc(sb)).some(x=>/automatic transfer switch/.test(x)),'ATS narration')
 }
 console.log('svc tests: pass',pass,'fail',fail);process.exit(fail?1:0)

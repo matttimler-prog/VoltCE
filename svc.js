@@ -49,20 +49,22 @@
     else if (type === 'disc') g = '<rect class="ic" x="' + (x + 3) + '" y="' + (y + 2) + '" width="18" height="20" rx="2"/><path class="ic" d="M' + (x + 8) + ' ' + (y + 18) + ' L' + (x + 16) + ' ' + (y + 6) + '"/>'
     else if (type === 'bus') g = '<path class="ic" d="M' + (x + 2) + ' ' + (y + 6) + ' H' + (x + 22) + ' M' + (x + 6) + ' ' + (y + 6) + ' V' + (y + 22) + ' M' + (x + 12) + ' ' + (y + 6) + ' V' + (y + 22) + ' M' + (x + 18) + ' ' + (y + 6) + ' V' + (y + 22) + '"/>'
     else if (type === 'xfmr') g = '<circle class="ic" cx="' + (x + 8) + '" cy="' + (y + 12) + '" r="8"/><circle class="ic" cx="' + (x + 17) + '" cy="' + (y + 12) + '" r="8"/>'
+    else if (type === 'ats') g = '<rect class="ic" x="' + (x + 2) + '" y="' + (y + 3) + '" width="20" height="18" rx="2"/><path class="ic" d="M' + (x + 6) + ' ' + (y + 17) + ' V' + (y + 9) + ' M' + (x + 18) + ' ' + (y + 17) + ' V' + (y + 9) + ' M' + (x + 6) + ' ' + (y + 9) + ' L' + (x + 18) + ' ' + (y + 15) + '"/>'
     else if (type === 'panel') g = '<rect class="ic" x="' + (x + 3) + '" y="' + (y + 2) + '" width="18" height="20" rx="2"/><path class="ic" d="M' + (x + 8) + ' ' + (y + 7) + ' H' + (x + 16) + ' M' + (x + 8) + ' ' + (y + 12) + ' H' + (x + 16) + ' M' + (x + 8) + ' ' + (y + 17) + ' H' + (x + 16) + '"/>'
     else g = '<circle class="ic" cx="' + (x + 12) + '" cy="' + (y + 12) + '" r="10"/><text x="' + (x + 12) + '" y="' + (y + 17) + '" text-anchor="middle" style="font:700 13px system-ui" fill="#2b3947">M</text>'
     return g
   }
-  var TYPE_LABEL = { utility: 'Utility', meter: 'Meter', disc: 'Main / disconnect', bus: 'Switchboard / bus', xfmr: 'Transformer', panel: 'Panel', load: 'Load' }
+  var TYPE_LABEL = { utility: 'Utility', meter: 'Meter', disc: 'Main / disconnect', bus: 'Switchboard / bus', xfmr: 'Transformer', ats: 'Generator + transfer switch', panel: 'Panel', load: 'Load' }
   function nodeSVG(o, forExport) {
     var n = o.n, r = R[n.id], bad = r.warnings.some(function (w) { return w.lvl === 'bad' }), warn = !bad && r.warnings.some(function (w) { return w.lvl === 'warn' })
     var cls = 'sn' + (bad ? ' bad' : warn ? ' warn' : '') + (sel === n.id && !forExport ? ' sel' : '')
     var l1, l2
     if (n.type === 'utility') { l1 = SYSN(r.sys); l2 = fmt(r.Imax) + ' A · ' + fmt(r.S / 1000) + ' kVA' }
     else if (n.type === 'xfmr') { l1 = fmt(r.kva, 1) + ' kVA ' + SHORT(n.props.pri) + '→' + SHORT(n.props.sec); l2 = fmt(r.xloadPct, 0) + '% loaded · ' + fmt(r.isc / 1000) + ' kA' }
+    else if (n.type === 'ats') { l1 = 'ATS · gen ' + (r.genKva ? fmt(r.genKva, 0) + ' kVA' : 'not set'); l2 = r.genKva ? fmt(r.genLoadPct, 0) + '% gen load · ' + fmt(r.Imax) + ' A' : fmt(r.Imax) + ' A' }
     else if (n.type === 'panel') { l1 = r.bus + ' A bus · ' + r.used + '/' + r.spaces + ' spaces'; l2 = fmt(r.Imax) + ' A · ' + fmt(r.S / 1000) + ' kVA' }
     else { l1 = fmt(r.Imax) + ' A · ' + fmt(r.S / 1000) + ' kVA'; l2 = n.type === 'load' ? SYSN(r.sys) : fmt(r.vEnd, 0) + ' V' }
-    var pct = n.type === 'xfmr' ? r.xloadPct : n.type === 'utility' ? 0 : r.need && n.ocpd ? r.need / n.ocpd * 100 : 0
+    var pct = n.type === 'xfmr' ? r.xloadPct : n.type === 'ats' && r.genKva ? r.genLoadPct : n.type === 'utility' ? 0 : r.need && n.ocpd ? r.need / n.ocpd * 100 : 0
     var bw = Math.max(0, Math.min(100, pct)) / 100 * (NW - 20)
     var s = '<g class="' + cls + '" data-id="' + n.id + '" style="cursor:pointer"><rect class="bx" x="' + o.x + '" y="' + o.y + '" width="' + NW + '" height="' + NH + '" rx="10"/>' + icon(n.type, o.x + 10, o.y + 8)
     s += '<text class="nm" x="' + (o.x + 40) + '" y="' + (o.y + 22) + '">' + esc(trunc(n.name, 17)) + '</text><text class="t2" x="' + (o.x + 40) + '" y="' + (o.y + 36) + '">' + TYPE_LABEL[n.type] + '</text>'
@@ -111,6 +113,7 @@
       h += '<div class="sv-grid">' + fld('Wire size', sel2('size', n.feeder.size, K.SIZES.map(function (s) { return [s, s + ' (' + K.ampacity(s, n.feeder.mat) + ' A)'] }))) + fld('Material', sel2('mat', n.feeder.mat, ['Cu', 'Al'])) + fld('Length (ft)', '<input data-f="len" type="number" min="0" step="5" value="' + esc(n.feeder.len) + '">') + fld('Parallel sets', sel2('sets', n.feeder.sets, [1, 2, 3, 4])) + '</div>'
     }
     if (n.type === 'xfmr') h += '<div class="sv-grid">' + fld('Secondary', sel2('sec', n.props.sec, SYSOPTS)) + fld('kVA', sel2('kva', n.props.kva, KVA)) + fld('Impedance %', '<input data-f="z" type="number" min="1" max="10" step="0.5" value="' + esc(n.props.z || 5) + '">') + '</div><p class="sv-n">Primary follows its supply: ' + esc(SYSN(n.props.pri)) + '.</p>'
+    if (n.type === 'ats') h += '<div class="sv-grid">' + fld('Generator kVA', sel2('genKva', n.props.genKva || 0, [0, 10, 15, 20, 22, 25, 30, 35, 45, 60, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600])) + fld('Generator wire', sel2('genWire', n.props.genWire || '4', K.SIZES.map(function (s) { return [s, s + ' Cu (' + K.ampacity(s, 'Cu') + ' A)'] }))) + '</div><p class="sv-n">The feeder fields above are the transfer switch and its wire from the utility side. The generator wire must carry at least 115% of the generator full-load current (NEC 445.13).</p>'
     if (n.type === 'panel') h += '<div class="sv-grid">' + fld('Bus rating (A)', sel2('bus', n.props.bus, [60, 100, 125, 150, 200, 225, 400, 600, 800, 1200])) + fld('Spaces', '<input data-f="spaces" type="number" min="2" step="2" value="' + esc(n.props.spaces || 30) + '">') + fld('Demand %', '<input data-f="demand" type="number" min="10" max="100" step="5" value="' + esc(n.props.demand || 100) + '" title="Share of the connected load that actually runs at once">') + '</div>'
     if (n.type === 'load') h += loadFields(n.props, 'p:', r.sys)
     h += '</div>'
@@ -139,6 +142,7 @@
     var rows = [['Current (worst phase)', fmt(r.Imax) + ' A'], ['Load for sizing', fmt(r.Imaxs) + ' A'], ['Connected load', fmt(r.S / 1000) + ' kVA']]
     if (r.neutral) rows.push(['Neutral current', fmt(r.neutral) + ' A'])
     if (n.type !== 'utility') rows.push(['Voltage at this point', fmt(r.vEnd, 0) + ' V'], ['Feeder voltage drop', fmt(r.dropPct, 2) + '%'], ['Total drop from service', fmt(r.cumDrop, 2) + '%'], ['Fault current here', fmt((r.iscIn || 0) / 1000) + ' kA'])
+    if (n.type === 'ats' && r.genKva) rows.push(['Generator full-load current', fmt(r.genFLA) + ' A'], ['Generator loading', fmt(r.genLoadPct, 0) + '%'], ['Generator wire needs (115%)', fmt(r.genFLA * 1.15) + ' A'])
     if (n.type === 'xfmr') rows.push(['Secondary fault current', fmt(r.isc / 1000) + ' kA'], ['Primary / secondary full-load', fmt(r.flaP) + ' / ' + fmt(r.flaS) + ' A'])
     return '<table class="sv-tbl">' + rows.map(function (x) { return '<tr><td>' + x[0] + '</td><td>' + x[1] + '</td></tr>' }).join('') + '</table>'
   }
@@ -156,6 +160,8 @@
     else if (f === 'name') n.name = v
     else if (f === 'sys') { n.props.sys = v }
     else if (f === 'isc') n.props.isc = Math.max(1, +v || 1)
+    else if (f === 'genKva') n.props.genKva = +v
+    else if (f === 'genWire') n.props.genWire = v
     else if (f === 'ocpd') n.ocpd = +v
     else if (f === 'aic') n.aic = +v
     else if (f === 'size') n.feeder.size = v
@@ -184,6 +190,7 @@
     else if (type === 'xfmr') { var sec = DEF_SEC[sys] || sys; c = K.node('xfmr', 'Transformer ' + (countType('xfmr') + 1), { pri: sys, sec: sec, kva: 45, z: 5 }) }
     else if (type === 'meter') c = K.node('meter', 'Meter ' + (countType('meter') + 1))
     else if (type === 'disc') c = K.node('disc', 'Disconnect')
+    else if (type === 'ats') c = K.node('ats', 'Transfer switch (ATS)', { genKva: 0, genWire: '4' })
     else if (type === 'bus') c = K.node('bus', 'Switchboard')
     else if (type === 'load') c = K.node('load', 'Motor ' + (countType('load') + 1), { kind: 'motor', motor: true, hp: 10, v: SYSTEMS3(sys) ? '480' : '240' })
     if (!c) return
@@ -192,7 +199,7 @@
     var R1 = K.calc(model), r = R1[c.id]
     if (type === 'xfmr') { c.ocpd = K.nextOCPD(r.flaP || 50); c.feeder.size = K.sizeFor(c.ocpd, 'Cu') }
     else if (type === 'load') { var fla = r.Imax; c.ocpd = K.nextOCPD(fla * 2); c.feeder.size = K.sizeFor(fla * 1.25, 'Cu') }
-    else if (type === 'meter' || type === 'disc' || type === 'bus') { var pr = K.find(model, n.id); c.ocpd = n.ocpd || 100; c.feeder.size = n.feeder ? n.feeder.size : '4'; c.feeder.mat = n.feeder ? n.feeder.mat : 'Cu'; c.feeder.sets = n.feeder ? n.feeder.sets : 1; c.feeder.len = 5; c.aic = n.aic || 22 }
+    else if (type === 'meter' || type === 'disc' || type === 'bus' || type === 'ats') { var pr = K.find(model, n.id); c.ocpd = n.ocpd || 100; c.feeder.size = n.feeder ? n.feeder.size : '4'; c.feeder.mat = n.feeder ? n.feeder.mat : 'Cu'; c.feeder.sets = n.feeder ? n.feeder.sets : 1; c.feeder.len = 5; c.aic = n.aic || 22 }
     snap(); update()
   }
   function SYSTEMS3(sys) { return K.SYSTEMS[sys] && K.SYSTEMS[sys].ph === 3 }
@@ -245,7 +252,7 @@
   function build(h) {
     host = h; h.classList.add('svc-root')
     h.innerHTML = '<div class="lab-bar"><label class="lab-sel">Examples <select data-a="ex"><option value="">Pick one…</option>' + K.examples.map(function (e) { return '<option value="' + e.id + '">' + esc(e.title) + '</option>' }).join('') + '</select></label><label class="lab-sel">Challenge <select data-a="chal"><option value="">None</option>' + K.challenges.map(function (c) { return '<option value="' + c.id + '">' + esc(c.title) + '</option>' }).join('') + '</select></label><span class="lab-sep"></span>' +
-      '<span class="sv-add">Add to selected:</span><button class="btn btn-outline" data-add="meter">Meter</button><button class="btn btn-outline" data-add="disc">Main / disconnect</button><button class="btn btn-outline" data-add="bus">Switchboard</button><button class="btn btn-outline" data-add="xfmr">Transformer</button><button class="btn btn-outline" data-add="panel">Panel</button><button class="btn btn-outline" data-add="load">Motor load</button><span class="lab-sep"></span>' +
+      '<span class="sv-add">Add to selected:</span><button class="btn btn-outline" data-add="meter">Meter</button><button class="btn btn-outline" data-add="disc">Main / disconnect</button><button class="btn btn-outline" data-add="bus">Switchboard</button><button class="btn btn-outline" data-add="xfmr">Transformer</button><button class="btn btn-outline" data-add="ats" title="Generator with an automatic transfer switch">Generator + ATS</button><button class="btn btn-outline" data-add="panel">Panel</button><button class="btn btn-outline" data-add="load">Motor load</button><span class="lab-sep"></span>' +
       '<button class="btn btn-outline" data-a="dup">Copy</button><button class="btn btn-outline" data-a="del">Delete</button><button class="btn" style="background:#1B5FC0;color:#fff" data-a="auto" title="Pick breaker, wire and AIC sizes for the loads">Auto-size</button><span class="lab-sep"></span>' +
       '<button class="btn btn-outline" data-a="undo">Undo</button><button class="btn btn-outline" data-a="redo">Redo</button><span class="lab-sep"></span>' +
       '<label class="lab-sel">Export <select data-a="exp"><option value="">Choose…</option><option value="svg">One-line diagram (SVG)</option><option value="png">One-line diagram (PNG)</option><option value="print">Print</option><option value="csv">Feeder schedule (CSV)</option><option value="panels">Panel schedules (CSV)</option><option value="json">Save (.json)</option></select></label><label class="btn btn-outline sv-imp">Import<input type="file" accept=".json,application/json" hidden data-a="imp"></label></div>' +

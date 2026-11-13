@@ -60,6 +60,28 @@
       [W('V1.L', 'S1.a', [[100, 20], [100, -40]]), W('S1.b', 'TR1.A1'), W('TR1.A2', 'V1.N', [[400, -40], [400, -80], [80, -80], [80, -20]]), W('S1.b', 'T1a.a', [[240, -40], [240, 100]]), W('T1a.b', 'LP1.a'), W('LP1.b', 'V1.N', [[520, 100], [520, -80], [80, -80], [80, -20]])])
   })
 
+  ex('fwdrev', '12. Forward / reverse starter', 'Two contactors reverse a 3-phase motor by swapping two of the three lines (L1 and L3). Each contactor has a seal-in contact, and a normally closed contact from the other contactor in series with its coil: the electrical interlock that stops both from closing and shorting the lines together.', 'Press FWD, then STOP, then REV and read the Rotation row on the motor. Then delete the interlock contact and press both buttons.', function () {
+    return mk([
+      P('src3', 'V1', 0, 0, 0), P('brk', 'CB1', 60, 170, 0, { amps: 15, poles: 3 }), P('cpoles', 'KF', -140, 330, 0, { tag: 'F', poles: 3 }), P('cpoles', 'KR', 140, 330, 0, { tag: 'R', poles: 3 }),
+      P('ol', 'OL1', 60, 500, 0, { amps: 8 }), P('motor3', 'M1', 60, 660, 0, { volts: 480, fla: 7.6 }), P('gnd', 'G3', 220, 520, 3),
+      P('xfmr1', 'T1', 420, 170, 0, { vp: 480, vs: 120, kva: 0.25 }), P('gnd', 'G2', 460, 290, 0),
+      P('pbnc', 'PB1', 560, 360, 3, {}, 'STOP'), P('pbno', 'PB2', 700, 300, 3, {}, 'FWD'), P('pbno', 'PB3', 700, 460, 3, {}, 'REV'),
+      P('cnt', 'KFa', 700, 360, 3, { tag: 'F', form: 'NO' }, 'F seal'), P('cnt', 'KRa', 700, 520, 3, { tag: 'R', form: 'NO' }, 'R seal'),
+      P('cnt', 'KRb', 840, 300, 3, { tag: 'R', form: 'NC' }, 'R interlock'), P('cnt', 'KFb', 840, 460, 3, { tag: 'F', form: 'NC' }, 'F interlock'),
+      P('coil', 'KFc', 980, 300, 3, { tag: 'F', volts: 120, kind: 'contactor' }), P('coil', 'KRc', 980, 460, 3, { tag: 'R', volts: 120, kind: 'contactor' })],
+      [W('V1.L1', 'CB1.in1'), W('V1.L2', 'CB1.in2'), W('V1.L3', 'CB1.in3'),
+        W('CB1.out1', 'KF.L1'), W('CB1.out2', 'KF.L2'), W('CB1.out3', 'KF.L3'),
+        W('CB1.out3', 'KR.L1'), W('CB1.out2', 'KR.L2'), W('CB1.out1', 'KR.L3'),
+        W('KF.T1', 'OL1.L1'), W('KF.T2', 'OL1.L2'), W('KF.T3', 'OL1.L3'), W('KR.T1', 'OL1.L1'), W('KR.T2', 'OL1.L2'), W('KR.T3', 'OL1.L3'),
+        W('OL1.T1', 'M1.T1'), W('OL1.T2', 'M1.T2'), W('OL1.T3', 'M1.T3'),
+        W('V1.L1', 'T1.H1', [[-60, 100], [380, 100]]), W('V1.L2', 'T1.H2', [[-20, 90], [440, 90]]),
+        W('T1.X2', 'G2.g'), W('T1.X1', 'PB1.a', [[520, 360]]),
+        W('PB1.b', 'PB2.a', [[640, 360], [640, 300]]), W('PB1.b', 'PB3.a', [[640, 360], [640, 460]]), W('PB1.b', 'KFa.a'), W('PB1.b', 'KRa.a', [[640, 360], [640, 520]]),
+        W('PB2.b', 'KRb.a'), W('KFa.b', 'KRb.a', [[780, 360], [780, 300]]), W('KRb.b', 'KFc.A1'),
+        W('PB3.b', 'KFb.a'), W('KRa.b', 'KFb.a', [[780, 520], [780, 460]]), W('KFb.b', 'KRc.A1'),
+        W('KFc.A2', 'OL1.95', [[1040, 300], [1040, 480], [160, 480]]), W('KRc.A2', 'OL1.95', [[1040, 460], [1040, 480], [160, 480]]), W('OL1.96', 'G3.g')])
+  })
+
 
   /* ---------- guided challenges (check() runs each tick while power is on) ---------- */
   var CH = []

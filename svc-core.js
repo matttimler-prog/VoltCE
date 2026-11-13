@@ -189,6 +189,17 @@
         if (n.ocpd > flaP * 1.25 + 0.01 && n.ocpd > flaP * 1.25 * 1.0 && n.ocpd > nextOCPD(flaP * 1.25)) W.push({ lvl: 'warn', msg: n.name + ': primary breaker ' + n.ocpd + ' A is more than 125% of the primary full-load current (' + fmt(flaP) + ' A). Without secondary protection, primary protection is limited to about 125% (NEC 450.3(B)).' })
         r.sysBond = ss.noN ? 'none' : 'The secondary of a transformer is a "separately derived system": bond its neutral (X0) to ground here, at the transformer, once.'
       }
+      if (n.type === 'ats') {
+        var gk = +n.props.genKva || 0, gfla = gk ? (sy.ph === 3 ? gk * 1000 / (S3 * sy.vll) : gk * 1000 / sy.vll) : 0, gw = n.props.genWire || '4', gamp = ampacity(gw, 'Cu')
+        r.genKva = gk; r.genFLA = gfla; r.genLoadPct = gk ? r.S / 1000 / gk * 100 : 0; r.genAmp = gamp; r.genWire = gw
+        if (!gk) W.push({ lvl: 'warn', msg: n.name + ': no generator size is set, so nothing can power the load during an outage.' })
+        else {
+          if (r.genLoadPct > 100) W.push({ lvl: 'bad', msg: n.name + ': the loads add up to ' + fmt(r.S / 1000) + ' kVA but the generator is only ' + gk + ' kVA (' + fmt(r.genLoadPct) + '%). It will stall or trip. Use a larger generator or move loads off the transfer switch.' })
+          else if (r.genLoadPct > 80) W.push({ lvl: 'warn', msg: n.name + ': generator would run at ' + fmt(r.genLoadPct) + '% of its ' + gk + ' kVA rating. Motor starting surges can make it sag. Leave more margin.' })
+          if (gamp < gfla * 1.15 - 0.01) W.push({ lvl: 'bad', msg: n.name + ': generator conductors (' + gw + ' Cu, ' + gamp + ' A) are smaller than 115% of generator full-load current (' + fmt(gfla * 1.15) + ' A). NEC 445.13 needs at least 115%.' })
+        }
+        W.push({ lvl: 'info', msg: 'Transfer equipment must keep utility and generator from ever being connected together. The generator also needs its own overcurrent protection and, for a separately derived system, a plan for where the neutral is bonded (NEC 250.30, 702.' + '5, 700 / 701 / 702 by type of system).' })
+      }
       if (n.type === 'utility') {
         // nothing
       }
@@ -234,6 +245,12 @@
       if (n.type === 'xfmr') { var fp = r.flaP; need = Math.max(r.need || 0, 0); n.ocpd = nextOCPD(Math.min(Math.max(need, fp * 1.0), fp * 1.25 || need)); if (n.ocpd < need) n.ocpd = nextOCPD(need) }
       else n.ocpd = nextOCPD(need)
       var sets = n.feeder.sets || 1; n.feeder.size = sizeFor(n.ocpd, n.feeder.mat, sets)
+      if (n.type === 'ats') {
+        var sy2 = SYSTEMS[r.sys], ld = r.S / 1000, GK = [10, 15, 20, 22, 25, 30, 35, 45, 60, 75, 100, 125, 150, 200, 250, 300, 400, 500, 600], gkk = GK.filter(function (g) { return g >= ld / 0.8 })[0] || GK[GK.length - 1]
+        if (!(+n.props.genKva) || +n.props.genKva * 1 < ld / 0.8) n.props.genKva = gkk
+        var gf = sy2.ph === 3 ? n.props.genKva * 1000 / (S3 * sy2.vll) : n.props.genKva * 1000 / sy2.vll
+        n.props.genWire = sizeFor(Math.ceil(gf * 1.15), 'Cu', 1)
+      }
       if (n.type === 'panel') { n.props.bus = Math.max(n.props.bus || 100, [100, 125, 150, 200, 225, 400, 600, 800, 1200].filter(function (b) { return b >= n.ocpd })[0] || n.ocpd) }
       ;(n.circuits || []).forEach(function (c) { var amps = c._amps; if (amps === undefined) return; var cont = c.cont !== undefined ? c.cont : (KINDS[c.kind] || KINDS.general).cont; var nd = amps * (cont ? 1.25 : 1); c.breaker = nextOCPD(Math.max(15, nd)); c.wire = sizeFor(c.breaker, c.mat || 'Cu', 1); if (+c.wire.split('/')[0] > 12 && c.breaker <= 20) c.wire = '12' })
     })
@@ -279,6 +296,10 @@
       out.push('This transformer steps ' + SYSTEMS[n.props.pri].label + ' to ' + SYSTEMS[n.props.sec].label + '. Rated ' + r.kva + ' kVA: full-load current is ' + fmt(r.flaP) + ' A on the primary and ' + fmt(r.flaS) + ' A on the secondary. Today it carries ' + fmt(r.loadKVA) + ' kVA (' + fmt(r.xloadPct) + '%). Higher voltage means lower current for the same power, which is why long runs use higher voltage.')
       if (r.sysBond && r.sysBond !== 'none') out.push(r.sysBond)
       out.push('Available fault current on the secondary is about ' + fmt(r.isc / 1000) + ' kA, set mostly by the transformer\'s impedance (' + (n.props.z || 5) + '%).')
+    }
+    if (n.type === 'ats') {
+      out.push('An automatic transfer switch (ATS) picks between two sources. Normally it passes utility power through. When the utility fails it starts the generator, then switches the load over once the generator is up to speed. It is built so the two sources can never be connected at the same time.')
+      out.push('Generator: ' + (r.genKva ? r.genKva + ' kVA, full-load current about ' + fmt(r.genFLA) + ' A, carrying ' + fmt(r.S / 1000) + ' kVA of load (' + fmt(r.genLoadPct) + '%). Its conductors are ' + r.genWire + ' Cu rated ' + r.genAmp + ' A; the rule is at least 115% of its full-load current (' + fmt(r.genFLA * 1.15) + ' A).' : 'No generator size is set yet.'))
     }
     if (n.type === 'panel') {
       out.push('This panel has a ' + r.bus + ' A bus and ' + r.spaces + ' spaces (' + r.used + ' used). The branch circuits add up to about ' + fmt(r.S / 1000) + ' kVA. Per-leg current: ' + r.I.slice(0, SYSTEMS[r.sys].ph === 1 ? 2 : 3).map(fmt).join(' / ') + ' A' + (r.neutral ? '; neutral carries ' + fmt(r.neutral) + ' A, the difference between legs' : '') + '.')
@@ -348,6 +369,13 @@
     var s = add(p, f(node('panel', 'Barn subpanel', { bus: 60, spaces: 8 }), '10', 300, 60, 'Cu', 10)); s.circuits = [circuit('Shop welder', 'general', '240', 9600, { breaker: 60, wire: '6' }), circuit('Lights', 'lighting', '120', 1200, { breaker: 15, wire: '14' })]
     return mdl('Find the problems', u)
   })
+  EX('standby', 'Business with a standby generator', 'A 120/208 V building with an automatic transfer switch (ATS) between the main and the critical-loads panel. The generator is sized for the critical loads only, with its conductors sized at 115% of its full-load current.', function () {
+    var u = U('3P-120/208', 30), m = add(u, f(node('meter', 'Utility meter'), '500', 10, 400, 'Cu', 42)), d = add(m, f(node('disc', 'Main disconnect', {}), '500', 5, 400, 'Cu', 42))
+    var a = add(d, f(node('ats', 'Transfer switch (ATS)', { genKva: 60, genWire: '3/0' }), '3/0', 10, 200, 'Cu', 42))
+    var p = add(a, f(node('panel', 'Critical loads panel', { bus: 225, spaces: 42 }), '3/0', 10, 200, 'Cu', 42))
+    p.circuits = [circuit('Server room A/C', 'hvac', '208', 6200, { breaker: 40, wire: '8' }), circuit('Emergency lighting', 'lighting', '120', 1500, { breaker: 20, wire: '12' }), circuit('Fire alarm and phones', 'general', '120', 1200, { breaker: 20, wire: '12' }), circuit('Sump pump', 'motor', '208', 0, { breaker: 25, wire: '10', motor: true, hp: 3, v: '208' }), circuit('Server rack', 'general', '208', 9000, { breaker: 50, wire: '6' })]
+    return mdl('Standby generator', u)
+  })
 
   /* ---------- guided challenges: a start model, goals checked live against calc() ---------- */
   var CH = []
@@ -377,6 +405,11 @@
     'Click each box and compare the available fault current with the breaker rating (kA). Pick an AIC rating at or above the available fault current. Auto-size also sets AIC.',
     function () { var u = U('1P-120/240', 65), d = add(u, f(node('disc', 'Main breaker', {}), '4/0', 3, 200, 'Cu', 10)), p = add(d, f(node('panel', 'Main panel', { bus: 200, spaces: 40 }), '4/0', 5, 200, 'Cu', 10)); p.circuits = [circuit('Range', 'range', '240', 9600, { breaker: 50, wire: '6' }), circuit('Lighting', 'lighting', '120', 1500, { breaker: 15, wire: '14' }), circuit('Receptacles', 'recep', '120', 1800, { breaker: 20, wire: '12' })]; return mdl('Strong utility', u) },
     [G_CLEAN])
+  CHAL('gen', '6. Size the backup generator', 'A clinic wants standby power for its critical loads. The generator is too small and its conductors are too light. Make the generator big enough and fix its conductors, without overshooting wildly.',
+    'The transfer switch box shows the generator size and its loading. Keep the generator under about 80% loaded. Generator conductors need at least 115% of its full-load current: Auto-size does both.',
+    function () { var m = ex.filter(function (x) { return x.id === 'standby' })[0].build(), a = ofType(m, 'ats')[0]; a.props.genKva = 20; a.props.genWire = '8'; return m },
+    [{ text: 'Generator loaded to 80% or less', ok: function (m, R) { var a = ofType(m, 'ats')[0]; return !!a && R[a.id].genLoadPct <= 80.01 && R[a.id].genKva > 0 } },
+      { text: 'Generator is not oversized (loaded above 35%)', ok: function (m, R) { var a = ofType(m, 'ats')[0]; return !!a && R[a.id].genLoadPct >= 35 } }, G_CLEAN])
   function checkChallenge(id, model) {
     var c = CH.filter(function (x) { return x.id === id })[0]; if (!c) return null
     var R = calc(model); return c.goals.map(function (g) { var ok = false; try { ok = !!g.ok(model, R) } catch (e) {} return { text: g.text, ok: ok } })
