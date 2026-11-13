@@ -23,7 +23,16 @@ var Goals = (function () {
     G = (a && a.data) || []; R = (b && b.data) || []; render();
     var pr = await supabaseClient.from('profiles').select('email_reminders').eq('id', currentUser.id).single(); if ($('gr-email')) $('gr-email').checked = !!(pr && pr.data && pr.data.email_reminders);
   }
+  function progress() {
+    var el = $('gr-progress'); if (!el || typeof Stats === 'undefined') return;
+    var st = Stats.streak(), w = Stats.weakest();
+    el.innerHTML = '<div style="display:flex;gap:22px;flex-wrap:wrap;font-size:14px"><div><b style="font-size:22px">' + st.cur + '</b><div class="m" style="font-size:12px;color:var(--muted)">day study streak' + (st.cur && !st.today ? ' (answer today to keep it)' : '') + '</div></div><div><b style="font-size:22px">' + st.best + '</b><div style="font-size:12px;color:var(--muted)">best streak</div></div></div>' +
+      '<div style="margin-top:10px;font-size:14px">' + (w ? 'Weakest section: <b>' + esc(w.name) + '</b> (' + Math.round(w.pct * 100) + '% right over ' + w.n + ' questions). <button class="btn-sm" onclick="Stats.practiceWeak()">Practice it</button>' : 'Answer at least 5 questions in a section and your weakest one shows here.') + '</div>' +
+      '<div style="margin-top:8px"><button class="btn-sm" onclick="Stats.open()">Open my full progress dashboard</button></div>' +
+      '<div class="gr-note">Your streak and scores are saved on this device.</div>';
+  }
   function render() {
+    progress();
     var gl = $('gr-goals'), rl = $('gr-rems'); if (!gl) return;
     gl.innerHTML = G.length ? G.map(function (g) {
       var cur = prog(g), pct = g.target ? Math.min(100, Math.round(cur / g.target * 100)) : (g.done ? 100 : 0), done = g.done || (g.target && cur >= g.target);

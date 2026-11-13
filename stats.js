@@ -40,6 +40,22 @@
   setInterval(() => { if (document.visibilityState === 'visible' && Date.now() - last < 120000) { load(); D.secs += 5; if (D.secs % 30 === 0) { save(); home() } } }, 5000);
   addEventListener('pagehide', () => { if (D) save() });
 
+  const key = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  /* study streak: consecutive days with at least one answer, counting back from today (or from yesterday if today is still empty) */
+  function streak() {
+    load(); const d = new Date(); let n = 0;
+    if (!(D.days[key(d)] && D.days[key(d)].n)) d.setDate(d.getDate() - 1);
+    while (D.days[key(d)] && D.days[key(d)].n) { n++; d.setDate(d.getDate() - 1) }
+    const ks = Object.keys(D.days).filter(x => D.days[x].n).sort(); let run = 0, prev = null, mx = 0;
+    ks.forEach(x => { const t = new Date(x + 'T12:00:00'); if (prev && Math.round((t - prev) / 86400000) === 1) run++; else run = 1; prev = t; if (run > mx) mx = run });
+    if (Math.max(n, mx) > (D.best || 0)) { D.best = Math.max(n, mx); save() }
+    return { cur: n, best: Math.max(D.best || 0, n), today: !!(D.days[key(new Date())] && D.days[key(new Date())].n) };
+  }
+  function weakest() {
+    const rows = totals().sec.filter(x => x.n >= 5 && x.tool !== 'fc').sort((a, b) => a.pct - b.pct || b.n - a.n);
+    return rows[0] && rows[0].pct < 0.9 ? rows[0] : null;
+  }
+  function practiceWeak() { const w = weakest(); if (w) drill(w.tool, w.name); else open() }
   function totals() {
     load(); const t = { n: 0, r: 0, s: 0, ts: 0, by: {}, sec: [] };
     Object.keys(D.sec).forEach(k => {
@@ -87,6 +103,7 @@
         <div><b class="g">${t.r}</b><span>right</span></div>
         <div><b class="r">${t.n - t.r}</b><span>wrong</span></div>
         <div><b>${pct(t.r, t.n)}</b><span>accuracy</span></div>
+        <div><b>${streak().cur}</b><span>day streak</span></div>
       </div><button class="btn-sm" onclick="Stats.open()">Open my dashboard</button></div>`;
   }
 
@@ -101,10 +118,10 @@
     const lab = x => `${esc(x.name)} <span class="st-tool">${esc(TOOLS[x.tool] || x.tool)}</span>`;
     const days = []; for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); days.push({ k, d, v: D.days[k] || { n: 0, r: 0 } }) }
     const mx = Math.max(5, ...days.map(x => x.v.n));
-    el.innerHTML = readyCard() + `<div class="st-grid">${tile(dur(D.secs), 'time on VoltCE')}${tile(t.n, 'questions answered')}${tile(t.r, 'right', 'g')}${tile(t.n - t.r, 'wrong', 'r')}${tile(pct(t.r, t.n), 'accuracy')}${tile(avg(t), 'average per question')}</div>
+    el.innerHTML = readyCard() + `<div class="st-grid">${tile(dur(D.secs), 'time on VoltCE')}${tile(t.n, 'questions answered')}${tile(t.r, 'right', 'g')}${tile(t.n - t.r, 'wrong', 'r')}${tile(pct(t.r, t.n), 'accuracy')}${tile(streak().cur + (streak().today ? '' : ' (answer today to keep it)'), 'day streak, best ' + streak().best)}${tile(avg(t), 'average per question')}</div>
       <div class="st-two">
         <div class="card-sm"><div class="st-h">Best section</div>${best ? `<div class="st-big g">${lab(best)}</div><div class="st-sub">${pct(best.r, best.n)} right over ${best.n} questions</div>` : '<div class="st-sub">Answer at least 5 questions in a section to see this.</div>'}</div>
-        <div class="card-sm"><div class="st-h">Where you struggle most</div>${weak && (!best || weak !== best) ? `<div class="st-big r">${lab(weak)}</div><div class="st-sub">${pct(weak.r, weak.n)} right over ${weak.n} questions</div><button class="btn-sm" style="margin-top:8px" onclick="Stats.drill('${esc(weak.tool)}','${esc(weak.name).replace(/'/g, "\\'")}')">Practice this section</button>` : '<div class="st-sub">Answer at least 5 questions in two sections to see this.</div>'}</div>
+        <div class="card-sm"><div class="st-h">Where you struggle most</div>${weakest() ? '<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm" onclick="Stats.practiceWeak()">Practice my weakest section</button></div>' : ''}${weak && (!best || weak !== best) ? `<div class="st-big r">${lab(weak)}</div><div class="st-sub">${pct(weak.r, weak.n)} right over ${weak.n} questions</div><button class="btn-sm" style="margin-top:8px" onclick="Stats.drill('${esc(weak.tool)}','${esc(weak.name).replace(/'/g, "\\'")}')">Practice this section</button>` : '<div class="st-sub">Answer at least 5 questions in two sections to see this.</div>'}</div>
       </div>
       <div class="card"><div class="st-h">Last 14 days</div><div class="st-bars">${days.map(x => `<div class="st-col" title="${x.d.toLocaleDateString()}: ${x.v.n} answered, ${x.v.r} right"><div class="st-bar"><i style="height:${Math.round(x.v.n / mx * 100)}%"><u style="height:${x.v.n ? Math.round(x.v.r / x.v.n * 100) : 0}%"></u></i></div><span>${x.d.getDate()}</span></div>`).join('')}</div><div class="st-sub">Tall bar = questions answered. Green part = right.</div></div>
       <div class="card"><div class="st-h">By tool</div><div class="table-wrap"><table><thead><tr><th>Tool</th><th>Answered</th><th>Right</th><th>Accuracy</th><th>Avg time</th></tr></thead><tbody>${Object.keys(t.by).sort((a, b) => t.by[b].n - t.by[a].n).map(k => { const b = t.by[k]; return `<tr><td>${esc(TOOLS[k] || k)}</td><td>${b.n}</td><td>${b.r}</td><td>${pct(b.r, b.n)}</td><td>${avg(b)}</td></tr>` }).join('')}</tbody></table></div></div>
@@ -118,6 +135,6 @@
   }
   function reset() { if (!confirm('Reset your tally on this device? This cannot be undone.')) return; D = { secs: 0, sec: {}, days: {}, since: Date.now() }; save(); render(); home() }
 
-  window.Stats = { log, hook, open, render, home, drill, reset };
+  window.Stats = { log, hook, open, render, home, drill, reset, streak, weakest, practiceWeak };
   document.addEventListener('DOMContentLoaded', home);
 })();
