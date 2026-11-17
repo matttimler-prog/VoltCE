@@ -13,4 +13,8 @@ eq(N.calcOcc({occ:'store',sqft:0,heat:20000,cool:30000}).totalVA,30000,'larger o
 let m=N.calcMF({units:20,unitSqft:1000,laundry:true,appliances:[{va:12000},{va:4500},{va:1200}],cool:3600,houseVA:15000});eq(m.totalVA,233880,'multi-family total');eq(m.service,700,'multi-family service 700 A');
 eq(N.mfFactor(3),.45,'MF 3 units');eq(N.mfFactor(21),.37,'MF 21');eq(N.mfFactor(62),.23,'MF 62+');eq(N.calcMF({units:2}).error?1:0,1,'MF <3 units error');
 eq(N.calcOcc({occ:'office',sys:'240-1',sqft:1000}).amps,3500*1.25/240,'single-phase amps');
+eq(N.calcOcc({occ:'office',sqft:10000,recepts:50,edition:'2026'}).totalVA,23000,'2026 office: 1.3 VA/sf, no 125%, 1 VA/sf receptacle minimum');
+eq(N.calcOcc({occ:'warehouse',sqft:10000,recepts:50,edition:'2026'}).totalVA,21000,'2026 warehouse 1.2 VA/sf');
+eq(N.lightingDemand('hotel',120000,'2026'),12000+40000+7000,'2026 hotel demand 60/50/35');eq(N.lightingDemand('hospital',100000,'2026'),100000,'2026 hospital no demand row');
+eq(N.calcMF({units:20,unitSqft:1000,laundry:true,appliances:[{va:12000},{va:4500},{va:1200}],cool:3600,houseVA:15000,edition:'2026'}).totalVA,226280,'2026 multi-family 2 VA/sf');
 console.log(bad?'FAILED '+bad:'ALL PASS');process.exit(bad?1:0)

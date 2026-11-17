@@ -1512,7 +1512,7 @@ const STRIPE_DONATE_LINK = 'https://buy.stripe.com/cNi4gygEN3Mle666XY14402'
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 const COURSES = [
-  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true, url:'/course/electrical-safety-osha' },
+  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:39, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', soon:true },
   { id:'wi23', slug:'wisconsin-2023-nec-transition', title:'Wisconsin 2023 NEC Transition', hours:4.0, price:49, tag:'All types', icon:'WI', bg:'#FAEEDA', ic:'#633806', soon:true },
   { id:'nec', slug:'nec-2023-code-update', title:'NEC 2023 Code Update', hours:8.0, price:59, tag:'All types', icon:'NEC', bg:'#EAF3DE', ic:'#27500A', soon:true },
   { id:'nec26', slug:'nec-2026-code-update', title:'NEC 2026 Code Update', hours:4.0, price:49, tag:'All types', icon:'26', bg:'#EAF3DE', ic:'#27500A', soon:true },
@@ -1521,7 +1521,7 @@ const COURSES = [
   { id:'hc', slug:'health-care-hazardous-locations-nec2023', title:'Health Care Facilities and Hazardous Locations per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'HC', bg:'#FBE6E4', ic:'#B02A22', soon:true },
   { id:'mot', slug:'motor-circuits-calculations-nec2023', title:'Motor Circuits and Calculations per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'MTR', bg:'#DDF3E6', ic:'#17794A', soon:true },
   { id:'svcl', slug:'service-load-calculations-nec2023', title:'Service and Load Calculations per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'LOAD', bg:'#DDF3E6', ic:'#17794A', soon:true },
-  { id:'af', slug:'arc-flash-nfpa70e-2021', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806', soon:true, nodata:true },
+  { id:'af', slug:'arc-flash-nfpa70e', title:'Arc Flash Safety & NFPA 70E (2024)', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806', soon:true },
 ]
 
 const STATES = [
@@ -2985,7 +2985,7 @@ const RECS = {
     { t:'Wisconsin 2023 NEC Transition (4 hrs)', d:'Opens once DSPS approves it. Create an account to get the announcement.', go:"showPage('courses')", l:'See courses' },
     { t:'NEC 2023 Code Update (8 hrs)', d:'Planned for states on the 2023 NEC. Pending approval.', go:"showPage('courses')", l:'See courses' },
     { t:'Check your renewal rules', d:'Hours and deadlines differ by license and state.', go:"showPage('states')", l:'State links' },
-    { t:'Free refresher', d:'Keep sharp with the free safety course.', go:"openFree('electrical-safety-osha','course-osha.html')", l:'Open free course' },
+    { t:'Practice a load calc', d:'Work a real service calculation in the free lab.', go:"showPage('n220')", l:'Open the load lab' },
   ],
 }
 function renderRecs(kind, btn, target) {
