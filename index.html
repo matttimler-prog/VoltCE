@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VoltCE — Free Electrician Exam Prep &amp; Continuing Education</title>
 <meta name="description" content="Free journeyman electrician exam prep: flashcards and practice questions on the 2023 NEC, grounding and bonding, and electrical safety. Continuing-education courses launching after state approval.">
@@ -1063,6 +1064,10 @@
     <p style="font-size:13px;color:var(--muted);margin-top:18px">Sources: <a href="https://openplcproject.github.io/runtime/raspberry-pi" target="_blank" rel="noopener">OpenPLC on Raspberry Pi</a>, <a href="https://openplcproject.github.io/reference/basics/upload" target="_blank" rel="noopener">Uploading your project to OpenPLC</a>.</p>
   </div>
 </div>
+<div id="page-course" class="page">
+  <div id="course-root"></div>
+</div>
+
 <div id="page-whatsnew" class="page">
   <div class="container" style="max-width:780px">
     <div class="page-title">What's new</div>
@@ -1507,11 +1512,16 @@ const STRIPE_DONATE_LINK = 'https://buy.stripe.com/cNi4gygEN3Mle666XY14402'
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 const COURSES = [
-  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true, url:'course-osha.html' },
+  { id:'osha', slug:'electrical-safety-osha', title:'Electrical Safety & OSHA Standards', hours:4.0, price:0, tag:'All types', icon:'OSH', bg:'#EEEDFE', ic:'#3C3489', free:true, url:'/course/electrical-safety-osha' },
   { id:'wi23', slug:'wisconsin-2023-nec-transition', title:'Wisconsin 2023 NEC Transition', hours:4.0, price:49, tag:'All types', icon:'WI', bg:'#FAEEDA', ic:'#633806', soon:true },
   { id:'nec', slug:'nec-2023-code-update', title:'NEC 2023 Code Update', hours:8.0, price:59, tag:'All types', icon:'NEC', bg:'#EAF3DE', ic:'#27500A', soon:true },
+  { id:'nec26', slug:'nec-2026-code-update', title:'NEC 2026 Code Update', hours:4.0, price:49, tag:'All types', icon:'26', bg:'#EAF3DE', ic:'#27500A', soon:true },
   { id:'gb', slug:'grounding-bonding-nec2023', title:'Grounding & Bonding per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'G&B', bg:'#E6F1FB', ic:'#0C447C', soon:true },
-  { id:'af', slug:'arc-flash-nfpa70e-2021', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806', soon:true },
+  { id:'ev', slug:'ev-solar-storage-nec2023', title:'EV, Solar and Energy Storage per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'EV', bg:'#E6F1FB', ic:'#0C447C', soon:true },
+  { id:'hc', slug:'health-care-hazardous-locations-nec2023', title:'Health Care Facilities and Hazardous Locations per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'HC', bg:'#FBE6E4', ic:'#B02A22', soon:true },
+  { id:'mot', slug:'motor-circuits-calculations-nec2023', title:'Motor Circuits and Calculations per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'MTR', bg:'#DDF3E6', ic:'#17794A', soon:true },
+  { id:'svcl', slug:'service-load-calculations-nec2023', title:'Service and Load Calculations per NEC 2023', hours:4.0, price:49, tag:'Journeyman', icon:'LOAD', bg:'#DDF3E6', ic:'#17794A', soon:true },
+  { id:'af', slug:'arc-flash-nfpa70e-2021', title:'Arc Flash Safety & NFPA 70E', hours:4.0, price:49, tag:'Journeyman', icon:'ARC', bg:'#FAEEDA', ic:'#633806', soon:true, nodata:true },
 ]
 
 const STATES = [
@@ -1885,10 +1895,10 @@ function renderAllCourses(filter = 'all') {
 }
 
 function courseCard(c) {
-  const action = c.soon ? '' : (c.free ? `onclick="openFree('${c.slug}','${c.url}')"` : '')
+  const action = c.nodata ? '' : (c.free ? `onclick="openFree('${c.slug}','${c.url}')"` : `onclick="openCourse('${c.slug}')"`)
   const price = c.free ? 'Free' : (c.soon ? `<span class="badge badge-amber">Pending state approval</span> <span style="font-size:13px;color:var(--muted);font-weight:400">· planned $${c.price}</span>` : '$' + c.price)
-  const note = c.free ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Study for free now. No CE credit until approved.</div>' : (c.soon ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Create a free account and we will email you when it opens.</div>' : '')
-  return `<div class="course-card${c.soon?' locked':''}" ${action}>
+  const note = c.free ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">Study for free now. No CE credit until approved.</div>' : (c.soon ? '<div style="font-size:12px;color:var(--muted);margin-top:6px">' + (c.nodata ? 'Create a free account and we will email you when it opens.' : 'Open the preview. CE credit and certificates start once a state approves it.') + '</div>' : '')
+  return `<div class="course-card${c.nodata?' locked':''}" ${action} ${c.nodata?'':'role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')this.click()"'}>
     <div class="course-icon" style="background:${c.bg};color:${c.ic}">${c.icon}</div>
     <div class="course-title">${c.title}</div>
     <div class="course-meta">${c.hours} hours · ${c.tag}</div>
@@ -1896,9 +1906,10 @@ function courseCard(c) {
   </div>`
 }
 
+function openCourse(slug) { window._courseSlug = slug; showPage('course') }
 function openFree(slug, url) {
   if (currentUser) { try { enrollFree(slug) } catch (e) {} }
-  window.open(url, '_blank')
+  openCourse(slug)
 }
 
 function filterCourses(filter, btn) {
@@ -2778,6 +2789,7 @@ try { if (!sessionStorage.getItem('vc_visit')) { sessionStorage.setItem('vc_visi
 function reportQ() {
   const r = window._rq || window.PQ_CUR; if (!r) return
   window._prevPage = (document.querySelector('.page.active')?.id || '').replace('page-', '')
+  if (window._prevPage === 'course' && id !== 'course') { try { Course.unmount() } catch (e) {} }
   showPage('feedback')
   document.getElementById('fb-kind').value = 'correction'
   document.getElementById('fb-msg').value = 'Question: ' + r.q + '\nKeyed answer: ' + String.fromCharCode(65 + r.a) + '. ' + r.o[r.a] + '\n\nWhat I think is wrong (and the correct answer / code section):\n'
@@ -3019,6 +3031,7 @@ const LabLoad = (() => {
     lab() { css('lab.css?v=2'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=2', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
     svc() { css('lab.css?v=2'); css('svc.css?v=3'); return seq(['svc-core.js?v=3', 'svc.js?v=3']) },
     n220() { css('lab.css?v=2'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
+    course() { return seq(['course.js?v=1']) },
     ladder() { css('lab.css?v=2'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
 })()
@@ -3041,6 +3054,7 @@ function showPage(id) {
   try { Speak.stop() } catch (e) {}
   if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh(); LabLink.apply('lab'); Share.open('lab') }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
   if (id === 'whatsnew') renderWhatsNew()
+  if (id === 'course') LabLoad.course().then(() => { const r = document.getElementById('course-root'); if (window._courseSlug) Course.mount(r, window._courseSlug); else Course.verify(r, new URLSearchParams(location.search).get('verify') || '') }).catch(() => { const r = document.getElementById('course-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the course player. Check your connection and reload.</div>' })
   if (id === 'svc') LabLoad.svc().then(() => { Svc.mount(document.getElementById('svc-root')); LabLink.apply('svc'); Share.open('svc') }).catch(() => { const r = document.getElementById('svc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the builder. Check your connection and reload.</div>' })
   if (id === 'n220') LabLoad.n220().then(() => { N220.mount(document.getElementById('n220-root')); LabLink.apply('n220') }).catch(() => { const r = document.getElementById('n220-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the calculator. Check your connection and reload.</div>' })
   if (id === 'ladder') LabLoad.ladder().then(() => { Ladder.mount(document.getElementById('ladder-root')); LabLink.apply('ladder'); Share.open('ladder') }).catch(() => { const r = document.getElementById('ladder-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the editor. Check your connection and reload.</div>' })
@@ -3068,7 +3082,7 @@ function renderWhatsNew() {
 const UTM_LAND = (() => { try { const p = new URLSearchParams(location.search), o = {}; ['source', 'medium', 'campaign', 'content'].forEach(k => { const v = p.get('utm_' + k); if (v) o[k] = v.slice(0, 60) }); return Object.keys(o).length ? o : null } catch (e) { return null } })()
 const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const ROUTES = (() => {
-  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', n220: 'nec-220-load-calculator', plchw: 'run-ladder-logic-on-a-plc', whatsnew: 'whats-new', wi: 'wisconsin', fl: 'florida-contractor' }
+  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', n220: 'nec-220-load-calculator', plchw: 'run-ladder-logic-on-a-plc', whatsnew: 'whats-new', course: 'course', wi: 'wisconsin', fl: 'florida-contractor' }
   Object.keys(ST_CFG).forEach(id => { r[id] = slugify(ST_CFG[id].name) })
   return r
 })()
@@ -3092,13 +3106,14 @@ function routeMeta(id) {
   else if (id === 'n220') { t = 'NEC 220 load calculation lab | VoltCE'; d = 'Free NEC 220 load calculation lab for houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings, with the code section beside every step.' }
   else if (id === 'plchw') { t = 'Run ladder logic on a real PLC with OpenPLC | VoltCE'; d = 'Export your ladder program as an OpenPLC project and run it on a Raspberry Pi: install, upload, wire the inputs and outputs, and common problems.' }
   else if (id === 'whatsnew') { t = "What's new on VoltCE"; d = 'Recent additions to VoltCE: new labs, study tools, reminders and the installable app.' }
+  else if (id === 'course') { const cd = window._courseSlug && COURSES.find(c => c.slug === window._courseSlug); t = cd ? cd.title + ' | VoltCE continuing education' : 'Verify a VoltCE certificate'; d = cd ? cd.title + ': an online, timed continuing education course for electricians, with module quizzes and a verifiable certificate.' : 'Check a VoltCE continuing education certificate number.' }
   else if (id === 'ladder') { t = 'Ladder logic editor and simulator | VoltCE'; d = 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export your program.' }
   return { t, d }
 }
 function routeSync(id) {
   if (_routing || ROUTE_SUB[id]) return
   const slug = ROUTES[id]
-  const path = slug === undefined ? '/' : '/' + slug
+  const path = id === 'course' && window._courseSlug ? '/course/' + window._courseSlug : (slug === undefined ? '/' : '/' + slug)
   if (location.pathname !== path) history.pushState({ id }, '', path)
   const m = routeMeta(slug === undefined ? 'home' : id)
   document.title = m.t
@@ -3112,6 +3127,8 @@ function routeOpen(path) {
   const id = ROUTE_ID[slug]
   _routing = true
   try {
+    if (/^course\/[a-z0-9-]+$/.test(slug)) { window._courseSlug = slug.slice(7); showPage('course'); return true }
+    if (slug === 'course') window._courseSlug = null
     if (id === undefined) { if (slug === '') showPage('home'); return false }
     if (STT[id]) navST(id, STT[id]._lvl || 'J')
     else if (id === 'wi') WIT.open()
