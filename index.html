@@ -394,6 +394,7 @@
       <button class="nav-link dd-btn" aria-haspopup="true" aria-expanded="false">Exam prep <span class="caret" aria-hidden="true">▾</span></button>
       <div class="dd-menu">
         <button class="dd-item" onclick="showPage('prep')">Free exam prep</button>
+        <button class="dd-item" onclick="showPage('proc')">Test-taking process</button>
         <button class="dd-item" onclick="MASTT.open()">Master prep</button>
         <button class="dd-item" onclick="CYCT.open()">Code cycles</button>
       </div>
@@ -1073,6 +1074,12 @@
     <div class="page-title">What's new</div>
     <div class="page-sub">Recent additions to VoltCE, newest first. Everything here is free to use.</div>
     <div id="wn-body" style="margin-top:14px"></div>
+  </div>
+</div>
+<div id="page-proc" class="page">
+  <div class="lab-wrap">
+    <div class="lab-top"><h1>Test-taking process for the journeyman and master exam</h1><p>Know your articles, learn the keyword index, then work the test in three passes and track what you are certain of. A method built by a working master electrician. Free, no sign-up.</p></div>
+    <div id="proc-root" class="lab-root" style="padding:0 16px 24px"></div>
   </div>
 </div>
 <div id="page-n220" class="page">
@@ -3032,6 +3039,7 @@ const LabLoad = (() => {
     svc() { css('lab.css?v=2'); css('svc.css?v=3'); return seq(['svc-core.js?v=3', 'svc.js?v=3']) },
     n220() { css('lab.css?v=2'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
     course() { return seq(['course.js?v=1']) },
+    proc() { css('proc.css?v=1'); return seq(['proc.js?v=1']) },
     ladder() { css('lab.css?v=2'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
 })()
@@ -3054,6 +3062,7 @@ function showPage(id) {
   try { Speak.stop() } catch (e) {}
   if (id === 'lab') LabLoad.lab().then(() => { Lab.mount(document.getElementById('lab-root')); Lab.refresh(); LabLink.apply('lab'); Share.open('lab') }).catch(() => { document.getElementById('lab-root').innerHTML = '<div style="padding:40px">Could not load the lab. Check your connection and reload.</div>' })
   if (id === 'whatsnew') renderWhatsNew()
+  if (id === 'proc') LabLoad.proc().then(() => { Proc.mount(document.getElementById('proc-root')) }).catch(() => { const r = document.getElementById('proc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the page. Check your connection and reload.</div>' })
   if (id === 'course') LabLoad.course().then(() => { const r = document.getElementById('course-root'); if (window._courseSlug) Course.mount(r, window._courseSlug); else Course.verify(r, new URLSearchParams(location.search).get('verify') || '') }).catch(() => { const r = document.getElementById('course-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the course player. Check your connection and reload.</div>' })
   if (id === 'svc') LabLoad.svc().then(() => { Svc.mount(document.getElementById('svc-root')); LabLink.apply('svc'); Share.open('svc') }).catch(() => { const r = document.getElementById('svc-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the builder. Check your connection and reload.</div>' })
   if (id === 'n220') LabLoad.n220().then(() => { N220.mount(document.getElementById('n220-root')); LabLink.apply('n220') }).catch(() => { const r = document.getElementById('n220-root'); if (r) r.innerHTML = '<div style="padding:40px">Could not load the calculator. Check your connection and reload.</div>' })
@@ -3061,6 +3070,8 @@ function showPage(id) {
 }
 
 const WHATS_NEW = [
+  ['Nov 18, 2026', 'Test-taking process', 'A free step-by-step method for exam day: learn the major articles, drill the keyword index, then take a mock test in three passes while tracking what you are certain of.'],
+  ['Nov 18, 2026', 'Timed interactive CE courses', 'Ten courses on a new timed player with lesson timers, module quizzes, knowledge checks and verifiable certificates. Credit depends on state approval.'],
   ['Nov 13, 2026', 'Service Builder challenges, generator and transfer switch', 'Six guided challenges with a live checklist, plus a Generator + ATS node that checks generator size and its 115% conductor rule. Circuit Lab has a forward/reverse motor starter with interlock.'],
   ['Nov 13, 2026', 'Study streaks and weak-topic practice', 'See your study streak, your best streak and the topics you miss most, then practice the weakest one in a click.'],
   ['Nov 13, 2026', 'Share a design by link', 'Copy a link that carries your whole circuit, ladder program or service one-line, so someone else can open exactly what you built.'],
@@ -3082,7 +3093,7 @@ function renderWhatsNew() {
 const UTM_LAND = (() => { try { const p = new URLSearchParams(location.search), o = {}; ['source', 'medium', 'campaign', 'content'].forEach(k => { const v = p.get('utm_' + k); if (v) o[k] = v.slice(0, 60) }); return Object.keys(o).length ? o : null } catch (e) { return null } })()
 const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const ROUTES = (() => {
-  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', n220: 'nec-220-load-calculator', plchw: 'run-ladder-logic-on-a-plc', whatsnew: 'whats-new', course: 'course', wi: 'wisconsin', fl: 'florida-contractor' }
+  const r = { home: '', courses: 'courses', states: 'states', pricing: 'pricing', lab: 'circuit-lab', ladder: 'ladder-logic', svc: 'service-panel-builder', n220: 'nec-220-load-calculator', plchw: 'run-ladder-logic-on-a-plc', whatsnew: 'whats-new', proc: 'test-taking-process', course: 'course', wi: 'wisconsin', fl: 'florida-contractor' }
   Object.keys(ST_CFG).forEach(id => { r[id] = slugify(ST_CFG[id].name) })
   return r
 })()
@@ -3105,6 +3116,7 @@ function routeMeta(id) {
   else if (id === 'svc') { t = 'Service and panel builder: sizing, voltage drop, fault current | VoltCE'; d = 'Free electrical service and panel builder. Design a one-line from utility to panels and transformers, size breakers and wire, and see voltage drop and fault current explained.' }
   else if (id === 'n220') { t = 'NEC 220 load calculation lab | VoltCE'; d = 'Free NEC 220 load calculation lab for houses, offices, stores, schools, hospitals, hotels, warehouses and multi-family buildings, with the code section beside every step.' }
   else if (id === 'plchw') { t = 'Run ladder logic on a real PLC with OpenPLC | VoltCE'; d = 'Export your ladder program as an OpenPLC project and run it on a Raspberry Pi: install, upload, wire the inputs and outputs, and common problems.' }
+  else if (id === 'proc') { t = 'How to pass the journeyman or master electrician exam: a test-taking process | VoltCE'; d = 'A free test-taking process for the electrician exam: memorize the major NEC articles, master the keyword index, then work the test in three passes and track what you are certain of.' }
   else if (id === 'whatsnew') { t = "What's new on VoltCE"; d = 'Recent additions to VoltCE: new labs, study tools, reminders and the installable app.' }
   else if (id === 'course') { const cd = window._courseSlug && COURSES.find(c => c.slug === window._courseSlug); t = cd ? cd.title + ' | VoltCE continuing education' : 'Verify a VoltCE certificate'; d = cd ? cd.title + ': an online, timed continuing education course for electricians, with module quizzes and a verifiable certificate.' : 'Check a VoltCE continuing education certificate number.' }
   else if (id === 'ladder') { t = 'Ladder logic editor and simulator | VoltCE'; d = 'Free ladder logic editor with a live PLC simulation. Build rungs with contacts, coils, timers and counters, then export your program.' }
