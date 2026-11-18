@@ -6,25 +6,32 @@
   var STD = [100, 110, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1600, 2000, 2500, 3000, 4000]   // NEC 240.6(A)
   // Table 220.12 general lighting VA per sq ft, and Table 220.42 demand type
   var OCC = {
-    office: { name: 'Office building', va: 3.5, dem: 'none' },
-    bank: { name: 'Bank', va: 3.5, dem: 'none' },
-    store: { name: 'Store / retail', va: 3, dem: 'none' },
-    school: { name: 'School', va: 3, dem: 'none' },
-    restaurant: { name: 'Restaurant', va: 2, dem: 'none' },
-    hospital: { name: 'Hospital', va: 2, dem: 'hospital' },
-    hotel: { name: 'Hotel / motel', va: 2, dem: 'hotel' },
-    warehouse: { name: 'Warehouse (storage)', va: 0.25, dem: 'warehouse' },
-    church: { name: 'Church', va: 1, dem: 'none' },
-    industrial: { name: 'Industrial / commercial loft', va: 2, dem: 'none' },
-    garage: { name: 'Commercial garage (storage)', va: 0.5, dem: 'none' }
+    office: { name: 'Office building', va: 3.5, va26: 1.3, dem: 'none' },
+    bank: { name: 'Bank', va: 3.5, va26: 1.3, dem: 'none' },
+    store: { name: 'Store / retail', va: 3, va26: 1.9, dem: 'none' },
+    school: { name: 'School', va: 3, va26: 1.5, dem: 'none' },
+    restaurant: { name: 'Restaurant', va: 2, va26: 1.5, dem: 'none' },
+    hospital: { name: 'Hospital', va: 2, va26: 1.6, dem: 'hospital' },
+    hotel: { name: 'Hotel / motel', va: 2, va26: 1.7, dem: 'hotel' },
+    warehouse: { name: 'Warehouse (storage)', va: 0.25, va26: 1.2, dem: 'warehouse' },
+    church: { name: 'Church', va: 1, va26: 2.2, dem: 'none' },
+    industrial: { name: 'Industrial / commercial loft', va: 2, va26: 2.2, dem: 'none' },
+    garage: { name: 'Commercial garage (storage)', va: 0.5, va26: 0.3, dem: 'none' }
   }
+  var MAP26 = { '5': '120.5', '12': '120.42', '14': '120.14', '40': '120.40', '42': '120.45', '43': '120.46', '44': '120.47', '50': '120.50', '51': '120.51', '52': '120.52', '53': '120.53', '54': '120.54', '55': '120.55', '56': '120.56', '57': '120.57', '60': '120.6', '61': '120.61', '82': '120.82', '83': '120.83', '84': '120.84', '85': '120.85', '86': '120.86', '87': '120.87', '88': '120.88' }
+  function cite(ref, ed) { if (ed !== '2026') return ref; return String(ref).replace(/Table 220\.12/g, 'Table 120.42(A)').replace(/Table 220\.42/g, 'Table 120.45').replace(/Table 220\.44/g, 'Table 120.47').replace(/\b220\.(\d+)/g, function (m, n) { return MAP26[n] || m }) }
   var SYS = { '208Y': { name: '208Y/120 V three-phase', v: 208, ph: 3 }, '480Y': { name: '480Y/277 V three-phase', v: 480, ph: 3 }, '240-3': { name: '240 V three-phase', v: 240, ph: 3 }, '240-1': { name: '120/240 V single-phase', v: 240, ph: 1 } }
   function r(n) { return Math.round(n * 100) / 100 }
   function num(v) { v = parseFloat(v); return isFinite(v) && v > 0 ? v : 0 }
   function nextSize(a) { for (var i = 0; i < STD.length; i++) if (STD[i] >= a) return STD[i]; return null }
   function amps(va, sys) { var s = SYS[sys] || SYS['208Y']; return va / (s.ph === 3 ? s.v * Math.sqrt(3) : s.v) }
 
-  function lightingDemand(type, va) {                          // Table 220.42
+  function lightingDemand(type, va, ed) {                      // Table 220.42 (2023) / Table 120.45 (2026: hospital row removed, hotel 60/50/35)
+    if (ed === '2026') {
+      if (type === 'hotel') return va <= 20000 ? va * .6 : va <= 100000 ? 12000 + (va - 20000) * .5 : 12000 + 40000 + (va - 100000) * .35
+      if (type === 'warehouse') return va <= 12500 ? va : 12500 + (va - 12500) * .5
+      return va
+    }
     if (type === 'hospital') return va <= 50000 ? va * .4 : 20000 + (va - 50000) * .2
     if (type === 'hotel') return va <= 20000 ? va * .5 : va <= 100000 ? 10000 + (va - 20000) * .4 : 10000 + 32000 + (va - 100000) * .3
     if (type === 'warehouse') return va <= 12500 ? va : 12500 + (va - 12500) * .5
@@ -41,16 +48,17 @@
   // inp: occ, sys, sqft, recepts (outlets, 180 VA each), multiFt (multioutlet ft, 180 VA per 5 ft), windowFt (200 VA/ft), trackFt (150 VA per 2 ft), signs (1200 VA each),
   //      heat, cool (VA), motors [{name,va}] at 100%, largestMotor (VA, +25%), kitchen [VA...], other [{name,va}] at 100%, continuous (default true)
   function calcOcc(inp) {
-    var o = OCC[inp.occ] || OCC.office, s = { kind: 'occupancy', occ: o.name, lines: [], notes: [] }, L = s.lines
-    function line(label, va, ref, note, sub) { L.push({ label: label, va: r(va), ref: ref, note: note || '', sub: !!sub }) }
-    var cont = inp.continuous !== false, k = cont ? 1.25 : 1, kTxt = cont ? ' x 125% continuous' : ''
+    var ED = inp.edition === '2026' ? '2026' : '2023', o0 = OCC[inp.occ] || OCC.office, o = ED === '2026' ? Object.assign({}, o0, { va: o0.va26, dem: o0.dem === 'hospital' ? 'none' : o0.dem }) : o0, s = { kind: 'occupancy', edition: ED, occ: o.name, lines: [], notes: [] }, L = s.lines
+    function line(label, va, ref, note, sub) { L.push({ label: label, va: r(va), ref: cite(ref, ED), note: note || '', sub: !!sub }) }
+    var cont = ED === '2026' ? false : inp.continuous !== false, k = cont ? 1.25 : 1, kTxt = cont ? ' x 125% continuous' : ''
     var sqft = num(inp.sqft), sys = inp.sys || '208Y'
     var gen = sqft * o.va
     line('General lighting: ' + sqft + ' sq ft x ' + o.va + ' VA (' + o.name + ')', gen, '220.12, Table 220.12', '', true)
-    var gd = lightingDemand(o.dem, gen)
-    line('General lighting after demand factor' + kTxt, gd * k, o.dem === 'none' ? '220.12, 215.2(A)(1)' : 'Table 220.42', o.dem === 'none' ? 'No demand factor for this occupancy. Continuous loads are counted at 125%.' : 'Demand: ' + r(gd) + ' VA' + (cont ? ', then x 125% for continuous operation' : ''))
+    var gd = lightingDemand(o.dem, gen, ED)
+    line('General lighting after demand factor' + kTxt, gd * k, o.dem === 'none' ? '220.12, 215.2(A)(1)' : 'Table 220.42', o.dem === 'none' ? (ED === '2026' ? 'No demand factor for this occupancy. 120.5(E): load calculations do not apply the 125% continuous multiplier.' : 'No demand factor for this occupancy. Continuous loads are counted at 125%.') : 'Demand: ' + r(gd) + ' VA' + (cont ? ', then x 125% for continuous operation' : ''))
     var rec = num(inp.recepts) * 180 + Math.ceil(num(inp.multiFt) / 5) * 180
     if (rec > 0) { line('General-use receptacles: ' + num(inp.recepts) + ' outlets x 180 VA' + (num(inp.multiFt) ? ' + ' + num(inp.multiFt) + ' ft multioutlet (180 VA per 5 ft)' : ''), rec, '220.14(I), 220.44', '', true); line('Receptacle load after demand (first 10,000 VA at 100%, rest at 50%)', receptDemand(rec), 'Table 220.44') }
+    if (ED === '2026' && (inp.occ === 'office' || inp.occ === 'bank') && sqft > 0) { var recD = receptDemand(rec), minR = sqft * 1; if (minR > recD) line('Office receptacle minimum: ' + sqft + ' sq ft x 1 VA is larger than the calculated receptacle load', minR - recD, '120.43', 'Office buildings: the larger of the calculated receptacle load (after demand) or 1 VA/sq ft. Only the difference is added here.') }
     var win = num(inp.windowFt) * 200, trk = Math.ceil(num(inp.trackFt) / 2) * 150, sg = num(inp.signs) * 1200
     if (win) line('Show-window lighting: ' + num(inp.windowFt) + ' ft x 200 VA' + kTxt, win * k, '220.14(G)')
     if (trk) line('Track lighting: ' + num(inp.trackFt) + ' ft, 150 VA per 2 ft' + kTxt, trk * k, '220.43(B)')
@@ -63,29 +71,30 @@
     var ot = (inp.other || []).reduce(function (a, m) { return a + num(m.va) }, 0); if (ot > 0) line('Other connected loads at 100%', ot, '220.40')
     s.totalVA = r(L.reduce(function (a, x) { return a + (x.sub ? 0 : x.va) }, 0)); s.sys = SYS[sys] ? sys : '208Y'; s.sysName = SYS[s.sys].name
     s.amps = r(amps(s.totalVA, s.sys)); s.service = nextSize(s.amps)
-    if (o.dem !== 'none') s.notes.push('Table 220.42 demand factors apply to the lighting of this occupancy.')
-    s.notes.push('Verify Table 220.12 and the other tables against your code book and the energy-code exception in 220.12.')
+    if (o.dem !== 'none') s.notes.push(cite('Table 220.42', ED) + ' demand factors apply to the lighting of this occupancy.')
+    s.notes.push(ED === '2026' ? 'Based on the 2026 Article 120 text supplied (verification pending). Verify Table 120.42(A) and the other tables against your code book and the energy-code option in 120.42(B).' : 'Verify Table 220.12 and the other tables against your code book and the energy-code exception in 220.12.')
     return s
   }
 
   // inp: units, unitSqft, laundry (true if a laundry circuit in each unit), appliances [{name,va}] per unit at nameplate, heat, cool (VA per unit), houseVA, sys
   function calcMF(inp) {
-    var s = { kind: 'multifamily', occ: 'Multi-family (optional method)', lines: [], notes: [] }, L = s.lines
-    function line(label, va, ref, note, sub) { L.push({ label: label, va: r(va), ref: ref, note: note || '', sub: !!sub }) }
+    var ED = inp.edition === '2026' ? '2026' : '2023', UL = ED === '2026' ? 2 : 3
+    var s = { kind: 'multifamily', edition: ED, occ: 'Multi-family (optional method)', lines: [], notes: [] }, L = s.lines
+    function line(label, va, ref, note, sub) { L.push({ label: label, va: r(va), ref: cite(ref, ED), note: note || '', sub: !!sub }) }
     var n = Math.floor(num(inp.units)), sys = inp.sys || '208Y'
     if (n < 3) { s.error = 'The optional multi-family method (220.84) needs three or more dwelling units. Use the dwelling calculator for fewer.'; s.totalVA = 0; s.amps = 0; s.service = null; return s }
     var sf = num(inp.unitSqft), lnd = inp.laundry !== false ? 1500 : 0
     var ap = (inp.appliances || []).reduce(function (a, x) { return a + num(x.va) }, 0), hv = Math.max(num(inp.heat), num(inp.cool))
-    var per = sf * 3 + 3000 + lnd + ap + hv
-    line('Each unit: lighting ' + sf + ' sq ft x 3 VA = ' + r(sf * 3) + ', small-appliance 3,000' + (lnd ? ', laundry 1,500' : '') + ', appliances ' + r(ap) + (hv ? ', heat or A/C ' + r(hv) : ''), per, '220.84(C)', 'Appliances at nameplate, larger of heating or cooling.', true)
+    var per = sf * UL + 3000 + lnd + ap + hv
+    line('Each unit: lighting ' + sf + ' sq ft x ' + UL + ' VA = ' + r(sf * UL) + ', small-appliance 3,000' + (lnd ? ', laundry 1,500' : '') + ', appliances ' + r(ap) + (hv ? ', heat or A/C ' + r(hv) : ''), per, '220.84(C)', 'Appliances at nameplate, larger of heating or cooling.', true)
     line('All ' + n + ' units connected: ' + n + ' x ' + r(per), per * n, '220.84(C)', '', true)
     var f = mfFactor(n)
     line('Demand on the units at ' + Math.round(f * 100) + '% (' + n + ' units)', per * n * f, 'Table 220.84')
     var h = num(inp.houseVA); if (h > 0) line('House loads (corridors, lobby, elevators, pumps) at their own demand', h, '220.84(B)', 'Calculate the house loads separately under Article 220 and enter the result here.')
     s.totalVA = r(L.reduce(function (a, x) { return a + (x.sub ? 0 : x.va) }, 0)); s.sys = SYS[sys] ? sys : '208Y'; s.sysName = SYS[s.sys].name
     s.amps = r(amps(s.totalVA, s.sys)); s.service = nextSize(s.amps)
-    s.notes.push('220.84 applies when each unit has electric cooking, is metered, and the building has three or more units.')
+    s.notes.push(cite('220.84', ED) + ' applies when each unit has electric cooking, is metered, and the building has three or more units.')
     return s
   }
-  return { calcOcc: calcOcc, calcMF: calcMF, OCC: OCC, SYS: SYS, nextSize: nextSize, lightingDemand: lightingDemand, receptDemand: receptDemand, kitchenFactor: kitchenFactor, mfFactor: mfFactor }
+  return { cite: cite, calcOcc: calcOcc, calcMF: calcMF, OCC: OCC, SYS: SYS, nextSize: nextSize, lightingDemand: lightingDemand, receptDemand: receptDemand, kitchenFactor: kitchenFactor, mfFactor: mfFactor }
 })

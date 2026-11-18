@@ -11,4 +11,8 @@ eq(N.calc(Object.assign({},base,{evseN:1,evseVa:0})).totalVA,29500+7200,'EVSE mi
 eq(N.calc(Object.assign({},base,{motor:4800})).totalVA,29500+1200,'25% largest motor');
 eq(N.calc({sqft:1000,smallApp:0}).totalVA,3000+3000+1500>3000?3000+(3000+3000+1500-3000)*.35:0,'minimum 2 small-appliance circuits');
 eq(N.nextSize(200.1),225,'next size');
+const b26=Object.assign({},base,{edition:'2026'});
+eq(N.calc(b26).totalVA,28800,'2026 standard total (2 VA/sf, dryer, 120.x)');eq(N.calc(Object.assign({},b26,{method:'optional'})).totalVA,23040,'2026 optional (first 8 kVA)');
+eq(N.dryerFactor(3,'2026'),.8,'2026 dryers 3 at 80%');eq(N.dryerFactor(5,'2026'),.8,'2026 dryers 5 at 80%');eq(N.dryerFactor(5),.85,'2023 dryers 5 unchanged');
+eq(N.cite('Table 220.55','2026')==='Table 120.55'?1:0,1,'cite map table');eq(N.cite('220.60','2026')==='120.6'?1:0,1,'cite map 220.60 to 120.6');
 console.log(bad?'FAILED '+bad:'ALL PASS');process.exit(bad?1:0)

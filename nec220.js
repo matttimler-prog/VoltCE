@@ -1,7 +1,7 @@
 /* NEC 220 load calculation lab UI: dwelling, other occupancies, multi-family. Logic in nec220-core.js and nec220-occ-core.js. */
 var N220 = (function () {
   var root, st = {
-    mode: 'dwelling', method: 'standard', occ: 'office', sys: '208Y',
+    mode: 'dwelling', ed: '2023', method: 'standard', occ: 'office', sys: '208Y',
     fixed: [{ name: 'Dishwasher', va: 1200 }, { name: 'Disposal', va: 900 }, { name: 'Water heater', va: 4500 }, { name: 'Microwave', va: 1500 }],
     kit: [],
     oth: [], mf: [{ name: 'Range', va: 12000 }, { name: 'Water heater', va: 4500 }, { name: 'Dishwasher', va: 1200 }]
@@ -24,9 +24,9 @@ var N220 = (function () {
   }
   function occForm() {
     var O = Nec220Occ.OCC, p = PRESETS[st.occ] || PRESETS.office
-    return '<div class="n2-grid"><div class="n2-card"><h3>Building</h3><label class="n2-f"><span>Occupancy (Table 220.12)</span><select id="n2-occ" onchange="N220.setOcc(this.value)">' + Object.keys(O).map(function (k) { return '<option value="' + k + '"' + (st.occ === k ? ' selected' : '') + '>' + O[k].name + ' (' + O[k].va + ' VA/sq ft)</option>' }).join('') + '</select></label>' +
+    return '<div class="n2-grid"><div class="n2-card"><h3>Building</h3><label class="n2-f"><span>Occupancy (' + (st.ed === '2026' ? 'Table 120.42(A)' : 'Table 220.12') + ')</span><select id="n2-occ" onchange="N220.setOcc(this.value)">' + Object.keys(O).map(function (k) { return '<option value="' + k + '"' + (st.occ === k ? ' selected' : '') + '>' + O[k].name + ' (' + O[k].va + ' VA/sq ft)</option>' }).join('') + '</select></label>' +
       sysSel() + fld('sqft', 'Floor area, sq ft', p.sqft) +
-      '<label class="n2-f n2-c"><input id="n2-cont" type="checkbox" checked onchange="N220.run()"> <span>Lighting runs 3 hours or more (continuous, counted at 125%)</span></label>' +
+      '<label class="n2-f n2-c"><input id="n2-cont" type="checkbox" checked onchange="N220.run()"> <span>Lighting runs 3 hours or more (continuous' + (st.ed === '2026' ? ', no 125% multiplier in 2026 load calculations' : ', counted at 125%') + ')</span></label>' +
       '<h3>Receptacles and lighting extras</h3><div class="n2-two">' + fld('rec', 'Receptacle outlets (180 VA each)', p.rec) + fld('mo', 'Multioutlet assembly, ft', '') + fld('win', 'Show-window lighting, ft', p.win || '') + fld('trk', 'Track lighting, ft', '') + fld('sign', 'Sign circuits (1,200 VA each)', p.sign || '') + '</div>' +
       '<h3>HVAC and motors</h3><div class="n2-two">' + fld('heat', 'Heating, VA', '') + fld('cool', 'Cooling, VA', p.cool) + fld('lm', 'Largest motor, VA (25% added)', p.lm) + '</div></div>' +
       '<div>' + list('kit', 'Commercial kitchen equipment', 'Table 220.56 factors apply to three or more units. Leave empty if there is no kitchen.', 'Add unit') + '<div style="height:14px"></div>' + list('oth', 'Other connected loads', 'Anything else at 100%: process equipment, elevators, data racks.', 'Add load') + '</div></div>'
@@ -39,7 +39,8 @@ var N220 = (function () {
   function render() {
     var tab = function (m, t) { return '<button role="tab" class="' + (st.mode === m ? 'on' : '') + '" onclick="N220.mode(\'' + m + '\')">' + t + '</button>' }
     root.innerHTML =
-      '<div class="n2-note"><b>Teaching tool, not a code-compliance determination.</b> It follows NEC 2023 Article 220. Verify every table against your code book, the adopted NEC and your inspector.</div>' +
+      '<div class="n2-note"><b>Teaching tool, not a code-compliance determination.</b> ' + (st.ed === '2026' ? 'It follows NEC 2026 Article 120 (formerly Article 220), built from the Article 120 text supplied to us and marked verification pending.' : 'It follows NEC 2023 Article 220.') + ' Verify every table against your code book, the adopted NEC and your inspector.</div>' +
+      '<label class="n2-f" style="max-width:320px"><span>Code edition</span><select id="n2-ed" onchange="N220.edition(this.value)"><option value="2023"' + (st.ed === '2023' ? ' selected' : '') + '>NEC 2023 (Article 220)</option><option value="2026"' + (st.ed === '2026' ? ' selected' : '') + '>NEC 2026 (Article 120)</option></select></label>' +
       '<div class="n2-tabs n2-modes" role="tablist">' + tab('dwelling', 'House (dwelling)') + tab('occ', 'Offices, stores, schools and more') + tab('mf', 'Multi-family building') + '</div>' +
       (st.mode === 'dwelling' ? dwellingForm() : st.mode === 'occ' ? occForm() : mfForm()) + '<div id="n2-out" aria-live="polite"></div>'
     lists(); run()
@@ -62,14 +63,14 @@ var N220 = (function () {
   function run() {
     var o = root.querySelector('#n2-out'); if (!o) return
     var s
-    if (st.mode === 'dwelling') s = Nec220.calc({ method: st.method, sqft: v('sqft'), smallApp: v('sa'), laundry: v('lnd'), rangeN: v('rn'), rangeKw: v('rkw'), dryerN: v('dn'), dryerKw: v('dkw'), heat: v('heat'), ac: v('ac'), motor: v('motor'), evseN: v('en'), evseVa: v('eva'), heatUnits: v('hu'), fixed: st.fixed })
-    else if (st.mode === 'occ') s = Nec220Occ.calcOcc({ occ: st.occ, sys: st.sys, sqft: v('sqft'), continuous: v('cont'), recepts: v('rec'), multiFt: v('mo'), windowFt: v('win'), trackFt: v('trk'), signs: v('sign'), heat: v('heat'), cool: v('cool'), largestMotor: v('lm'), kitchen: st.kit.map(function (x) { return x.va }), other: st.oth })
-    else s = Nec220Occ.calcMF({ sys: st.sys, units: v('units'), unitSqft: v('usf'), heat: v('mheat'), cool: v('mcool'), laundry: v('mlnd'), houseVA: v('house'), appliances: st.mf })
+    if (st.mode === 'dwelling') s = Nec220.calc({ edition: st.ed, method: st.method, sqft: v('sqft'), smallApp: v('sa'), laundry: v('lnd'), rangeN: v('rn'), rangeKw: v('rkw'), dryerN: v('dn'), dryerKw: v('dkw'), heat: v('heat'), ac: v('ac'), motor: v('motor'), evseN: v('en'), evseVa: v('eva'), heatUnits: v('hu'), fixed: st.fixed })
+    else if (st.mode === 'occ') s = Nec220Occ.calcOcc({ edition: st.ed, occ: st.occ, sys: st.sys, sqft: v('sqft'), continuous: v('cont'), recepts: v('rec'), multiFt: v('mo'), windowFt: v('win'), trackFt: v('trk'), signs: v('sign'), heat: v('heat'), cool: v('cool'), largestMotor: v('lm'), kitchen: st.kit.map(function (x) { return x.va }), other: st.oth })
+    else s = Nec220Occ.calcMF({ edition: st.ed, sys: st.sys, units: v('units'), unitSqft: v('usf'), heat: v('mheat'), cool: v('mcool'), laundry: v('mlnd'), houseVA: v('house'), appliances: st.mf })
     o.innerHTML = result(s)
   }
   return {
     mount: function (el) { root = el; if (!root.dataset.ok) { root.dataset.ok = 1; render() } },
-    run: run, method: function (m) { st.method = m; render() }, mode: function (m) { st.mode = m; render() },
+    edition: function (e) { st.ed = e; render() }, run: run, method: function (m) { st.method = m; render() }, mode: function (m) { st.mode = m; render() },
     set: function (k, val) { st[k] = val; run() },
     setOcc: function (k) { st.occ = k; st.kit = (k === 'restaurant' || k === 'hospital' || k === 'school' || k === 'hotel') ? [{ name: 'Fryer / oven', va: 12000 }, { name: 'Dishwasher', va: 6000 }, { name: 'Booster heater', va: 4000 }] : []; render() },
     add: function (k) { st[k].push({ name: 'Item', va: 1000 }); lists(); run() },
