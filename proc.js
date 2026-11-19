@@ -30,7 +30,7 @@
   /* ---------- the method ---------- */
   function method(b) {
     b.innerHTML = '<div class="pr-card"><h2>A test-taking process you can repeat</h2><p>This is a method for passing the journeyman or master exam, whether you take it on a computer or on paper. It is built around one idea: <b>stop flipping through the code book</b>. Know where you are going before you open it, and open it once per section, not once per question.</p>' +
-      '<p class="pr-muted">Study method created by Matthew Timler, a Michigan master electrician. VoltCE practice questions are study practice, not official exam questions.</p></div>' +
+      '<p class="pr-muted">Study method created by Matthew Timler, a master electrician licensed in many states. VoltCE practice questions are study practice, not official exam questions.</p></div>' +
       step(1, 'Know the major articles from memory', 'Hear "250" and think grounding. Hear "430" and think motors. If you already know where you are going, you spend your time reading the right page instead of hunting for it.', 'art') +
       step(2, 'Learn the keyword index', 'Know what the question is really asking, pick the word you would look up, and use the index to find the <b>subsection</b>, not just the article. Choose the sub-entry under the keyword so you land on the exact spot. Skimming pages is the biggest time waster.', 'idx') +
       '<div class="pr-card"><div class="pr-n">3</div><h3>Take the test in three passes</h3><ol class="pr-steps">' +
