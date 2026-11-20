@@ -1317,8 +1317,8 @@
       <div id="auth-alert" style="display:none" class="alert alert-error"></div>
       <div id="register-only" style="display:none">
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">First name</label><input class="form-input" id="reg-first" placeholder="John"></div>
-          <div class="form-group"><label class="form-label">Last name</label><input class="form-input" id="reg-last" placeholder="Smith"></div>
+          <div class="form-group"><label class="form-label">First name</label><input class="form-input" id="reg-first" placeholder="John" autocomplete="given-name"></div>
+          <div class="form-group"><label class="form-label">Last name</label><input class="form-input" id="reg-last" placeholder="Smith" autocomplete="family-name"></div>
         </div>
         <div class="form-group"><label class="form-label">License type</label>
           <select class="form-select" id="reg-license">
@@ -1329,7 +1329,8 @@
             <option>Registered Electrician</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Wisconsin license number</label><input class="form-input" id="reg-licnum" placeholder="J-123456"></div>
+        <div class="form-group"><label class="form-label">License number</label><input class="form-input" id="reg-licnum" placeholder="J-123456"><div style="font-size:12px;color:var(--muted);margin-top:4px">Required. It is printed on your certificate and on the attendance record sent to the state, so enter it exactly as it appears on your license.</div></div>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin:0 0 14px"><input type="checkbox" id="reg-optin" style="margin-top:3px"> <span>Email me about new courses, features and specials (optional, unsubscribe any time).</span></label>
       </div>
       <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" id="auth-email" placeholder="you@email.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="auth-pass" placeholder="••••••••"></div>
@@ -1637,13 +1638,16 @@ async function handleAuth() {
 
   try {
     if (authMode === 'register') {
-      const first = document.getElementById('reg-first').value.trim() || 'Student'
-      const last = document.getElementById('reg-last').value.trim() || ''
+      const first = document.getElementById('reg-first').value.trim()
+      const last = document.getElementById('reg-last').value.trim()
       const license = document.getElementById('reg-license').value
-      const licnum = document.getElementById('reg-licnum').value.trim() || '—'
+      const licnum = document.getElementById('reg-licnum').value.trim()
+      const optin = !!document.getElementById('reg-optin').checked
+      if (!first || !last) throw new Error('Enter your first and last name as they appear on your license.')
+      if (licnum.replace(/[^A-Za-z0-9]/g, '').length < 3) throw new Error('Enter your license number. It is required for your certificate and state records.')
       const { data, error } = await supabaseClient.auth.signUp({
         email, password: pass,
-        options: { data: { first_name: first, last_name: last, license_type: license, license_number: licnum } }
+        options: { data: { first_name: first, last_name: last, license_type: license, license_number: licnum, marketing_opt_in: optin, info_verified_at: new Date().toISOString() } }
       })
       if (error) throw error
       if (data.user) await afterLogin(data.user)
@@ -1674,7 +1678,10 @@ async function afterLogin(user) {
   updateNavForUser(profile)
   renderDashboard(profile, enr || [], comp || [])
   if (profile?.email === ADMIN_EMAIL) await renderAdmin()
-  showPage('dashboard')
+  let back = null
+  try { back = sessionStorage.getItem('vc_return'); sessionStorage.removeItem('vc_return') } catch (e) {}
+  const m = back && back.match(/^\/course\/([a-z0-9-]+)/)
+  if (m) { window._courseSlug = m[1]; showPage('course') } else showPage('dashboard')
 }
 
 function updateNavForUser(profile) {
@@ -3038,7 +3045,7 @@ const LabLoad = (() => {
     lab() { css('lab.css?v=2'); return seq(['sim-core.js?v=1', 'lab-sym.js?v=1', 'lab.js?v=1', 'lab-examples.js?v=2', 'lab-export.js?v=1', 'lab-assist.js?v=1', 'lab-assist-ui.js?v=1']) },
     svc() { css('lab.css?v=2'); css('svc.css?v=3'); return seq(['svc-core.js?v=3', 'svc.js?v=3']) },
     n220() { css('lab.css?v=2'); css('nec220.css?v=2'); return seq(['nec220-core.js?v=1', 'nec220-occ-core.js?v=1', 'nec220.js?v=2']) },
-    course() { return seq(['course.js?v=1']) },
+    course() { return seq(['course.js?v=2']) },
     proc() { css('proc.css?v=1'); return seq(['proc.js?v=2']) },
     ladder() { css('lab.css?v=2'); css('ladder.css?v=1'); return seq(['ladder-core.js?v=1', 'ladder.js?v=1']) }
   }
@@ -3185,7 +3192,7 @@ function showAlert(id, msg) {
 </script>
 <script src="state-links.js" defer></script>
 <script src="answer-fx.js" defer></script>
-<script src="nudge.js?v=2" defer></script>
+<script src="nudge.js?v=3" defer></script>
 <script src="goals.js?v=4" defer></script>
 <script src="lablink.js?v=1" defer></script>
 <script src="pwa.js?v=1" defer></script>

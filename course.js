@@ -144,6 +144,54 @@
     var f = $('[data-focus]'); if (f) { try { f.focus({ preventScroll: true }) } catch (e) {} }
   }
 
+
+  // ---------- account gate: an account with verified name and license number is required ----------
+  function infoOk() {
+    var u = user(), p = null; try { p = currentProfile } catch (e) {}
+    if (!u || !p) return false
+    var n = String(p.license_number || '').replace(/[^A-Za-z0-9]/g, '')
+    var md = u.user_metadata || {}
+    return !!(p.first_name && p.first_name !== 'Student' && p.last_name && n.length >= 3 && md.info_verified_at)
+  }
+  function gateCard() {
+    var u = user(), p = null; try { p = currentProfile } catch (e) {}
+    if (!u) return '<div class="cs-card"><h2>Create a free account to take this course</h2><p>Your name and license number go on your certificate and on the attendance record the state requires, so an account is required. It takes about a minute and your progress is saved.</p><div class="cs-row"><button class="cs-btn cs-primary" id="cs-gate-new" type="button" data-focus>Create free account</button><button class="cs-btn" id="cs-gate-in" type="button">I already have an account</button></div></div>'
+    p = p || {}
+    var lt = ['Journeyman Electrician', 'Master Electrician', 'Residential Journeyman', 'Industrial Journeyman', 'Registered Electrician']
+    if (p.license_type && lt.indexOf(p.license_type) < 0) lt.unshift(p.license_type)
+    var n = String(p.license_number || ''); if (n === '\u2014') n = ''
+    return '<div class="cs-card"><h2>Confirm your information</h2><p>This is printed on your certificate and sent to the state as your attendance record. Check that it matches your license exactly.</p><div id="cs-v-err" class="cs-warn" style="display:none"></div>' +
+      '<p><label>First name<br><input id="cs-v-first" value="' + esc(p.first_name && p.first_name !== 'Student' ? p.first_name : '') + '" autocomplete="given-name"></label></p>' +
+      '<p><label>Last name<br><input id="cs-v-last" value="' + esc(p.last_name || '') + '" autocomplete="family-name"></label></p>' +
+      '<p><label>License type<br><select id="cs-v-type">' + lt.map(function (t) { return '<option' + (t === p.license_type ? ' selected' : '') + '>' + esc(t) + '</option>' }).join('') + '</select></label></p>' +
+      '<p><label>License number<br><input id="cs-v-num" value="' + esc(n) + '"></label></p>' +
+      '<p><label><input type="checkbox" id="cs-v-ok"> I confirm this information is correct.</label></p>' +
+      '<div class="cs-row"><button class="cs-btn cs-primary" id="cs-v-save" type="button">Confirm and continue</button></div></div>'
+  }
+  async function saveVerify() {
+    var c = sb(), u = user(), err = $('#cs-v-err')
+    function bad(m) { err.textContent = m; err.style.display = 'block' }
+    var f = $('#cs-v-first').value.trim(), l = $('#cs-v-last').value.trim(), t = $('#cs-v-type').value, n = $('#cs-v-num').value.trim()
+    if (!f || !l) return bad('Enter your first and last name.')
+    if (n.replace(/[^A-Za-z0-9]/g, '').length < 3) return bad('Enter your license number.')
+    if (!$('#cs-v-ok').checked) return bad('Tick the box to confirm your information is correct.')
+    try {
+      var r = await c.from('profiles').update({ first_name: f, last_name: l, license_type: t, license_number: n }).eq('id', u.id)
+      if (r.error) throw r.error
+      var a = await c.auth.updateUser({ data: { first_name: f, last_name: l, license_type: t, license_number: n, info_verified_at: new Date().toISOString() } })
+      if (a.error) throw a.error
+      if (a.data && a.data.user) { try { currentUser = a.data.user } catch (e) {} }
+      try { currentProfile = Object.assign({}, currentProfile, { first_name: f, last_name: l, license_type: t, license_number: n }) } catch (e) {}
+      try { trk('course_info_verified', D.slug) } catch (e) {}
+      render()
+    } catch (e) { bad('Could not save: ' + (e.message || e)) }
+  }
+  function goAuth(register) {
+    try { sessionStorage.setItem('vc_return', '/course/' + D.slug) } catch (e) {}
+    showPage('auth')
+    try { if (register && authMode === 'login') toggleAuthMode(); if (!register && authMode === 'register') toggleAuthMode() } catch (e) {}
+  }
+
   function statesFit() {
     if (D.scope === 'wi') return ['Wisconsin']
     var out = []
@@ -160,7 +208,9 @@
     if (ap.length) h += '<p class="cs-ok"><b>Approved for credit:</b> ' + ap.map(function (a) { return esc(a.state + ' (' + a.board + (a.number ? ' #' + a.number : '') + ')') }).join(', ') + '</p>'
     else h += '<p class="cs-warn"><b>Preview.</b> This course is waiting for state approval. You can take it, but no CE credit or certificate is issued yet.</p>'
     h += '<ul class="cs-facts"><li><b>' + D.modules.length + ' modules</b>, ' + nS + ' lessons, ' + nQ + ' review questions</li><li><b>Time is enforced.</b> Each lesson holds the Next button for a minimum viewing time, and each module has a minimum time. Only active time counts.</li><li><b>70% to pass</b> each module quiz. You can retake a quiz as often as you need; questions and answer order change each try.</li><li><b>Knowledge checks</b> inside lessons give instant feedback and cite the Code section.</li><li>Occasional <b>still-here checks</b> confirm you are present.</li></ul>'
-    h += '<div class="cs-row"><button class="cs-btn cs-primary" id="cs-start" type="button" data-focus>' + (S.done ? 'Review course' : started ? 'Resume course' : 'Start course') + '</button>' + (S.code ? '<button class="cs-btn" id="cs-showcert" type="button">View certificate</button>' : '') + '</div>'
+    var gated = !infoOk()
+    if (gated) h += '</div>' + gateCard() + '<div class="cs-card" style="display:none">'
+    else h += '<div class="cs-row"><button class="cs-btn cs-primary" id="cs-start" type="button" data-focus>' + (S.done ? 'Review course' : started ? 'Resume course' : 'Start course') + '</button>' + (S.code ? '<button class="cs-btn" id="cs-showcert" type="button">View certificate</button>' : '') + '</div>'
     if (!u) h += '<p class="cs-muted">You are not signed in. <a href="/" onclick="event.preventDefault();showPage(\'auth\')">Sign in</a> to save progress across devices and have your time recorded.</p>'
     h += '</div>'
     h += '<div class="cs-card"><h2>Modules</h2><ol class="cs-mods">' + D.modules.map(function (m, i) { return '<li class="' + (modDone(i) ? 'done' : '') + '"><b>' + esc(m.title) + '</b><span>' + m.minutes + ' min, ' + m.slides.length + ' lessons, ' + m.quiz.length + ' questions' + (modDone(i) ? ' - complete' : '') + '</span></li>' }).join('') + '</ol></div>'
@@ -268,7 +318,10 @@
   // ---------- actions ----------
   function bind() {
     function on(id, fn) { var e = $(id); if (e) e.onclick = fn }
-    on('#cs-start', function () { S.phase = S.mods[S.mod].started ? 'slides' : 'intro'; if (S.phase === 'slides') enterSlide(); render() })
+    on('#cs-gate-new', function () { goAuth(true) })
+    on('#cs-gate-in', function () { goAuth(false) })
+    on('#cs-v-save', saveVerify)
+    on('#cs-start', function () { if (!infoOk()) { render(); return } S.phase = S.mods[S.mod].started ? 'slides' : 'intro'; if (S.phase === 'slides') enterSlide(); render() })
     on('#cs-showcert', function () { S.phase = 'cert'; render() })
     on('#cs-print', function () { document.body.classList.add('cs-printing'); window.print(); setTimeout(function () { document.body.classList.remove('cs-printing') }, 500) })
     on('#cs-back', function () { S.phase = 'landing'; render() })

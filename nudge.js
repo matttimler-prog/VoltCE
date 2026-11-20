@@ -3,8 +3,9 @@
    and are rate-limited with localStorage so returning visitors are not nagged. */
 (function () {
   var CFG = {
-    signupAfterSec: 240,      // active time on site before the account nudge (4 min)
-    signupCooldownDays: 7,    // after dismissing, wait this long
+    signupAfterSec: 900,      // total active time on site (across visits) before the first account nudge (15 min)
+    signup2AfterSec: 1800,    // second, firmer account nudge (30 min total)
+    signupCooldownDays: 1,    // after dismissing the first, wait this long before the second
     donateChance: 0.5,        // chance a given session gets a donate nudge at all
     donateMinSec: 420,        // random delay window for the donate nudge (7 to 14 min of active time)
     donateMaxSec: 840,
@@ -19,7 +20,7 @@
   var q = {}; try { q = new URLSearchParams(location.search) } catch (e) {}
   if (q.get && q.get('nonudge') === '1') return;
 
-  var active = 0, shownAt = 0, el = null, kind = null;
+  var active = 0, shownAt = 0, el = null, kind = null, prior = +st.totalSec || 0, stage = +st.stage || 0;
   var donateAt = (Math.random() < CFG.donateChance) ? Math.round(CFG.donateMinSec + Math.random() * (CFG.donateMaxSec - CFG.donateMinSec)) : -1;
   var signupDone = false, donateDone = false;
   if (window.__nudgeTest) { CFG = Object.assign(CFG, window.__nudgeTest); donateAt = CFG.forceDonateAt != null ? CFG.forceDonateAt : donateAt; }
@@ -68,14 +69,19 @@
     try { trk('nudge_shown', k) } catch (e) {}
   }
 
-  function showSignup() {
-    signupDone = true;
-    build('signup', 'Save your progress with a free account',
-      'Free accounts keep your completed lessons and CEU records in one place. You can also set study goals and reminders, like finishing your hours before renewal.',
-      'Create free account', 'Not now', function () {
-        try { trk('nudge_click', 'signup') } catch (e) {}
-        showPage('auth'); if (typeof authMode !== 'undefined' && authMode === 'login') toggleAuthMode();
-      });
+  function showSignup(n) {
+    signupDone = true; stage = n; st.stage = n; save();
+    var go = function () {
+      try { trk('nudge_click', 'signup') } catch (e) {}
+      try { sessionStorage.setItem('vc_return', location.pathname + location.search) } catch (e) {}
+      showPage('auth'); if (typeof authMode !== 'undefined' && authMode === 'login') toggleAuthMode();
+    };
+    if (n === 1) build('signup', 'Save your progress with a free account',
+      'You have spent a while studying here. A free account saves your progress and CEU records across devices, and lets us tell you about new courses and features.',
+      'Create free account', 'Not now', go);
+    else build('signup', 'Keep your progress: please sign in',
+      'You have studied 30 minutes without an account, so none of it is saved to you. Create a free account (it takes a minute) to keep your progress and hear about new features and specials.',
+      'Create free account', 'Not now', go);
   }
   function showDonate() {
     donateDone = true; st.donateShown = Date.now(); save();
@@ -87,10 +93,13 @@
   setInterval(function () {
     if (document.hidden) return;
     active++;
+    if (active % 10 === 0) { st.totalSec = prior + active; save(); }
+    var total = prior + active;
     if (el) { if (signedIn() && kind === 'signup') hide(false); return; }
     if (onAuthPage()) return;
     if (shownAt && active - shownAt < CFG.gapSec) return;
-    if (!signupDone && !signedIn() && active >= CFG.signupAfterSec && days(st.signupDismissed) >= CFG.signupCooldownDays) return showSignup();
+    if (!signedIn() && stage < 1 && total >= CFG.signupAfterSec) return showSignup(1);
+    if (!signedIn() && stage < 2 && total >= CFG.signup2AfterSec && days(st.signupDismissed) >= CFG.signupCooldownDays) return showSignup(2);
     if (!donateDone && donateAt >= 0 && active >= donateAt && days(st.donateShown) >= CFG.donateCooldownDays) return showDonate();
   }, 1000);
 
