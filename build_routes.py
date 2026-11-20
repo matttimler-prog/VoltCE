@@ -5,7 +5,7 @@ h = open('index.html').read()
 slugify = lambda s: re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 import subprocess
 TRACKED = set(subprocess.run(['git', 'ls-files'], capture_output=True, text=True).stdout.split()) if os.path.isdir('.git') else set()
-slugs = ['courses', 'states', 'pricing', 'circuit-lab', 'ladder-logic', 'service-panel-builder', 'nec-220-load-calculator', 'run-ladder-logic-on-a-plc', 'whats-new', 'test-taking-process', 'course', 'wisconsin', 'florida-contractor']
+slugs = ['courses', 'states', 'pricing', 'circuit-lab', 'ladder-logic', 'service-panel-builder', 'nec-220-load-calculator', 'run-ladder-logic-on-a-plc', 'whats-new', 'test-taking-process', 'apparel', 'course', 'wisconsin', 'florida-contractor']
 for m in re.finditer(r"^  (\w+): \{ name: ['\"]([^'\"]+)['\"], ed: '", h, re.M):
     s = slugify(m.group(2))
     if s not in slugs: slugs.append(s)
@@ -40,6 +40,7 @@ if '--pages' in sys.argv:
              'run-ladder-logic-on-a-plc': ('Run ladder logic on a real PLC with OpenPLC | VoltCE', 'Export your ladder program as an OpenPLC project and run it on a Raspberry Pi: install, upload, wire the inputs and outputs, and common problems.'),
              'whats-new': ("What's new on VoltCE", 'Recent additions to VoltCE: new labs, study tools, reminders and the installable app.'),
              'service-panel-builder': ('Service and panel builder | VoltCE', 'Free electrical service and panel builder: size breakers and wire, check voltage drop and fault current, and learn how services and distribution work.'),
+             'apparel': ('VoltCE apparel: electrician shirts and gear | VoltCE', 'Original electrician apparel designs: funny electrical shirts, VoltCE designs and formula designs like Ohm law.'),
              'test-taking-process': ('Test-taking process for the journeyman and master electrician exam | VoltCE', 'A free test-taking process: memorize the major NEC articles, master the keyword index, then work the exam in three passes and track what you are certain of.'),
              'course': ('Verify a VoltCE certificate', 'Check a VoltCE continuing education certificate number.'),
              'courses': ('Electrician continuing education courses | VoltCE', 'Online electrician continuing education courses from VoltCE.'),
