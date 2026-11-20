@@ -1198,7 +1198,7 @@
     <div class="page-sub">Everything here is free. Practice written by VoltCE for the 2023 NEC, with an explanation, a reference and the math behind every answer. Not official exam questions, no CE credit.</div>
     <div class="rec-grid">
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen()"><h4>Flashcards</h4><p>Memorize the code: major articles (tier 1), all other articles (tier 2), formulas (tier 3).</p></div>
-      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen();setTimeout(()=>fcSetLevel('m25'),400)"><h4>Article names: memorize the code book</h4><p>250 is Grounding and Bonding, 240 is Overcurrent Protection. Flashcards and a quiz, major 25 articles or all of them.</p></div>
+      <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="fcOpen();setTimeout(()=>fcSetLevel('m25'),400)"><h4>Article names: memorize the code book</h4><p>250 is Grounding and Bonding, 240 is Overcurrent Protection. Flashcards and a quiz, the 36 major articles or all of them.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="codeOpen()"><h4>Code article study</h4><p>Pick one article and zip through questions, or randomize across articles. Timer optional.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-b)" onclick="idxOpen()"><h4>Index lookup drill</h4><p>Practice finding answers in the code book: pick the index keyword, then pick the section.</p></div>
       <div class="rec" style="cursor:pointer;--ph:var(--phase-a)" onclick="CYCT.open()"><h4>Practice by code cycle</h4><p>2017, 2020, 2023 or 2026 NEC: questions that are correct for your edition, journeyman or master level, plus what changed.</p></div>
@@ -1215,7 +1215,7 @@
 <div id="page-fc" class="page">
   <div class="container">
     <div class="page-title">Code flashcards</div>
-    <div class="page-sub">Memorization cards in three levels. Randomized mix shuffles every card. Code section cards cover the code book article by article: start with the 25 major articles, then add all the rest. Formula cards cover the math. Tap a card to flip it.</div>
+    <div class="page-sub">Memorization cards in three levels. Randomized mix shuffles every card. Code section cards cover the code book article by article: start with the 36 major articles, then add all the rest. Formula cards cover the math. Tap a card to flip it.</div>
     <div class="tabs" id="fc-tiers"></div>
     <div id="fc-scope"></div>
     <div id="fc-cats"></div>
@@ -2482,9 +2482,9 @@ function theoryOpen() { THEORYT.open() }
 
 // flashcards
 const FC = { dir: 'mix', level: 'code', scope: 'major', cat: 'All', deck: [], i: 0, flipped: false, known: 0, again: [], cats: [] }
-const FC_LEVELS = { m25: '25 major article names', rand: 'Randomized mix', names: 'All article names', code: 'Code section cards', formula: 'Formula cards' }
-// The 25 major articles to know cold: the heaviest-tested parts of the code book.
-const FC_MAJOR = [90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690]
+const FC_LEVELS = { m25: '36 major article names', rand: 'Randomized mix', names: 'All article names', code: 'Code section cards', formula: 'Formula cards' }
+// The 36 major articles to know cold: the heaviest-tested parts of the code book.
+const FC_MAJOR = [90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 320, 334, 342, 400, 404, 406, 408, 410, 422, 430, 440, 445, 450, 500, 501, 517, 625, 630, 680, 690, 700, 705]
 const fcIsMajor = x => FC_MAJOR.includes(artNum(x.c))
 function fcOpen() { showPage('fc'); document.getElementById('fc-body').innerHTML = '<div class="empty">Loading cards…</div>'; loadData('fc-bank.js', 'FC_BANK', fcStart, 'fc-body') }
 function fcSetLevel(l) { FC.level = l; if (l === 'm25' && FC.dir === 'mix') FC.dir = 'n2t'; FC.cat = 'All'; fcStart() }
@@ -2517,7 +2517,7 @@ function fcStart() {
   const nm = window.ART_NAMES || []
   const dirRow = `<button class="btn-sm cat-chip ${FC.dir === 'n2t' ? 'active' : ''}" onclick="fcSetDir('n2t')">Number → name</button><button class="btn-sm cat-chip ${FC.dir === 't2n' ? 'active' : ''}" onclick="fcSetDir('t2n')">Name → number</button><button class="btn-sm cat-chip ${FC.dir === 'mix' ? 'active' : ''}" onclick="fcSetDir('mix')">Both (2 cards each)</button>`
   document.getElementById('fc-scope').innerHTML = FC.level === 'm25' ? `<div class="row-btns" style="margin:0 0 8px">${dirRow}</div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">The 25 articles to know cold: 90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690. One card each. 250 is Grounding and Bonding, 240 is Overcurrent Protection. Names follow the 2023 NEC.</p>` : FC.level === 'names' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${nm.filter(a => a.m).length})</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nm.length})</button>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">The ${FC_MAJOR.length} articles to know cold: ${FC_MAJOR.join(', ')}. One card each. 250 is Grounding and Bonding, 240 is Overcurrent Protection. Names follow the 2023 NEC.</p>` : FC.level === 'names' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${nm.filter(a => a.m).length})</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nm.length})</button>
     <span style="width:14px"></span><button class="btn-sm cat-chip ${FC.dir === 'mix' ? 'active' : ''}" onclick="fcSetDir('mix')">Both directions</button><button class="btn-sm cat-chip ${FC.dir === 'n2t' ? 'active' : ''}" onclick="fcSetDir('n2t')">Number → name</button><button class="btn-sm cat-chip ${FC.dir === 't2n' ? 'active' : ''}" onclick="fcSetDir('t2n')">Name → number</button></div>
     <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Memorize what each article covers: 250 is Grounding and Bonding, 240 is Overcurrent Protection. Names follow the 2023 NEC. In the 2026 NEC, load calculations moved from Article 220 to Article 120.</p>` : FC.level === 'code' ? `<div class="row-btns" style="margin:0 0 8px"><button class="btn-sm cat-chip ${FC.scope === 'major' ? 'active' : ''}" onclick="fcSetScope('major')">Major articles (${FC_MAJOR.length} articles, ${bank.filter(x => x.t !== 3 && fcIsMajor(x)).length} cards)</button><button class="btn-sm cat-chip ${FC.scope === 'all' ? 'active' : ''}" onclick="fcSetScope('all')">All articles (${nCode} cards)</button></div>
     ${FC.scope === 'major' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Major articles: 90, 100, 110, 210, 215, 220, 225, 230, 240, 250, 300, 310, 312, 314, 334, 400, 406, 408, 410, 422, 430, 450, 630, 680, 690. These are where most exam questions come from.</p>' : ''}` : (FC.level === 'rand' ? '<p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Every card, code articles and formulas, in random order.</p>' : '')
@@ -2592,7 +2592,7 @@ function idxNext() { IDX.i++; IDX.step = 1; IDX.kSel = -1; IDX.sSel = -1; idxRen
 const SF_SRC = { wi: { name: 'Wisconsin', ed: 2023, bank: 'WI_BANK', file: 'wi-bank.js', lvl: () => WIT._lvl, back: () => navWI(WIT._lvl) },
   fl: { name: 'Florida', ed: 2020, back: () => navFL(null) } }
 const SF_GONE = { 2026: [220], 2017: [242] }
-const SF_SETS = { mix: 'Randomized mix (all cards)', m25: '25 major article names', names: 'All article names', cmajor: 'Code cards: 25 major articles', call: 'Code cards: all articles', calc: 'Calculation cards', formula: 'Formula cards', theory: 'Electrical theory cards', rules: 'State rules cards' }
+const SF_SETS = { mix: 'Randomized mix (all cards)', m25: '36 major article names', names: 'All article names', cmajor: 'Code cards: 36 major articles', call: 'Code cards: all articles', calc: 'Calculation cards', formula: 'Formula cards', theory: 'Electrical theory cards', rules: 'State rules cards' }
 const SF = { id: null, set: 'mix', cat: 'All', dir: 'mix', deck: [], i: 0, flipped: false, known: 0, again: [], ready: false }
 let _sfChg = null
 function sfInfo(id) {

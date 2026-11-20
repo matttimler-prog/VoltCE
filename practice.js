@@ -8,7 +8,7 @@
     theory: { label: 'Electrical theory', file: 'theory-bank.js', glob: 'THEORY_BANK', field: 'c' },
     chg: { label: 'Edition changes', file: 'chg-bank.js', glob: 'CHG_BANK', field: 'ar' },
     master: { label: 'Master prep', file: 'master-bank.js', glob: 'MASTER_BANK', field: 'c' },
-    namesM: { label: 'Article names: major 25', file: 'art-names.js', glob: 'ART_QS', field: 'c', filter: x => x.mj },
+    namesM: { label: 'Article names: major 36', file: 'art-names.js', glob: 'ART_QS', field: 'c', filter: x => x.mj },
     namesA: { label: 'Article names: all', file: 'art-names.js', glob: 'ART_QS', field: 'c' }
   };
   const N = 10;

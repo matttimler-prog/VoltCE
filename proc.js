@@ -50,7 +50,7 @@
     var A = S.art
     if (!A) {
       b.innerHTML = '<div class="pr-card"><h2>Know the articles</h2><p>Twenty quick questions. Some give the article number and ask what it covers; others give the topic and ask for the number. A score of ' + ART_PASS + ' percent or better means you know them.</p>' +
-        '<div class="pr-row"><label><input type="radio" name="sc" value="1" checked> The 25 major articles</label> <label><input type="radio" name="sc" value="0"> All ' + arts().length + ' articles</label></div>' +
+        '<div class="pr-row"><label><input type="radio" name="sc" value="1" checked> The 36 major articles</label> <label><input type="radio" name="sc" value="0"> All ' + arts().length + ' articles</label></div>' +
         '<p class="pr-muted">Best so far: ' + (S.data.art ? S.data.art + '%' : 'none yet') + '</p><button class="pr-btn pr-primary" id="go">Start</button></div>' + artRef()
       b.querySelector('#go').onclick = function () {
         var major = b.querySelector('input[name=sc]:checked').value === '1', pool = arts(major)
@@ -81,7 +81,7 @@
     var nx = b.querySelector('#nx'); if (nx) { nx.onclick = function () { A.i++; artView(b) }; nx.focus() }
   }
   function artRef() {
-    return '<details class="pr-card"><summary>Study list: the 25 major articles</summary><table class="pr-tbl"><tbody>' + arts(true).map(function (a) { return '<tr><th>' + a.n + '</th><td>' + esc(a.t) + '</td><td class="pr-muted">' + esc(a.h || '') + '</td></tr>' }).join('') + '</tbody></table></details>'
+    return '<details class="pr-card"><summary>Study list: the 36 major articles</summary><table class="pr-tbl"><tbody>' + arts(true).map(function (a) { return '<tr><th>' + a.n + '</th><td>' + esc(a.t) + '</td><td class="pr-muted">' + esc(a.h || '') + '</td></tr>' }).join('') + '</tbody></table></details>'
   }
 
   /* ---------- step 2: keyword index ---------- */
