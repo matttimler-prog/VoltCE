@@ -10,3 +10,5 @@
 .sh-card .sh-cap{padding:8px 10px;font-size:12px;color:#c9d2e0;background:#141b25}
 .sh-btn{display:inline-block;margin-top:6px;font:inherit;font-size:13px;padding:6px 10px;border-radius:6px;background:#FFC20E;color:#111;border:0;text-decoration:none;cursor:pointer}
 .sh-tab:focus-visible,.sh-btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.sh-card .sh-cap .sh-buy{display:block;margin-top:8px;text-align:center;font-weight:600}
+.sh-soon{display:block;margin-top:8px;font-size:11px;color:#8a96a8}
